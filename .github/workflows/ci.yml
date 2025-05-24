@@ -1,4 +1,4 @@
-name: CI
+name: Supabase
 
 on:
   push:
@@ -15,6 +15,7 @@ on:
 
 jobs:
   test:
+    name: Test Database
     runs-on: ubuntu-latest
     environment:
       name: Preview – bytebuzz
