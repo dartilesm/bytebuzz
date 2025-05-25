@@ -12,7 +12,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, vs } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Copy, Download, Trash } from "lucide-react";
 import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
-
+import { cn } from "@/lib/utils";
 interface CodeBlockEditorProps {
   /** Initial code content */
   initialCode?: string;
@@ -136,7 +136,9 @@ export function CodeBlockEditor({
   const dynamicHeight = codeBlockEditorFunctions.calculateDynamicHeight(code, height);
 
   return (
-    <Card className={`w-full [box-shadow:none] ${className}`}>
+    <Card
+      className={cn("w-full [box-shadow:none] border-default-300 border dark:border-0", className)}
+    >
       <CardHeader className="flex flex-row items-center justify-between gap-4 pb-2">
         <div className="flex items-center gap-2">
           <Select
