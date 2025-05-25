@@ -6,6 +6,8 @@ import { Select, SelectItem } from "@heroui/select";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { useTheme } from "next-themes";
+import { Editor } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, vs } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Copy, Download, Edit3, Eye } from "lucide-react";
@@ -31,7 +33,7 @@ interface CodeBlockEditorProps {
 }
 
 /**
- * CodeBlock Editor Component with syntax highlighting, language selection, and editing capabilities
+ * CodeBlock Editor Component with Monaco Editor, syntax highlighting, language selection, and editing capabilities
  */
 export function CodeBlockEditor({
   initialCode = "",
@@ -44,7 +46,7 @@ export function CodeBlockEditor({
   className = "",
 }: CodeBlockEditorProps) {
   const { theme } = useTheme();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   const [code, setCode] = useState(initialCode);
   const [language, setLanguage] = useState(initialLanguage);
@@ -97,33 +99,60 @@ export function CodeBlockEditor({
   }
 
   /**
-   * Handle textarea input changes
+   * Handle Monaco Editor mount
    */
-  function handleTextareaChange(event: React.ChangeEvent<HTMLTextAreaElement>): void {
-    handleCodeChange(event.target.value);
+  function handleEditorDidMount(editor: editor.IStandaloneCodeEditor): void {
+    editorRef.current = editor;
   }
 
   /**
-   * Handle textarea key down events for better editing experience
+   * Handle Monaco Editor value changes
    */
-  function handleTextareaKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>): void {
-    if (event.key === "Tab") {
-      event.preventDefault();
-      const textarea = event.currentTarget;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const newValue = `${code.substring(0, start)}  ${code.substring(end)}`;
-      handleCodeChange(newValue);
+  function handleEditorChange(value: string | undefined): void {
+    const newValue = value || "";
+    handleCodeChange(newValue);
+  }
 
-      // Set cursor position after the inserted spaces
-      setTimeout(() => {
-        textarea.selectionStart = textarea.selectionEnd = start + 2;
-      }, 0);
-    }
+  /**
+   * Get Monaco Editor language mapping
+   */
+  function getMonacoLanguage(lang: string): string {
+    const languageMap: Record<string, string> = {
+      javascript: "javascript",
+      typescript: "typescript",
+      python: "python",
+      java: "java",
+      cpp: "cpp",
+      c: "c",
+      csharp: "csharp",
+      php: "php",
+      ruby: "ruby",
+      go: "go",
+      rust: "rust",
+      swift: "swift",
+      kotlin: "kotlin",
+      scala: "scala",
+      html: "html",
+      css: "css",
+      scss: "scss",
+      sass: "sass",
+      less: "less",
+      json: "json",
+      xml: "xml",
+      yaml: "yaml",
+      markdown: "markdown",
+      sql: "sql",
+      bash: "shell",
+      powershell: "powershell",
+      dockerfile: "dockerfile",
+    };
+
+    return languageMap[lang] || "plaintext";
   }
 
   const syntaxHighlighterStyle = theme === "dark" ? vscDarkPlus : vs;
   const supportedLanguages = codeBlockEditorFunctions.getSupportedLanguages();
+  const monacoLanguage = getMonacoLanguage(language);
 
   return (
     <Card className={`w-full ${className}`}>
@@ -188,50 +217,80 @@ export function CodeBlockEditor({
       <CardBody className="p-0">
         <div className="relative" style={{ height }}>
           {isEditing ? (
-            <textarea
-              ref={textareaRef}
-              value={code}
-              onChange={handleTextareaChange}
-              onKeyDown={handleTextareaKeyDown}
-              className="absolute inset-0 w-full h-full p-4 font-mono text-sm bg-transparent border-none outline-none resize-none z-10 text-transparent caret-current"
-              style={{
-                fontFamily:
-                  'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-                lineHeight: "1.5",
-                tabSize: 2,
-              }}
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              aria-label="Code editor"
-            />
-          ) : null}
-
-          <div className="absolute inset-0 overflow-auto">
-            <SyntaxHighlighter
-              language={language}
-              style={syntaxHighlighterStyle}
-              showLineNumbers={showLineNumbers}
-              customStyle={{
-                margin: 0,
-                padding: "1rem",
-                background: "transparent",
-                fontSize: "0.875rem",
-                lineHeight: "1.5",
-                fontFamily:
-                  'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-              }}
-              lineNumberStyle={{
-                minWidth: "3em",
-                paddingRight: "1em",
-                textAlign: "right",
-                userSelect: "none",
-              }}
-            >
-              {code || "// Start typing your code here..."}
-            </SyntaxHighlighter>
-          </div>
+            <div className="absolute inset-0">
+              <Editor
+                height="100%"
+                language={monacoLanguage}
+                value={code}
+                onChange={handleEditorChange}
+                onMount={handleEditorDidMount}
+                theme={theme === "dark" ? "vs-dark" : "light"}
+                options={{
+                  minimap: { enabled: false },
+                  lineNumbers: showLineNumbers ? "on" : "off",
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  tabSize: 2,
+                  insertSpaces: true,
+                  wordWrap: "on",
+                  fontSize: 14,
+                  fontFamily:
+                    'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+                  readOnly: false,
+                  contextmenu: true,
+                  selectOnLineNumbers: true,
+                  roundedSelection: false,
+                  cursorStyle: "line",
+                  cursorBlinking: "blink",
+                  folding: true,
+                  foldingHighlight: true,
+                  showFoldingControls: "always",
+                  matchBrackets: "always",
+                  autoIndent: "full",
+                  formatOnPaste: true,
+                  formatOnType: true,
+                  suggestOnTriggerCharacters: true,
+                  acceptSuggestionOnEnter: "on",
+                  quickSuggestions: true,
+                  parameterHints: { enabled: true },
+                  hover: { enabled: true },
+                  links: true,
+                  colorDecorators: true,
+                  bracketPairColorization: { enabled: true },
+                }}
+                loading={
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-default-500">Loading editor...</div>
+                  </div>
+                }
+              />
+            </div>
+          ) : (
+            <div className="absolute inset-0 overflow-auto">
+              <SyntaxHighlighter
+                language={language}
+                style={syntaxHighlighterStyle}
+                showLineNumbers={showLineNumbers}
+                customStyle={{
+                  margin: 0,
+                  padding: "1rem",
+                  background: "transparent",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  fontFamily:
+                    'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+                }}
+                lineNumberStyle={{
+                  minWidth: "3em",
+                  paddingRight: "1em",
+                  textAlign: "right",
+                  userSelect: "none",
+                }}
+              >
+                {code || "// Start typing your code here..."}
+              </SyntaxHighlighter>
+            </div>
+          )}
         </div>
       </CardBody>
     </Card>
