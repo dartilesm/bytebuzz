@@ -15,7 +15,7 @@ on:
 
 jobs:
   test:
-    name: Test Database
+    name: Test, lint, and generate backup of database
     runs-on: ubuntu-latest
     environment:
       name: Preview – bytebuzz

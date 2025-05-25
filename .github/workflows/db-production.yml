@@ -8,6 +8,7 @@ on:
 
 jobs:
   deploy:
+    name: Test, lint, backup and push migrations to production
     runs-on: ubuntu-latest
 
     env:
