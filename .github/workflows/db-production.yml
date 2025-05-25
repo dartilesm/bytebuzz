@@ -1,4 +1,4 @@
-name: Deploy Migrations to Production
+name: Supabase Production
 
 on:
   push:
