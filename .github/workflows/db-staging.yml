@@ -21,10 +21,13 @@ jobs:
         with:
           version: latest
 
+      - name: Start Supabase local development setup
+        run: supabase db start
+
       - name: Link to staging project
         run: supabase link --project-ref $SUPABASE_PROJECT_ID
 
-      - name: See diff
+      - name: See schemas differences between local and remote
         run: supabase db diff --linked
 
       - name: Run lint
