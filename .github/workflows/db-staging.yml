@@ -1,10 +1,6 @@
 name: Deploy Migrations to Staging
 
-on:
-  push:
-    branches:
-      - develop
-  workflow_dispatch:
+on: [push]
 
 jobs:
   deploy:
