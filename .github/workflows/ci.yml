@@ -57,7 +57,7 @@ jobs:
         run: supabase link --project-ref $SUPABASE_PROJECT_ID && bun db:dump-remote
 
       - name: Upload backup to Vercel Blob
-        uses: dartilesm/vercel-blob-action@v1
+        uses: dartilesm/vercel-blob-action@v2
         with:
           source: "supabase/dump"
           destination: "db-backup-pr-${{ github.ref_name }}"

@@ -42,7 +42,7 @@ jobs:
         run: bun db:dump-remote
 
       - name: Upload backup to Vercel Blob
-        uses: dartilesm/vercel-blob-action@v1
+        uses: dartilesm/vercel-blob-action@v2
         with:
           source: "supabase/dump"
           destination: "db-backup-staging"
