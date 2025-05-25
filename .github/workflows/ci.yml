@@ -39,7 +39,7 @@ jobs:
         run: bun run db:start
 
       - name: Link to staging project
-        run: supabase link --project-ref $SUPABASE_PROJECT_ID
+        run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
 
       - name: Run lint
         run: bun run db:lint --fail-on error
