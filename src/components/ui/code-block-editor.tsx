@@ -24,6 +24,8 @@ interface CodeBlockEditorProps {
   onCodeChange?: (code: string) => void;
   /** Callback when language changes */
   onLanguageChange?: (language: string) => void;
+  /** Callback when code block is removed */
+  onRemoveCodeBlock?: () => void;
   /** Custom height for the editor */
   height?: string;
   /** Whether to show line numbers */
@@ -41,6 +43,7 @@ export function CodeBlockEditor({
   readOnly = false,
   onCodeChange,
   onLanguageChange,
+  onRemoveCodeBlock,
   height = "400px",
   showLineNumbers = true,
   className = "",
@@ -102,6 +105,13 @@ export function CodeBlockEditor({
     if (!readOnly) {
       setIsEditing(!isEditing);
     }
+  }
+
+  /**
+   * Handle removing the code block from the editor
+   */
+  function handleRemoveCodeBlock(): void {
+    onRemoveCodeBlock?.();
   }
 
   /**
@@ -203,7 +213,7 @@ export function CodeBlockEditor({
               size="sm"
               variant="flat"
               startContent={<Trash size={16} />}
-              onPress={() => {}}
+              onPress={handleRemoveCodeBlock}
               aria-label="Delete block code"
               color="danger"
               className="cursor-pointer"
