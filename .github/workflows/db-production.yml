@@ -10,6 +10,8 @@ jobs:
   deploy:
     name: Test, lint, backup and push migrations to production
     runs-on: ubuntu-latest
+    environment:
+      name: Production – bytebuzz
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
