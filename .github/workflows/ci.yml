@@ -32,14 +32,20 @@ jobs:
         with:
           version: latest
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Start Supabase local development setup
-        run: supabase db start
+        run: bun run db:start
+
+      - name: Link to staging project
+        run: supabase link --project-ref $SUPABASE_PROJECT_ID
 
       - name: Run lint
-        run: supabase db lint --fail-on error
+        run: bun run db:lint --fail-on error
 
       - name: Run tests
-        run: supabase test db
+        run: bun run db:test
 
       - name: Verify generated types are checked in
         run: |
@@ -50,11 +56,8 @@ jobs:
             exit 1
           fi
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
       - name: Generate backup
-        run: supabase link --project-ref $SUPABASE_PROJECT_ID && bun db:dump-remote
+        run: bun run db:dump-remote
 
       - name: Upload backup to Vercel Blob
         uses: dartilesm/vercel-blob-action@v2
