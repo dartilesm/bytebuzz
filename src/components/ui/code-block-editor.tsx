@@ -10,7 +10,7 @@ import { Editor } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, vs } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, Download, Edit3, Eye } from "lucide-react";
+import { Copy, Download, Trash } from "lucide-react";
 import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
 
 interface CodeBlockEditorProps {
@@ -53,12 +53,18 @@ export function CodeBlockEditor({
   const [isEditing, setIsEditing] = useState(!readOnly);
   const [copySuccess, setCopySuccess] = useState(false);
 
+  // Character limit constant
+  const CHARACTER_LIMIT = 1000;
+
   /**
    * Handle code content changes
    */
   function handleCodeChange(newCode: string): void {
-    setCode(newCode);
-    onCodeChange?.(newCode);
+    // Enforce character limit using utility function
+    const limitedCode = codeBlockEditorFunctions.enforceCharacterLimit(newCode, CHARACTER_LIMIT);
+
+    setCode(limitedCode);
+    onCodeChange?.(limitedCode);
   }
 
   /**
@@ -113,49 +119,14 @@ export function CodeBlockEditor({
     handleCodeChange(newValue);
   }
 
-  /**
-   * Get Monaco Editor language mapping
-   */
-  function getMonacoLanguage(lang: string): string {
-    const languageMap: Record<string, string> = {
-      javascript: "javascript",
-      typescript: "typescript",
-      python: "python",
-      java: "java",
-      cpp: "cpp",
-      c: "c",
-      csharp: "csharp",
-      php: "php",
-      ruby: "ruby",
-      go: "go",
-      rust: "rust",
-      swift: "swift",
-      kotlin: "kotlin",
-      scala: "scala",
-      html: "html",
-      css: "css",
-      scss: "scss",
-      sass: "sass",
-      less: "less",
-      json: "json",
-      xml: "xml",
-      yaml: "yaml",
-      markdown: "markdown",
-      sql: "sql",
-      bash: "shell",
-      powershell: "powershell",
-      dockerfile: "dockerfile",
-    };
-
-    return languageMap[lang] || "plaintext";
-  }
-
   const syntaxHighlighterStyle = theme === "dark" ? vscDarkPlus : vs;
   const supportedLanguages = codeBlockEditorFunctions.getSupportedLanguages();
-  const monacoLanguage = getMonacoLanguage(language);
+  const monacoLanguage = codeBlockEditorFunctions.getMonacoLanguage(language);
+
+  const dynamicHeight = codeBlockEditorFunctions.calculateDynamicHeight(code, height);
 
   return (
-    <Card className={`w-full ${className}`}>
+    <Card className={`w-full [box-shadow:none] ${className}`}>
       <CardHeader className="flex flex-row items-center justify-between gap-4 pb-2">
         <div className="flex items-center gap-2">
           <Select
@@ -176,20 +147,34 @@ export function CodeBlockEditor({
           <Chip size="sm" variant="flat" color="primary">
             {codeBlockEditorFunctions.getLineCount(code)} lines
           </Chip>
+
+          <Chip
+            size="sm"
+            variant="flat"
+            color={
+              codeBlockEditorFunctions.getCharacterLimitStatus(code, CHARACTER_LIMIT)
+                .isApproachingLimit
+                ? "warning"
+                : "default"
+            }
+          >
+            {code.length}/{CHARACTER_LIMIT} chars
+          </Chip>
         </div>
 
         <div className="flex items-center gap-2">
-          {!readOnly && (
+          {/* {!readOnly && (
             <Button
               size="sm"
               variant="flat"
               startContent={isEditing ? <Eye size={16} /> : <Edit3 size={16} />}
               onPress={handleToggleEdit}
               aria-label={isEditing ? "Switch to preview mode" : "Switch to edit mode"}
+              className="cursor-pointer"
             >
               {isEditing ? "Preview" : "Edit"}
             </Button>
-          )}
+          )} */}
 
           <Button
             size="sm"
@@ -198,9 +183,9 @@ export function CodeBlockEditor({
             onPress={handleCopyToClipboard}
             color={copySuccess ? "success" : "default"}
             aria-label="Copy code to clipboard"
-          >
-            {copySuccess ? "Copied!" : "Copy"}
-          </Button>
+            className="cursor-pointer"
+            isIconOnly
+          />
 
           <Button
             size="sm"
@@ -208,14 +193,44 @@ export function CodeBlockEditor({
             startContent={<Download size={16} />}
             onPress={handleDownload}
             aria-label="Download code as file"
-          >
-            Download
-          </Button>
+            className="cursor-pointer"
+            isIconOnly
+          />
+
+          {!readOnly && (
+            // Delete button
+            <Button
+              size="sm"
+              variant="flat"
+              startContent={<Trash size={16} />}
+              onPress={() => {}}
+              aria-label="Delete block code"
+              color="danger"
+              className="cursor-pointer"
+              isIconOnly
+            />
+          )}
         </div>
       </CardHeader>
 
+      {/* Character limit warning */}
+      {(() => {
+        const limitStatus = codeBlockEditorFunctions.getCharacterLimitStatus(code, CHARACTER_LIMIT);
+        return (
+          limitStatus.isApproachingLimit && (
+            <div className="px-4 py-2 bg-warning-50 border-b border-warning-200">
+              <p className="text-sm text-warning-700">
+                {limitStatus.isAtLimit
+                  ? `Character limit reached (${CHARACTER_LIMIT} characters)`
+                  : `Approaching character limit: ${code.length}/${CHARACTER_LIMIT} characters (${limitStatus.percentage}%)`}
+              </p>
+            </div>
+          )
+        );
+      })()}
+
       <CardBody className="p-0">
-        <div className="relative" style={{ height }}>
+        <div className="relative" style={{ height: dynamicHeight }}>
           {isEditing ? (
             <div className="absolute inset-0">
               <Editor
@@ -257,6 +272,8 @@ export function CodeBlockEditor({
                   links: true,
                   colorDecorators: true,
                   bracketPairColorization: { enabled: true },
+                  // Show ruler at 90% of character limit
+                  rulers: [Math.floor(CHARACTER_LIMIT * 0.9)],
                 }}
                 loading={
                   <div className="flex items-center justify-center h-full">

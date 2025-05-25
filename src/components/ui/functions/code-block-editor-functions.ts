@@ -35,6 +35,8 @@ export const codeBlockEditorFunctions = {
     const fileExtensions: Record<string, string> = {
       javascript: "js",
       typescript: "ts",
+      jsx: "jsx",
+      tsx: "tsx",
       python: "py",
       java: "java",
       cpp: "cpp",
@@ -97,6 +99,8 @@ export const codeBlockEditorFunctions = {
     return [
       { value: "javascript", label: "JavaScript" },
       { value: "typescript", label: "TypeScript" },
+      { value: "jsx", label: "JSX (React)" },
+      { value: "tsx", label: "TSX (React + TypeScript)" },
       { value: "python", label: "Python" },
       { value: "java", label: "Java" },
       { value: "cpp", label: "C++" },
@@ -162,5 +166,83 @@ export const codeBlockEditorFunctions = {
 
     // For other languages, assume valid (could be extended with more validators)
     return { isValid: true };
+  },
+
+  /**
+   * Get Monaco Editor language mapping
+   */
+  getMonacoLanguage(lang: string): string {
+    const languageMap: Record<string, string> = {
+      javascript: "javascript",
+      typescript: "typescript",
+      jsx: "javascript", // Monaco treats JSX as JavaScript with JSX enabled
+      tsx: "typescript", // Monaco treats TSX as TypeScript with JSX enabled
+      python: "python",
+      java: "java",
+      cpp: "cpp",
+      c: "c",
+      csharp: "csharp",
+      php: "php",
+      ruby: "ruby",
+      go: "go",
+      rust: "rust",
+      swift: "swift",
+      kotlin: "kotlin",
+      scala: "scala",
+      html: "html",
+      css: "css",
+      scss: "scss",
+      sass: "sass",
+      less: "less",
+      json: "json",
+      xml: "xml",
+      yaml: "yaml",
+      markdown: "markdown",
+      sql: "sql",
+      bash: "shell",
+      powershell: "powershell",
+      dockerfile: "dockerfile",
+    };
+
+    return languageMap[lang] || "plaintext";
+  },
+
+  /**
+   * Calculate dynamic height based on content and constraints
+   */
+  calculateDynamicHeight(code: string, maxHeightProp: string): string {
+    const lineCount = this.getLineCount(code);
+    const minHeight = 150; // Minimum height in pixels
+    const maxHeight = Number.parseInt(maxHeightProp.replace("px", ""), 10) || 400; // Use provided height as max
+    const lineHeight = 24; // Approximate line height in pixels
+
+    const calculatedHeight = Math.max(minHeight, Math.min(maxHeight, lineCount * lineHeight + 40));
+    return `${calculatedHeight}px`;
+  },
+
+  /**
+   * Check if character count is approaching or at limit
+   */
+  getCharacterLimitStatus(
+    code: string,
+    limit: number,
+  ): {
+    isApproachingLimit: boolean;
+    isAtLimit: boolean;
+    percentage: number;
+  } {
+    const percentage = (code.length / limit) * 100;
+    return {
+      isApproachingLimit: percentage >= 90,
+      isAtLimit: code.length >= limit,
+      percentage: Math.round(percentage),
+    };
+  },
+
+  /**
+   * Enforce character limit on code input
+   */
+  enforceCharacterLimit(code: string, limit: number): string {
+    return code.length > limit ? code.substring(0, limit) : code;
   },
 };
