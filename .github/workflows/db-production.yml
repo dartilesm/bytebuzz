@@ -1,0 +1,57 @@
+name: Supabase Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Test, lint, backup and push migrations to production
+    runs-on: ubuntu-latest
+    environment:
+      name: Production – bytebuzz
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.PRODUCTION_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Start Supabase local development setup
+        run: bun run db:start
+
+      - name: Link to production project
+        run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
+
+      - name: See schemas differences between local and remote
+        run: bun run db:diff
+
+      - name: Run lint
+        run: bun run db:lint --fail-on error
+
+      - name: Run tests
+        run: bun run db:test
+
+      - name: Generate backup
+        run: bun run db:dump-remote
+
+      - name: Upload backup to Vercel Blob
+        uses: dartilesm/vercel-blob-action@v2
+        with:
+          source: "supabase/dump"
+          destination: "db-backup-prod"
+          read-write-token: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+
+      - name: Push migrations to staging
+        run: bun run db:push-remote
