@@ -45,6 +45,7 @@ export const showMentionPicker$ = Cell<boolean>(false);
 export const mentionQuery$ = Cell<string>("");
 export const mentionPickerPosition$ = Cell<{ x: number; y: number } | null>(null);
 export const mentionElement$ = Cell<HTMLElement | null>(null);
+export const selectedMentionUser$ = Cell<User | null>(null);
 export const insertMention$ = Signal<User>();
 
 /**
@@ -158,6 +159,7 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
       realm.pub(mentionQuery$, "");
       realm.pub(mentionPickerPosition$, null);
       realm.pub(mentionElement$, null);
+      realm.pub(selectedMentionUser$, null);
     });
 
     // Handle keyboard events for mention trigger
@@ -195,11 +197,21 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
 
           // Handle typing while mention picker is open
           if (realm.getValue(showMentionPicker$)) {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              const selectedUser = realm.getValue(selectedMentionUser$);
+              if (selectedUser) {
+                realm.pub(insertMention$, selectedUser);
+              }
+              return true;
+            }
+
             if (event.key === "Escape") {
               realm.pub(showMentionPicker$, false);
               realm.pub(mentionQuery$, "");
               realm.pub(mentionPickerPosition$, null);
               realm.pub(mentionElement$, null);
+              realm.pub(selectedMentionUser$, null);
               return true;
             }
 
@@ -210,6 +222,7 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
                 realm.pub(showMentionPicker$, false);
                 realm.pub(mentionPickerPosition$, null);
                 realm.pub(mentionElement$, null);
+                realm.pub(selectedMentionUser$, null);
                 return false;
               }
               // Update query

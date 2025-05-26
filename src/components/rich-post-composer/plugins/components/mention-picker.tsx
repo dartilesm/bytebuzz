@@ -11,6 +11,7 @@ import { createPortal } from "react-dom";
 interface MentionPickerProps {
   users: User[];
   onSelect: (user: User) => void;
+  onSelectedUserChange: (user: User | null) => void;
   query: string;
   isLoading?: boolean;
   mentionElement: HTMLElement | null;
@@ -22,6 +23,7 @@ interface MentionPickerProps {
 export function MentionPicker({
   users,
   onSelect,
+  onSelectedUserChange,
   query,
   isLoading = false,
   mentionElement,
@@ -32,6 +34,12 @@ export function MentionPicker({
   useEffect(() => {
     setSelectedIndex(0);
   }, [users]);
+
+  // Update selected user when index changes
+  useEffect(() => {
+    const selectedUser = users[selectedIndex] || null;
+    onSelectedUserChange(selectedUser);
+  }, [selectedIndex, users, onSelectedUserChange]);
 
   /**
    * Handle keyboard navigation

@@ -9,6 +9,7 @@ import {
   mentionMaxSuggestions$,
   mentionPickerPosition$,
   mentionQuery$,
+  selectedMentionUser$,
   showMentionPicker$,
 } from "@/components/rich-post-composer/plugins/mentions-plugin";
 import { useCellValue, usePublisher } from "@mdxeditor/editor";
@@ -21,6 +22,7 @@ export function MentionPickerWrapper() {
   const maxSuggestions = useCellValue(mentionMaxSuggestions$);
   const mentionElement = useCellValue(mentionElement$);
   const insertMention = usePublisher(insertMention$);
+  const setSelectedUser = usePublisher(selectedMentionUser$);
 
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +55,7 @@ export function MentionPickerWrapper() {
     <MentionPicker
       users={users}
       onSelect={insertMention}
+      onSelectedUserChange={setSelectedUser}
       query={query}
       isLoading={isLoading}
       mentionElement={mentionElement}
