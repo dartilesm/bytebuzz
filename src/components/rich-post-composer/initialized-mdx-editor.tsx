@@ -11,6 +11,7 @@ import {
   thematicBreakPlugin,
   toolbarPlugin,
   linkPlugin,
+  imagePlugin,
 } from "@mdxeditor/editor";
 import type { RefObject } from "react";
 import { CustomToolbar } from "./custom-toolbar";
@@ -27,6 +28,20 @@ export function InitializedMDXEditor({
         codeBlockPlugin({
           codeBlockEditorDescriptors: [PlainTextCodeEditorDescriptor],
           defaultCodeBlockLanguage: "javascript",
+        }),
+        imagePlugin({
+          imageUploadHandler: async (file: File) => {
+            // Convert dropped/pasted images to base64
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
+          },
+          disableImageSettingsButton: true,
+          disableImageResize: true,
+          EditImageToolbar: () => null,
         }),
         /* sandpackPlugin({ sandpackConfig: simpleSandpackConfig }), */
         /* codeMirrorPlugin({
