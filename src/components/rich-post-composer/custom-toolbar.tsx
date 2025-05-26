@@ -1,5 +1,6 @@
 "use client";
 
+import { MentionPickerWrapper } from "@/components/rich-post-composer/plugins/mentions-plugin";
 import { Button } from "@heroui/button";
 import { insertCodeBlock$, insertImage$, usePublisher } from "@mdxeditor/editor";
 import { Code, Image } from "lucide-react";
@@ -72,7 +73,7 @@ export function CustomToolbar() {
   }
 
   return (
-    <div className="flex items-center gap-2 p-2 border dark:border-0 border-default-200 bg-default-50 rounded-b-xl">
+    <div className="flex items-center gap-2 p-2 border dark:border-0 border-default-200 bg-default-50 rounded-b-xl relative">
       <Button
         size="sm"
         variant="flat"
@@ -94,6 +95,8 @@ export function CustomToolbar() {
       >
         Insert Image
       </Button>
+
+      <MentionPickerWrapper />
     </div>
   );
 }
