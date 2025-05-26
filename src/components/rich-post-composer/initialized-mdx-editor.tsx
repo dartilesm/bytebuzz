@@ -1,21 +1,21 @@
 "use client";
 
+import { PlainTextCodeEditorDescriptor } from "@/components/rich-post-composer/custom-code-block-editor";
 import { cn } from "@/lib/utils";
 import type { MDXEditorMethods, MDXEditorProps } from "@mdxeditor/editor";
 import {
   MDXEditor,
   codeBlockPlugin,
+  imagePlugin,
+  linkPlugin,
   listsPlugin,
   markdownShortcutPlugin,
   quotePlugin,
   thematicBreakPlugin,
   toolbarPlugin,
-  linkPlugin,
-  imagePlugin,
 } from "@mdxeditor/editor";
 import type { RefObject } from "react";
 import { CustomToolbar } from "./custom-toolbar";
-import { PlainTextCodeEditorDescriptor } from "./custom-code-block-editor";
 
 // Only import this to the next file
 export function InitializedMDXEditor({
