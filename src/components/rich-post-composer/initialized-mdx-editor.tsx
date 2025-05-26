@@ -16,29 +16,7 @@ import {
 } from "@mdxeditor/editor";
 import type { RefObject } from "react";
 import { CustomToolbar } from "./custom-toolbar";
-import { mentionsPlugin, MentionPickerWrapper, type User } from "./plugins/mentions-plugin";
-
-// Sample users for mentions
-const sampleUsers: User[] = [
-  {
-    id: "1",
-    displayName: "John Doe",
-    username: "johndoe",
-    avatar: "https://i.pravatar.cc/150?u=1",
-  },
-  {
-    id: "2",
-    displayName: "Jane Smith",
-    username: "janesmith",
-    avatar: "https://i.pravatar.cc/150?u=2",
-  },
-  {
-    id: "3",
-    displayName: "Bob Johnson",
-    username: "bobjohnson",
-    avatar: "https://i.pravatar.cc/150?u=3",
-  },
-];
+import { mentionsPlugin } from "./plugins/mentions-plugin";
 
 // Only import this to the next file
 export function InitializedMDXEditor({
@@ -83,7 +61,6 @@ export function InitializedMDXEditor({
         markdownShortcutPlugin(),
         // Add mentions plugin
         mentionsPlugin({
-          users: sampleUsers,
           trigger: "@",
           maxSuggestions: 5,
         }),

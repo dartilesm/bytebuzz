@@ -1,17 +1,17 @@
 "use client";
 
+import { Link } from "@heroui/react";
 import {
   DecoratorNode,
-  type NodeKey,
-  type LexicalNode,
-  type SerializedLexicalNode,
-  type Spread,
   type EditorConfig,
   type LexicalEditor,
+  type LexicalNode,
+  type NodeKey,
+  type SerializedLexicalNode,
+  type Spread,
 } from "lexical";
 import type { JSX } from "react";
 import type { User } from "./mentions-plugin";
-import { Link } from "@heroui/react";
 
 export interface SerializedMentionNode
   extends Spread<
@@ -39,6 +39,7 @@ export class MentionNode extends DecoratorNode<JSX.Element> {
 
   createDOM(_config: EditorConfig): HTMLElement {
     const span = document.createElement("span");
+    span.className = "mention-node";
     return span;
   }
 

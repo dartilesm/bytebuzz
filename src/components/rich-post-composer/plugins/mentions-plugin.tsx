@@ -1,16 +1,12 @@
-"use client";
-
 import {
-  realmPlugin,
   Cell,
   Signal,
-  addImportVisitor$,
+  activeEditor$,
   addExportVisitor$,
+  addImportVisitor$,
   addLexicalNode$,
   createRootEditorSubscription$,
-  activeEditor$,
-  useCellValue,
-  usePublisher,
+  realmPlugin,
 } from "@mdxeditor/editor";
 import {
   $createTextNode,
@@ -19,10 +15,9 @@ import {
   COMMAND_PRIORITY_LOW,
   KEY_DOWN_COMMAND,
 } from "lexical";
+import { MdastMentionVisitor } from "./mdast-mention-visitor";
 import { $createMentionNode, MentionNode } from "./mention-node";
 import { MentionVisitor } from "./mention-visitor";
-import { MdastMentionVisitor } from "./mdast-mention-visitor";
-import { MentionPicker } from "./mention-picker";
 
 // Types
 export interface User {
@@ -32,15 +27,7 @@ export interface User {
   avatar?: string;
 }
 
-export interface MentionsPluginParams {
-  /**
-   * List of users that can be mentioned
-   */
-  users?: User[];
-  /**
-   * Function to fetch users dynamically (optional)
-   */
-  fetchUsers?: (query: string) => Promise<User[]> | User[];
+interface MentionsPluginParams {
   /**
    * Custom trigger character (default: "@")
    */
@@ -52,13 +39,82 @@ export interface MentionsPluginParams {
 }
 
 // Cells and Signals for state management
-export const mentionUsers$ = Cell<User[]>([]);
 export const mentionTrigger$ = Cell<string>("@");
 export const mentionMaxSuggestions$ = Cell<number>(10);
 export const showMentionPicker$ = Cell<boolean>(false);
 export const mentionQuery$ = Cell<string>("");
 export const mentionPickerPosition$ = Cell<{ x: number; y: number } | null>(null);
+export const mentionElement$ = Cell<HTMLElement | null>(null);
 export const insertMention$ = Signal<User>();
+
+/**
+ * Mock function to simulate fetching users based on query
+ * Used when no users are provided to the plugin
+ */
+export function getDefaultUsers(query: string): User[] {
+  // Mock users data
+  const allUsers: User[] = [
+    {
+      id: "1",
+      displayName: "John Doe",
+      username: "johndoe",
+      avatar: "https://i.pravatar.cc/150?u=1",
+    },
+    {
+      id: "2",
+      displayName: "Jane Smith",
+      username: "janesmith",
+      avatar: "https://i.pravatar.cc/150?u=2",
+    },
+    {
+      id: "3",
+      displayName: "Mike Johnson",
+      username: "mikejohnson",
+      avatar: "https://i.pravatar.cc/150?u=3",
+    },
+    {
+      id: "4",
+      displayName: "Sarah Wilson",
+      username: "sarahwilson",
+      avatar: "https://i.pravatar.cc/150?u=4",
+    },
+    {
+      id: "5",
+      displayName: "David Brown",
+      username: "davidbrown",
+      avatar: "https://i.pravatar.cc/150?u=5",
+    },
+    {
+      id: "6",
+      displayName: "Emily Davis",
+      username: "emilydavis",
+      avatar: "https://i.pravatar.cc/150?u=6",
+    },
+    {
+      id: "7",
+      displayName: "Alex Miller",
+      username: "alexmiller",
+      avatar: "https://i.pravatar.cc/150?u=7",
+    },
+    {
+      id: "8",
+      displayName: "Lisa Garcia",
+      username: "lisagarcia",
+      avatar: "https://i.pravatar.cc/150?u=8",
+    },
+  ];
+
+  // Filter users based on query
+  if (!query.trim()) {
+    return allUsers;
+  }
+
+  return allUsers.filter(
+    (user) =>
+      user.displayName.toLowerCase().includes(query.toLowerCase()) ||
+      user.username?.toLowerCase().includes(query.toLowerCase()),
+  );
+}
 
 // Plugin definition
 export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
@@ -101,6 +157,7 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
       realm.pub(showMentionPicker$, false);
       realm.pub(mentionQuery$, "");
       realm.pub(mentionPickerPosition$, null);
+      realm.pub(mentionElement$, null);
     });
 
     // Handle keyboard events for mention trigger
@@ -126,11 +183,13 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
                 y: rect.bottom + window.scrollY,
               });
             }
-
             // Start mention mode
             realm.pub(showMentionPicker$, true);
             realm.pub(mentionQuery$, "");
-
+            realm.pub(
+              mentionElement$,
+              domSelection?.getRangeAt(0).commonAncestorContainer as HTMLElement,
+            );
             return false; // Let the character be typed
           }
 
@@ -140,6 +199,7 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
               realm.pub(showMentionPicker$, false);
               realm.pub(mentionQuery$, "");
               realm.pub(mentionPickerPosition$, null);
+              realm.pub(mentionElement$, null);
               return true;
             }
 
@@ -149,6 +209,7 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
                 // If we backspace with empty query, close picker
                 realm.pub(showMentionPicker$, false);
                 realm.pub(mentionPickerPosition$, null);
+                realm.pub(mentionElement$, null);
                 return false;
               }
               // Update query
@@ -172,10 +233,6 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
   },
 
   update(realm, params) {
-    // Update plugin parameters
-    if (params?.users) {
-      realm.pub(mentionUsers$, params.users);
-    }
     if (params?.trigger) {
       realm.pub(mentionTrigger$, params.trigger);
     }
@@ -184,35 +241,3 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
     }
   },
 });
-
-// React component for mention picker
-export function MentionPickerWrapper() {
-  const showPicker = useCellValue(showMentionPicker$);
-  const position = useCellValue(mentionPickerPosition$);
-  const query = useCellValue(mentionQuery$);
-  const users = useCellValue(mentionUsers$);
-  const maxSuggestions = useCellValue(mentionMaxSuggestions$);
-  const insertMention = usePublisher(insertMention$);
-
-  if (!showPicker || !position) {
-    return null;
-  }
-
-  // Filter users based on query
-  const filteredUsers = users
-    .filter(
-      (user) =>
-        user.displayName.toLowerCase().includes(query.toLowerCase()) ||
-        user.username?.toLowerCase().includes(query.toLowerCase()),
-    )
-    .slice(0, maxSuggestions);
-
-  return (
-    <MentionPicker
-      users={filteredUsers}
-      position={position}
-      onSelect={insertMention}
-      query={query}
-    />
-  );
-}
