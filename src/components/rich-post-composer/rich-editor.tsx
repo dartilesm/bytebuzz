@@ -7,7 +7,6 @@ import {
   MDXEditor,
   codeBlockPlugin,
   imagePlugin,
-  linkPlugin,
   listsPlugin,
   markdownShortcutPlugin,
   quotePlugin,
@@ -17,9 +16,10 @@ import {
 import type { RefObject } from "react";
 import { CustomToolbar } from "./custom-toolbar";
 import { mentionsPlugin } from "./plugins/mentions-plugin";
+import { linksPlugin } from "./plugins/links-plugin";
 
 // Only import this to the next file
-export function InitializedMDXEditor({
+export function RichEditor({
   editorRef,
   ...props
 }: { editorRef: RefObject<MDXEditorMethods> | null } & MDXEditorProps) {
@@ -55,7 +55,10 @@ export function InitializedMDXEditor({
           }), */
         // Example Plugin Usage
         listsPlugin(),
-        linkPlugin(),
+        // Custom links plugin with HeroUI Link component
+        linksPlugin({
+          autoLink: true,
+        }),
         quotePlugin(),
         thematicBreakPlugin(),
         markdownShortcutPlugin(),

@@ -4,9 +4,7 @@ import type { MDXEditorMethods, MDXEditorProps } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
 import type { RefObject } from "react";
 
-const MDXEditor = dynamic(() =>
-  import("./initialized-mdx-editor").then((mod) => mod.InitializedMDXEditor),
-);
+const MDXEditor = dynamic(() => import("./rich-editor").then((mod) => mod.RichEditor));
 
 const initialMarkdown = `
 
