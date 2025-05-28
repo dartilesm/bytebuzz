@@ -59,8 +59,6 @@ export function RichEditor({
         linksPlugin({
           autoLink: true,
         }),
-        quotePlugin(),
-        thematicBreakPlugin(),
         markdownShortcutPlugin(),
         // Add mentions plugin
         mentionsPlugin({

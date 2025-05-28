@@ -4,7 +4,7 @@ import type { MDXEditorMethods, MDXEditorProps } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
 import type { RefObject } from "react";
 
-const MDXEditor = dynamic(() => import("./rich-editor").then((mod) => mod.RichEditor));
+const RichEditor = dynamic(() => import("./rich-editor").then((mod) => mod.RichEditor));
 
 const initialMarkdown = `
 
@@ -37,7 +37,7 @@ interface RichPostComposerProps extends Omit<MDXEditorProps, "ref" | "markdown">
 
 export function RichPostComposer({ markdown, ref }: RichPostComposerProps) {
   return (
-    <MDXEditor
+    <RichEditor
       markdown={markdown || initialMarkdown}
       contentEditableClassName="prose"
       editorRef={ref || null}
