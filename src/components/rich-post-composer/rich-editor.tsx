@@ -9,14 +9,12 @@ import {
   imagePlugin,
   listsPlugin,
   markdownShortcutPlugin,
-  quotePlugin,
-  thematicBreakPlugin,
   toolbarPlugin,
 } from "@mdxeditor/editor";
 import type { RefObject } from "react";
 import { CustomToolbar } from "./custom-toolbar";
-import { mentionsPlugin } from "./plugins/mentions-plugin";
 import { linksPlugin } from "./plugins/links-plugin";
+import { mentionsPlugin } from "./plugins/mentions-plugin";
 
 // Only import this to the next file
 export function RichEditor({
