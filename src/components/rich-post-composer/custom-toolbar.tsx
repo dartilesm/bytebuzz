@@ -81,9 +81,8 @@ export function CustomToolbar() {
         onPress={handleInsertCodeBlock}
         aria-label="Insert code block"
         className="cursor-pointer"
-      >
-        Insert Code Block
-      </Button>
+        isIconOnly
+      />
 
       <Button
         size="sm"
@@ -92,9 +91,8 @@ export function CustomToolbar() {
         onPress={handleInsertImage}
         aria-label="Insert image"
         className="cursor-pointer"
-      >
-        Insert Image
-      </Button>
+        isIconOnly
+      />
 
       <MentionPickerWrapper />
     </div>
