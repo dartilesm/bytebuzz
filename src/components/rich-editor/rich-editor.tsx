@@ -1,6 +1,6 @@
 "use client";
 
-import { PlainTextCodeEditorDescriptor } from "@/components/rich-post-composer/custom-code-block-editor";
+import { PlainTextCodeEditorDescriptor } from "@/components/rich-editor/custom-code-block-editor";
 import { cn } from "@/lib/utils";
 import type { MDXEditorMethods, MDXEditorProps } from "@mdxeditor/editor";
 import {
