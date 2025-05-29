@@ -52,13 +52,10 @@ export function CustomToolbar() {
         // Convert image to base64
         const base64String = await convertFileToBase64(file);
 
-        // Use filename as alt text, or prompt for custom alt text
-        const altText = prompt("Enter alt text (optional):", file.name.split(".")[0]) || file.name;
-
         insertImage({
           src: base64String,
-          altText: altText,
-          title: altText,
+          altText: file.name,
+          title: file.name,
         });
       } catch (error) {
         console.error("Error converting image to base64:", error);
@@ -73,24 +70,24 @@ export function CustomToolbar() {
   }
 
   return (
-    <div className="flex items-center gap-2 p-2 border dark:border-0 border-default-200 bg-default-50 rounded-b-xl relative">
+    <div className="flex items-center gap-2">
       <Button
         size="sm"
-        variant="flat"
+        variant="light"
         startContent={<Code size={16} />}
         onPress={handleInsertCodeBlock}
         aria-label="Insert code block"
-        className="cursor-pointer"
+        className="cursor-pointer dark:hover:bg-default-300"
         isIconOnly
       />
 
       <Button
         size="sm"
-        variant="flat"
+        variant="light"
         startContent={<Image size={16} />}
         onPress={handleInsertImage}
         aria-label="Insert image"
-        className="cursor-pointer"
+        className="cursor-pointer dark:hover:bg-default-300"
         isIconOnly
       />
 

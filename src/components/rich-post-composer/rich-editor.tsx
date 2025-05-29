@@ -16,11 +16,13 @@ import { CustomToolbar } from "./custom-toolbar";
 import { linksPlugin } from "./plugins/links-plugin";
 import { mentionsPlugin } from "./plugins/mentions-plugin";
 
+type RichEditorProps = MDXEditorProps & {
+  editorRef: RefObject<MDXEditorMethods> | null;
+  containerClassName?: string;
+};
+
 // Only import this to the next file
-export function RichEditor({
-  editorRef,
-  ...props
-}: { editorRef: RefObject<MDXEditorMethods> | null } & MDXEditorProps) {
+export function RichEditor({ editorRef, containerClassName, ...props }: RichEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   function handleChange(markdown: string, initialMarkdownNormalize: boolean) {
@@ -67,6 +69,7 @@ export function RichEditor({
   return (
     <div
       ref={containerRef}
+      className={cn(containerClassName)}
       style={
         {
           "--placeholder-text": `"${props.placeholder || "What's on your mind?"}"`,
@@ -117,15 +120,18 @@ export function RichEditor({
           toolbarPlugin({
             toolbarContents: () => <CustomToolbar />,
             toolbarPosition: "bottom",
+            toolbarClassName: "absolute bottom-0 left-0 right-0",
           }),
         ]}
         {...props}
         onChange={handleChange}
+        trim={false}
         ref={editorRef}
+        className={cn("relative flex-1 h-full flex flex-col gap-4", props.className)}
         contentEditableClassName={cn(
           // When the editor is empty, it adds two divs, one for the placeholder and one for the content.
           // So below classes affect the placeholder and the content.
-          "outline-none dark:bg-default-100 p-4 bg-default-100 dark:hover:bg-default-200 hover:bg-default-200 rounded-t-xl border-t border-default-200 border-x dark:border-0",
+          "outline-none cursor-text pb-12",
           // Classes for the placeholder
           "[&:not([role='textbox'])]:hidden",
           // Add a fake placeholder
