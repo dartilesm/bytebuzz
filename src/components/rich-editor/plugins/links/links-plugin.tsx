@@ -19,7 +19,7 @@ import {
   type LexicalNode,
   type LexicalEditor,
 } from "lexical";
-import { MdastLinkVisitor } from "./mdast-link-visitor";
+import { MdastLinkVisitor } from "@/components/rich-editor/plugins/links/mdast-link-visitor";
 import { $createLinkNode, LinkNode } from "./link-node";
 import { LinkVisitor } from "./link-visitor";
 

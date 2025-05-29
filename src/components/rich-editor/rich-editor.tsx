@@ -13,8 +13,8 @@ import {
 } from "@mdxeditor/editor";
 import { useRef, type CSSProperties, type RefObject } from "react";
 import { CustomToolbar } from "./custom-toolbar";
-import { linksPlugin } from "./plugins/links-plugin";
-import { mentionsPlugin } from "./plugins/mentions-plugin";
+import { linksPlugin } from "@/components/rich-editor/plugins/links/links-plugin";
+import { mentionsPlugin } from "@/components/rich-editor/plugins/mentions/mentions-plugin";
 
 type RichEditorProps = MDXEditorProps & {
   editorRef: RefObject<MDXEditorMethods> | null;

@@ -1,6 +1,6 @@
 "use client";
 
-import { MentionPickerWrapper } from "@/components/rich-editor/plugins/components/mention-picker-wrapper";
+import { MentionPickerWrapper } from "@/components/rich-editor/plugins/mentions/components/mention-picker-wrapper";
 import { Button } from "@heroui/button";
 import { insertCodeBlock$, insertImage$, usePublisher } from "@mdxeditor/editor";
 import { Code, Image } from "lucide-react";

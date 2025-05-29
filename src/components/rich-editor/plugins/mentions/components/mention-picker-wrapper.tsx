@@ -1,6 +1,6 @@
 "use client";
 
-import { MentionPicker } from "@/components/rich-editor/plugins/components/mention-picker";
+import { MentionPicker } from "@/components/rich-editor/plugins/mentions/components/mention-picker";
 import {
   type User,
   getDefaultUsers,
@@ -11,7 +11,7 @@ import {
   mentionQuery$,
   selectedMentionUser$,
   showMentionPicker$,
-} from "@/components/rich-editor/plugins/mentions-plugin";
+} from "@/components/rich-editor/plugins/mentions/mentions-plugin";
 import { useCellValue, usePublisher } from "@mdxeditor/editor";
 import { useEffect, useState } from "react";
 
