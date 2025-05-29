@@ -12,7 +12,7 @@ import {
   toolbarPlugin,
 } from "@mdxeditor/editor";
 import { useRef, type CSSProperties, type RefObject } from "react";
-import { CustomToolbar } from "./custom-toolbar";
+import { CustomToolbar } from "@/components/rich-editor/toolbar/custom-toolbar";
 import { linksPlugin } from "@/components/rich-editor/plugins/links/links-plugin";
 import { mentionsPlugin } from "@/components/rich-editor/plugins/mentions/mentions-plugin";
 

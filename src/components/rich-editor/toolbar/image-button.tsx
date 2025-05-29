@@ -1,27 +1,10 @@
-"use client";
-
-import { MentionPickerWrapper } from "@/components/rich-editor/plugins/mentions/components/mention-picker-wrapper";
 import { Button } from "@heroui/button";
-import { insertCodeBlock$, insertImage$, usePublisher } from "@mdxeditor/editor";
-import { Code, Image } from "lucide-react";
+import { ImageIcon } from "lucide-react";
+import { insertImage$ } from "@mdxeditor/editor";
+import { usePublisher } from "@mdxeditor/editor";
 
-/**
- * Custom toolbar component with Insert Code Block button
- */
-export function CustomToolbar() {
-  const insertCodeBlock = usePublisher(insertCodeBlock$);
+export function ImageButton() {
   const insertImage = usePublisher(insertImage$);
-
-  /**
-   * Handle inserting a new code block
-   */
-  function handleInsertCodeBlock(): void {
-    insertCodeBlock({
-      code: "// Start typing your code here...",
-      language: "javascript",
-      meta: "",
-    });
-  }
 
   /**
    * Convert file to base64 string
@@ -70,28 +53,14 @@ export function CustomToolbar() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        size="sm"
-        variant="light"
-        startContent={<Code size={16} />}
-        onPress={handleInsertCodeBlock}
-        aria-label="Insert code block"
-        className="cursor-pointer dark:hover:bg-default-300"
-        isIconOnly
-      />
-
-      <Button
-        size="sm"
-        variant="light"
-        startContent={<Image size={16} />}
-        onPress={handleInsertImage}
-        aria-label="Insert image"
-        className="cursor-pointer dark:hover:bg-default-300"
-        isIconOnly
-      />
-
-      <MentionPickerWrapper />
-    </div>
+    <Button
+      size="sm"
+      variant="light"
+      startContent={<ImageIcon size={16} />}
+      onPress={handleInsertImage}
+      aria-label="Insert image"
+      className="cursor-pointer dark:hover:bg-default-300"
+      isIconOnly
+    />
   );
 }
