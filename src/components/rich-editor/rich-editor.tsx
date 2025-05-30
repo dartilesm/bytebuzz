@@ -11,7 +11,7 @@ import {
   markdownShortcutPlugin,
   toolbarPlugin,
 } from "@mdxeditor/editor";
-import { useRef, type CSSProperties, type RefObject } from "react";
+import { useRef, type CSSProperties, type RefObject, type ReactNode } from "react";
 import { CustomToolbar } from "@/components/rich-editor/toolbar/custom-toolbar";
 import { linksPlugin } from "@/components/rich-editor/plugins/links/links-plugin";
 import { mentionsPlugin } from "@/components/rich-editor/plugins/mentions/mentions-plugin";
@@ -19,6 +19,19 @@ import { mentionsPlugin } from "@/components/rich-editor/plugins/mentions/mentio
 type RichEditorProps = MDXEditorProps & {
   editorRef: RefObject<MDXEditorMethods> | null;
   containerClassName?: string;
+  /**
+   * Custom action components to be rendered in the toolbar
+   * @example
+   * ```tsx
+   * const customActions = [
+   *   <Button key="save" onClick={handleSave}>Save</Button>,
+   *   <Button key="cancel" onClick={handleCancel}>Cancel</Button>
+   * ];
+   *
+   * <RichEditor customActions={customActions} />
+   * ```
+   */
+  customActions?: ReactNode[];
 };
 
 // Only import this to the next file
@@ -118,7 +131,7 @@ export function RichEditor({ editorRef, containerClassName, ...props }: RichEdit
             maxSuggestions: 5,
           }),
           toolbarPlugin({
-            toolbarContents: () => <CustomToolbar />,
+            toolbarContents: () => <CustomToolbar customActions={props.customActions} />,
             toolbarPosition: "bottom",
             toolbarClassName: "absolute bottom-0 left-0 right-0",
           }),
