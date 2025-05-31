@@ -62,7 +62,7 @@ export default function EditorDemoPage() {
             <div className="flex flex-col">
               <p className="text-md font-semibold">Primary Editor</p>
               <p className="text-small text-default-500">
-                Try markdown shortcuts: # ## ### ** * `` --- {">"} - 1.
+                Try markdown shortcuts and mentions: # ## ### ** * `` --- {">"} - 1. @username
               </p>
             </div>
           </CardHeader>
@@ -161,6 +161,22 @@ export default function EditorDemoPage() {
                 </li>
                 <li>
                   <code>1. </code> - Numbered list
+                </li>
+              </ul>
+
+              <p className="text-sm font-medium mt-4">Mentions:</p>
+              <ul className="text-sm text-default-600 space-y-1">
+                <li>
+                  <code>@john </code> - Type @ to trigger user suggestions
+                </li>
+                <li>
+                  <code>↑↓ </code> - Navigate suggestions with arrow keys
+                </li>
+                <li>
+                  <code>Enter </code> - Select a user mention
+                </li>
+                <li>
+                  <code>Esc </code> - Close suggestions
                 </li>
               </ul>
             </div>

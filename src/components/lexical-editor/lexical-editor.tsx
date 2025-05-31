@@ -19,6 +19,10 @@ import { cn } from "@/lib/utils";
 import { useEffect, type RefObject } from "react";
 import type { EditorState, LexicalEditor } from "lexical";
 
+// Import mention components
+import { MentionNode } from "./plugins/mentions/mention-node";
+import { MentionPlugin } from "./plugins/mentions/mention-plugin";
+
 // Editor theme
 const theme = {
   paragraph: "mb-1",
@@ -45,6 +49,8 @@ const theme = {
   code: "bg-gray-100 rounded p-2 font-mono text-sm block mb-2",
   quote: "border-l-4 border-gray-300 pl-4 italic mb-2",
   link: "text-blue-500 underline hover:text-blue-700",
+  mention:
+    "bg-primary-100 text-primary-800 rounded px-1 py-0.5 font-medium cursor-pointer hover:bg-primary-200",
 };
 
 interface MarkdownEditorProps {
@@ -72,6 +78,10 @@ interface MarkdownEditorProps {
    * Whether to auto-focus the editor on mount
    */
   autoFocus?: boolean;
+  /**
+   * Whether to enable mentions functionality
+   */
+  enableMentions?: boolean;
 }
 
 /**
@@ -121,10 +131,11 @@ function Placeholder({ children }: { children: string }) {
 }
 
 /**
- * Lexical-based markdown editor with keyboard shortcuts
+ * Lexical-based markdown editor with keyboard shortcuts and mentions
  *
  * Features:
  * - Markdown shortcuts (# for headings, ** for bold, etc.)
+ * - Mentions triggered by "@" symbol (optional)
  * - No toolbar - pure markdown experience
  * - Real-time markdown conversion
  * - Extensible plugin architecture
@@ -136,6 +147,7 @@ export function MarkdownEditor({
   contentClassName,
   editorRef,
   autoFocus = false,
+  enableMentions = true,
 }: MarkdownEditorProps) {
   const initialConfig = {
     namespace: "lexical-markdown-editor",
@@ -152,6 +164,7 @@ export function MarkdownEditor({
       CodeHighlightNode,
       LinkNode,
       AutoLinkNode,
+      ...(enableMentions ? [MentionNode] : []),
     ],
     editorState: undefined,
   };
@@ -180,6 +193,9 @@ export function MarkdownEditor({
 
           {/* Markdown shortcuts plugin */}
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+
+          {/* Mention plugin */}
+          {enableMentions && <MentionPlugin />}
 
           {/* Event handling plugins */}
           <OnChangeMarkdownPlugin onChange={onChange} />

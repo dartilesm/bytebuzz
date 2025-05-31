@@ -2,11 +2,19 @@
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect, useState, useCallback } from "react";
-import { $getSelection, $isRangeSelection } from "lexical";
+import {
+  $getSelection,
+  $isRangeSelection,
+  COMMAND_PRIORITY_NORMAL,
+  KEY_ARROW_DOWN_COMMAND,
+  KEY_ARROW_UP_COMMAND,
+  KEY_ENTER_COMMAND,
+  KEY_ESCAPE_COMMAND,
+} from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import type { TextNode } from "lexical";
 import { $createMentionNode, type User } from "./mention-node";
-import { MentionSuggestions } from "./mention-suggestions";
+import { MentionSuggestions } from "@/components/lexical-editor/plugins/mentions/mention-suggestions";
 
 interface MentionPluginProps {
   /**
@@ -118,68 +126,37 @@ export function MentionPlugin({
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) return;
 
-        // Remove the trigger character and query text
-        const queryLength = mentionState.query.length + trigger.length;
-        for (let i = 0; i < queryLength; i++) {
-          selection.deletePreviousChar();
+        const anchor = selection.anchor;
+        const node = anchor.getNode();
+
+        if (node && "getTextContent" in node && "select" in node) {
+          const textNode = node as TextNode;
+          const currentText = textNode.getTextContent();
+          const currentOffset = anchor.offset;
+
+          // Find the mention trigger position
+          const beforeCursor = currentText.slice(0, currentOffset);
+          const mentionMatch = beforeCursor.match(new RegExp(`${trigger}([^\\s]*)$`));
+
+          if (mentionMatch) {
+            const matchStart = beforeCursor.length - mentionMatch[0].length;
+
+            // Select the mention text (trigger + query)
+            textNode.select(matchStart, currentOffset);
+
+            // Insert the mention node
+            const mentionNode = $createMentionNode(user);
+            selection.insertNodes([mentionNode]);
+
+            // Add a space after the mention
+            selection.insertText(" ");
+          }
         }
-
-        // Insert the mention node
-        const mentionNode = $createMentionNode(user);
-        selection.insertNodes([mentionNode]);
-
-        // Add a space after the mention
-        selection.insertText(" ");
       });
 
       closeMentions();
     },
-    [editor, mentionState.query, trigger, closeMentions],
-  );
-
-  /**
-   * Handles keyboard navigation in mention dropdown
-   */
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (!mentionState.isOpen) return false;
-
-      switch (event.key) {
-        case "ArrowUp":
-          event.preventDefault();
-          setMentionState((prev) => ({
-            ...prev,
-            selectedIndex:
-              prev.selectedIndex > 0 ? prev.selectedIndex - 1 : prev.suggestions.length - 1,
-          }));
-          return true;
-
-        case "ArrowDown":
-          event.preventDefault();
-          setMentionState((prev) => ({
-            ...prev,
-            selectedIndex:
-              prev.selectedIndex < prev.suggestions.length - 1 ? prev.selectedIndex + 1 : 0,
-          }));
-          return true;
-
-        case "Enter":
-          event.preventDefault();
-          if (mentionState.suggestions[mentionState.selectedIndex]) {
-            selectMention(mentionState.suggestions[mentionState.selectedIndex]);
-          }
-          return true;
-
-        case "Escape":
-          event.preventDefault();
-          closeMentions();
-          return true;
-
-        default:
-          return false;
-      }
-    },
-    [mentionState, selectMention, closeMentions],
+    [editor, trigger, closeMentions],
   );
 
   /**
@@ -198,61 +175,118 @@ export function MentionPlugin({
     };
   }
 
-  useEffect(() => {
-    return mergeRegister(
-      // Handle text input for mention detection
-      editor.registerTextContentListener(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return;
+  /**
+   * Detects mention triggers in text content
+   */
+  const detectMention = useCallback(() => {
+    editor.getEditorState().read(() => {
+      const selection = $getSelection();
+      if (!$isRangeSelection(selection)) return;
 
-        const anchor = selection.anchor;
-        const node = anchor.getNode();
+      const anchor = selection.anchor;
+      const node = anchor.getNode();
 
-        if (node && "getTextContent" in node) {
-          const textNode = node as TextNode;
-          const text = textNode.getTextContent();
-          const offset = anchor.offset;
+      if (node && "getTextContent" in node) {
+        const textNode = node as TextNode;
+        const text = textNode.getTextContent();
+        const offset = anchor.offset;
 
-          // Find mention trigger in current text
-          const beforeCursor = text.slice(0, offset);
-          const mentionMatch = beforeCursor.match(new RegExp(`${trigger}([^\\s]*)$`));
+        // Find mention trigger in current text
+        const beforeCursor = text.slice(0, offset);
+        const mentionMatch = beforeCursor.match(new RegExp(`${trigger}([^\\s]*)$`));
 
-          if (mentionMatch) {
-            const query = mentionMatch[1];
-            const position = getCaretPosition();
+        if (mentionMatch) {
+          const query = mentionMatch[1];
+          const position = getCaretPosition();
 
-            if (position) {
+          if (position) {
+            setMentionState((prev) => ({
+              ...prev,
+              isOpen: true,
+              query,
+              position,
+              selectedIndex: 0,
+            }));
+
+            // Search for users
+            searchUsers(query).then((suggestions) => {
               setMentionState((prev) => ({
                 ...prev,
-                isOpen: true,
-                query,
-                position,
-                selectedIndex: 0,
+                suggestions,
               }));
-
-              // Search for users
-              searchUsers(query).then((suggestions) => {
-                setMentionState((prev) => ({
-                  ...prev,
-                  suggestions,
-                }));
-              });
-            }
-          } else if (mentionState.isOpen) {
-            closeMentions();
+            });
           }
+        } else if (mentionState.isOpen) {
+          closeMentions();
         }
-      }),
+      }
+    });
+  }, [editor, trigger, mentionState.isOpen, searchUsers, closeMentions]);
 
-      // Handle keyboard events
-      // biome-ignore lint/suspicious/noExplicitAny: Lexical command API requires any type
-      editor.registerCommand<KeyboardEvent>(
-        "keydown" as any,
-        handleKeyDown,
-        1, // High priority to capture before other handlers
+  useEffect(() => {
+    return mergeRegister(
+      // Handle text content changes for mention detection
+      editor.registerTextContentListener(detectMention),
+
+      // Handle arrow up command
+      editor.registerCommand(
+        KEY_ARROW_UP_COMMAND,
+        () => {
+          if (!mentionState.isOpen) return false;
+
+          setMentionState((prev) => ({
+            ...prev,
+            selectedIndex:
+              prev.selectedIndex > 0 ? prev.selectedIndex - 1 : prev.suggestions.length - 1,
+          }));
+          return true;
+        },
+        COMMAND_PRIORITY_NORMAL,
+      ),
+
+      // Handle arrow down command
+      editor.registerCommand(
+        KEY_ARROW_DOWN_COMMAND,
+        () => {
+          if (!mentionState.isOpen) return false;
+
+          setMentionState((prev) => ({
+            ...prev,
+            selectedIndex:
+              prev.selectedIndex < prev.suggestions.length - 1 ? prev.selectedIndex + 1 : 0,
+          }));
+          return true;
+        },
+        COMMAND_PRIORITY_NORMAL,
+      ),
+
+      // Handle enter command
+      editor.registerCommand(
+        KEY_ENTER_COMMAND,
+        () => {
+          if (!mentionState.isOpen) return false;
+
+          if (mentionState.suggestions[mentionState.selectedIndex]) {
+            selectMention(mentionState.suggestions[mentionState.selectedIndex]);
+          }
+          return true;
+        },
+        COMMAND_PRIORITY_NORMAL,
+      ),
+
+      // Handle escape command
+      editor.registerCommand(
+        KEY_ESCAPE_COMMAND,
+        () => {
+          if (!mentionState.isOpen) return false;
+
+          closeMentions();
+          return true;
+        },
+        COMMAND_PRIORITY_NORMAL,
       ),
     );
-  }, [editor, trigger, mentionState.isOpen, searchUsers, handleKeyDown, closeMentions]);
+  }, [editor, mentionState, selectMention, closeMentions, detectMention]);
 
   return (
     <>

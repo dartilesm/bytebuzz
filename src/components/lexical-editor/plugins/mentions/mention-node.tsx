@@ -93,7 +93,8 @@ export class MentionNode extends TextNode {
   }
 
   updateDOM(prevNode: MentionNode, anchor: HTMLElement, config: EditorConfig): boolean {
-    const updated = super.updateDOM(prevNode, anchor, config);
+    // biome-ignore lint/suspicious/noExplicitAny: Lexical API type compatibility issue
+    const updated = super.updateDOM(prevNode as any, anchor, config);
     if (this.__user !== prevNode.__user) {
       anchor.setAttribute("data-mention-id", this.__user.id);
       anchor.setAttribute("data-mention-username", this.__user.username);

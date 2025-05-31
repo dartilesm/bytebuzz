@@ -1,4 +1,4 @@
-import { $getRoot, type EditorState } from "lexical";
+import { $getRoot, type EditorState, type LexicalNode } from "lexical";
 import { $isHeadingNode, type HeadingNode } from "@lexical/rich-text";
 import { $isListNode, $isListItemNode, type ListNode, type ListItemNode } from "@lexical/list";
 import { $isCodeNode, type CodeNode } from "@lexical/code";
@@ -16,7 +16,7 @@ export function editorStateToMarkdown(editorState: EditorState): string {
     const children = root.getChildren();
 
     for (const child of children) {
-      markdown += nodeToMarkdown(child) + "\n";
+      markdown += `${nodeToMarkdown(child)}\n`;
     }
   });
 
@@ -26,7 +26,7 @@ export function editorStateToMarkdown(editorState: EditorState): string {
 /**
  * Converts a single Lexical node to markdown
  */
-function nodeToMarkdown(node: any): string {
+function nodeToMarkdown(node: LexicalNode): string {
   if ($isHeadingNode(node)) {
     const heading = node as HeadingNode;
     const level = heading.getTag().slice(1); // Extract number from h1, h2, etc.
@@ -100,7 +100,7 @@ function nodeToMarkdown(node: any): string {
  * Converts markdown string to Lexical editor state
  * This is a simplified implementation - for production use, consider using @lexical/markdown
  */
-export function markdownToEditorState(markdown: string): any {
+export function markdownToEditorState(): null {
   // TODO: Implement proper markdown to editor state conversion
   // For now, return null to use the default empty state
   return null;
