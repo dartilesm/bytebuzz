@@ -1,63 +1,55 @@
-import React from "react";
-import { Code, Button, Tooltip } from "@heroui/react";
+"use client";
+
+import { Button, Tooltip } from "@heroui/react";
 import { Icon } from "@iconify/react";
-
-// Add proper types for highlight.js
-import hljs from "highlight.js/lib/core";
-import javascript from "highlight.js/lib/languages/javascript";
-import typescript from "highlight.js/lib/languages/typescript";
-import html from "highlight.js/lib/languages/xml";
-import css from "highlight.js/lib/languages/css";
-import python from "highlight.js/lib/languages/python";
-import json from "highlight.js/lib/languages/json";
-import bash from "highlight.js/lib/languages/bash";
-import "highlight.js/styles/atom-one-dark.css";
-
-// Register the languages
-hljs.registerLanguage("javascript", javascript);
-hljs.registerLanguage("typescript", typescript);
-hljs.registerLanguage("html", html);
-hljs.registerLanguage("css", css);
-hljs.registerLanguage("python", python);
-hljs.registerLanguage("json", json);
-hljs.registerLanguage("bash", bash);
+import { useTheme } from "next-themes";
+import React, { useEffect } from "react";
+import { type BundledTheme, type CodeOptionsSingleTheme, codeToHtml } from "shiki";
 
 interface CodeBlockProps {
   code: string;
   language?: string;
   showLineNumbers?: boolean;
-
-  // Add missing props that are used in App.tsx
   className?: string;
   hideSymbol?: boolean;
   tooltipProps?: {
     content?: string;
-    color?: string;
-    [key: string]: any;
+    color?: "primary" | "default" | "secondary" | "success" | "warning" | "danger" | "foreground";
+    [key: string]: unknown;
   };
 }
 
-export const CodeBlock: React.FC<CodeBlockProps> = ({
-  code = "", // Add default empty string to prevent undefined
+/**
+ * CodeBlock component that renders syntax highlighted code using Shiki
+ */
+export function CodeBlock({
+  code = "",
   language = "javascript",
   showLineNumbers = true,
   className = "",
-  hideSymbol = false, // Add default value
-  tooltipProps = {}, // Add default value
-}) => {
+  hideSymbol = false,
+  tooltipProps = {},
+}: CodeBlockProps) {
+  const { theme } = useTheme();
   const [copied, setCopied] = React.useState(false);
+  const [highlightedHtml, setHighlightedHtml] = React.useState<string>("");
 
-  const handleCopy = () => {
+  /**
+   * Handles copying code to clipboard
+   */
+  function handleCopy() {
     navigator.clipboard.writeText(code);
     setCopied(true);
 
     setTimeout(() => {
       setCopied(false);
     }, 2000);
-  };
+  }
 
-  // Format language display name
-  const formatLanguage = (lang: string): string => {
+  /**
+   * Formats language display name for UI
+   */
+  function formatLanguage(lang: string): string {
     const languageMap: Record<string, string> = {
       js: "JavaScript",
       javascript: "JavaScript",
@@ -89,10 +81,12 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     };
 
     return languageMap[lang.toLowerCase()] || lang;
-  };
+  }
 
-  // Get language icon based on language type
-  const getLanguageIcon = (lang: string): string => {
+  /**
+   * Gets appropriate icon for the programming language
+   */
+  function getLanguageIcon(lang: string): string {
     const iconMap: Record<string, string> = {
       javascript: "logos:javascript",
       js: "logos:javascript",
@@ -126,66 +120,67 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     };
 
     return iconMap[lang.toLowerCase()] || "lucide:code";
-  };
+  }
 
-  // Highlight the code with highlight.js
-  const highlightedCode = React.useMemo(() => {
-    if (!code) return ""; // Safety check for empty code
-
-    try {
-      let highlighted;
-
-      // Check if the language is registered
-      if (hljs.getLanguage(language.toLowerCase())) {
-        highlighted = hljs.highlight(code, {
-          language: language.toLowerCase(),
-        }).value;
-      } else {
-        // Fallback to auto detection
-        highlighted = hljs.highlightAuto(code).value;
-      }
-
-      // Fix how line numbers are handled with hideSymbol
-      if (showLineNumbers && !hideSymbol) {
-        // Only add line numbers if showLineNumbers is true AND hideSymbol is false
-        const lines = highlighted.split("\n");
-        const paddingWidth = lines.length.toString().length;
-
-        return lines
-          .map((line, i) => {
-            const lineNumber = (i + 1).toString().padStart(paddingWidth, " ");
-            return `<span class="code-line-number text-default-400">${lineNumber} |</span> ${line}`;
-          })
-          .join("\n");
-      }
-
-      return highlighted;
-    } catch (error) {
-      console.error("Error highlighting code:", error);
-
-      // Fallback to plain text with line numbers if needed
-      if (showLineNumbers && code) {
-        const lines = code.split("\n");
-        const paddingWidth = lines.length.toString().length;
-
-        return lines
-          .map((line, i) => {
-            const lineNumber = (i + 1).toString().padStart(paddingWidth, " ");
-            return `<span class="code-line-number text-default-400">${lineNumber} |</span> ${line}`;
-          })
-          .join("\n");
-      }
-
-      return code; // Return original code if all else fails
+  /**
+   * Adds line numbers to highlighted HTML
+   */
+  function addLineNumbers(html: string): string {
+    if (!showLineNumbers || hideSymbol) {
+      return html;
     }
-  }, [code, language, showLineNumbers, hideSymbol]);
 
-  // Calculate line number width safely
-  const lineNumberWidth = React.useMemo(() => {
-    if (!code) return "3ch";
-    const length = code.split("\n").length.toString().length;
-    return `${length + 3}ch`;
-  }, [code]);
+    // Extract the content between <pre> and </pre> tags
+    const preMatch = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/);
+    if (!preMatch) return html;
+
+    const codeContent = preMatch[1];
+    const lines = codeContent.split("\n");
+    const paddingWidth = lines.length.toString().length;
+
+    const linesWithNumbers = lines
+      .map((line: string, index: number) => {
+        const lineNumber = (index + 1).toString().padStart(paddingWidth, " ");
+        return `<span class="code-line-number text-default-400" style="display: inline-block; min-width: ${paddingWidth + 3}ch; user-select: none;">${lineNumber} |</span> ${line}`;
+      })
+      .join("\n");
+
+    return html.replace(preMatch[1], linesWithNumbers);
+  }
+
+  // Highlight code with Shiki
+  useEffect(() => {
+    if (!code) {
+      setHighlightedHtml("");
+      return;
+    }
+
+    /**
+     * Highlights code using Shiki
+     */
+    async function highlightCode() {
+      const codeTheme: CodeOptionsSingleTheme<BundledTheme>["theme"] =
+        theme === "dark" ? "github-dark" : "github-light";
+
+      try {
+        const highlighted = await codeToHtml(code, {
+          lang: language.toLowerCase(),
+          theme: codeTheme,
+        });
+
+        const processedHtml = addLineNumbers(highlighted);
+        setHighlightedHtml(processedHtml);
+      } catch (error) {
+        console.error("Error highlighting code:", error);
+        // Fallback to plain text
+        const plainHtml = `<pre class="shiki ${codeTheme}" style="background-color:#121212;color:#dbd7caee" tabindex="0"><code>${code}</code></pre>`;
+        const processedHtml = addLineNumbers(plainHtml);
+        setHighlightedHtml(processedHtml);
+      }
+    }
+
+    highlightCode();
+  }, [code, language, showLineNumbers, hideSymbol, theme]);
 
   return (
     <div
@@ -213,21 +208,11 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
           </Button>
         </Tooltip>
       </div>
-      <div className="p-4 overflow-auto max-h-[500px]">
-        <pre className="text-sm whitespace-pre">
-          <code
-            className={`language-${language} block`}
-            dangerouslySetInnerHTML={{ __html: highlightedCode }}
-          />
-        </pre>
-      </div>
-      <style jsx>{`
-        .code-line-number {
-          display: inline-block;
-          min-width: ${lineNumberWidth};
-          user-select: none;
-        }
-      `}</style>
+      <div
+        className="overflow-auto max-h-[500px] [&>pre]:p-4 [&>pre]:m-0 [&>pre]:bg-transparent"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      />
     </div>
   );
-};
+}
