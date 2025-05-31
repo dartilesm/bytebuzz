@@ -14,6 +14,7 @@ import {
   $isRangeSelection,
   COMMAND_PRIORITY_LOW,
   KEY_DOWN_COMMAND,
+  $isTextNode,
 } from "lexical";
 import { MdastMentionVisitor } from "./mdast-mention-visitor";
 import { $createMentionNode, MentionNode } from "./mention-node";
@@ -47,6 +48,7 @@ export const mentionPickerPosition$ = Cell<{ x: number; y: number } | null>(null
 export const mentionElement$ = Cell<HTMLElement | null>(null);
 export const selectedMentionUser$ = Cell<User | null>(null);
 export const insertMention$ = Signal<User>();
+export const mentionStartPosition$ = Cell<{ nodeKey: string; offset: number } | null>(null);
 
 /**
  * Mock function to simulate fetching users based on query
@@ -136,30 +138,39 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) return;
 
-        // Remove the trigger and query text
-        const query = realm.getValue(mentionQuery$);
-        const trigger = realm.getValue(mentionTrigger$);
-        const textToRemove = trigger + query;
+        // Get the current text content and find the mention text to replace
+        const anchorNode = selection.anchor.getNode();
+        if ($isTextNode(anchorNode)) {
+          const textContent = anchorNode.getTextContent();
+          const cursorOffset = selection.anchor.offset;
 
-        // Move selection back to remove the trigger and query
-        selection.anchor.offset -= textToRemove.length;
-        selection.focus.offset = selection.anchor.offset + textToRemove.length;
+          // Find the last "@" before the cursor
+          const textBeforeCursor = textContent.substring(0, cursorOffset);
+          const lastAtIndex = textBeforeCursor.lastIndexOf("@");
 
-        // Create and insert mention node
-        const mentionNode = $createMentionNode(user);
-        selection.insertNodes([mentionNode]);
+          if (lastAtIndex !== -1) {
+            // Select the text from "@" to current cursor position
+            selection.anchor.offset = lastAtIndex;
+            selection.focus.offset = cursorOffset;
 
-        // Add a space after the mention
-        const spaceNode = $createTextNode(" ");
-        selection.insertNodes([spaceNode]);
+            // Create and insert mention node
+            const mentionNode = $createMentionNode(user);
+            selection.insertNodes([mentionNode]);
+
+            // Add a space after the mention
+            const spaceNode = $createTextNode(" ");
+            selection.insertNodes([spaceNode]);
+          }
+        }
       });
 
-      // Hide picker
+      // Hide picker and reset state
       realm.pub(showMentionPicker$, false);
       realm.pub(mentionQuery$, "");
       realm.pub(mentionPickerPosition$, null);
       realm.pub(mentionElement$, null);
       realm.pub(selectedMentionUser$, null);
+      realm.pub(mentionStartPosition$, null);
     });
 
     // Handle keyboard events for mention trigger
@@ -173,6 +184,12 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
             // Get current selection and position
             const selection = $getSelection();
             if (!$isRangeSelection(selection)) return false;
+
+            // Store the position where the mention starts (before the @ symbol)
+            realm.pub(mentionStartPosition$, {
+              nodeKey: selection.anchor.key,
+              offset: selection.anchor.offset,
+            });
 
             // Get cursor position for picker placement
             const domSelection = window.getSelection();
@@ -212,6 +229,7 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
               realm.pub(mentionPickerPosition$, null);
               realm.pub(mentionElement$, null);
               realm.pub(selectedMentionUser$, null);
+              realm.pub(mentionStartPosition$, null);
               return true;
             }
 
@@ -223,6 +241,7 @@ export const mentionsPlugin = realmPlugin<MentionsPluginParams>({
                 realm.pub(mentionPickerPosition$, null);
                 realm.pub(mentionElement$, null);
                 realm.pub(selectedMentionUser$, null);
+                realm.pub(mentionStartPosition$, null);
                 return false;
               }
               // Update query
