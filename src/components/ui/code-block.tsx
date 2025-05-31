@@ -47,6 +47,70 @@ export function CodeBlock({
   }
 
   /**
+   * Gets file extension based on language
+   */
+  function getFileExtension(lang: string): string {
+    const extensionMap: Record<string, string> = {
+      javascript: "js",
+      js: "js",
+      typescript: "ts",
+      ts: "ts",
+      jsx: "jsx",
+      tsx: "tsx",
+      html: "html",
+      css: "css",
+      scss: "scss",
+      python: "py",
+      py: "py",
+      ruby: "rb",
+      rb: "rb",
+      go: "go",
+      rust: "rs",
+      java: "java",
+      c: "c",
+      cpp: "cpp",
+      cs: "cs",
+      php: "php",
+      swift: "swift",
+      kotlin: "kt",
+      shell: "sh",
+      bash: "sh",
+      json: "json",
+      yaml: "yml",
+      yml: "yml",
+      markdown: "md",
+      md: "md",
+      sql: "sql",
+    };
+
+    return extensionMap[lang.toLowerCase()] || "txt";
+  }
+
+  /**
+   * Handles downloading code as a file
+   */
+  function handleDownload() {
+    if (!code) return;
+
+    const extension = getFileExtension(language);
+    const filename = `code.${extension}`;
+
+    const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
+  /**
    * Formats language display name for UI
    */
   function formatLanguage(lang: string): string {
@@ -191,22 +255,36 @@ export function CodeBlock({
           <Icon icon={getLanguageIcon(language)} className="w-5 h-5" />
           <span className="text-sm font-medium">{formatLanguage(language)}</span>
         </div>
-        <Tooltip
-          content={copied ? "Copied!" : tooltipProps.content || "Copy code"}
-          placement="left"
-          color={tooltipProps.color || "default"}
-        >
-          <Button
-            isIconOnly
-            size="sm"
-            variant="flat"
-            color="default"
-            onPress={handleCopy}
-            aria-label="Copy code"
+        <div className="flex items-center gap-2">
+          <Tooltip content="Download code" placement="left" color="default">
+            <Button
+              isIconOnly
+              size="sm"
+              variant="flat"
+              color="default"
+              onPress={handleDownload}
+              aria-label="Download code"
+            >
+              <Icon icon="lucide:download" className="w-4 h-4" />
+            </Button>
+          </Tooltip>
+          <Tooltip
+            content={copied ? "Copied!" : tooltipProps.content || "Copy code"}
+            placement="left"
+            color={tooltipProps.color || "default"}
           >
-            <Icon icon={copied ? "lucide:check" : "lucide:copy"} className="w-4 h-4" />
-          </Button>
-        </Tooltip>
+            <Button
+              isIconOnly
+              size="sm"
+              variant="flat"
+              color="default"
+              onPress={handleCopy}
+              aria-label="Copy code"
+            >
+              <Icon icon={copied ? "lucide:check" : "lucide:copy"} className="w-4 h-4" />
+            </Button>
+          </Tooltip>
+        </div>
       </div>
       <div
         className="overflow-auto max-h-[500px] [&>pre]:p-4 [&>pre]:m-0 [&>pre]:bg-transparent"
