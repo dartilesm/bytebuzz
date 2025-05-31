@@ -62,7 +62,8 @@ export default function EditorDemoPage() {
             <div className="flex flex-col">
               <p className="text-md font-semibold">Primary Editor</p>
               <p className="text-small text-default-500">
-                Try markdown shortcuts and mentions: # ## ### ** * `` --- {">"} - 1. @username
+                Try markdown shortcuts, mentions, and code blocks: # ## ### ** * `` --- {">"} - 1.
+                @username ```js
               </p>
             </div>
           </CardHeader>
@@ -162,6 +163,26 @@ export default function EditorDemoPage() {
                 <li>
                   <code>1. </code> - Numbered list
                 </li>
+              </ul>
+
+              <p className="text-sm font-medium mt-4">Code Blocks:</p>
+              <ul className="text-sm text-default-600 space-y-1">
+                <li>
+                  <code>```javascript</code> + Tab/Space - JavaScript code block
+                </li>
+                <li>
+                  <code>```python</code> + Tab/Space - Python code block
+                </li>
+                <li>
+                  <code>```typescript</code> + Tab/Space - TypeScript code block
+                </li>
+                <li>
+                  <code>```html</code> + Tab/Space - HTML code block
+                </li>
+                <li>
+                  <code>```css</code> + Tab/Space - CSS code block
+                </li>
+                <li>And many more languages supported!</li>
               </ul>
 
               <p className="text-sm font-medium mt-4">Mentions:</p>

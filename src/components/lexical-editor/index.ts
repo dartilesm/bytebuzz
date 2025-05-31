@@ -1,6 +1,9 @@
 // Main editor component
 export { MarkdownEditor } from "./lexical-editor";
 
+// Plugins
+export { CodeBlockPlugin, useSupportedLanguages } from "./plugins/code-block/code-block-plugin";
+
 // Utility functions
 export { editorStateToMarkdown, markdownToEditorState } from "./functions/markdown-utils";
 

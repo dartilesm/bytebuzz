@@ -22,6 +22,7 @@ import type { EditorState, LexicalEditor } from "lexical";
 // Import mention components
 import { MentionNode } from "./plugins/mentions/mention-node";
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
+import { CodeBlockPlugin } from "./plugins/code-block/code-block-plugin";
 
 // Editor theme
 const theme = {
@@ -196,6 +197,9 @@ export function MarkdownEditor({
 
           {/* Mention plugin */}
           {enableMentions && <MentionPlugin />}
+
+          {/* Code block plugin */}
+          <CodeBlockPlugin />
 
           {/* Event handling plugins */}
           <OnChangeMarkdownPlugin onChange={onChange} />

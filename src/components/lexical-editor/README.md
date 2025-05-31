@@ -5,6 +5,7 @@ A modern, extensible markdown editor built on Facebook's Lexical framework. This
 ## Features
 
 - ✅ **Markdown Shortcuts**: Type `#` for headings, `**` for bold, `*` for italic, etc.
+- ✅ **Code Blocks**: Type ` ```lang ` and press Tab/Space for syntax-highlighted code blocks
 - ✅ **No Toolbar**: Clean, distraction-free writing experience
 - ✅ **Real-time Conversion**: Live markdown output as you type
 - ✅ **Extensible**: Plugin-based architecture for custom features
@@ -31,18 +32,20 @@ export function MyComponent() {
 
 ## Supported Markdown Shortcuts
 
-| Shortcut     | Result          | Description     |
-| ------------ | --------------- | --------------- |
-| `# `         | `# Heading 1`   | Heading level 1 |
-| `## `        | `## Heading 2`  | Heading level 2 |
-| `### `       | `### Heading 3` | Heading level 3 |
-| `**text**`   | **text**        | Bold text       |
-| `*text*`     | _text_          | Italic text     |
-| `` `code` `` | `code`          | Inline code     |
-| `--- `       | `---`           | Horizontal rule |
-| `> `         | `> Quote`       | Blockquote      |
-| `- `         | `- Item`        | Bullet list     |
-| `1. `        | `1. Item`       | Numbered list   |
+| Shortcut        | Result          | Description      |
+| --------------- | --------------- | ---------------- |
+| `# `            | `# Heading 1`   | Heading level 1  |
+| `## `           | `## Heading 2`  | Heading level 2  |
+| `### `          | `### Heading 3` | Heading level 3  |
+| `**text**`      | **text**        | Bold text        |
+| `*text*`        | _text_          | Italic text      |
+| `` `code` ``    | `code`          | Inline code      |
+| `--- `          | `---`           | Horizontal rule  |
+| `> `            | `> Quote`       | Blockquote       |
+| `- `            | `- Item`        | Bullet list      |
+| `1. `           | `1. Item`       | Numbered list    |
+| ` ```js ` + Tab | Code block      | JavaScript block |
+| ` ```py ` + Tab | Code block      | Python block     |
 
 ## Props
 
