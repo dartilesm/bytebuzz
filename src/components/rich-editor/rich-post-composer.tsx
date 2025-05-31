@@ -1,20 +1,22 @@
 "use client";
 
+import { CodeBlockButton } from "@/components/rich-editor/toolbar/code-block-button";
+import { ImageButton } from "@/components/rich-editor/toolbar/image-button";
 import { useUser } from "@clerk/nextjs";
-import { Avatar } from "@heroui/react";
+import { Avatar, Button } from "@heroui/react";
 import type { MDXEditorMethods, MDXEditorProps } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
-import type { RefObject } from "react";
+import { useRef } from "react";
 import { DismissibleImage } from "./dismissible-image";
 
 const RichEditor = dynamic(() => import("./rich-editor").then((mod) => mod.RichEditor));
 
 interface RichPostComposerProps extends Omit<MDXEditorProps, "ref" | "markdown"> {
-  ref?: RefObject<MDXEditorMethods>;
   markdown?: string;
 }
 
-export function RichPostComposer({ markdown = "", ref }: RichPostComposerProps) {
+export function RichPostComposer({ markdown = "" }: RichPostComposerProps) {
+  const editorRef = useRef<MDXEditorMethods>({} as MDXEditorMethods);
   const { user } = useUser();
 
   /**
@@ -23,6 +25,18 @@ export function RichPostComposer({ markdown = "", ref }: RichPostComposerProps) 
   function handleImageDismiss() {
     // TODO: Implement image removal logic
     console.log("Image dismissed");
+  }
+
+  /**
+   * Handles the post submission by logging the current editor content
+   */
+  function handlePost() {
+    if (editorRef.current) {
+      const content = editorRef.current.getMarkdown();
+      console.log("Editor content:", content);
+    } else {
+      console.log("Editor ref not available");
+    }
   }
 
   return (
@@ -36,9 +50,19 @@ export function RichPostComposer({ markdown = "", ref }: RichPostComposerProps) 
           containerClassName="flex-1"
           contentEditableClassName="pb-0"
           className="static"
-          editorRef={ref || null}
+          editorRef={editorRef}
           placeholder="What's on your mind?"
-        />
+        >
+          <div className="flex flex-row gap-2 justify-between flex-1">
+            <div className="flex flex-row gap-2">
+              <CodeBlockButton />
+              <ImageButton />
+            </div>
+            <Button variant="flat" color="primary" size="sm" onPress={handlePost}>
+              Post
+            </Button>
+          </div>
+        </RichEditor>
         <DismissibleImage
           src="https://placehold.co/600x400"
           alt="placeholder"

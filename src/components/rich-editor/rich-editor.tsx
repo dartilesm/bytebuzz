@@ -20,18 +20,16 @@ type RichEditorProps = MDXEditorProps & {
   editorRef: RefObject<MDXEditorMethods> | null;
   containerClassName?: string;
   /**
-   * Custom action components to be rendered in the toolbar
+   * Children to completely override the toolbar content
    * @example
    * ```tsx
-   * const customActions = [
-   *   <Button key="save" onClick={handleSave}>Save</Button>,
-   *   <Button key="cancel" onClick={handleCancel}>Cancel</Button>
-   * ];
-   *
-   * <RichEditor customActions={customActions} />
+   * <RichEditor>
+   *   <Button onClick={handleSave}>Save</Button>
+   *   <Button onClick={handleCancel}>Cancel</Button>
+   * </RichEditor>
    * ```
    */
-  customActions?: ReactNode[];
+  children?: ReactNode;
 };
 
 // Only import this to the next file
@@ -131,7 +129,7 @@ export function RichEditor({ editorRef, containerClassName, ...props }: RichEdit
             maxSuggestions: 5,
           }),
           toolbarPlugin({
-            toolbarContents: () => <CustomToolbar customActions={props.customActions} />,
+            toolbarContents: () => <CustomToolbar>{props.children}</CustomToolbar>,
             toolbarPosition: "bottom",
             toolbarClassName: "absolute bottom-0 left-0 right-0",
           }),
