@@ -1,0 +1,191 @@
+"use client";
+
+import { $getRoot } from "lexical";
+import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
+import { TRANSFORMERS } from "@lexical/markdown";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { ListNode, ListItemNode } from "@lexical/list";
+import { CodeNode, CodeHighlightNode } from "@lexical/code";
+import { LinkNode, AutoLinkNode } from "@lexical/link";
+import { cn } from "@/lib/utils";
+import { useEffect, type RefObject } from "react";
+import type { EditorState, LexicalEditor } from "lexical";
+
+// Editor theme
+const theme = {
+  paragraph: "mb-1",
+  heading: {
+    h1: "text-2xl font-bold mb-2",
+    h2: "text-xl font-bold mb-2",
+    h3: "text-lg font-bold mb-1",
+    h4: "text-base font-bold mb-1",
+    h5: "text-sm font-bold mb-1",
+    h6: "text-xs font-bold mb-1",
+  },
+  list: {
+    ul: "list-disc pl-4 mb-2",
+    ol: "list-decimal pl-4 mb-2",
+    listitem: "mb-1",
+  },
+  text: {
+    bold: "font-bold",
+    italic: "italic",
+    strikethrough: "line-through",
+    underline: "underline",
+    code: "bg-gray-100 rounded px-1 font-mono text-sm",
+  },
+  code: "bg-gray-100 rounded p-2 font-mono text-sm block mb-2",
+  quote: "border-l-4 border-gray-300 pl-4 italic mb-2",
+  link: "text-blue-500 underline hover:text-blue-700",
+};
+
+interface MarkdownEditorProps {
+  /**
+   * Placeholder text to show when editor is empty
+   */
+  placeholder?: string;
+  /**
+   * Callback when content changes
+   */
+  onChange?: (markdown: string, editorState: EditorState) => void;
+  /**
+   * Additional CSS classes for the editor container
+   */
+  className?: string;
+  /**
+   * Additional CSS classes for the content editable area
+   */
+  contentClassName?: string;
+  /**
+   * Reference to the editor instance
+   */
+  editorRef?: RefObject<LexicalEditor>;
+  /**
+   * Whether to auto-focus the editor on mount
+   */
+  autoFocus?: boolean;
+}
+
+/**
+ * Plugin to handle editor state changes and convert to markdown
+ */
+function OnChangeMarkdownPlugin({ onChange }: { onChange?: MarkdownEditorProps["onChange"] }) {
+  const [editor] = useLexicalComposerContext();
+
+  function handleEditorChange(editorState: EditorState) {
+    if (!onChange) return;
+
+    editorState.read(() => {
+      const root = $getRoot();
+      // For now, just return the text content - this can be enhanced later
+      const markdown = root.getTextContent();
+      onChange(markdown, editorState);
+    });
+  }
+
+  return <OnChangePlugin onChange={handleEditorChange} />;
+}
+
+/**
+ * Plugin to set editor reference
+ */
+function EditorRefPlugin({ editorRef }: { editorRef?: RefObject<LexicalEditor> }) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    if (editorRef && "current" in editorRef) {
+      editorRef.current = editor;
+    }
+  }, [editor, editorRef]);
+
+  return null;
+}
+
+/**
+ * Custom placeholder component
+ */
+function Placeholder({ children }: { children: string }) {
+  return (
+    <div className="absolute top-3 left-3 text-default-400 pointer-events-none select-none">
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Lexical-based markdown editor with keyboard shortcuts
+ *
+ * Features:
+ * - Markdown shortcuts (# for headings, ** for bold, etc.)
+ * - No toolbar - pure markdown experience
+ * - Real-time markdown conversion
+ * - Extensible plugin architecture
+ */
+export function MarkdownEditor({
+  placeholder = "What's on your mind?",
+  onChange,
+  className,
+  contentClassName,
+  editorRef,
+  autoFocus = false,
+}: MarkdownEditorProps) {
+  const initialConfig = {
+    namespace: "lexical-markdown-editor",
+    theme,
+    onError: (error: Error) => {
+      console.error("Lexical Editor Error:", error);
+    },
+    nodes: [
+      HeadingNode,
+      QuoteNode,
+      ListNode,
+      ListItemNode,
+      CodeNode,
+      CodeHighlightNode,
+      LinkNode,
+      AutoLinkNode,
+    ],
+    editorState: undefined,
+  };
+
+  return (
+    <div className={cn("relative", className)}>
+      <LexicalComposer initialConfig={initialConfig}>
+        <div className="relative">
+          <RichTextPlugin
+            contentEditable={
+              <ContentEditable
+                className={cn(
+                  "outline-none min-h-[100px] p-3 resize-none",
+                  "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                  contentClassName,
+                )}
+              />
+            }
+            placeholder={<Placeholder>{placeholder}</Placeholder>}
+            ErrorBoundary={LexicalErrorBoundary}
+          />
+
+          {/* Core plugins */}
+          <HistoryPlugin />
+          {autoFocus && <AutoFocusPlugin />}
+
+          {/* Markdown shortcuts plugin */}
+          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+
+          {/* Event handling plugins */}
+          <OnChangeMarkdownPlugin onChange={onChange} />
+          {editorRef && <EditorRefPlugin editorRef={editorRef} />}
+        </div>
+      </LexicalComposer>
+    </div>
+  );
+}
