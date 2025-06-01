@@ -62,8 +62,8 @@ export default function EditorDemoPage() {
             <div className="flex flex-col">
               <p className="text-md font-semibold">Primary Editor</p>
               <p className="text-small text-default-500">
-                Try markdown shortcuts, mentions, and code blocks: # ## ### ** * `` --- {">"} - 1.
-                @username ```js
+                Try markdown shortcuts, mentions, and enhanced code blocks: # ## ### ** * `` ---{" "}
+                {">"} - 1. @username ```js (press space after language)
               </p>
             </div>
           </CardHeader>
@@ -165,24 +165,26 @@ export default function EditorDemoPage() {
                 </li>
               </ul>
 
-              <p className="text-sm font-medium mt-4">Code Blocks:</p>
+              <p className="text-sm font-medium mt-4">Enhanced Code Blocks:</p>
               <ul className="text-sm text-default-600 space-y-1">
                 <li>
-                  <code>```javascript</code> + Tab/Space - JavaScript code block
+                  <code>```javascript</code> + Space - Enhanced JavaScript code block
                 </li>
                 <li>
-                  <code>```python</code> + Tab/Space - Python code block
+                  <code>```python</code> + Space - Enhanced Python code block
                 </li>
                 <li>
-                  <code>```typescript</code> + Tab/Space - TypeScript code block
+                  <code>```typescript</code> + Space - Enhanced TypeScript code block
                 </li>
                 <li>
-                  <code>```html</code> + Tab/Space - HTML code block
+                  <code>```html</code> + Space - Enhanced HTML code block
                 </li>
                 <li>
-                  <code>```css</code> + Tab/Space - CSS code block
+                  <code>```css</code> + Space - Enhanced CSS code block
                 </li>
-                <li>And many more languages supported!</li>
+                <li>
+                  Features: Monaco Editor, Copy/Download, Language Selection, Syntax Highlighting
+                </li>
               </ul>
 
               <p className="text-sm font-medium mt-4">Mentions:</p>

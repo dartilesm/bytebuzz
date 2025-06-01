@@ -10,8 +10,8 @@ import {
   KEY_SPACE_COMMAND,
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
-import { $createCodeNode } from "@lexical/code";
 import type { TextNode } from "lexical";
+import { $createEnhancedCodeBlockNode } from "./enhanced-code-block-node";
 
 interface CodeBlockPluginProps {
   /**
@@ -59,13 +59,13 @@ const DEFAULT_LANGUAGES = [
 ];
 
 /**
- * Plugin that handles code block creation with language specification
+ * Plugin that handles enhanced code block creation with language specification
  *
  * Features:
  * - Detects ```lang patterns
- * - Converts to code blocks on Tab or Space
- * - Supports multiple programming languages
- * - Syntax highlighting ready
+ * - Converts to enhanced code blocks on Tab or Space
+ * - Uses the sophisticated CodeBlockEditor component
+ * - Monaco Editor integration with syntax highlighting
  */
 export function CodeBlockPlugin({
   supportedLanguages = DEFAULT_LANGUAGES,
@@ -117,9 +117,9 @@ export function CodeBlockPlugin({
   }
 
   /**
-   * Converts the detected pattern to a code block
+   * Converts the detected pattern to an enhanced code block
    */
-  function convertToCodeBlock(language: string, textNode: TextNode, matchStart: number) {
+  function convertToEnhancedCodeBlock(language: string, textNode: TextNode, matchStart: number) {
     editor.update(() => {
       const selection = $getSelection();
       if (!$isRangeSelection(selection)) return;
@@ -128,12 +128,12 @@ export function CodeBlockPlugin({
       const currentOffset = selection.anchor.offset;
       textNode.select(matchStart, currentOffset);
 
-      // Create and insert the code block
-      const codeNode = $createCodeNode(language);
-      selection.insertNodes([codeNode]);
+      // Create and insert the enhanced code block
+      const codeBlockNode = $createEnhancedCodeBlockNode(language);
+      selection.insertNodes([codeBlockNode]);
 
-      // Focus the code block for immediate editing
-      codeNode.select();
+      // Add some space after the code block
+      selection.insertParagraph();
     });
   }
 
@@ -144,7 +144,7 @@ export function CodeBlockPlugin({
     const pattern = editor.getEditorState().read(detectCodeBlockPattern);
 
     if (pattern.hasPattern && pattern.node) {
-      convertToCodeBlock(pattern.language, pattern.node, pattern.matchStart);
+      convertToEnhancedCodeBlock(pattern.language, pattern.node, pattern.matchStart);
       return true; // Prevent default tab behavior
     }
 
@@ -158,7 +158,7 @@ export function CodeBlockPlugin({
     const pattern = editor.getEditorState().read(detectCodeBlockPattern);
 
     if (pattern.hasPattern && pattern.node) {
-      convertToCodeBlock(pattern.language, pattern.node, pattern.matchStart);
+      convertToEnhancedCodeBlock(pattern.language, pattern.node, pattern.matchStart);
       return true; // Prevent default space insertion
     }
 
@@ -176,7 +176,7 @@ export function CodeBlockPlugin({
           if ($isRangeSelection(selection)) {
             const node = selection.anchor.getNode();
             // Don't interfere if already in a code block
-            if (node.getType() === "code") {
+            if (node.getType() === "code" || node.getType() === "enhanced-code-block") {
               return false;
             }
           }
@@ -195,7 +195,7 @@ export function CodeBlockPlugin({
           if ($isRangeSelection(selection)) {
             const node = selection.anchor.getNode();
             // Don't interfere if already in a code block
-            if (node.getType() === "code") {
+            if (node.getType() === "code" || node.getType() === "enhanced-code-block") {
               return false;
             }
           }

@@ -1,6 +1,5 @@
 "use client";
 
-import { $getRoot } from "lexical";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -18,11 +17,13 @@ import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { cn } from "@/lib/utils";
 import { useEffect, type RefObject } from "react";
 import type { EditorState, LexicalEditor } from "lexical";
+import { editorStateToMarkdown } from "./functions/markdown-utils";
 
 // Import mention components
 import { MentionNode } from "./plugins/mentions/mention-node";
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
-import { CodeBlockPlugin } from "./plugins/code-block/code-block-plugin";
+import { EnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
+import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
 
 // Editor theme
 const theme = {
@@ -53,6 +54,16 @@ const theme = {
   mention:
     "bg-primary-100 text-primary-800 rounded px-1 py-0.5 font-medium cursor-pointer hover:bg-primary-200",
 };
+
+// Create custom transformers that use our enhanced code block
+const customTransformers = TRANSFORMERS.filter(
+  (transformer) =>
+    !(
+      transformer.type === "element" &&
+      "regExp" in transformer &&
+      transformer.regExp?.source.includes("```")
+    ),
+).concat([ENHANCED_CODE_BLOCK_TRANSFORMER]);
 
 interface MarkdownEditorProps {
   /**
@@ -89,17 +100,11 @@ interface MarkdownEditorProps {
  * Plugin to handle editor state changes and convert to markdown
  */
 function OnChangeMarkdownPlugin({ onChange }: { onChange?: MarkdownEditorProps["onChange"] }) {
-  const [editor] = useLexicalComposerContext();
-
   function handleEditorChange(editorState: EditorState) {
     if (!onChange) return;
 
-    editorState.read(() => {
-      const root = $getRoot();
-      // For now, just return the text content - this can be enhanced later
-      const markdown = root.getTextContent();
-      onChange(markdown, editorState);
-    });
+    const markdown = editorStateToMarkdown(editorState);
+    onChange(markdown, editorState);
   }
 
   return <OnChangePlugin onChange={handleEditorChange} />;
@@ -165,6 +170,7 @@ export function MarkdownEditor({
       CodeHighlightNode,
       LinkNode,
       AutoLinkNode,
+      EnhancedCodeBlockNode,
       ...(enableMentions ? [MentionNode] : []),
     ],
     editorState: undefined,
@@ -193,13 +199,10 @@ export function MarkdownEditor({
           {autoFocus && <AutoFocusPlugin />}
 
           {/* Markdown shortcuts plugin */}
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          <MarkdownShortcutPlugin transformers={customTransformers} />
 
           {/* Mention plugin */}
           {enableMentions && <MentionPlugin />}
-
-          {/* Code block plugin */}
-          <CodeBlockPlugin />
 
           {/* Event handling plugins */}
           <OnChangeMarkdownPlugin onChange={onChange} />

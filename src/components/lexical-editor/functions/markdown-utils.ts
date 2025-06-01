@@ -1,107 +1,41 @@
-import { $getRoot, type EditorState, type LexicalNode } from "lexical";
-import { $isHeadingNode, type HeadingNode } from "@lexical/rich-text";
-import { $isListNode, $isListItemNode, type ListNode, type ListItemNode } from "@lexical/list";
-import { $isCodeNode, type CodeNode } from "@lexical/code";
-import { $isQuoteNode, type QuoteNode } from "@lexical/rich-text";
-import { $isLinkNode, type LinkNode } from "@lexical/link";
+import { $getRoot, type EditorState } from "lexical";
+import { $isEnhancedCodeBlockNode } from "../plugins/code-block/enhanced-code-block-node";
 
 /**
- * Converts Lexical editor state to markdown string
+ * Converts the current editor state to markdown string
  */
 export function editorStateToMarkdown(editorState: EditorState): string {
-  let markdown = "";
-
-  editorState.read(() => {
+  return editorState.read(() => {
     const root = $getRoot();
     const children = root.getChildren();
 
+    const markdownParts: string[] = [];
+
     for (const child of children) {
-      markdown += `${nodeToMarkdown(child)}\n`;
-    }
-  });
-
-  return markdown.trim();
-}
-
-/**
- * Converts a single Lexical node to markdown
- */
-function nodeToMarkdown(node: LexicalNode): string {
-  if ($isHeadingNode(node)) {
-    const heading = node as HeadingNode;
-    const level = heading.getTag().slice(1); // Extract number from h1, h2, etc.
-    const hashes = "#".repeat(Number(level));
-    return `${hashes} ${heading.getTextContent()}`;
-  }
-
-  if ($isListNode(node)) {
-    const list = node as ListNode;
-    const listType = list.getListType();
-    const children = list.getChildren();
-
-    return children
-      .map((child, index) => {
-        if ($isListItemNode(child)) {
-          const listItem = child as ListItemNode;
-          const prefix = listType === "bullet" ? "-" : `${index + 1}.`;
-          return `${prefix} ${listItem.getTextContent()}`;
+      if ($isEnhancedCodeBlockNode(child)) {
+        // Handle enhanced code blocks
+        const language = child.getLanguage();
+        const code = child.getCode();
+        markdownParts.push(`\`\`\`${language}\n${code}\n\`\`\``);
+      } else {
+        // Handle other content - for now just get text content
+        // This can be enhanced later to handle other markdown elements
+        const text = child.getTextContent();
+        if (text.trim()) {
+          markdownParts.push(text);
         }
-        return "";
-      })
-      .join("\n");
-  }
-
-  if ($isCodeNode(node)) {
-    const code = node as CodeNode;
-    return `\`\`\`\n${code.getTextContent()}\n\`\`\``;
-  }
-
-  if ($isQuoteNode(node)) {
-    const quote = node as QuoteNode;
-    return `> ${quote.getTextContent()}`;
-  }
-
-  if ($isLinkNode(node)) {
-    const link = node as LinkNode;
-    return `[${link.getTextContent()}](${link.getURL()})`;
-  }
-
-  // Handle text formatting
-  const textContent = node.getTextContent();
-  if (!textContent) return "";
-
-  // Check for text formatting
-  if (node.hasFormat && typeof node.hasFormat === "function") {
-    let formatted = textContent;
-
-    if (node.hasFormat("bold")) {
-      formatted = `**${formatted}**`;
+      }
     }
 
-    if (node.hasFormat("italic")) {
-      formatted = `*${formatted}*`;
-    }
-
-    if (node.hasFormat("strikethrough")) {
-      formatted = `~~${formatted}~~`;
-    }
-
-    if (node.hasFormat("code")) {
-      formatted = `\`${formatted}\``;
-    }
-
-    return formatted;
-  }
-
-  return textContent;
+    return markdownParts.join("\n\n");
+  });
 }
 
 /**
- * Converts markdown string to Lexical editor state
- * This is a simplified implementation - for production use, consider using @lexical/markdown
+ * Placeholder function for converting markdown to editor state
+ * This would be used for importing markdown content
  */
-export function markdownToEditorState(): null {
-  // TODO: Implement proper markdown to editor state conversion
-  // For now, return null to use the default empty state
-  return null;
+export function markdownToEditorState(markdown: string): string {
+  // This is a placeholder - would need proper markdown parsing
+  return markdown;
 }
