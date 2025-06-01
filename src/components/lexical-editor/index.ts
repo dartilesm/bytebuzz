@@ -9,6 +9,9 @@ export {
   $isEnhancedCodeBlockNode,
 } from "./plugins/code-block/enhanced-code-block-node";
 
+// Toolbar
+export { EditorToolbar } from "./plugins/toolbar/editor-toolbar";
+
 // Utility functions
 export { editorStateToMarkdown, markdownToEditorState } from "./functions/markdown-utils";
 

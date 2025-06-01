@@ -62,8 +62,8 @@ export default function EditorDemoPage() {
             <div className="flex flex-col">
               <p className="text-md font-semibold">Primary Editor</p>
               <p className="text-small text-default-500">
-                Try markdown shortcuts, mentions, and enhanced code blocks: # ## ### ** * `` ---{" "}
-                {">"} - 1. @username ```js (press space after language)
+                Try markdown shortcuts, mentions, enhanced code blocks, and the toolbar: # ## ### **
+                * `` --- {">"} - 1. @username ```js (press space after language)
               </p>
             </div>
           </CardHeader>
@@ -188,6 +188,20 @@ export default function EditorDemoPage() {
                 <li>
                   <strong>Exit:</strong> Press <code>Enter</code> 3 times quickly to exit and
                   continue writing (auto-focuses editor)
+                </li>
+              </ul>
+
+              <p className="text-sm font-medium mt-4">Toolbar Features:</p>
+              <ul className="text-sm text-default-600 space-y-1">
+                <li>
+                  <strong>Insert Code Block</strong> - Click dropdown to select language and insert
+                </li>
+                <li>
+                  <strong>Quick Access</strong> - Popular languages: JavaScript, Python, HTML, CSS,
+                  etc.
+                </li>
+                <li>
+                  <strong>Alternative Method</strong> - Use toolbar instead of markdown shortcuts
                 </li>
               </ul>
 

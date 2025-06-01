@@ -24,6 +24,7 @@ import { MentionNode } from "./plugins/mentions/mention-node";
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
 import { EnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
 import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
+import { EditorToolbar } from "./plugins/toolbar/editor-toolbar";
 
 // Editor theme
 const theme = {
@@ -94,6 +95,10 @@ interface MarkdownEditorProps {
    * Whether to enable mentions functionality
    */
   enableMentions?: boolean;
+  /**
+   * Whether to show the bottom toolbar
+   */
+  showToolbar?: boolean;
 }
 
 /**
@@ -154,6 +159,7 @@ export function MarkdownEditor({
   editorRef,
   autoFocus = false,
   enableMentions = true,
+  showToolbar = true,
 }: MarkdownEditorProps) {
   const initialConfig = {
     namespace: "lexical-markdown-editor",
@@ -207,6 +213,9 @@ export function MarkdownEditor({
           {/* Event handling plugins */}
           <OnChangeMarkdownPlugin onChange={onChange} />
           {editorRef && <EditorRefPlugin editorRef={editorRef} />}
+
+          {/* Editor Toolbar */}
+          {showToolbar && <EditorToolbar />}
         </div>
       </LexicalComposer>
     </div>
