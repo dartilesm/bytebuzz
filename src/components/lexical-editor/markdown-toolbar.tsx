@@ -2,20 +2,25 @@
 
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
-import { Tooltip } from "@heroui/react";
+import { cn, Tooltip } from "@heroui/react";
 import { SiMarkdown } from "@icons-pack/react-simple-icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon } from "lucide-react";
 import { useRef } from "react";
-import { $createEnhancedCodeBlockNode } from "../code-block/enhanced-code-block-node";
-import { $createMediaNode, type MediaData, type MediaType } from "../media/media-node";
+import { $createEnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
+import { $createMediaNode, type MediaData, type MediaType } from "./plugins/media/media-node";
+import { useMarkdownContext } from "@/components/lexical-editor/markdown-provider";
 
-interface EditorToolbarProps {
+interface MarkdownToolbarProps {
   /**
    * Additional CSS classes for the toolbar
    */
   className?: string;
+  /**
+   * Additional CSS classes for the buttons
+   */
+  buttonClassName?: string;
 }
 
 /**
@@ -26,9 +31,11 @@ interface EditorToolbarProps {
  * - Popular languages dropdown
  * - Positioned at bottom of editor
  */
-export function EditorToolbar({ className }: EditorToolbarProps) {
+export function MarkdownToolbar({ className, buttonClassName }: MarkdownToolbarProps) {
   const [editor] = useLexicalComposerContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Ensure we're within the provider context
+  useMarkdownContext();
 
   /**
    * Inserts a new enhanced code block with the specified language
@@ -120,12 +127,15 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
 
   return (
     <div
-      className={`flex items-center justify-start gap-2 p-2 border-t border-default-200 bg-default-50 ${className || ""}`}
+      className={cn(
+        "flex items-center justify-start gap-2 p-2 border-t border-default-200 bg-default-50",
+        className,
+      )}
     >
       <Button
         variant="flat"
         size="sm"
-        className="text-default-600 hover:text-default-900"
+        className={cn("text-default-600 hover:text-default-900 cursor-pointer", buttonClassName)}
         onPress={() => handleInsertCodeBlock("javascript")}
         isIconOnly
       >
@@ -135,7 +145,7 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
       <Button
         variant="flat"
         size="sm"
-        className="text-default-600 hover:text-default-900"
+        className={cn("text-default-600 hover:text-default-900 cursor-pointer", buttonClassName)}
         onPress={handleMediaButtonClick}
         isIconOnly
       >

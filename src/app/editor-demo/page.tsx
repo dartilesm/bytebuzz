@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
-import { MarkdownEditor } from "@/components/lexical-editor/lexical-editor";
+import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider";
+import { MarkdownEditor } from "@/components/lexical-editor/markdown-editor";
+import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
 import type { EditorState } from "lexical";
 
 /**
@@ -69,13 +71,18 @@ export default function EditorDemoPage() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <MarkdownEditor
-              placeholder="Start typing with markdown shortcuts..."
+            <MarkdownProvider
               onChange={handleContentChange}
+              enableMentions={true}
               className="border border-default-200 rounded-lg"
-              contentClassName="min-h-[200px]"
-              autoFocus
-            />
+            >
+              <MarkdownEditor
+                placeholder="Start typing with markdown shortcuts..."
+                contentClassName="min-h-[200px]"
+                autoFocus
+              />
+              <MarkdownToolbar />
+            </MarkdownProvider>
           </CardBody>
         </Card>
 
@@ -107,12 +114,17 @@ export default function EditorDemoPage() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <MarkdownEditor
-              placeholder="Another editor instance..."
+            <MarkdownProvider
               onChange={handleSecondContentChange}
+              enableMentions={true}
               className="border border-default-200 rounded-lg"
-              contentClassName="min-h-[150px]"
-            />
+            >
+              <MarkdownEditor
+                placeholder="Another editor instance..."
+                contentClassName="min-h-[150px]"
+              />
+              <MarkdownToolbar />
+            </MarkdownProvider>
           </CardBody>
         </Card>
 
