@@ -150,7 +150,7 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
           content: "inline-flex gap-2 items-center",
         }}
       >
-        <Tooltip content="Markdown is supported">
+        <Tooltip content="Certain markdown features are supported, click to learn more.">
           <span className="inline-flex gap-2 items-center">
             <SiMarkdown size={16} fill="currentColor" />
             <span className="leading-0">Markdown supported*</span>
