@@ -71,18 +71,16 @@ export default function EditorDemoPage() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <MarkdownProvider
-              onChange={handleContentChange}
-              enableMentions={true}
-              className="border border-default-200 rounded-lg"
-            >
-              <MarkdownEditor
-                placeholder="Start typing with markdown shortcuts..."
-                contentClassName="min-h-[200px]"
-                autoFocus
-              />
-              <MarkdownToolbar />
-            </MarkdownProvider>
+            <div className="border border-default-200 rounded-lg">
+              <MarkdownProvider onChange={handleContentChange} enableMentions={true}>
+                <MarkdownEditor
+                  placeholder="Start typing with markdown shortcuts..."
+                  contentClassName="min-h-[200px]"
+                  autoFocus
+                />
+                <MarkdownToolbar />
+              </MarkdownProvider>
+            </div>
           </CardBody>
         </Card>
 
@@ -114,17 +112,15 @@ export default function EditorDemoPage() {
           </CardHeader>
           <Divider />
           <CardBody>
-            <MarkdownProvider
-              onChange={handleSecondContentChange}
-              enableMentions={true}
-              className="border border-default-200 rounded-lg"
-            >
-              <MarkdownEditor
-                placeholder="Another editor instance..."
-                contentClassName="min-h-[150px]"
-              />
-              <MarkdownToolbar />
-            </MarkdownProvider>
+            <div className="border border-default-200 rounded-lg">
+              <MarkdownProvider onChange={handleSecondContentChange} enableMentions={true}>
+                <MarkdownEditor
+                  placeholder="Another editor instance..."
+                  contentClassName="min-h-[150px]"
+                />
+                <MarkdownToolbar />
+              </MarkdownProvider>
+            </div>
           </CardBody>
         </Card>
 

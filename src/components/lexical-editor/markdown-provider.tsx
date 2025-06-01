@@ -6,11 +6,10 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import type { EditorState, LexicalEditor } from "lexical";
-import { type RefObject, createContext, useContext } from "react";
+import { type RefObject, createContext, useContext, useRef } from "react";
 
 import { EnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
 import { MediaNode } from "./plugins/media/media-node";
-// Import mention components
 import { MentionNode } from "./plugins/mentions/mention-node";
 
 // Editor theme
@@ -89,8 +88,11 @@ export function MarkdownProvider({
   children,
   enableMentions = true,
   onChange,
-  editorRef,
+  editorRef: defaultEditorRef,
 }: MarkdownProviderProps) {
+  const internalEditorRef = useRef<LexicalEditor>({} as LexicalEditor);
+  const editorRef = defaultEditorRef ?? internalEditorRef;
+
   const initialConfig = {
     namespace: "lexical-markdown-editor",
     theme,
