@@ -197,11 +197,33 @@ export default function EditorDemoPage() {
                   <strong>Insert Code Block</strong> - Click dropdown to select language and insert
                 </li>
                 <li>
+                  <strong>Add Media</strong> - Upload images or videos (added at the end of content)
+                </li>
+                <li>
                   <strong>Quick Access</strong> - Popular languages: JavaScript, Python, HTML, CSS,
                   etc.
                 </li>
                 <li>
                   <strong>Alternative Method</strong> - Use toolbar instead of markdown shortcuts
+                </li>
+              </ul>
+
+              <p className="text-sm font-medium mt-4">Media Features:</p>
+              <ul className="text-sm text-default-600 space-y-1">
+                <li>
+                  <strong>Image Support</strong> - Upload JPEG, PNG, GIF, WebP images
+                </li>
+                <li>
+                  <strong>Video Support</strong> - Upload MP4, WebM, AVI, MOV videos with controls
+                </li>
+                <li>
+                  <strong>Always at End</strong> - Media is automatically placed at the bottom
+                </li>
+                <li>
+                  <strong>Download & Delete</strong> - Each media item has action buttons
+                </li>
+                <li>
+                  <strong>Responsive</strong> - Media scales properly on different screen sizes
                 </li>
               </ul>
 

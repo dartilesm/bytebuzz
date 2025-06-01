@@ -24,6 +24,7 @@ import { MentionNode } from "./plugins/mentions/mention-node";
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
 import { EnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
 import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
+import { MediaNode } from "./plugins/media/media-node";
 import { EditorToolbar } from "./plugins/toolbar/editor-toolbar";
 
 // Editor theme
@@ -178,6 +179,7 @@ export function MarkdownEditor({
       AutoLinkNode,
       EnhancedCodeBlockNode,
       ...(enableMentions ? [MentionNode] : []),
+      MediaNode,
     ],
     editorState: undefined,
   };

@@ -2,10 +2,12 @@
 
 import { Button } from "@heroui/button";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
-import { Code, ChevronDown } from "lucide-react";
+import { Code, ChevronDown, Upload } from "lucide-react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection } from "lexical";
+import { $getSelection, $isRangeSelection, $getRoot } from "lexical";
 import { $createEnhancedCodeBlockNode } from "../code-block/enhanced-code-block-node";
+import { $createMediaNode, type MediaData, type MediaType } from "../media/media-node";
+import { useRef } from "react";
 
 interface EditorToolbarProps {
   /**
@@ -40,6 +42,7 @@ const POPULAR_LANGUAGES = [
  */
 export function EditorToolbar({ className }: EditorToolbarProps) {
   const [editor] = useLexicalComposerContext();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   /**
    * Inserts a new enhanced code block with the specified language
@@ -58,6 +61,75 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
       // Add a paragraph after the code block for continued editing
       selection.insertParagraph();
     });
+  }
+
+  /**
+   * Inserts media at the end of the editor content
+   */
+  function handleInsertMedia(mediaData: MediaData): void {
+    try {
+      editor.update(() => {
+        console.log("Creating media node with data:", mediaData);
+
+        const root = $getRoot();
+
+        // Create the media node
+        const mediaNode = $createMediaNode(mediaData);
+        console.log("Media node created:", mediaNode);
+
+        // Always append media at the end
+        root.append(mediaNode);
+
+        console.log("Media node appended to root");
+      });
+
+      // Focus back to the editor after update
+      editor.focus();
+    } catch (error) {
+      console.error("Error inserting media:", error);
+      alert(`Error adding media: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  }
+
+  /**
+   * Handles file upload for media insertion
+   */
+  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>): void {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check if file is image or video
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+
+    if (!isImage && !isVideo) {
+      alert("Please select an image or video file");
+      return;
+    }
+
+    // Create object URL for preview
+    const src = URL.createObjectURL(file);
+    const mediaType: MediaType = isImage ? "image" : "video";
+
+    const mediaData: MediaData = {
+      id: `media-${Date.now()}`,
+      type: mediaType,
+      src,
+      title: file.name,
+      alt: isImage ? file.name : undefined,
+    };
+
+    handleInsertMedia(mediaData);
+
+    // Clear the input
+    event.target.value = "";
+  }
+
+  /**
+   * Triggers file input click
+   */
+  function handleMediaButtonClick(): void {
+    fileInputRef.current?.click();
   }
 
   /**
@@ -96,6 +168,25 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
           ))}
         </DropdownMenu>
       </Dropdown>
+
+      <Button
+        variant="flat"
+        size="sm"
+        startContent={<Upload size={16} />}
+        className="text-default-600 hover:text-default-900"
+        onPress={handleMediaButtonClick}
+      >
+        Add Media
+      </Button>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        onChange={handleFileUpload}
+        className="hidden"
+        aria-label="Upload media file"
+      />
 
       <div className="flex-1" />
 

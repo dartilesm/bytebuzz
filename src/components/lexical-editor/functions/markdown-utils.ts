@@ -6,6 +6,7 @@ import {
   type ElementNode,
 } from "lexical";
 import { $isEnhancedCodeBlockNode } from "../plugins/code-block/enhanced-code-block-node";
+import { $isMediaNode } from "../plugins/media/media-node";
 import { $isHeadingNode, $isQuoteNode, type HeadingNode } from "@lexical/rich-text";
 import { $isListNode, $isListItemNode, type ListNode, type ListItemNode } from "@lexical/list";
 import { $isCodeNode, type CodeNode } from "@lexical/code";
@@ -41,6 +42,22 @@ function nodeToMarkdown(node: LexicalNode): string {
     const language = node.getLanguage();
     const code = node.getCode();
     return `\`\`\`${language}\n${code}\n\`\`\``;
+  }
+
+  // Media nodes (images and videos)
+  if ($isMediaNode(node)) {
+    const mediaData = node.getMediaData();
+
+    if (mediaData.type === "image") {
+      // Convert to markdown image syntax
+      const alt = mediaData.alt || mediaData.title || "Image";
+      return `![${alt}](${mediaData.src})`;
+    }
+
+    if (mediaData.type === "video") {
+      // Videos don't have standard markdown syntax, so we'll use HTML
+      return `<video src="${mediaData.src}" controls${mediaData.title ? ` title="${mediaData.title}"` : ""}></video>`;
+    }
   }
 
   // Headings
