@@ -151,9 +151,9 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
           <Button
             variant="flat"
             size="sm"
-            startContent={<Code size={16} />}
-            endContent={<ChevronDown size={14} />}
-            className="text-default-600 hover:text-default-900"
+            startContent={<Code size={16} className="flex-1 shrink" />}
+            endContent={<ChevronDown size={14} className="flex-1 shrink" />}
+            className="text-default-600 hover:text-default-900 "
           >
             Insert Code Block
           </Button>
@@ -187,14 +187,6 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
         className="hidden"
         aria-label="Upload media file"
       />
-
-      <div className="flex-1" />
-
-      {/* Future toolbar items can be added here */}
-      <div className="text-xs text-default-400">
-        Tip: Type <code className="bg-default-200 px-1 rounded">```js</code> + Space for quick code
-        blocks
-      </div>
     </div>
   );
 }
