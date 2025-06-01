@@ -185,6 +185,10 @@ export default function EditorDemoPage() {
                 <li>
                   Features: Monaco Editor, Copy/Download, Language Selection, Syntax Highlighting
                 </li>
+                <li>
+                  <strong>Exit:</strong> Press <code>Enter</code> 3 times quickly to exit and
+                  continue writing (auto-focuses editor)
+                </li>
               </ul>
 
               <p className="text-sm font-medium mt-4">Mentions:</p>
