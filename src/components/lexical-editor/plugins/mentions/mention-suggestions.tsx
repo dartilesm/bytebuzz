@@ -36,7 +36,7 @@ interface MentionSuggestionsProps {
  * - Displays user list with avatars and display names
  * - Keyboard navigation support
  * - Click to select functionality
- * - Positioned absolutely based on caret position
+ * - Positioned absolutely within the editor container
  */
 export function MentionSuggestions({
   suggestions,
@@ -67,7 +67,7 @@ export function MentionSuggestions({
 
   return (
     <div
-      className="fixed z-50"
+      className="absolute z-50"
       style={{
         top: position.top,
         left: position.left,

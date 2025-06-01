@@ -2,15 +2,7 @@
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect, useState, useCallback } from "react";
-import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_NORMAL,
-  KEY_ARROW_DOWN_COMMAND,
-  KEY_ARROW_UP_COMMAND,
-  KEY_ENTER_COMMAND,
-  KEY_ESCAPE_COMMAND,
-} from "lexical";
+import { $getSelection, $isRangeSelection } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import type { TextNode } from "lexical";
 import { $createMentionNode, type User } from "./mention-node";
@@ -169,9 +161,16 @@ export function MentionPlugin({
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
+    // Get the editor's root element to calculate relative position
+    const editorElement = editor.getRootElement();
+    const editorRect = editorElement?.getBoundingClientRect();
+
+    if (!editorRect) return null;
+
+    // Position relative to the editor container
     return {
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
+      top: rect.bottom - editorRect.top + 4, // Relative to editor container
+      left: rect.left - editorRect.left, // Relative to editor container
     };
   }
 
@@ -224,69 +223,71 @@ export function MentionPlugin({
   }, [editor, trigger, mentionState.isOpen, searchUsers, closeMentions]);
 
   useEffect(() => {
-    return mergeRegister(
-      // Handle text content changes for mention detection
-      editor.registerTextContentListener(detectMention),
+    // Selective keystroke prevention: Only block keys that would interfere with mention selection
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!mentionState.isOpen) return;
 
-      // Handle arrow up command
-      editor.registerCommand(
-        KEY_ARROW_UP_COMMAND,
-        () => {
-          if (!mentionState.isOpen) return false;
-
+      // Handle specific mention navigation keys
+      switch (event.key) {
+        case "ArrowUp":
+          event.preventDefault();
+          event.stopPropagation();
           setMentionState((prev) => ({
             ...prev,
             selectedIndex:
               prev.selectedIndex > 0 ? prev.selectedIndex - 1 : prev.suggestions.length - 1,
           }));
-          return true;
-        },
-        COMMAND_PRIORITY_NORMAL,
-      ),
+          break;
 
-      // Handle arrow down command
-      editor.registerCommand(
-        KEY_ARROW_DOWN_COMMAND,
-        () => {
-          if (!mentionState.isOpen) return false;
-
+        case "ArrowDown":
+          event.preventDefault();
+          event.stopPropagation();
           setMentionState((prev) => ({
             ...prev,
             selectedIndex:
               prev.selectedIndex < prev.suggestions.length - 1 ? prev.selectedIndex + 1 : 0,
           }));
-          return true;
-        },
-        COMMAND_PRIORITY_NORMAL,
-      ),
+          break;
 
-      // Handle enter command
-      editor.registerCommand(
-        KEY_ENTER_COMMAND,
-        () => {
-          if (!mentionState.isOpen) return false;
-
+        case "Enter":
+          // Only block Enter to prevent new lines when selecting mentions
+          event.preventDefault();
+          event.stopPropagation();
           if (mentionState.suggestions[mentionState.selectedIndex]) {
             selectMention(mentionState.suggestions[mentionState.selectedIndex]);
           }
-          return true;
-        },
-        COMMAND_PRIORITY_NORMAL,
-      ),
+          break;
 
-      // Handle escape command
-      editor.registerCommand(
-        KEY_ESCAPE_COMMAND,
-        () => {
-          if (!mentionState.isOpen) return false;
-
+        case "Escape":
+        case "Tab":
+          event.preventDefault();
+          event.stopPropagation();
           closeMentions();
-          return true;
-        },
-        COMMAND_PRIORITY_NORMAL,
-      ),
+          break;
+
+        // Allow all other keys (backspace, delete, typing, etc.) to work normally
+        default:
+          // Don't prevent other keys - let normal editing continue
+          break;
+      }
+    };
+
+    if (mentionState.isOpen) {
+      // Capture keyboard events before they reach the editor
+      document.addEventListener("keydown", handleKeyDown, true);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [mentionState, selectMention, closeMentions]);
+
+  useEffect(() => {
+    return mergeRegister(
+      // Handle text content changes for mention detection
+      editor.registerTextContentListener(detectMention),
     );
-  }, [editor, mentionState, selectMention, closeMentions, detectMention]);
+  }, [editor, detectMention]);
 
   return (
     <>
