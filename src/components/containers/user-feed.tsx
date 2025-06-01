@@ -1,4 +1,5 @@
 import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
+import { PostComposer as RichLexicalPostComposer } from "@/components/post-composer/post-composer";
 import { PostComposer } from "@/components/post/post-composer";
 import { PostList } from "@/components/post/post-list";
 import { RichPostComposer } from "@/components/rich-editor/rich-post-composer";
@@ -25,18 +26,7 @@ export async function UserFeed() {
   return (
     <PostsProvider initialPosts={initialPosts || []}>
       <div className="w-full p-4 flex flex-col gap-4">
-        <RichPostComposer />
-        <MarkdownViewer
-          markdown={`Editor content: Hi everybody, *hope* you are doing **great**.
-
-\`\`\`javascript
-function getConsole() {
-  console.log('hi')
-}
-\`\`\`
-`}
-        />
-        <PostComposer />
+        <RichLexicalPostComposer />
         <PostList />
       </div>
     </PostsProvider>

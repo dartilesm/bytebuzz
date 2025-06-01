@@ -124,6 +124,79 @@ export default function EditorDemoPage() {
           </CardBody>
         </Card>
 
+        {/* Third Editor with Initial Value */}
+        <Card>
+          <CardHeader className="flex gap-3">
+            <div className="flex flex-col">
+              <p className="text-md font-semibold">Editor with Initial Markdown Value</p>
+              <p className="text-small text-default-500">
+                Demonstrates the markdownValue prop with pre-filled markdown content
+              </p>
+            </div>
+          </CardHeader>
+          <Divider />
+          <CardBody>
+            <div className="border border-default-200 rounded-lg">
+              <MarkdownProvider enableMentions={true}>
+                <MarkdownEditor
+                  placeholder="This editor has initial markdown content..."
+                  contentClassName="min-h-[150px]"
+                  markdownValue={`# Welcome to the Editor!
+
+This is some **initial content** that was provided via the \`markdownValue\` prop.
+
+## Features Demonstrated
+
+- **Bold text** formatting
+- *Italic text* formatting  
+- \`Inline code\` formatting
+- [Links](https://example.com) work too!
+
+### Lists
+
+1. Ordered list item 1
+2. Ordered list item 2
+3. Ordered list item 3
+
+### Blockquote
+
+> This is a blockquote that demonstrates
+> how markdown parsing works with the
+> built-in Lexical functionality.
+
+Try typing some *markdown* and see how it works!`}
+                />
+                <MarkdownToolbar />
+              </MarkdownProvider>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Fourth Editor with Plain Text Value */}
+        <Card>
+          <CardHeader className="flex gap-3">
+            <div className="flex flex-col">
+              <p className="text-md font-semibold">Editor with Plain Text Value</p>
+              <p className="text-small text-default-500">
+                Demonstrates the value prop with plain text content
+              </p>
+            </div>
+          </CardHeader>
+          <Divider />
+          <CardBody>
+            <div className="border border-default-200 rounded-lg">
+              <MarkdownProvider enableMentions={true}>
+                <MarkdownEditor
+                  placeholder="This editor has initial plain text..."
+                  contentClassName="min-h-[100px]"
+                  value="This is plain text content provided via the 'value' prop. It will be inserted as-is without markdown parsing."
+                />
+                <MarkdownToolbar />
+              </MarkdownProvider>
+            </div>
+          </CardBody>
+        </Card>
+
         {/* Controls */}
         <Card>
           <CardHeader className="flex gap-3">
