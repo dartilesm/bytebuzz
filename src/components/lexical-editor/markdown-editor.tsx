@@ -1,24 +1,25 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+import { TRANSFORMERS } from "@lexical/markdown";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
-import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
-import { TRANSFORMERS } from "@lexical/markdown";
-import { cn } from "@/lib/utils";
-import { useEffect, type RefObject } from "react";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import type { EditorState, LexicalEditor } from "lexical";
+import { type RefObject, useEffect } from "react";
 import { editorStateToMarkdown } from "./functions/markdown-utils";
 
-// Import mention components
-import { MentionPlugin } from "./plugins/mentions/mention-plugin";
-import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
 import { useMarkdownContext } from "./markdown-provider";
+import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
+
+import { MentionPlugin } from "./plugins/mentions/mention-plugin";
+import { ValuePlugin } from "./plugins/value/value-plugin";
 
 // Create custom transformers that use our enhanced code block
 const customTransformers = TRANSFORMERS.filter(
@@ -91,6 +92,14 @@ interface MarkdownEditorProps {
    * Whether to auto-focus the editor on mount
    */
   autoFocus?: boolean;
+  /**
+   * Initial plain text value to display in the editor
+   */
+  value?: string;
+  /**
+   * Initial markdown value to parse and display in the editor
+   */
+  markdownValue?: string;
 }
 
 /**
@@ -152,6 +161,8 @@ export function MarkdownEditor({
   contentClassName,
   className,
   autoFocus = false,
+  value,
+  markdownValue,
 }: MarkdownEditorProps) {
   const { enableMentions, onChange, editorRef } = useMarkdownContext();
 
@@ -161,6 +172,7 @@ export function MarkdownEditor({
         contentEditable={
           <ContentEditable
             className={cn("outline-none min-h-[100px] resize-none cursor-text", contentClassName)}
+            value="custom"
           />
         }
         placeholder={<Placeholder>{placeholder}</Placeholder>}
@@ -182,6 +194,7 @@ export function MarkdownEditor({
       {/* Event handling plugins */}
       <OnChangeMarkdownPlugin onChange={onChange} />
       {editorRef && <EditorRefPlugin editorRef={editorRef} />}
+      <ValuePlugin value={value} markdownValue={markdownValue} />
     </div>
   );
 }
