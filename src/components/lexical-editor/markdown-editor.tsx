@@ -123,7 +123,6 @@ function OnChangeMarkdownPlugin({
  */
 function EditorRefPlugin({ editorRef }: { editorRef?: RefObject<LexicalEditor> }) {
   const [editor] = useLexicalComposerContext();
-  console.log("editorRef from editor ref plugin", editorRef);
 
   useEffect(() => {
     if (editorRef && "current" in editorRef) {
@@ -172,7 +171,6 @@ export function MarkdownEditor({
         contentEditable={
           <ContentEditable
             className={cn("outline-none min-h-[100px] resize-none cursor-text", contentClassName)}
-            value="custom"
           />
         }
         placeholder={<Placeholder>{placeholder}</Placeholder>}
