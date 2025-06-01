@@ -1,13 +1,15 @@
 "use client";
 
 import { Button } from "@heroui/button";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
-import { Code, ChevronDown, Upload } from "lucide-react";
+import { Chip } from "@heroui/chip";
+import { Tooltip } from "@heroui/react";
+import { SiMarkdown } from "@icons-pack/react-simple-icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, $getRoot } from "lexical";
+import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
+import { Code, ImageUpIcon } from "lucide-react";
+import { useRef } from "react";
 import { $createEnhancedCodeBlockNode } from "../code-block/enhanced-code-block-node";
 import { $createMediaNode, type MediaData, type MediaType } from "../media/media-node";
-import { useRef } from "react";
 
 interface EditorToolbarProps {
   /**
@@ -15,22 +17,6 @@ interface EditorToolbarProps {
    */
   className?: string;
 }
-
-/**
- * Popular programming languages for quick access
- */
-const POPULAR_LANGUAGES = [
-  { key: "javascript", label: "JavaScript" },
-  { key: "typescript", label: "TypeScript" },
-  { key: "python", label: "Python" },
-  { key: "java", label: "Java" },
-  { key: "html", label: "HTML" },
-  { key: "css", label: "CSS" },
-  { key: "json", label: "JSON" },
-  { key: "markdown", label: "Markdown" },
-  { key: "bash", label: "Bash" },
-  { key: "sql", label: "SQL" },
-];
 
 /**
  * Editor toolbar component with code block insertion functionality
@@ -132,52 +118,45 @@ export function EditorToolbar({ className }: EditorToolbarProps) {
     fileInputRef.current?.click();
   }
 
-  /**
-   * Handles language selection from dropdown
-   */
-  function handleLanguageSelect(keys: Set<string>): void {
-    const language = Array.from(keys)[0];
-    if (language) {
-      handleInsertCodeBlock(language);
-    }
-  }
-
   return (
     <div
       className={`flex items-center justify-start gap-2 p-2 border-t border-default-200 bg-default-50 ${className || ""}`}
     >
-      <Dropdown>
-        <DropdownTrigger>
-          <Button
-            variant="flat"
-            size="sm"
-            startContent={<Code size={16} className="flex-1 shrink" />}
-            endContent={<ChevronDown size={14} className="flex-1 shrink" />}
-            className="text-default-600 hover:text-default-900 "
-          >
-            Insert Code Block
-          </Button>
-        </DropdownTrigger>
-        <DropdownMenu
-          aria-label="Select programming language"
-          onSelectionChange={(keys) => handleLanguageSelect(keys as Set<string>)}
-          selectionMode="single"
-        >
-          {POPULAR_LANGUAGES.map((lang) => (
-            <DropdownItem key={lang.key}>{lang.label}</DropdownItem>
-          ))}
-        </DropdownMenu>
-      </Dropdown>
+      <Button
+        variant="flat"
+        size="sm"
+        className="text-default-600 hover:text-default-900"
+        onPress={() => handleInsertCodeBlock("javascript")}
+        isIconOnly
+      >
+        <Code size={16} />
+      </Button>
 
       <Button
         variant="flat"
         size="sm"
-        startContent={<Upload size={16} />}
         className="text-default-600 hover:text-default-900"
         onPress={handleMediaButtonClick}
+        isIconOnly
       >
-        Add Media
+        <ImageUpIcon size={16} />
       </Button>
+
+      <Chip
+        variant="bordered"
+        size="sm"
+        className="text-default-500 hover:text-default-500"
+        classNames={{
+          content: "inline-flex gap-2 items-center",
+        }}
+      >
+        <Tooltip content="Markdown is supported">
+          <span className="inline-flex gap-2 items-center">
+            <SiMarkdown size={16} fill="currentColor" />
+            <span className="leading-0">Markdown supported*</span>
+          </span>
+        </Tooltip>
+      </Chip>
 
       <input
         ref={fileInputRef}
