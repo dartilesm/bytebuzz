@@ -227,6 +227,25 @@ export default function EditorDemoPage() {
                 </li>
               </ul>
 
+              <p className="text-sm font-medium mt-4">Auto Links:</p>
+              <ul className="text-sm text-default-600 space-y-1">
+                <li>
+                  <strong>Smart URL Detection</strong> - Uses native URL validation (no regex!)
+                </li>
+                <li>
+                  <strong>Valid URLs Only</strong> - Only converts actually valid URLs to links
+                </li>
+                <li>
+                  <strong>Auto HTTPS</strong> - Adds https:// to www. domains automatically
+                </li>
+                <li>
+                  <strong>Secure Protocols</strong> - Only accepts http:// and https:// URLs
+                </li>
+                <li>
+                  <strong>Examples</strong> - Try: https://x.com/home, www.github.com, google.com
+                </li>
+              </ul>
+
               <p className="text-sm font-medium mt-4">Mentions:</p>
               <ul className="text-sm text-default-600 space-y-1">
                 <li>

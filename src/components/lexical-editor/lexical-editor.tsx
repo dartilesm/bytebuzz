@@ -9,6 +9,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
+import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
 import { TRANSFORMERS } from "@lexical/markdown";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListNode, ListItemNode } from "@lexical/list";
@@ -66,6 +67,50 @@ const customTransformers = TRANSFORMERS.filter(
       transformer.regExp?.source.includes("```")
     ),
 ).concat([ENHANCED_CODE_BLOCK_TRANSFORMER]);
+
+// URL detection matchers for AutoLinkPlugin using native URL constructor
+const MATCHERS = [
+  (text: string) => {
+    // Look for potential URLs in the text
+    const words = text.split(/\s+/);
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      let url: URL | null = null;
+
+      // Try to create URL directly
+      try {
+        url = new URL(word);
+      } catch {
+        // If it fails, try with https:// prefix for www. or domain-like strings
+        if (word.includes(".") && !word.includes(" ")) {
+          try {
+            url = new URL(`https://${word}`);
+          } catch {
+            continue;
+          }
+        } else {
+          continue;
+        }
+      }
+
+      // Only accept http, https protocols (not file:, data:, etc.)
+      if (url && (url.protocol === "http:" || url.protocol === "https:")) {
+        const startIndex = text.indexOf(word);
+        if (startIndex !== -1) {
+          return {
+            index: startIndex,
+            length: word.length,
+            text: word,
+            url: url.href,
+          };
+        }
+      }
+    }
+
+    return null;
+  },
+];
 
 interface MarkdownEditorProps {
   /**
@@ -208,6 +253,9 @@ export function MarkdownEditor({
 
           {/* Markdown shortcuts plugin */}
           <MarkdownShortcutPlugin transformers={customTransformers} />
+
+          {/* Auto link plugin for URL detection */}
+          <AutoLinkPlugin matchers={MATCHERS} />
 
           {/* Mention plugin */}
           {enableMentions && <MentionPlugin />}

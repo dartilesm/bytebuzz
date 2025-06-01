@@ -126,6 +126,13 @@ function getTextContentWithFormatting(node: LexicalNode): string {
           const linkNode = child as LinkNode;
           const text = getTextContentWithFormatting(linkNode);
           const url = linkNode.getURL();
+
+          // If the link text is the same as the URL, format as [url](url)
+          // Otherwise use the standard [text](url) format
+          if (text === url || text.trim() === url.trim()) {
+            return `[${url}](${url})`;
+          }
+
           return `[${text}](${url})`;
         }
 
