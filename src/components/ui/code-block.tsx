@@ -1,10 +1,14 @@
 "use client";
 
-import { Button, Tooltip } from "@heroui/react";
-import { Icon } from "@iconify/react";
+import { Button, ScrollShadow, Skeleton, Tooltip, cn } from "@heroui/react";
 import { useTheme } from "next-themes";
-import React, { useEffect } from "react";
-import { type BundledTheme, type CodeOptionsSingleTheme, codeToHtml } from "shiki";
+import React, { type CSSProperties, useEffect } from "react";
+import { type ThemeRegistration, codeToHtml } from "shiki";
+
+import oneDarkProTheme from "@shikijs/themes/github-dark";
+import oneLightTheme from "@shikijs/themes/one-light";
+import { CopyIcon, DownloadIcon } from "lucide-react";
+import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
 
 interface CodeBlockProps {
   code: string;
@@ -34,6 +38,40 @@ export function CodeBlock({
   const [copied, setCopied] = React.useState(false);
   const [highlightedHtml, setHighlightedHtml] = React.useState<string>("");
 
+  const codeTheme: ThemeRegistration = theme === "dark" ? oneDarkProTheme : oneLightTheme;
+
+  // Highlight code with Shiki
+  useEffect(() => {
+    if (!code) {
+      setHighlightedHtml("");
+      return;
+    }
+
+    /**
+     * Highlights code using Shiki
+     */
+    async function highlightCode() {
+      try {
+        const highlighted = await codeToHtml(code, {
+          lang: language.toLowerCase(),
+          theme: codeTheme,
+          defaultColor: "dark",
+        });
+
+        const processedHtml = addLineNumbers(highlighted, showLineNumbers, hideSymbol);
+        setHighlightedHtml(processedHtml);
+      } catch (error) {
+        console.error("Error highlighting code:", error);
+        // Fallback to plain text
+        const plainHtml = `<pre class="shiki ${codeTheme}" tabindex="0"><code>${code}</code></pre>`;
+        const processedHtml = addLineNumbers(plainHtml, showLineNumbers, hideSymbol);
+        setHighlightedHtml(processedHtml);
+      }
+    }
+
+    highlightCode();
+  }, [code, language, showLineNumbers, hideSymbol, theme]);
+
   /**
    * Handles copying code to clipboard
    */
@@ -44,46 +82,6 @@ export function CodeBlock({
     setTimeout(() => {
       setCopied(false);
     }, 2000);
-  }
-
-  /**
-   * Gets file extension based on language
-   */
-  function getFileExtension(lang: string): string {
-    const extensionMap: Record<string, string> = {
-      javascript: "js",
-      js: "js",
-      typescript: "ts",
-      ts: "ts",
-      jsx: "jsx",
-      tsx: "tsx",
-      html: "html",
-      css: "css",
-      scss: "scss",
-      python: "py",
-      py: "py",
-      ruby: "rb",
-      rb: "rb",
-      go: "go",
-      rust: "rs",
-      java: "java",
-      c: "c",
-      cpp: "cpp",
-      cs: "cs",
-      php: "php",
-      swift: "swift",
-      kotlin: "kt",
-      shell: "sh",
-      bash: "sh",
-      json: "json",
-      yaml: "yml",
-      yml: "yml",
-      markdown: "md",
-      md: "md",
-      sql: "sql",
-    };
-
-    return extensionMap[lang.toLowerCase()] || "txt";
   }
 
   /**
@@ -110,184 +108,70 @@ export function CodeBlock({
     URL.revokeObjectURL(url);
   }
 
-  /**
-   * Formats language display name for UI
-   */
-  function formatLanguage(lang: string): string {
-    const languageMap: Record<string, string> = {
-      js: "JavaScript",
-      javascript: "JavaScript",
-      ts: "TypeScript",
-      typescript: "TypeScript",
-      jsx: "JSX",
-      tsx: "TSX",
-      html: "HTML",
-      css: "CSS",
-      scss: "SCSS",
-      py: "Python",
-      python: "Python",
-      rb: "Ruby",
-      go: "Go",
-      rust: "Rust",
-      java: "Java",
-      c: "C",
-      cpp: "C++",
-      cs: "C#",
-      php: "PHP",
-      swift: "Swift",
-      kotlin: "Kotlin",
-      shell: "Shell",
-      bash: "Bash",
-      json: "JSON",
-      yaml: "YAML",
-      md: "Markdown",
-      sql: "SQL",
-    };
-
-    return languageMap[lang.toLowerCase()] || lang;
+  function handleClick(event: React.MouseEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
-  /**
-   * Gets appropriate icon for the programming language
-   */
-  function getLanguageIcon(lang: string): string {
-    const iconMap: Record<string, string> = {
-      javascript: "logos:javascript",
-      js: "logos:javascript",
-      typescript: "logos:typescript-icon",
-      ts: "logos:typescript-icon",
-      jsx: "logos:react",
-      tsx: "logos:react",
-      html: "logos:html-5",
-      css: "logos:css-3",
-      scss: "logos:sass",
-      python: "logos:python",
-      py: "logos:python",
-      ruby: "logos:ruby",
-      rb: "logos:ruby",
-      go: "logos:go",
-      rust: "logos:rust",
-      java: "logos:java",
-      c: "logos:c",
-      cpp: "logos:c-plusplus",
-      cs: "logos:c-sharp",
-      php: "logos:php",
-      swift: "logos:swift",
-      kotlin: "logos:kotlin",
-      shell: "logos:terminal",
-      bash: "logos:terminal",
-      json: "logos:json",
-      yaml: "logos:yaml",
-      markdown: "logos:markdown",
-      md: "logos:markdown",
-      sql: "logos:mysql",
-    };
-
-    return iconMap[lang.toLowerCase()] || "lucide:code";
-  }
-
-  /**
-   * Adds line numbers to highlighted HTML
-   */
-  function addLineNumbers(html: string): string {
-    if (!showLineNumbers || hideSymbol) {
-      return html;
-    }
-
-    // Extract the content between <pre> and </pre> tags
-    const preMatch = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/);
-    if (!preMatch) return html;
-
-    const codeContent = preMatch[1];
-    const lines = codeContent.split("\n");
-    const paddingWidth = lines.length.toString().length;
-
-    const linesWithNumbers = lines
-      .map((line: string, index: number) => {
-        const lineNumber = (index + 1).toString().padStart(paddingWidth, " ");
-        return `<span class="code-line-number text-default-400" style="display: inline-block; min-width: ${paddingWidth + 3}ch; user-select: none;">${lineNumber} |</span> ${line}`;
-      })
-      .join("\n");
-
-    return html.replace(preMatch[1], linesWithNumbers);
-  }
-
-  // Highlight code with Shiki
-  useEffect(() => {
-    if (!code) {
-      setHighlightedHtml("");
-      return;
-    }
-
-    /**
-     * Highlights code using Shiki
-     */
-    async function highlightCode() {
-      const codeTheme: CodeOptionsSingleTheme<BundledTheme>["theme"] =
-        theme === "dark" ? "github-dark" : "github-light";
-
-      try {
-        const highlighted = await codeToHtml(code, {
-          lang: language.toLowerCase(),
-          theme: codeTheme,
-        });
-
-        const processedHtml = addLineNumbers(highlighted);
-        setHighlightedHtml(processedHtml);
-      } catch (error) {
-        console.error("Error highlighting code:", error);
-        // Fallback to plain text
-        const plainHtml = `<pre class="shiki ${codeTheme}" style="background-color:#121212;color:#dbd7caee" tabindex="0"><code>${code}</code></pre>`;
-        const processedHtml = addLineNumbers(plainHtml);
-        setHighlightedHtml(processedHtml);
-      }
-    }
-
-    highlightCode();
-  }, [code, language, showLineNumbers, hideSymbol, theme]);
+  if (!highlightedHtml) return <Skeleton className="w-full h-full">{code}</Skeleton>;
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <div
-      className={`rounded-lg overflow-hidden border border-default-200 bg-content1 ${className}`}
+      className={cn(
+        "rounded-lg overflow-hidden border border-default-200 bg-content1 cursor-default",
+        className,
+      )}
+      style={
+        {
+          "--editor-background": codeTheme.colors?.["editor.background"] || "inherit",
+        } as CSSProperties
+      }
+      onClick={handleClick}
     >
-      <div className="flex items-center justify-between px-4 py-2 bg-content2 border-b border-default-200">
+      <div className="flex items-center justify-between px-2 pt-1 pr-1 bg-[var(--editor-background)]">
         <div className="flex items-center gap-2">
-          <Icon icon={getLanguageIcon(language)} className="w-5 h-5" />
-          <span className="text-sm font-medium">{formatLanguage(language)}</span>
+          <span className="text-xs font-base cursor-text font-sans text-default-500">
+            {formatLanguage(language)}
+          </span>
         </div>
         <div className="flex items-center gap-2">
-          <Tooltip content="Download code" placement="left" color="default">
+          <Tooltip content="Download code" color="default">
             <Button
               isIconOnly
-              size="sm"
-              variant="flat"
+              variant="light"
               color="default"
               onPress={handleDownload}
               aria-label="Download code"
+              className="size-8 min-w-8 text-default-400 hover:text-default-500"
             >
-              <Icon icon="lucide:download" className="w-4 h-4" />
+              <DownloadIcon size={14} />
             </Button>
           </Tooltip>
           <Tooltip
             content={copied ? "Copied!" : tooltipProps.content || "Copy code"}
-            placement="left"
             color={tooltipProps.color || "default"}
           >
             <Button
               isIconOnly
-              size="sm"
-              variant="flat"
+              variant="light"
               color="default"
               onPress={handleCopy}
               aria-label="Copy code"
+              className="size-8 min-w-8 text-default-400 hover:text-default-500"
             >
-              <Icon icon={copied ? "lucide:check" : "lucide:copy"} className="w-4 h-4" />
+              <CopyIcon size={14} />
             </Button>
           </Tooltip>
         </div>
       </div>
-      <div
-        className="overflow-auto max-h-[500px] [&>pre]:p-4 [&>pre]:m-0 [&>pre]:bg-transparent"
+
+      <ScrollShadow
+        className={cn(
+          "max-h-[500px] overflow-auto [&>pre]:m-0 bg-[var(--editor-background)] text-xs cursor-text [&>pre]:p-2",
+          "data-[left-scroll=true]:[mask-image:linear-gradient(270deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[right-scroll=true]:[mask-image:linear-gradient(90deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[left-right-scroll=true]:[mask-image:linear-gradient(to_right,var(--editor-background),var(--editor-background),transparent_0,var(--editor-background)_var(--scroll-shadow-size),var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)]",
+        )}
+        orientation="horizontal"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
         dangerouslySetInnerHTML={{ __html: highlightedHtml }}
       />
