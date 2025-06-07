@@ -33,9 +33,9 @@ const theme = {
     italic: "italic",
     strikethrough: "line-through",
     underline: "underline",
-    code: "bg-gray-100 rounded px-1 font-mono text-sm",
+    code: "bg-default/40 text-default-700 px-2 py-1 rounded-small px-1 font-mono text-sm",
   },
-  code: "bg-gray-100 rounded p-2 font-mono text-sm block mb-2",
+  code: "bg-default/40 text-default-700 px-2 py-1 rounded-small p-2 font-mono text-sm block mb-2",
   quote: "border-l-4 border-gray-300 pl-4 italic mb-2",
   link: "text-blue-500 underline hover:text-blue-700",
   mention:
