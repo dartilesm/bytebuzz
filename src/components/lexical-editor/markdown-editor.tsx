@@ -21,14 +21,23 @@ import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-c
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
 import { ValuePlugin } from "./plugins/value/value-plugin";
 
-// Create custom transformers that use our enhanced code block
+// Patterns to exclude from markdown transformers
+const EXCLUDED_PATTERNS = ["```", "#", ">"] as const;
+
+/**
+ * Check if transformer should be excluded based on regex patterns
+ */
+function shouldExcludeTransformer(transformer: (typeof TRANSFORMERS)[number]): boolean {
+  return (
+    transformer.type === "element" &&
+    "regExp" in transformer &&
+    EXCLUDED_PATTERNS.some((pattern) => transformer.regExp?.source.includes(pattern))
+  );
+}
+
+// Create custom transformers excluding headers, blockquotes, and default code blocks
 const customTransformers = TRANSFORMERS.filter(
-  (transformer) =>
-    !(
-      transformer.type === "element" &&
-      "regExp" in transformer &&
-      transformer.regExp?.source.includes("```")
-    ),
+  (transformer) => !shouldExcludeTransformer(transformer),
 ).concat([ENHANCED_CODE_BLOCK_TRANSFORMER]);
 
 // URL detection matchers for AutoLinkPlugin using native URL constructor
