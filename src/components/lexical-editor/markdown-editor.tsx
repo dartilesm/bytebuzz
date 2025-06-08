@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { TRANSFORMERS } from "@lexical/markdown";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -15,30 +14,11 @@ import type { EditorState, LexicalEditor } from "lexical";
 import { type RefObject, useEffect } from "react";
 import { editorStateToMarkdown } from "./functions/markdown-utils";
 
+import { customTransformers } from "./markdown-config";
 import { useMarkdownContext } from "./markdown-provider";
-import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
 
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
 import { ValuePlugin } from "./plugins/value/value-plugin";
-
-// Patterns to exclude from markdown transformers
-const EXCLUDED_PATTERNS = ["```", "#", ">"] as const;
-
-/**
- * Check if transformer should be excluded based on regex patterns
- */
-function shouldExcludeTransformer(transformer: (typeof TRANSFORMERS)[number]): boolean {
-  return (
-    transformer.type === "element" &&
-    "regExp" in transformer &&
-    EXCLUDED_PATTERNS.some((pattern) => transformer.regExp?.source.includes(pattern))
-  );
-}
-
-// Create custom transformers excluding headers, blockquotes, and default code blocks
-const customTransformers = TRANSFORMERS.filter(
-  (transformer) => !shouldExcludeTransformer(transformer),
-).concat([ENHANCED_CODE_BLOCK_TRANSFORMER]);
 
 // URL detection matchers for AutoLinkPlugin using native URL constructor
 const MATCHERS = [

@@ -3,7 +3,8 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
 import { $getRoot, $createParagraphNode, $createTextNode } from "lexical";
-import { $convertFromMarkdownString, TRANSFORMERS } from "@lexical/markdown";
+import { $convertFromMarkdownString } from "@lexical/markdown";
+import { customTransformers } from "../../markdown-config";
 
 interface ValuePluginProps {
   /**
@@ -21,6 +22,9 @@ interface ValuePluginProps {
  *
  * Supports both plain text (value) and markdown (markdownValue) content.
  * markdownValue takes priority when both are provided.
+ *
+ * The plugin respects the centralized markdown configuration and only processes
+ * markdown patterns that are enabled in MARKDOWN_FEATURES.
  */
 export function ValuePlugin({ value, markdownValue }: ValuePluginProps) {
   const [editor] = useLexicalComposerContext();
@@ -38,8 +42,8 @@ export function ValuePlugin({ value, markdownValue }: ValuePluginProps) {
 
         if (contentToSet.trim()) {
           if (markdownValue) {
-            // Use Lexical's built-in markdown parser
-            $convertFromMarkdownString(markdownValue, TRANSFORMERS);
+            // Use filtered transformers that respect centralized config
+            $convertFromMarkdownString(markdownValue, customTransformers);
           } else {
             // Handle plain text content
             const lines = contentToSet.split("\n");
