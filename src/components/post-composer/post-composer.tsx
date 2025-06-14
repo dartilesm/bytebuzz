@@ -41,7 +41,7 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
     reValidateMode: "onSubmit",
   });
 
-  const { mutate: uploadPostMedia, isPending: isUploadingPostMedia } = useUploadPostMediaMutation();
+  const { mutate: uploadPostMedia } = useUploadPostMediaMutation();
 
   const { mutate, isPending } = useCreatePostMutation(
     {
