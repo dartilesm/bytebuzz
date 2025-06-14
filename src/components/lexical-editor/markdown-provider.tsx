@@ -60,7 +60,7 @@ interface MarkdownProviderProps {
  */
 export function MarkdownProvider({
   children,
-  enableMentions = true,
+  enableMentions = false,
   onChange,
   editorRef: defaultEditorRef,
 }: MarkdownProviderProps) {

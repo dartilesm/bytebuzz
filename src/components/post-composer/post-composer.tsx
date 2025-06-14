@@ -98,7 +98,7 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
       className="dark:bg-default-100 bg-default-100 dark:hover:bg-default-200 hover:bg-default-200 rounded-xl overflow-hidden min-h-24 group/post-composer"
       onSubmit={form.handleSubmit(onSubmit)}
     >
-      <MarkdownProvider editorRef={editorRef} onChange={handleContentChange} enableMentions>
+      <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
         <div className="flex flex-row gap-4 p-4">
           <div className="flex flex-row gap-2 z-10">
             <Avatar isBordered src={user?.imageUrl} />
