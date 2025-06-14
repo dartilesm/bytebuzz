@@ -9,8 +9,13 @@ import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon } from "lucide-react";
 import { useRef } from "react";
 import { $createEnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
-import { $createMediaNode, $isMediaNode, type MediaData } from "./plugins/media/media-node";
-import { useUploadImageMutation } from "@/hooks/use-upload-image-mutation";
+import { $createMediaNode, type MediaData } from "./plugins/media/media-node";
+import { removeMediaNodeById, updateMediaNodeById } from "./functions/media-node-helpers";
+import {
+  validateMediaFile,
+  createBlobMediaData,
+  createLoadingMediaData,
+} from "./functions/upload-handlers";
 
 interface MarkdownToolbarDefaultActionsProps {
   /**
@@ -21,6 +26,11 @@ interface MarkdownToolbarDefaultActionsProps {
    * Whether to show the markdown info chip
    */
   showMarkdownInfo?: boolean;
+  /**
+   * Custom media upload function that returns a Promise with { error, data } structure
+   * If provided, this will be used for uploading media files
+   */
+  onMediaUpload?: (file: File) => Promise<{ error?: string; data?: MediaData }>;
 }
 
 /**
@@ -30,10 +40,10 @@ interface MarkdownToolbarDefaultActionsProps {
 export function MarkdownToolbarDefaultActions({
   buttonClassName,
   showMarkdownInfo = true,
+  onMediaUpload,
 }: MarkdownToolbarDefaultActionsProps) {
   const [editor] = useLexicalComposerContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const uploadImageMutation = useUploadImageMutation();
 
   /**
    * Inserts a new enhanced code block with the specified language
@@ -85,95 +95,69 @@ export function MarkdownToolbarDefaultActions({
   /**
    * Handles file upload for media insertion
    */
-  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>): void {
+  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check if file is image or video
-    const isImage = file.type.startsWith("image/");
-    const isVideo = file.type.startsWith("video/");
-
-    if (!isImage && !isVideo) {
+    const validation = validateMediaFile(file);
+    if (!validation.isValid) {
       alert("Please select an image or video file");
       return;
     }
 
-    // Handle image upload with the mutation hook
-    if (isImage) {
-      // Create a unique ID for this media item
-      const mediaId = `media-${Date.now()}`;
+    // Clear input immediately
+    event.target.value = "";
 
-      // Immediately insert a loading media node
-      const loadingMediaData: MediaData = {
-        id: mediaId,
-        type: "image",
-        src: "", // Empty src during loading
-        title: file.name,
-        alt: file.name,
-        isLoading: true,
-      };
+    // Handle custom upload if provided
+    if (onMediaUpload) return handleCustomMediaUpload(file);
 
-      handleInsertMedia(loadingMediaData);
+    // Handle default blob URL media insertion
+    const mediaData = createBlobMediaData(file);
+    handleInsertMedia(mediaData);
+  }
 
-      // Start the upload process
-      uploadImageMutation.mutate(file, {
-        onSuccess: (uploadedUrl) => {
-          // Update the existing media node with the uploaded URL
-          editor.update(() => {
-            const root = $getRoot();
-            const mediaNode = root.getChildren().find((child) => {
-              if ($isMediaNode(child)) {
-                const nodeData = child.getMediaData();
-                return nodeData.id === mediaId;
-              }
-              return false;
-            });
+  /**
+   * Handles custom media upload with loading state
+   */
+  async function handleCustomMediaUpload(file: File) {
+    if (!onMediaUpload) return;
 
-            if ($isMediaNode(mediaNode)) {
-              mediaNode.setMediaData({
-                ...loadingMediaData,
-                src: uploadedUrl,
-                isLoading: false,
-              });
-            }
-          });
-        },
-        onError: (error) => {
-          console.error("Upload failed:", error);
-          alert("Failed to upload image. Please try again.");
+    const loadingMediaData = createLoadingMediaData(file);
+    handleInsertMedia(loadingMediaData);
 
-          // Remove the loading node on error
-          editor.update(() => {
-            const root = $getRoot();
-            const mediaNode = root.getChildren().find((child) => {
-              if ($isMediaNode(child)) {
-                const nodeData = child.getMediaData();
-                return nodeData.id === mediaId;
-              }
-              return false;
-            });
+    const { error, data } = await onMediaUpload(file);
 
-            if (mediaNode) {
-              mediaNode.remove();
-            }
-          });
-        },
-      });
-    } else {
-      // For videos, use the blob URL as before (no upload needed)
-      const src = URL.createObjectURL(file);
-      const mediaData: MediaData = {
-        id: `media-${Date.now()}`,
-        type: "video",
-        src,
-        title: file.name,
-      };
-
-      handleInsertMedia(mediaData);
+    if (error || !data) {
+      handleUploadError(loadingMediaData.id, error || "Failed to upload media. Please try again.");
+      return;
     }
 
-    // Clear the input
-    event.target.value = "";
+    handleUploadSuccess(loadingMediaData.id, data);
+  }
+
+  /**
+   * Handles upload success by updating the media node
+   */
+  function handleUploadSuccess(mediaId: string, data: MediaData): void {
+    editor.update(() => {
+      updateMediaNodeById(mediaId, {
+        ...data,
+        id: mediaId, // Keep the original ID
+        isLoading: false,
+      });
+    });
+  }
+
+  /**
+   * Handles upload error by removing the loading node
+   */
+  function handleUploadError(mediaId: string, errorMessage: string): void {
+    console.error("Upload failed:", errorMessage);
+    alert(`Failed to upload media: ${errorMessage}`);
+
+    editor.update(() => {
+      removeMediaNodeById(mediaId);
+    });
   }
 
   /**

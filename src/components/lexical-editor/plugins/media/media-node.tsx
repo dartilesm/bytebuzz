@@ -189,7 +189,7 @@ function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: Media
                 alt={mediaData.alt || ""}
                 title={mediaData.title}
                 classNames={{
-                  wrapper: "max-w-full! aspect-square",
+                  wrapper: "max-w-full!",
                   img: "w-full h-auto rounded-lg shadow-sm max-h-96 object-contain bg-default-100",
                 }}
                 loading="lazy"
