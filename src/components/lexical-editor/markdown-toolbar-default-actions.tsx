@@ -9,7 +9,8 @@ import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon } from "lucide-react";
 import { useRef } from "react";
 import { $createEnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
-import { $createMediaNode, type MediaData, type MediaType } from "./plugins/media/media-node";
+import { $createMediaNode, $isMediaNode, type MediaData } from "./plugins/media/media-node";
+import { useUploadImageMutation } from "@/hooks/use-upload-image-mutation";
 
 interface MarkdownToolbarDefaultActionsProps {
   /**
@@ -32,6 +33,7 @@ export function MarkdownToolbarDefaultActions({
 }: MarkdownToolbarDefaultActionsProps) {
   const [editor] = useLexicalComposerContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadImageMutation = useUploadImageMutation();
 
   /**
    * Inserts a new enhanced code block with the specified language
@@ -96,19 +98,79 @@ export function MarkdownToolbarDefaultActions({
       return;
     }
 
-    // Create object URL for preview
-    const src = URL.createObjectURL(file);
-    const mediaType: MediaType = isImage ? "image" : "video";
+    // Handle image upload with the mutation hook
+    if (isImage) {
+      // Create a unique ID for this media item
+      const mediaId = `media-${Date.now()}`;
 
-    const mediaData: MediaData = {
-      id: `media-${Date.now()}`,
-      type: mediaType,
-      src,
-      title: file.name,
-      alt: isImage ? file.name : undefined,
-    };
+      // Immediately insert a loading media node
+      const loadingMediaData: MediaData = {
+        id: mediaId,
+        type: "image",
+        src: "", // Empty src during loading
+        title: file.name,
+        alt: file.name,
+        isLoading: true,
+      };
 
-    handleInsertMedia(mediaData);
+      handleInsertMedia(loadingMediaData);
+
+      // Start the upload process
+      uploadImageMutation.mutate(file, {
+        onSuccess: (uploadedUrl) => {
+          // Update the existing media node with the uploaded URL
+          editor.update(() => {
+            const root = $getRoot();
+            const mediaNode = root.getChildren().find((child) => {
+              if ($isMediaNode(child)) {
+                const nodeData = child.getMediaData();
+                return nodeData.id === mediaId;
+              }
+              return false;
+            });
+
+            if ($isMediaNode(mediaNode)) {
+              mediaNode.setMediaData({
+                ...loadingMediaData,
+                src: uploadedUrl,
+                isLoading: false,
+              });
+            }
+          });
+        },
+        onError: (error) => {
+          console.error("Upload failed:", error);
+          alert("Failed to upload image. Please try again.");
+
+          // Remove the loading node on error
+          editor.update(() => {
+            const root = $getRoot();
+            const mediaNode = root.getChildren().find((child) => {
+              if ($isMediaNode(child)) {
+                const nodeData = child.getMediaData();
+                return nodeData.id === mediaId;
+              }
+              return false;
+            });
+
+            if (mediaNode) {
+              mediaNode.remove();
+            }
+          });
+        },
+      });
+    } else {
+      // For videos, use the blob URL as before (no upload needed)
+      const src = URL.createObjectURL(file);
+      const mediaData: MediaData = {
+        id: `media-${Date.now()}`,
+        type: "video",
+        src,
+        title: file.name,
+      };
+
+      handleInsertMedia(mediaData);
+    }
 
     // Clear the input
     event.target.value = "";
