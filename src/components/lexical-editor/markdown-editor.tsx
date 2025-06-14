@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
@@ -19,50 +18,7 @@ import { useMarkdownContext } from "./markdown-provider";
 
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
 import { ValuePlugin } from "./plugins/value/value-plugin";
-
-// URL detection matchers for AutoLinkPlugin using native URL constructor
-const MATCHERS = [
-  (text: string) => {
-    // Look for potential URLs in the text
-    const words = text.split(/\s+/);
-
-    for (let i = 0; i < words.length; i++) {
-      const word = words[i];
-      let url: URL | null = null;
-
-      // Try to create URL directly
-      try {
-        url = new URL(word);
-      } catch {
-        // If it fails, try with https:// prefix for www. or domain-like strings
-        if (word.includes(".") && !word.includes(" ")) {
-          try {
-            url = new URL(`https://${word}`);
-          } catch {
-            continue;
-          }
-        } else {
-          continue;
-        }
-      }
-
-      // Only accept http, https protocols (not file:, data:, etc.)
-      if (url && (url.protocol === "http:" || url.protocol === "https:")) {
-        const startIndex = text.indexOf(word);
-        if (startIndex !== -1) {
-          return {
-            index: startIndex,
-            length: word.length,
-            text: word,
-            url: url.href,
-          };
-        }
-      }
-    }
-
-    return null;
-  },
-];
+import { SmartTextPlugin } from "@/components/lexical-editor/plugins/smart-text-plugin/smart-text-plugin";
 
 interface MarkdownEditorProps {
   /**
@@ -173,7 +129,7 @@ export function MarkdownEditor({
       <MarkdownShortcutPlugin transformers={customTransformers} />
 
       {/* Auto link plugin for URL detection */}
-      <AutoLinkPlugin matchers={MATCHERS} />
+      <SmartTextPlugin />
 
       {/* Mention plugin */}
       {enableMentions && <MentionPlugin />}
