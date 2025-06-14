@@ -4,8 +4,10 @@ import { MarkdownEditor } from "@/components/lexical-editor/markdown-editor";
 import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider";
 import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
 import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
+import { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
 import { useCreatePostMutation } from "@/hooks/mutation/use-create-post-mutation";
 import { usePostsContext } from "@/hooks/use-posts-context";
+import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
 import type { NestedPost } from "@/types/nested-posts";
 import { useUser } from "@clerk/nextjs";
 import { Avatar } from "@heroui/avatar";
@@ -28,6 +30,7 @@ type PostComposerProps = {
 export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
   const { user } = useUser();
   const { addPost } = usePostsContext();
+
   const editorRef = useRef<LexicalEditor>({} as LexicalEditor);
   const form = useForm<z.infer<typeof postComposerSchema>>({
     resolver: zodResolver(postComposerSchema),
@@ -37,6 +40,8 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
+
+  const { mutate: uploadPostMedia, isPending: isUploadingPostMedia } = useUploadPostMediaMutation();
 
   const { mutate, isPending } = useCreatePostMutation(
     {
@@ -67,6 +72,22 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
     },
     user,
   );
+
+  async function handleMediaUpload(file: File): Promise<{ error?: string; data?: MediaData }> {
+    return await new Promise((resolve, reject) => {
+      uploadPostMedia(file, {
+        onSuccess: (url) => {
+          resolve({
+            data: { id: url, type: "image", src: url, title: file.name, alt: file.name },
+            error: undefined,
+          });
+        },
+        onError: (error) => {
+          reject({ data: null, error });
+        },
+      });
+    });
+  }
 
   useEffect(() => {
     form.register("content");
@@ -110,7 +131,10 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
               autoFocus
             />
             <MarkdownToolbar className="bg-transparent border-none p-0">
-              <MarkdownToolbarDefaultActions buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary" />
+              <MarkdownToolbarDefaultActions
+                buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary"
+                onMediaUpload={handleMediaUpload}
+              />
               <Button
                 type="submit"
                 color="primary"

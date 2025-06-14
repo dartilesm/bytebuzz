@@ -1,8 +1,8 @@
 /**
- * Mocked action for uploading images
+ * Mocked action for uploading post media
  * Simulates async upload and returns a mocked URL
  */
-export async function uploadImageAction(file: File): Promise<string> {
+export async function uploadPostMediaAction(file: File): Promise<string> {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 2000));
 

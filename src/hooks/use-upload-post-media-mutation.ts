@@ -1,13 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
-import { uploadImageAction } from "@/actions/upload-image";
+import { uploadPostMediaAction } from "@/actions/upload-post-media";
 
 /**
  * Hook for uploading images with React Query mutation
  * Uses the mocked upload action to simulate async image upload
  */
-export function useUploadImageMutation() {
+export function useUploadPostMediaMutation() {
   return useMutation({
-    mutationFn: uploadImageAction,
+    mutationFn: uploadPostMediaAction,
     onSuccess: (url) => {
       console.log("Image uploaded successfully:", url);
     },
