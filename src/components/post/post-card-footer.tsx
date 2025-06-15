@@ -20,7 +20,7 @@ const reactions: Reaction[] = [
 ];
 
 export function PostFooter() {
-  const { isThreadPagePost, togglePostModal, post, isModal } = usePostContext();
+  const { isThreadPagePost, togglePostModal, post, isNavigationDisabled } = usePostContext();
   const [selectedReaction, setSelectedReaction] = useState<Reaction["type"] | null>(
     post.reaction?.reaction_type ?? null,
   );
@@ -55,7 +55,7 @@ export function PostFooter() {
   return (
     <>
       <CardFooter className={cn("z-30 flex flex-col gap-1 w-full")}>
-        {!isModal && (
+        {!isNavigationDisabled && (
           <>
             {/* Legend: All reactions ordered + total counter */}
             {sortedReactions.length > 0 && (

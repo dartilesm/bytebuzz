@@ -13,7 +13,7 @@ export function ReplyToPost({ post, onSubmit = () => Promise.resolve() }: ReplyT
     <div className="flex flex-col gap-2">
       <div className="relative">
         <PostThreadLine isFirstInThread />
-        <UserPost post={post} isModal />
+        <UserPost post={post} isNavigationDisabled />
       </div>
       <PostComposer
         placeholder={`Reply to @${post.user?.username}`}
