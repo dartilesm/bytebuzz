@@ -1,8 +1,9 @@
 import { CodeBlock } from "@/components/ui/code-block";
+import { Image } from "@heroui/react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-export function MarkdownViewer({ markdown }: { markdown: string }) {
+export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
   return (
     <Markdown
       remarkPlugins={[remarkGfm]}
@@ -12,6 +13,14 @@ export function MarkdownViewer({ markdown }: { markdown: string }) {
           const language = className?.replace("language-", "");
           console.log({ children, language, rest });
           return <CodeBlock code={children as string} language={language} />;
+        },
+        img: ({ node, ...props }) => {
+          const { src, alt, ...rest } = props;
+
+          // Append postId as a query parameter
+          const imageUrl = `${src}?postId=${postId}`;
+
+          return <Image src={imageUrl} alt={alt} {...rest} />;
         },
       }}
     >

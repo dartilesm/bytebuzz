@@ -42,9 +42,8 @@ export async function createPostWithMediaAction({ content, mediaData }: CreatePo
 
     if (mediaData) {
       // Generate permanent path for the media
-      const timestamp = Date.now();
-      const extension = mediaData.path.split(".").pop() || "";
-      const permanentPath = `${user.id}/posts/${post.id}/${timestamp}_${mediaData.type}.${extension}`;
+      const fileName = mediaData.path.split("/").pop() || "";
+      const permanentPath = `${user.id}/posts/${post.id}/${fileName}`;
 
       // Move file from temp to permanent location
       const { error: moveError } = await supabase.storage
@@ -57,7 +56,7 @@ export async function createPostWithMediaAction({ content, mediaData }: CreatePo
         throw new Error(`Failed to move media file: ${moveError.message}`);
       }
 
-      // Get the public URL for the permanent location
+      // Generate the proxy URL for the permanent location
       const {
         data: { publicUrl },
       } = supabase.storage.from("post-images").getPublicUrl(permanentPath);

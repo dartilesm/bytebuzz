@@ -50,25 +50,25 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
 
   async function handleMediaUpload(file: File): Promise<{ error?: string; data?: MediaData }> {
     try {
-      const url = await uploadPostMedia(file);
+      const { publicUrl, proxyUrl } = await uploadPostMedia(file);
       // Extract the path from the URL (last two segments)
-      const path = url.split("/").slice(-3).join("/");
+      const path = publicUrl.split("/").slice(-3).join("/");
 
       // Store the media data for later use when creating the post
       setMediaData((prev) => [
         ...prev,
         {
           path,
-          url,
+          url: publicUrl,
           type: file.type.startsWith("image/") ? "image" : "video",
         },
       ]);
 
       return {
         data: {
-          id: url,
+          id: publicUrl,
           type: file.type.startsWith("image/") ? "image" : "video",
-          src: url,
+          src: proxyUrl,
           title: file.name,
           alt: file.name,
         },

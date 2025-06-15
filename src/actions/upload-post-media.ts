@@ -6,9 +6,11 @@ import { currentUser } from "@clerk/nextjs/server";
 /**
  * Uploads a media file to Supabase storage in a temporary location
  * @param file - The file to upload
- * @returns Promise with the public URL of the uploaded file
+ * @returns Promise with the proxied URL of the uploaded file
  */
-export async function uploadPostMediaAction(file: File): Promise<string> {
+export async function uploadPostMediaAction(
+  file: File,
+): Promise<{ publicUrl: string; proxyUrl: string }> {
   try {
     const supabase = createServerSupabaseClient();
     const user = await currentUser();
@@ -23,7 +25,8 @@ export async function uploadPostMediaAction(file: File): Promise<string> {
     const mediaType = file.type.startsWith("image/") ? "image" : "video";
 
     // Generate a temporary path for the file
-    const filePath = `${userId}/temp/${timestamp}_${mediaType}.${extension}`;
+    const fileNameWithoutExtension = `${timestamp}_${mediaType}`;
+    const filePath = `${userId}/temp/${fileNameWithoutExtension}.${extension}`;
 
     // Upload the file to Supabase storage
     const { error: uploadError } = await supabase.storage
@@ -42,7 +45,13 @@ export async function uploadPostMediaAction(file: File): Promise<string> {
       data: { publicUrl },
     } = supabase.storage.from("post-images").getPublicUrl(filePath);
 
-    return publicUrl;
+    // Instead of getting the Supabase URL, return our proxied URL
+    const proxyUrl = `http://localhost:3000/api/media/${userId}/${fileNameWithoutExtension}`;
+
+    return {
+      publicUrl,
+      proxyUrl,
+    };
   } catch (error) {
     console.error("Error uploading media:", error);
     throw error;
