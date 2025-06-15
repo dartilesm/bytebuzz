@@ -10,9 +10,11 @@ interface ReplyToPostProps {
 
 export function ReplyToPost({ post, onSubmit = () => Promise.resolve() }: ReplyToPostProps) {
   return (
-    <div className="relative flex flex-col gap-2">
-      <PostThreadLine isFirstInThread={true} isLastInThread={true} />
-      <UserPost post={post} isModal />
+    <div className="flex flex-col gap-2">
+      <div className="relative">
+        <PostThreadLine isFirstInThread />
+        <UserPost post={post} isNavigationDisabled />
+      </div>
       <PostComposer
         placeholder={`Reply to @${post.user?.username}`}
         onSubmit={onSubmit}
