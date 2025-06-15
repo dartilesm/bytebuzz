@@ -193,7 +193,6 @@ function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: Media
                   img: "w-full h-auto rounded-lg shadow-sm max-h-96 object-contain bg-default-100",
                 }}
                 loading="lazy"
-                isLoading={mediaData.isLoading}
               />
             ) : (
               <video
@@ -299,6 +298,7 @@ function $convertMediaElement(domNode: Node): DOMConversionOutput {
       id: mediaId,
       type: mediaType,
       src,
+      fallbackSrc: src,
       alt,
       title,
     };

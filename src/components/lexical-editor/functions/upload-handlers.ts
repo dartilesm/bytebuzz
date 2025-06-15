@@ -24,14 +24,8 @@ export function createBlobMediaData(file: File): MediaData {
  * @returns MediaData object with loading state
  */
 export function createLoadingMediaData(file: File): MediaData {
-  const isImage = file.type.startsWith("image/");
-
   return {
-    id: `media-${Date.now()}`,
-    type: isImage ? "image" : "video",
-    src: "", // Empty src during loading
-    title: file.name,
-    alt: isImage ? file.name : undefined,
+    ...createBlobMediaData(file),
     isLoading: true,
   };
 }
