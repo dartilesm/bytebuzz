@@ -64,5 +64,5 @@ jobs:
         uses: dartilesm/vercel-blob-action@v2
         with:
           source: "supabase/dump"
-          destination: "db-backup-pr-${{ github.ref_name }}"
+          destination: "db-backup-pr/${{ github.ref_name }}"
           read-write-token: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
