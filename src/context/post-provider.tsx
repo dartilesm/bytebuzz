@@ -10,7 +10,11 @@ export interface PostContextType {
   isThread?: boolean;
   isFirstInThread?: boolean;
   isLastInThread?: boolean;
-  isModal?: boolean;
+  /**
+   * When true, disables click-to-navigate interaction on the post.
+   * Used when the post is displayed in a modal context where navigation should be prevented.
+   */
+  isNavigationDisabled?: boolean;
 
   /**
    * Indicates if this post is the main post being viewed in a thread page.
@@ -26,7 +30,7 @@ export const PostContext = createContext<PostContextType>({} as PostContextType)
 export interface PostProviderProps {
   children: React.ReactNode;
   post: NestedPost;
-  isModal?: boolean;
+  isNavigationDisabled?: boolean;
   isThread?: boolean;
   isFirstInThread?: boolean;
   isLastInThread?: boolean;
@@ -34,7 +38,7 @@ export interface PostProviderProps {
 
 export function PostProvider({
   children,
-  isModal = false,
+  isNavigationDisabled = false,
   post,
   isThread,
   isFirstInThread,
@@ -53,11 +57,11 @@ export function PostProvider({
     <PostContext.Provider
       value={{
         post,
-        isModal,
+        isNavigationDisabled,
         isThread,
         isFirstInThread,
         isLastInThread,
-        isThreadPagePost: !isModal && post.id === postId,
+        isThreadPagePost: !isNavigationDisabled && post.id === postId,
         togglePostModal,
       }}
     >

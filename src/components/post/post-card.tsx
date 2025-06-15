@@ -13,14 +13,14 @@ interface PostCardProps {
 }
 
 export function PostCard({ children, className, classNames, ref }: PostCardProps) {
-  const { isThreadPagePost, post, isModal } = usePostContext();
+  const { isThreadPagePost, post, isNavigationDisabled } = usePostContext();
   const router = useRouter();
   const pathname = usePathname();
 
   function handleClick(event: React.MouseEvent<HTMLDivElement>) {
     // Check if the clicked element or its parents is an anchor tag
     const isAnchorElement = (event.target as HTMLElement).closest("a");
-    if (isAnchorElement || isModal) return;
+    if (isAnchorElement || isNavigationDisabled) return;
 
     const pushPath = `/@${post.user?.username}/thread/${post.id}`;
 
@@ -33,7 +33,7 @@ export function PostCard({ children, className, classNames, ref }: PostCardProps
         className={cn(
           "relative flex flex-row dark:bg-content1 bg-[transparent] [box-shadow:none]",
           {
-            "cursor-pointer": !isModal,
+            "cursor-pointer": !isNavigationDisabled,
           },
           className,
         )}
