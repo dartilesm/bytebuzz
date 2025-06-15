@@ -6,6 +6,7 @@ import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
 import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
 import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
 import { useCreatePostWithMediaMutation } from "@/hooks/mutation/use-create-post-with-media-mutation";
+import { usePostsContext } from "@/hooks/use-posts-context";
 import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
 import { useUser } from "@clerk/nextjs";
 import { Avatar } from "@heroui/avatar";
@@ -27,6 +28,7 @@ type PostComposerProps = {
 
 export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
   const { user } = useUser();
+  const { addPost } = usePostsContext();
   const editorRef = useRef<LexicalEditor>({} as LexicalEditor);
   const [mediaData, setMediaData] = useState<
     Array<{
@@ -104,10 +106,24 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
   async function onSubmit(data: z.infer<typeof postComposerSchema>) {
     try {
       // Create post with the first media (for now we only support one media per post)
-      await createPost({
-        content: data.content,
-        mediaData: mediaData[0],
-      });
+      await createPost(
+        {
+          content: data.content,
+          mediaData: mediaData[0],
+        },
+        {
+          onSuccess: (newPost) => {
+            addPost({
+              ...newPost,
+              user: {
+                username: user?.username ?? "",
+                display_name: `${user?.firstName || ""} ${user?.lastName || ""}`,
+                image_url: user?.imageUrl ?? "",
+              },
+            });
+          },
+        },
+      );
 
       if (onSubmitProp) onSubmitProp();
       form.reset();

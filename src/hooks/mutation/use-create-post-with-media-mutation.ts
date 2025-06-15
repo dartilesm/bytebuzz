@@ -1,9 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPostWithMediaAction } from "@/actions/create-post-with-media";
 import { addToast } from "@heroui/react";
-import type { NestedPost } from "@/types/nested-posts";
-import { PostsContext } from "@/context/posts-context";
-import { useContext } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 /**
  * Hook for creating a post with optional media attachment
@@ -11,20 +8,10 @@ import { useContext } from "react";
  */
 export function useCreatePostWithMediaMutation() {
   const queryClient = useQueryClient();
-  const context = useContext(PostsContext);
-
-  if (!context) {
-    throw new Error("useCreatePostWithMediaMutation must be used within a PostsProvider");
-  }
-
-  const { addPost } = context;
 
   return useMutation({
     mutationFn: createPostWithMediaAction,
-    onSuccess: (newPost: NestedPost) => {
-      // Add the new post to the context for immediate UI update
-      addPost(newPost);
-
+    onSuccess: () => {
       // Invalidate the posts query to refetch the latest data
       queryClient.invalidateQueries({ queryKey: ["posts"] });
 
