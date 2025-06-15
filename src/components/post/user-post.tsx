@@ -13,7 +13,7 @@ interface UserPostProps {
   isLastInThread?: boolean;
   ref?: React.RefObject<HTMLDivElement>;
   className?: string;
-  isModal?: boolean;
+  isNavigationDisabled?: boolean;
 }
 
 export function UserPost({
@@ -24,7 +24,7 @@ export function UserPost({
   isLastInThread,
   ref,
   className,
-  isModal,
+  isNavigationDisabled,
 }: UserPostProps) {
   if (!post && !ancestry) {
     throw new Error("Either post or ancestry must be provided");
@@ -47,7 +47,7 @@ export function UserPost({
           isThread={renderAsThread}
           isFirstInThread={firstInThread}
           isLastInThread={lastInThread}
-          isModal={isModal}
+          isNavigationDisabled={isNavigationDisabled}
         >
           <PostCard ref={ref} className={className}>
             <PostHeader />
