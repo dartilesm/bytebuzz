@@ -39,7 +39,6 @@ export function PostCard({ children, className, classNames, ref }: PostCardProps
         )}
         classNames={classNames}
         tabIndex={0}
-        role="article"
         as="article"
       >
         {!isThreadPagePost && <PostAvatarAndThreadLine />}
