@@ -17,7 +17,11 @@ interface CreatePostWithMediaData {
  * Server action to create a post with optional media attachment
  * Handles moving the media from temporary to permanent storage location
  */
-export async function createPostWithMediaAction({ content, mediaData }: CreatePostWithMediaData) {
+export async function createPostWithMediaAction({
+  content,
+  mediaData,
+  parent_post_id,
+}: CreatePostWithMediaData & { parent_post_id?: string }) {
   try {
     const supabase = createServerSupabaseClient();
     const user = await currentUser();
@@ -32,6 +36,7 @@ export async function createPostWithMediaAction({ content, mediaData }: CreatePo
       .insert({
         content,
         user_id: user.id,
+        parent_post_id,
       })
       .select()
       .single();

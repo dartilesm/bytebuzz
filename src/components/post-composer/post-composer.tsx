@@ -23,10 +23,16 @@ const postComposerSchema = z.object({
 });
 
 type PostComposerProps = {
+  placeholder?: string;
+  postId?: string;
   onSubmit?: () => void;
 };
 
-export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
+export function PostComposer({
+  placeholder = "Start typing with markdown shortcuts...",
+  postId,
+  onSubmit: onSubmitProp,
+}: PostComposerProps) {
   const { user } = useUser();
   const { addPost } = usePostsContext();
   const editorRef = useRef<LexicalEditor>({} as LexicalEditor);
@@ -110,6 +116,7 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
         {
           content: data.content,
           mediaData: mediaData[0],
+          parent_post_id: postId,
         },
         {
           onSuccess: (newPost) => {
@@ -147,11 +154,7 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
             <Avatar isBordered src={user?.imageUrl} />
           </div>
           <div className="flex-1">
-            <MarkdownEditor
-              placeholder="Start typing with markdown shortcuts..."
-              contentClassName="min-h-12 p-0"
-              autoFocus
-            />
+            <MarkdownEditor placeholder={placeholder} contentClassName="min-h-12 p-0" autoFocus />
             <MarkdownToolbar className="bg-transparent border-none p-0">
               <MarkdownToolbarDefaultActions
                 buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary"
