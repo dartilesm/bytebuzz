@@ -29,7 +29,7 @@ export function CondensedUserPost({
     <PostProvider post={post} isThread={false} isNavigationDisabled>
       <Card
         className={cn(
-          "relative flex flex-row gap-2 p-2 dark:bg-content2/50 bg-default-200/20 border border-content3 [box-shadow:none]",
+          "relative flex flex-row gap-2 p-2 dark:bg-content2/50 bg-default-300/40 border dark:border-content3 border-content4 [box-shadow:none]",
           className,
         )}
         tabIndex={0}
@@ -71,7 +71,7 @@ export function CondensedUserPost({
             </div>
           </CardHeader>
 
-          <CardBody className="py-0 text-sm p-0">
+          <CardBody className="text-sm gap-2 p-2">
             <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />
           </CardBody>
         </div>

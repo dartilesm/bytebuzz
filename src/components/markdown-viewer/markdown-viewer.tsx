@@ -20,7 +20,15 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           // Append postId as a query parameter
           const imageUrl = `${src}?postId=${postId}`;
 
-          return <Image src={imageUrl} alt={alt} {...rest} />;
+          return (
+            <Image
+              className="rounded-medium"
+              src={imageUrl}
+              alt={alt}
+              {...rest}
+              onError={() => {}}
+            />
+          );
         },
       }}
     >
