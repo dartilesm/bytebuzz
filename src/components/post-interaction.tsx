@@ -45,7 +45,8 @@ export function PostInteraction({
       <PostComposer
         placeholder={isReply ? replyPlaceholderText : repostPlaceholderText}
         onSubmit={onSubmit}
-        postId={post.id}
+        {...(isRepost && { repostPostId: post.id })}
+        {...(isReply && { replyPostId: post.id })}
       >
         {isRepost && (
           <div className="mb-4 flex flex-col gap-1">

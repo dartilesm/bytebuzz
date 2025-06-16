@@ -24,14 +24,16 @@ const postComposerSchema = z.object({
 
 type PostComposerProps = {
   placeholder?: string;
-  postId?: string;
+  replyPostId?: string;
+  repostPostId?: string;
   onSubmit?: () => void;
   children?: React.ReactNode;
 };
 
 export function PostComposer({
   placeholder = "Start typing with markdown shortcuts...",
-  postId,
+  replyPostId,
+  repostPostId,
   onSubmit: onSubmitProp,
   children,
 }: PostComposerProps) {
@@ -118,7 +120,8 @@ export function PostComposer({
         {
           content: data.content,
           mediaData: mediaData[0],
-          parent_post_id: postId,
+          parent_post_id: replyPostId,
+          repost_post_id: repostPostId,
         },
         {
           onSuccess: (newPost) => {
