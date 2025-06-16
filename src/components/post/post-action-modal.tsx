@@ -13,7 +13,7 @@ interface PostActionModalProps {
 
 export function PostActionModal({ post, action, onOpenChange }: PostActionModalProps) {
   return (
-    <Modal onClose={onOpenChange} defaultOpen size="xl" backdrop="blur">
+    <Modal onClose={onOpenChange} defaultOpen size="xl" backdrop="blur" scrollBehavior="outside">
       <ModalContent>
         {(onClose) => (
           <>

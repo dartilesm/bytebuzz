@@ -163,7 +163,7 @@ export function PostFooter() {
                   variant="light"
                   size="sm"
                   className="flex flex-row gap-2 text-gray-400"
-                  onPress={() => togglePostModal(true)}
+                  onPress={() => togglePostModal(true, "reply")}
                   aria-label="Comment"
                   tabIndex={0}
                 >
@@ -179,6 +179,7 @@ export function PostFooter() {
                   variant="light"
                   size="sm"
                   className="text-gray-400"
+                  onPress={() => togglePostModal(true, "clone")}
                   aria-label="Repost (coming soon)"
                   tabIndex={0}
                 >

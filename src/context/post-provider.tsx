@@ -22,7 +22,7 @@ export interface PostContextType {
    * as it's the focus of the current page.
    */
   isThreadPagePost?: boolean;
-  togglePostModal: (isOpen?: boolean) => void;
+  togglePostModal: (isOpen?: boolean, action?: "reply" | "clone") => void;
 }
 
 export const PostContext = createContext<PostContextType>({} as PostContextType);

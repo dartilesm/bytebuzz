@@ -1,7 +1,9 @@
 import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostThreadLine } from "@/components/post/post-thread-line";
+import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { UserPost } from "@/components/post/user-post";
 import type { NestedPost } from "@/types/nested-posts";
+import { ReplyIcon } from "lucide-react";
 
 interface PostInteractionProps {
   /**
@@ -28,6 +30,7 @@ export function PostInteraction({
   onSubmit = () => Promise.resolve(),
 }: PostInteractionProps) {
   const isReply = action === "reply";
+  const isRepost = action === "clone";
 
   const replyPlaceholderText = `Reply to @${post.user?.username}`;
   const repostPlaceholderText = `Repost @${post.user?.username}'s post`;
@@ -45,7 +48,14 @@ export function PostInteraction({
         onSubmit={onSubmit}
         postId={post.id}
       >
-        <UserPost post={post} isNavigationDisabled />
+        {isRepost && (
+          <div className="mb-4 flex flex-col gap-1">
+            <span className="text-sm text-content4-foreground/60 italic flex items-center gap-1">
+              <span>Original post</span>
+            </span>
+            <CondensedUserPost post={post} />
+          </div>
+        )}
       </PostComposer>
     </div>
   );
