@@ -1,5 +1,6 @@
 "use client";
 
+import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import { AnimatePresence, motion } from "motion/react";
@@ -21,7 +22,9 @@ export function PostList() {
             transition={{ duration: 0.3 }} // Animation duration
           >
             <PostWrapper>
-              <UserPost post={post} />
+              <UserPost post={post}>
+                {post.repost && <CondensedUserPost post={post.repost} />}
+              </UserPost>
             </PostWrapper>
           </motion.div>
         ))}

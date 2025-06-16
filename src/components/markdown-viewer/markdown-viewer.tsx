@@ -1,3 +1,5 @@
+"use client";
+
 import { CodeBlock } from "@/components/ui/code-block";
 import { Image } from "@heroui/react";
 import Markdown from "react-markdown";

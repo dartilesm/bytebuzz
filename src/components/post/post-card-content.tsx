@@ -14,11 +14,12 @@ export function PostContent({ children }: PostContentProps) {
 
   return (
     <CardBody
-      className={cn("flex-1 py-0", {
+      className={cn("flex-1 py-0 flex flex-col gap-2", {
         "px-8.5": isThreadPagePost,
       })}
     >
-      {children ?? <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />}
+      <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />
+      {children}
     </CardBody>
   );
 }
