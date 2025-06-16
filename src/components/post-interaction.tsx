@@ -1,9 +1,8 @@
 import { PostComposer } from "@/components/post-composer/post-composer";
-import { PostThreadLine } from "@/components/post/post-thread-line";
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
+import { PostThreadLine } from "@/components/post/post-thread-line";
 import { UserPost } from "@/components/post/user-post";
 import type { NestedPost } from "@/types/nested-posts";
-import { ReplyIcon } from "lucide-react";
 
 interface PostInteractionProps {
   /**
