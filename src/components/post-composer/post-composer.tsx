@@ -26,12 +26,14 @@ type PostComposerProps = {
   placeholder?: string;
   postId?: string;
   onSubmit?: () => void;
+  children?: React.ReactNode;
 };
 
 export function PostComposer({
   placeholder = "Start typing with markdown shortcuts...",
   postId,
   onSubmit: onSubmitProp,
+  children,
 }: PostComposerProps) {
   const { user } = useUser();
   const { addPost } = usePostsContext();
@@ -155,6 +157,7 @@ export function PostComposer({
           </div>
           <div className="flex-1">
             <MarkdownEditor placeholder={placeholder} contentClassName="min-h-12 p-0" autoFocus />
+            <div className="py-4">{children}</div>
             <MarkdownToolbar className="bg-transparent border-none p-0">
               <MarkdownToolbarDefaultActions
                 buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary"

@@ -1,17 +1,17 @@
 "use client";
 
-import { ReplyToPost } from "@/components/reply-to-post";
+import { PostInteraction } from "@/components/post-interaction";
 import type { NestedPost } from "@/types/nested-posts";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 
-interface PostCommentModalProps {
+interface PostActionModalProps {
   post: NestedPost;
   isOpen: boolean;
   action: "reply" | "clone";
   onOpenChange: () => void;
 }
 
-export function PostCommentModal({ post, action, onOpenChange }: PostCommentModalProps) {
+export function PostActionModal({ post, action, onOpenChange }: PostActionModalProps) {
   return (
     <Modal onClose={onOpenChange} defaultOpen size="xl" backdrop="blur">
       <ModalContent>
@@ -19,7 +19,7 @@ export function PostCommentModal({ post, action, onOpenChange }: PostCommentModa
           <>
             <ModalHeader />
             <ModalBody>
-              {action === "reply" && <ReplyToPost post={post} onSubmit={onClose} />}
+              <PostInteraction post={post} action={action} onSubmit={onClose} />
             </ModalBody>
             <ModalFooter />
           </>

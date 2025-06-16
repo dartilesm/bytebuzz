@@ -1,6 +1,6 @@
 "use client";
 
-import { PostCommentModal } from "@/components/post/post-comment-modal";
+import { PostActionModal } from "@/components/post/post-action-modal";
 import type { NestedPost } from "@/types/nested-posts";
 import { useParams } from "next/navigation";
 import { createContext, useState } from "react";
@@ -67,7 +67,7 @@ export function PostProvider({
     >
       {children}
       {isModalOpen && (
-        <PostCommentModal
+        <PostActionModal
           post={post}
           isOpen={isModalOpen}
           onOpenChange={togglePostModal}
