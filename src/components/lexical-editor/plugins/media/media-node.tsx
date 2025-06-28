@@ -1,6 +1,9 @@
 "use client";
 
-import type React from "react";
+import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
+import { Image } from "@heroui/react";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -10,10 +13,8 @@ import type {
   SerializedLexicalNode,
 } from "lexical";
 import { DecoratorNode } from "lexical";
-import { Card, CardBody } from "@heroui/card";
-import { Button } from "@heroui/button";
-import { Trash, Download } from "lucide-react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { Download, Trash } from "lucide-react";
+import type React from "react";
 
 export type MediaType = "image" | "video";
 
@@ -25,6 +26,7 @@ export interface MediaData {
   title?: string;
   width?: number;
   height?: number;
+  isLoading?: boolean;
 }
 
 export interface SerializedMediaNode extends SerializedLexicalNode {
@@ -182,11 +184,14 @@ function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: Media
           {/* Media Content */}
           <div className="relative">
             {mediaData.type === "image" ? (
-              <img
+              <Image
                 src={mediaData.src}
                 alt={mediaData.alt || ""}
                 title={mediaData.title}
-                className="w-full h-auto rounded-lg shadow-sm max-h-96 object-contain bg-default-100"
+                classNames={{
+                  wrapper: "max-w-full!",
+                  img: "w-full h-auto rounded-lg shadow-sm max-h-96 object-contain bg-default-100",
+                }}
                 loading="lazy"
               />
             ) : (
@@ -223,6 +228,7 @@ function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: Media
                 aria-label="Download media"
                 className="cursor-pointer"
                 isIconOnly
+                isDisabled={mediaData.isLoading}
               />
 
               <Button
@@ -234,6 +240,7 @@ function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: Media
                 color="danger"
                 className="cursor-pointer"
                 isIconOnly
+                isDisabled={mediaData.isLoading}
               />
             </div>
           </div>

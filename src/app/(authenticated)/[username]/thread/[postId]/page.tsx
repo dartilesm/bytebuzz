@@ -1,4 +1,4 @@
-import { PostComposer } from "@/components/post/post-composer";
+import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostList } from "@/components/post/post-list";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";

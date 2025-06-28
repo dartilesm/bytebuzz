@@ -9,7 +9,13 @@ import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon } from "lucide-react";
 import { useRef } from "react";
 import { $createEnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
-import { $createMediaNode, type MediaData, type MediaType } from "./plugins/media/media-node";
+import { $createMediaNode, type MediaData } from "./plugins/media/media-node";
+import { removeMediaNodeById, updateMediaNodeById } from "./functions/media-node-helpers";
+import {
+  validateMediaFile,
+  createBlobMediaData,
+  createLoadingMediaData,
+} from "./functions/upload-handlers";
 
 interface MarkdownToolbarDefaultActionsProps {
   /**
@@ -20,6 +26,11 @@ interface MarkdownToolbarDefaultActionsProps {
    * Whether to show the markdown info chip
    */
   showMarkdownInfo?: boolean;
+  /**
+   * Custom media upload function that returns a Promise with { error, data } structure
+   * If provided, this will be used for uploading media files
+   */
+  onMediaUpload?: (file: File) => Promise<{ error?: string; data?: MediaData }>;
 }
 
 /**
@@ -29,6 +40,7 @@ interface MarkdownToolbarDefaultActionsProps {
 export function MarkdownToolbarDefaultActions({
   buttonClassName,
   showMarkdownInfo = true,
+  onMediaUpload,
 }: MarkdownToolbarDefaultActionsProps) {
   const [editor] = useLexicalComposerContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,35 +95,69 @@ export function MarkdownToolbarDefaultActions({
   /**
    * Handles file upload for media insertion
    */
-  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>): void {
+  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check if file is image or video
-    const isImage = file.type.startsWith("image/");
-    const isVideo = file.type.startsWith("video/");
-
-    if (!isImage && !isVideo) {
+    const validation = validateMediaFile(file);
+    if (!validation.isValid) {
       alert("Please select an image or video file");
       return;
     }
 
-    // Create object URL for preview
-    const src = URL.createObjectURL(file);
-    const mediaType: MediaType = isImage ? "image" : "video";
-
-    const mediaData: MediaData = {
-      id: `media-${Date.now()}`,
-      type: mediaType,
-      src,
-      title: file.name,
-      alt: isImage ? file.name : undefined,
-    };
-
-    handleInsertMedia(mediaData);
-
-    // Clear the input
+    // Clear input immediately
     event.target.value = "";
+
+    // Handle custom upload if provided
+    if (onMediaUpload) return handleCustomMediaUpload(file);
+
+    // Handle default blob URL media insertion
+    const mediaData = createBlobMediaData(file);
+    handleInsertMedia(mediaData);
+  }
+
+  /**
+   * Handles custom media upload with loading state
+   */
+  async function handleCustomMediaUpload(file: File) {
+    if (!onMediaUpload) return;
+
+    const loadingMediaData = createLoadingMediaData(file);
+    handleInsertMedia(loadingMediaData);
+
+    const { error, data } = await onMediaUpload(file);
+
+    if (error || !data) {
+      handleUploadError(loadingMediaData.id, error || "Failed to upload media. Please try again.");
+      return;
+    }
+
+    handleUploadSuccess(loadingMediaData.id, data);
+  }
+
+  /**
+   * Handles upload success by updating the media node
+   */
+  function handleUploadSuccess(mediaId: string, data: MediaData): void {
+    editor.update(() => {
+      updateMediaNodeById(mediaId, {
+        ...data,
+        id: mediaId, // Keep the original ID
+        isLoading: false,
+      });
+    });
+  }
+
+  /**
+   * Handles upload error by removing the loading node
+   */
+  function handleUploadError(mediaId: string, errorMessage: string): void {
+    console.error("Upload failed:", errorMessage);
+    alert(`Failed to upload media: ${errorMessage}`);
+
+    editor.update(() => {
+      removeMediaNodeById(mediaId);
+    });
   }
 
   /**

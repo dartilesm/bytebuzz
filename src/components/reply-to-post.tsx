@@ -1,4 +1,4 @@
-import { PostComposer } from "@/components/post/post-composer";
+import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostThreadLine } from "@/components/post/post-thread-line";
 import { UserPost } from "@/components/post/user-post";
 import type { NestedPost } from "@/types/nested-posts";

@@ -18,7 +18,7 @@ export function PostContent({ children }: PostContentProps) {
         "px-8.5": isThreadPagePost,
       })}
     >
-      {children ?? <MarkdownViewer markdown={content ?? ""} />}
+      {children ?? <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />}
     </CardBody>
   );
 }

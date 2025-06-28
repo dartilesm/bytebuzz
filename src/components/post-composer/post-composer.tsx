@@ -4,16 +4,17 @@ import { MarkdownEditor } from "@/components/lexical-editor/markdown-editor";
 import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider";
 import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
 import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
-import { useCreatePostMutation } from "@/hooks/mutation/use-create-post-mutation";
+import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
+import { useCreatePostWithMediaMutation } from "@/hooks/mutation/use-create-post-with-media-mutation";
 import { usePostsContext } from "@/hooks/use-posts-context";
-import type { NestedPost } from "@/types/nested-posts";
+import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
 import { useUser } from "@clerk/nextjs";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LexicalEditor } from "lexical";
 import { $getRoot } from "lexical";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -22,13 +23,27 @@ const postComposerSchema = z.object({
 });
 
 type PostComposerProps = {
+  placeholder?: string;
+  postId?: string;
   onSubmit?: () => void;
 };
 
-export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
+export function PostComposer({
+  placeholder = "Start typing with markdown shortcuts...",
+  postId,
+  onSubmit: onSubmitProp,
+}: PostComposerProps) {
   const { user } = useUser();
   const { addPost } = usePostsContext();
   const editorRef = useRef<LexicalEditor>({} as LexicalEditor);
+  const [mediaData, setMediaData] = useState<
+    Array<{
+      path: string;
+      url: string;
+      type: "image" | "video";
+    }>
+  >([]);
+
   const form = useForm<z.infer<typeof postComposerSchema>>({
     resolver: zodResolver(postComposerSchema),
     defaultValues: {
@@ -38,35 +53,38 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
     reValidateMode: "onSubmit",
   });
 
-  const { mutate, isPending } = useCreatePostMutation(
-    {
-      onError: (error) => {
-        form.setError("content", { message: error.message });
-        console.error(error);
-      },
-      onSettled: (response) => {
-        if (response?.data) {
-          const newPost: NestedPost = {
-            ...response.data,
-            user: {
-              username: user?.username ?? "",
-              display_name: `${user?.firstName || ""} ${user?.lastName || ""}`,
-              image_url: user?.imageUrl ?? "",
-            },
-          };
+  const { mutateAsync: uploadPostMedia } = useUploadPostMediaMutation();
+  const { mutate: createPost, isPending } = useCreatePostWithMediaMutation();
 
-          addPost(newPost);
-          if (onSubmitProp) onSubmitProp();
-          form.reset();
-          resetEditorState();
-          return;
-        }
-        form.setError("content", { message: response?.error.message });
-        return;
-      },
-    },
-    user,
-  );
+  async function handleMediaUpload(file: File): Promise<{ error?: string; data?: MediaData }> {
+    try {
+      const { publicUrl, proxyUrl } = await uploadPostMedia(file);
+      // Extract the path from the URL (last two segments)
+      const path = publicUrl.split("/").slice(-3).join("/");
+
+      // Store the media data for later use when creating the post
+      setMediaData((prev) => [
+        ...prev,
+        {
+          path,
+          url: publicUrl,
+          type: file.type.startsWith("image/") ? "image" : "video",
+        },
+      ]);
+
+      return {
+        data: {
+          id: publicUrl,
+          type: file.type.startsWith("image/") ? "image" : "video",
+          src: proxyUrl,
+          title: file.name,
+          alt: file.name,
+        },
+      };
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : "Failed to upload media" };
+    }
+  }
 
   useEffect(() => {
     form.register("content");
@@ -82,15 +100,47 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
         root.clear();
       });
     }
+    // Clear media data
+    setMediaData([]);
   }
+
   function handleContentChange(markdown: string) {
     form.setValue("content", markdown);
     form.trigger("content");
   }
 
-  function onSubmit(data: z.infer<typeof postComposerSchema>) {
-    console.log(data);
-    mutate({ comment: data.content });
+  async function onSubmit(data: z.infer<typeof postComposerSchema>) {
+    try {
+      // Create post with the first media (for now we only support one media per post)
+      await createPost(
+        {
+          content: data.content,
+          mediaData: mediaData[0],
+          parent_post_id: postId,
+        },
+        {
+          onSuccess: (newPost) => {
+            addPost({
+              ...newPost,
+              user: {
+                username: user?.username ?? "",
+                display_name: `${user?.firstName || ""} ${user?.lastName || ""}`,
+                image_url: user?.imageUrl ?? "",
+              },
+            });
+          },
+        },
+      );
+
+      if (onSubmitProp) onSubmitProp();
+      form.reset();
+      resetEditorState();
+    } catch (error) {
+      console.error("Error creating post:", error);
+      form.setError("content", {
+        message: error instanceof Error ? error.message : "Failed to create post",
+      });
+    }
   }
 
   return (
@@ -104,13 +154,12 @@ export function PostComposer({ onSubmit: onSubmitProp }: PostComposerProps) {
             <Avatar isBordered src={user?.imageUrl} />
           </div>
           <div className="flex-1">
-            <MarkdownEditor
-              placeholder="Start typing with markdown shortcuts..."
-              contentClassName="min-h-12 p-0"
-              autoFocus
-            />
+            <MarkdownEditor placeholder={placeholder} contentClassName="min-h-12 p-0" autoFocus />
             <MarkdownToolbar className="bg-transparent border-none p-0">
-              <MarkdownToolbarDefaultActions buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary" />
+              <MarkdownToolbarDefaultActions
+                buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary"
+                onMediaUpload={handleMediaUpload}
+              />
               <Button
                 type="submit"
                 color="primary"
