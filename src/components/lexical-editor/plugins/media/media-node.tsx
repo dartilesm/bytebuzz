@@ -298,7 +298,6 @@ function $convertMediaElement(domNode: Node): DOMConversionOutput {
       id: mediaId,
       type: mediaType,
       src,
-      fallbackSrc: src,
       alt,
       title,
     };
