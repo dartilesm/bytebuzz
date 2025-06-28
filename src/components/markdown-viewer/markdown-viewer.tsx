@@ -11,9 +11,8 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
       remarkPlugins={[remarkGfm]}
       components={{
         code: ({ node, ...props }) => {
-          const { children, className, ...rest } = props;
+          const { children, className } = props;
           const language = className?.replace("language-", "");
-          console.log({ children, language, rest });
           return <CodeBlock code={children as string} language={language} />;
         },
         img: ({ node, ...props }) => {
