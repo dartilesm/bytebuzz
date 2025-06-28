@@ -3,6 +3,7 @@ import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostThreadLine } from "@/components/post/post-thread-line";
 import { UserPost } from "@/components/post/user-post";
 import type { NestedPost } from "@/types/nested-posts";
+import { cn } from "@heroui/react";
 
 interface PostInteractionProps {
   /**
@@ -31,22 +32,24 @@ export function PostInteraction({
   const isReply = action === "reply";
   const isRepost = action === "clone";
 
-  const replyPlaceholderText = `Reply to @${post.user?.username}`;
-  const repostPlaceholderText = `Repost @${post.user?.username}'s post`;
-
   return (
     <div className="flex flex-col gap-2">
       {isReply && (
         <div className="relative">
           <PostThreadLine isFirstInThread />
-          <UserPost post={post} isNavigationDisabled />
+          <UserPost post={post} isNavigationDisabled>
+            {post.repost && <CondensedUserPost post={post.repost} />}
+          </UserPost>
         </div>
       )}
       <PostComposer
-        placeholder={isReply ? replyPlaceholderText : repostPlaceholderText}
+        placeholder="What are your thoughts?"
         onSubmit={onSubmit}
         {...(isRepost && { repostPostId: post.id })}
         {...(isReply && { replyPostId: post.id })}
+        className={cn({
+          "rounded-b-xl rounded-t-none": isReply,
+        })}
       >
         {isRepost && (
           <div className="mb-4 flex flex-col gap-1">
