@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
 import { useEffect, useRef } from "react";
 import { UserPost } from "./user-post";
+import { CondensedUserPost } from "@/components/post/condensed-user-post";
 
 interface UserPostThreadProps {
   posts: NestedPost[];
@@ -49,7 +50,9 @@ export function UserPostThread({ posts }: UserPostThreadProps) {
               "rounded-t-xl border-t border-x border-b-0": index === 0,
             },
           )}
-        />
+        >
+          {post.repost && <CondensedUserPost post={post.repost} />}
+        </UserPost>
       ))}
     </div>
   );

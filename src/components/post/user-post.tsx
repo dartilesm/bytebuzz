@@ -14,6 +14,7 @@ interface UserPostProps {
   ref?: React.RefObject<HTMLDivElement>;
   className?: string;
   isNavigationDisabled?: boolean;
+  children?: React.ReactNode;
 }
 
 export function UserPost({
@@ -25,6 +26,7 @@ export function UserPost({
   ref,
   className,
   isNavigationDisabled,
+  children,
 }: UserPostProps) {
   if (!post && !ancestry) {
     throw new Error("Either post or ancestry must be provided");
@@ -51,7 +53,7 @@ export function UserPost({
         >
           <PostCard ref={ref} className={className}>
             <PostHeader />
-            <PostContent />
+            <PostContent>{children}</PostContent>
             <PostFooter />
           </PostCard>
           {post?.replies

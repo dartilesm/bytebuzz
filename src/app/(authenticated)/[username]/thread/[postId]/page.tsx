@@ -8,6 +8,7 @@ import { createServerSupabaseClient } from "@/db/supabase";
 import { withAnalytics } from "@/lib/with-analytics";
 import type { NestedPost } from "@/types/nested-posts";
 import { notFound } from "next/navigation";
+
 function nestReplies(posts: NestedPost[]) {
   const map = new Map();
   const roots: NestedPost[] = [];
@@ -53,7 +54,10 @@ async function getPostData(postId: string) {
   } else {
   }
 
-  const result = {
+  const result: {
+    postAncestry: NestedPost[];
+    directReplies: NestedPost[];
+  } = {
     postAncestry,
     directReplies: nestReplies(directReplies),
   };
@@ -72,6 +76,8 @@ async function ThreadPage({ params }: ThreadPageProps) {
   const { postId } = await params;
   const { postAncestry, directReplies } = await getPostData(postId);
 
+  console.log({ postAncestry, directReplies });
+
   if (!postAncestry || postAncestry.length === 0) {
     notFound();
   }
@@ -86,7 +92,7 @@ async function ThreadPage({ params }: ThreadPageProps) {
           </PostWrapper>
           <PostComposer
             placeholder={`Reply to @${postAncestry?.at(-1)?.user?.username}`}
-            postId={postId}
+            replyPostId={postId}
           />
           <div className="flex flex-col gap-4 min-h-[100dvh]">
             <h2 className="text-lg font-medium">Replies</h2>

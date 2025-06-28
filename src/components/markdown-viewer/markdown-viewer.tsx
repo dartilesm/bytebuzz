@@ -1,3 +1,5 @@
+"use client";
+
 import { CodeBlock } from "@/components/ui/code-block";
 import { Image } from "@heroui/react";
 import Markdown from "react-markdown";
@@ -14,12 +16,20 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           return <CodeBlock code={children as string} language={language} />;
         },
         img: ({ node, ...props }) => {
-          const { src, alt } = props;
+          const { src, alt, ...rest } = props;
 
           // Append postId as a query parameter
           const imageUrl = `${src}?postId=${postId}`;
 
-          return <Image src={imageUrl} alt={alt} />;
+          return (
+            <Image
+              className="rounded-medium"
+              src={imageUrl}
+              alt={alt}
+              {...rest}
+              onError={() => {}}
+            />
+          );
         },
       }}
     >

@@ -66,6 +66,7 @@
     "react-hook-form": "7.56.3",
     "react-markdown": "10.1.0",
     "react-syntax-highlighter": "^15.6.1",
+    "remark-gfm": "4.0.1",
     "shiki": "3.4.2",
     "svix": "1.65.0",
     "zod": "3.24.4"

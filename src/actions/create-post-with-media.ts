@@ -2,10 +2,15 @@
 
 import { createServerSupabaseClient } from "@/db/supabase";
 import { currentUser } from "@clerk/nextjs/server";
+import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
 
-interface CreatePostWithMediaData {
-  content: string;
+type PostExpectedFields = Pick<
+  Partial<Tables<"posts">>,
+  "content" | "parent_post_id" | "repost_post_id"
+>;
+
+interface CreatePostWithMediaData extends PostExpectedFields {
   mediaData?: {
     path: string;
     url: string;
@@ -21,7 +26,8 @@ export async function createPostWithMediaAction({
   content,
   mediaData,
   parent_post_id,
-}: CreatePostWithMediaData & { parent_post_id?: string }) {
+  repost_post_id,
+}: CreatePostWithMediaData) {
   try {
     const supabase = createServerSupabaseClient();
     const user = await currentUser();
@@ -37,6 +43,7 @@ export async function createPostWithMediaAction({
         content,
         user_id: user.id,
         parent_post_id,
+        repost_post_id,
       })
       .select()
       .single();

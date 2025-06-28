@@ -8,6 +8,7 @@ import type { MediaData } from "@/components/lexical-editor/plugins/media/media-
 import { useCreatePostWithMediaMutation } from "@/hooks/mutation/use-create-post-with-media-mutation";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
+import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
@@ -24,14 +25,20 @@ const postComposerSchema = z.object({
 
 type PostComposerProps = {
   placeholder?: string;
-  postId?: string;
+  replyPostId?: string;
+  repostPostId?: string;
   onSubmit?: () => void;
+  children?: React.ReactNode;
+  className?: string;
 };
 
 export function PostComposer({
   placeholder = "Start typing with markdown shortcuts...",
-  postId,
+  replyPostId,
+  repostPostId,
   onSubmit: onSubmitProp,
+  children,
+  className,
 }: PostComposerProps) {
   const { user } = useUser();
   const { addPost } = usePostsContext();
@@ -116,7 +123,8 @@ export function PostComposer({
         {
           content: data.content,
           mediaData: mediaData[0],
-          parent_post_id: postId,
+          parent_post_id: replyPostId,
+          repost_post_id: repostPostId,
         },
         {
           onSuccess: (newPost) => {
@@ -145,7 +153,10 @@ export function PostComposer({
 
   return (
     <form
-      className="dark:bg-default-100 bg-default-100 dark:hover:bg-default-200 hover:bg-default-200 rounded-xl overflow-hidden min-h-24 group/post-composer"
+      className={cn(
+        "dark:bg-default-100 bg-default-100 dark:hover:bg-default-200 hover:bg-default-200 rounded-xl overflow-hidden min-h-24 group/post-composer",
+        className,
+      )}
       onSubmit={form.handleSubmit(onSubmit)}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
@@ -155,6 +166,7 @@ export function PostComposer({
           </div>
           <div className="flex-1">
             <MarkdownEditor placeholder={placeholder} contentClassName="min-h-12 p-0" autoFocus />
+            <div className="py-4">{children}</div>
             <MarkdownToolbar className="bg-transparent border-none p-0">
               <MarkdownToolbarDefaultActions
                 buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary"

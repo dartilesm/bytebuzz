@@ -163,7 +163,7 @@ export function PostFooter() {
                   variant="light"
                   size="sm"
                   className="flex flex-row gap-2 text-gray-400"
-                  onPress={() => togglePostModal(true)}
+                  onPress={() => togglePostModal(true, "reply")}
                   aria-label="Comment"
                   tabIndex={0}
                 >
@@ -174,12 +174,13 @@ export function PostFooter() {
                 </Button>
               </Tooltip>
               {/* Other Buttons (Repost, Backup, More) */}
-              <Tooltip content="Repost (coming soon)">
+              <Tooltip content="Repost">
                 <Button
                   variant="light"
                   size="sm"
                   className="text-gray-400"
-                  aria-label="Repost (coming soon)"
+                  onPress={() => togglePostModal(true, "clone")}
+                  aria-label="Repost"
                   tabIndex={0}
                 >
                   <Repeat2Icon className="text-inherit" size={22} strokeWidth={1.5} />
