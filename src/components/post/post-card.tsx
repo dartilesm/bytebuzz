@@ -42,7 +42,7 @@ export function PostCard({ children, className, classNames, ref }: PostCardProps
         as="article"
       >
         {!isThreadPagePost && <PostAvatarAndThreadLine />}
-        <div className="w-full">{children}</div>
+        <div className="w-full overflow-hidden">{children}</div>
       </Card>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
 import { usePostContext } from "@/hooks/use-post-context";
 import { CardBody, cn } from "@heroui/react";
 
@@ -17,7 +18,7 @@ export function PostContent({ children }: PostContentProps) {
         "px-8.5": isThreadPagePost,
       })}
     >
-      {children ?? <p className="text-sm">{content}</p>}
+      {children ?? <MarkdownViewer markdown={content ?? ""} />}
     </CardBody>
   );
 }
