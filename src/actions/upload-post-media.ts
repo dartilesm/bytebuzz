@@ -3,10 +3,6 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import { currentUser } from "@clerk/nextjs/server";
 
-const DOMAIN = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
 /**
  * Uploads a media file to Supabase storage in a temporary location
  * @param file - The file to upload
@@ -50,7 +46,7 @@ export async function uploadPostMediaAction(
     } = supabase.storage.from("post-images").getPublicUrl(filePath);
 
     // Instead of getting the Supabase URL, return our proxied URL
-    const proxyUrl = `${DOMAIN}/api/media/${userId}/${fileNameWithoutExtension}`;
+    const proxyUrl = `/api/media/${userId}/${fileNameWithoutExtension}`;
 
     return {
       publicUrl,

@@ -5,6 +5,8 @@ import { type NextRequest, NextResponse } from "next/server";
  * GET handler for media files
  * Proxies requests to Supabase storage and returns the public URL
  * Route: /api/media/[userId]/[fileName]
+ * Query params:
+ * - postId: If provided, searches in posts directory, otherwise searches in temp
  */
 export async function GET(
   _request: NextRequest,
@@ -17,39 +19,33 @@ export async function GET(
 
     const supabase = createServerSupabaseClient();
 
-    // First try to find in permanent location (posts folder)
-    const { data: permanentFile } = await supabase.storage
+    // Define the path and search based on postId presence
+    const path = postId ? `${userId}/posts/${postId}` : `${userId}/temp`;
+
+    // Search for the file
+    const { data: files } = await supabase.storage
       .from("post-images")
-      .list(`${userId}/posts/${postId}`, {
-        search: fileName,
-      });
+      .list(path, { search: fileName, limit: 1 });
 
-    // If not found in permanent location, try temp folder
-    const { data: tempFile } = await supabase.storage.from("post-images").list(`${userId}/temp`, {
-      search: fileName,
-    });
+    const matchingFile = files?.[0];
 
-    // Get the matching file
-    const matchingFile = permanentFile?.[0] || tempFile?.[0];
-
+    // Return early if no file found
     if (!matchingFile) {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
-    // Get the full path based on where we found the file
-    const filePath = permanentFile?.[0]
-      ? `${userId}/posts/${postId}/${matchingFile.name}`
-      : `${userId}/temp/${matchingFile.name}`;
-
     // Get the public URL
-    const { data } = supabase.storage.from("post-images").getPublicUrl(filePath);
+    const { data } = supabase.storage
+      .from("post-images")
+      .getPublicUrl(`${path}/${matchingFile.name}`);
 
+    // Return early if no public URL
     if (!data?.publicUrl) {
       return NextResponse.json({ error: "Failed to get public URL" }, { status: 500 });
     }
 
     // Redirect to the public URL
-    return NextResponse.redirect(data.publicUrl);
+    return NextResponse.redirect(data.publicUrl, { status: 301 });
   } catch (error) {
     console.error("Error proxying media file:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
