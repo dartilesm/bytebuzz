@@ -46,7 +46,7 @@ export async function uploadPostMediaAction(
     } = supabase.storage.from("post-images").getPublicUrl(filePath);
 
     // Instead of getting the Supabase URL, return our proxied URL
-    const proxyUrl = `http://localhost:3000/api/media/${userId}/${fileNameWithoutExtension}`;
+    const proxyUrl = `/api/media/${userId}/${fileNameWithoutExtension}`;
 
     return {
       publicUrl,
