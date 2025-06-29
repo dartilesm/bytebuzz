@@ -3,11 +3,13 @@ import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * GET handler for media files
- * Proxies requests to Supabase storage and returns the public URL
+ * Proxies requests to Supabase storage and returns the file content
  * Route: /api/media/[userId]/[fileName]
  * Query params:
  * - postId: If provided, searches in posts directory, otherwise searches in temp
  */
+export const revalidate = 31536000; // Cache for 1 year (60 * 60 * 24 * 365)
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ userId: string; fileName: string }> },
@@ -22,10 +24,11 @@ export async function GET(
     // Define the path and search based on postId presence
     const path = postId ? `${userId}/posts/${postId}` : `${userId}/temp`;
 
-    // Search for the file
-    const { data: files } = await supabase.storage
-      .from("post-images")
-      .list(path, { search: fileName, limit: 1 });
+    // Search for the file with caching
+    const { data: files } = await supabase.storage.from("post-images").list(path, {
+      search: fileName,
+      limit: 1,
+    });
 
     const matchingFile = files?.[0];
 
@@ -34,20 +37,36 @@ export async function GET(
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
-    // Get the public URL
-    const { data } = supabase.storage
+    // Download the file with caching
+    const { data, error } = await supabase.storage
       .from("post-images")
-      .getPublicUrl(`${path}/${matchingFile.name}`);
+      .download(`${path}/${matchingFile.name}`);
 
-    // Return early if no public URL
-    if (!data?.publicUrl) {
-      return NextResponse.json({ error: "Failed to get public URL" }, { status: 500 });
+    if (error || !data) {
+      console.error("Error downloading file:", error);
+      return NextResponse.json({ error: "Failed to download file" }, { status: 500 });
     }
 
-    // Redirect to the public URL
-    return NextResponse.redirect(data.publicUrl, { status: 301 });
+    // Create response with appropriate headers
+    const response = new NextResponse(data, {
+      status: 200,
+      headers: {
+        "Content-Type": matchingFile.metadata?.mimetype || "application/octet-stream",
+        "Content-Disposition": `inline; filename="${matchingFile.name}"`,
+        // Add strong ETag for caching
+        ETag: `"${matchingFile.name}-${matchingFile.metadata?.size || 0}"`,
+        // Cache for 1 year since media files are immutable
+        "Cache-Control": "public, max-age=31536000, immutable, stale-while-revalidate=86400",
+        // Add Surrogate-Control for CDN caching
+        "Surrogate-Control": "public, max-age=31536000, immutable",
+        // Add Vary header to respect different client capabilities
+        Vary: "Accept-Encoding",
+      },
+    });
+
+    return response;
   } catch (error) {
-    console.error("Error proxying media file:", error);
+    console.error("Error serving media file:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
