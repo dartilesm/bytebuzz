@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
       {
         hostname: "github.com",
       },
+      {
+        hostname: "localhost",
+      },
+      {
+        hostname: "bytebuzz.dev",
+      },
     ],
   },
 };
