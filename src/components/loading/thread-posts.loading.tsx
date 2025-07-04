@@ -1,7 +1,7 @@
 "use client";
 
 import { UserPostLoading } from "@/components/loading/user-post.loading";
-import { PostComposer } from "@/components/post/post-composer";
+import { PostComposer } from "@/components/post-composer/post-composer";
 import { PageHeader } from "@/components/ui/page-header";
 import { PostsProvider } from "@/context/posts-context";
 

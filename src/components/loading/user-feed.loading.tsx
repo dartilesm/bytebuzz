@@ -1,5 +1,5 @@
 import { UserPostLoading } from "@/components/loading/user-post.loading";
-import { PostComposer } from "@/components/post/post-composer";
+import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostsProvider } from "@/context/posts-context";
 
 export function UserFeedLoading() {

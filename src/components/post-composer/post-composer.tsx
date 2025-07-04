@@ -5,7 +5,7 @@ import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider"
 import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
 import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
 import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
-import { useCreatePostWithMediaMutation } from "@/hooks/mutation/use-create-post-with-media-mutation";
+import { useCreatePostMutation } from "@/hooks/mutation/use-create-post-mutation";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
 import { cn } from "@/lib/utils";
@@ -61,7 +61,7 @@ export function PostComposer({
   });
 
   const { mutateAsync: uploadPostMedia } = useUploadPostMediaMutation();
-  const { mutate: createPost, isPending } = useCreatePostWithMediaMutation();
+  const { mutate: createPost, isPending } = useCreatePostMutation();
 
   async function handleMediaUpload(file: File): Promise<{ error?: string; data?: MediaData }> {
     try {
@@ -118,11 +118,11 @@ export function PostComposer({
 
   async function onSubmit(data: z.infer<typeof postComposerSchema>) {
     try {
-      // Create post with the first media (for now we only support one media per post)
+      // Create post with all media files
       await createPost(
         {
           content: data.content,
-          mediaData: mediaData[0],
+          mediaData: mediaData,
           parent_post_id: replyPostId,
           repost_post_id: repostPostId,
         },
