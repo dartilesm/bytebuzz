@@ -10,17 +10,19 @@ type PostExpectedFields = Pick<
   "content" | "parent_post_id" | "repost_post_id"
 >;
 
+interface MediaDataItem {
+  path: string;
+  url: string;
+  type: "image" | "video";
+}
+
 interface CreatePostWithMediaData extends PostExpectedFields {
-  mediaData?: {
-    path: string;
-    url: string;
-    type: "image" | "video";
-  };
+  mediaData?: MediaDataItem[];
 }
 
 /**
- * Server action to create a post with optional media attachment
- * Handles moving the media from temporary to permanent storage location
+ * Server action to create a post with optional media attachments
+ * Handles moving multiple media files from temporary to permanent storage location
  */
 export async function createPostWithMediaAction({
   content,
@@ -52,40 +54,52 @@ export async function createPostWithMediaAction({
       throw new Error(`Failed to create post: ${postError.message}`);
     }
 
-    if (mediaData) {
-      // Generate permanent path for the media
-      const fileName = mediaData.path.split("/").pop() || "";
-      const permanentPath = `${user.id}/posts/${post.id}/${fileName}`;
+    if (mediaData && mediaData.length > 0) {
+      const mediaPromises = mediaData.map(async (media) => {
+        // Generate permanent path for the media
+        const fileName = media.path.split("/").pop() || "";
+        const permanentPath = `${user.id}/posts/${post.id}/${fileName}`;
 
-      // Move file from temp to permanent location
-      const { error: moveError } = await supabase.storage
-        .from("post-images")
-        .move(mediaData.path, permanentPath);
+        // Move file from temp to permanent location
+        const { error: moveError } = await supabase.storage
+          .from("post-images")
+          .move(media.path, permanentPath);
 
-      if (moveError) {
-        // If move fails, delete the post and throw error
-        await supabase.from("posts").delete().eq("id", post.id);
-        throw new Error(`Failed to move media file: ${moveError.message}`);
-      }
+        if (moveError) {
+          throw new Error(`Failed to move media file: ${moveError.message}`);
+        }
 
-      // Generate the proxy URL for the permanent location
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("post-images").getPublicUrl(permanentPath);
+        // Generate the proxy URL for the permanent location
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("post-images").getPublicUrl(permanentPath);
 
-      // Create media record
-      const { error: mediaError } = await supabase.from("post_media").insert({
-        post_id: post.id,
-        file_url: publicUrl,
-        file_path: permanentPath,
-        media_type: mediaData.type,
+        return {
+          post_id: post.id,
+          file_url: publicUrl,
+          file_path: permanentPath,
+          media_type: media.type,
+        };
       });
 
-      if (mediaError) {
-        // If media record creation fails, clean up post and moved file
+      try {
+        const mediaRecords = await Promise.all(mediaPromises);
+
+        // Create media records
+        const { error: mediaError } = await supabase.from("post_media").insert(mediaRecords);
+
+        if (mediaError) {
+          throw new Error(`Failed to create media records: ${mediaError.message}`);
+        }
+      } catch (error) {
+        // If any media operation fails, clean up post and all moved files
         await supabase.from("posts").delete().eq("id", post.id);
-        await supabase.storage.from("post-images").remove([permanentPath]);
-        throw new Error(`Failed to create media record: ${mediaError.message}`);
+        const permanentPaths = mediaData.map((media) => {
+          const fileName = media.path.split("/").pop() || "";
+          return `${user.id}/posts/${post.id}/${fileName}`;
+        });
+        await supabase.storage.from("post-images").remove(permanentPaths);
+        throw error;
       }
     }
 

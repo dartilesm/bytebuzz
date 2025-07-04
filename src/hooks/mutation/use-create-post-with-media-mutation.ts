@@ -3,8 +3,9 @@ import { addToast } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 /**
- * Hook for creating a post with optional media attachment
+ * Hook for creating a post with optional media attachments
  * Handles optimistic updates and error handling
+ * Supports multiple media files per post
  */
 export function useCreatePostWithMediaMutation() {
   const queryClient = useQueryClient();

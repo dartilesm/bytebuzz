@@ -118,11 +118,11 @@ export function PostComposer({
 
   async function onSubmit(data: z.infer<typeof postComposerSchema>) {
     try {
-      // Create post with the first media (for now we only support one media per post)
+      // Create post with all media files
       await createPost(
         {
           content: data.content,
-          mediaData: mediaData[0],
+          mediaData: mediaData,
           parent_post_id: replyPostId,
           repost_post_id: repostPostId,
         },
