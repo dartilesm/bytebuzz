@@ -16,7 +16,7 @@ interface MediaDataItem {
   type: "image" | "video";
 }
 
-interface CreatePostWithMediaData extends PostExpectedFields {
+interface CreatePost extends PostExpectedFields {
   mediaData?: MediaDataItem[];
 }
 
@@ -24,12 +24,12 @@ interface CreatePostWithMediaData extends PostExpectedFields {
  * Server action to create a post with optional media attachments
  * Handles moving multiple media files from temporary to permanent storage location
  */
-export async function createPostWithMediaAction({
+export async function createPostAction({
   content,
   mediaData,
   parent_post_id,
   repost_post_id,
-}: CreatePostWithMediaData) {
+}: CreatePost) {
   try {
     const supabase = createServerSupabaseClient();
     const user = await currentUser();

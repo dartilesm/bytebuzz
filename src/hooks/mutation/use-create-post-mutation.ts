@@ -1,4 +1,4 @@
-import { createPostWithMediaAction } from "@/actions/create-post-with-media";
+import { createPostAction } from "@/actions/create-post";
 import { addToast } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -7,11 +7,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
  * Handles optimistic updates and error handling
  * Supports multiple media files per post
  */
-export function useCreatePostWithMediaMutation() {
+export function useCreatePostMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createPostWithMediaAction,
+    mutationFn: createPostAction,
     onSuccess: () => {
       // Invalidate the posts query to refetch the latest data
       queryClient.invalidateQueries({ queryKey: ["posts"] });
