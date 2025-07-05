@@ -20,11 +20,11 @@ export const PostsContext = createContext<PostsContextType | null>(null);
 export function PostsProvider({
   children,
   initialPosts,
-  fetchMorePosts,
+  fetchMorePosts = async () => ({ data: [], error: null }),
 }: {
   children: React.ReactNode;
   initialPosts: NestedPost[];
-  fetchMorePosts: (cursor?: string) => Promise<{ data: NestedPost[] | null; error: unknown }>;
+  fetchMorePosts?: (cursor?: string) => Promise<{ data: NestedPost[] | null; error: unknown }>;
 }) {
   const [posts, setPosts] = useState<NestedPost[]>(initialPosts);
 

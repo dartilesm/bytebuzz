@@ -2,36 +2,48 @@
 
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
-import { usePostsContext } from "@/hooks/use-posts-context";
-import { AnimatePresence, motion } from "motion/react";
+import { useFetchPosts } from "@/hooks/fetch/use-fetch-posts";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
+import { useEffect } from "react";
 import { UserPost } from "./user-post";
+import { UserPostLoading } from "@/components/loading/user-post.loading";
 
 export function PostList() {
-  const { posts } = usePostsContext();
+  // Set up infinite query for posts
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchPosts();
+
+  // Set up intersection observer for the last post
+  const [ref, entry] = useIntersectionObserver({
+    threshold: 1,
+    root: null,
+    rootMargin: "100px",
+  });
+
+  // Trigger loading more posts when last post becomes visible
+  useEffect(() => {
+    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+      console.log("fetching next page");
+      fetchNextPage({ cancelRefetch: false });
+    }
+  }, [entry?.isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <div className="flex flex-col gap-2">
-      <AnimatePresence mode="popLayout" initial={false}>
-        {posts.map((post) => (
-          <motion.div
-            key={post.id}
-            layout
-            initial={{ opacity: 0, y: -50 }} // Initial animation values
-            animate={{ opacity: 1, y: 0 }} // Animation values when entering
-            exit={{ opacity: 0, y: 50 }} // Animation values when exiting
-            transition={{ duration: 0.3 }} // Animation duration
-          >
-            <PostWrapper>
-              <UserPost post={post}>
-                {post.repost && <CondensedUserPost post={post.repost} />}
-              </UserPost>
-            </PostWrapper>
-          </motion.div>
-        ))}
-      </AnimatePresence>
-      {posts.length === 0 && (
+      {data.pages.map((page) => {
+        return page.data?.map((post) => (
+          <PostWrapper key={post.id}>
+            <UserPost post={post}>
+              {post.repost && <CondensedUserPost post={post.repost} />}
+            </UserPost>
+          </PostWrapper>
+        ));
+      })}
+      {/* Tracker ref for the last post */}
+      <div ref={ref} />
+      {data.pages.flatMap((page) => page.data).length === 0 && (
         <span className="text-center text-sm text-muted-foreground">No posts found</span>
       )}
+      {isFetchingNextPage && <UserPostLoading />}
     </div>
   );
 }
