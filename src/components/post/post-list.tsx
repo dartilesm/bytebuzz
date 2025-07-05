@@ -2,7 +2,7 @@
 
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
-import { useFetchPosts } from "@/hooks/fetch/use-fetch-posts";
+import { useFetchUserPosts } from "@/hooks/fetch/use-fetch-user-posts";
 import { useIntersectionObserver } from "@uidotdev/usehooks";
 import { useEffect } from "react";
 import { UserPost } from "./user-post";
@@ -10,7 +10,7 @@ import { UserPostLoading } from "@/components/loading/user-post.loading";
 
 export function PostList() {
   // Set up infinite query for posts
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchPosts();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchUserPosts();
 
   // Set up intersection observer for the last post
   const [ref, entry] = useIntersectionObserver({

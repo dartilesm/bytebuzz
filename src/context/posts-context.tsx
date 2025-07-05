@@ -8,7 +8,6 @@ interface PostsContextType {
   posts: NestedPost[];
   addPost: (post: NestedPost) => void;
   setPosts: (posts: NestedPost[]) => void;
-  fetchMorePosts: (cursor?: string) => Promise<{ data: NestedPost[] | null; error: unknown }>;
 }
 
 export const PostsContext = createContext<PostsContextType | null>(null);
@@ -20,11 +19,9 @@ export const PostsContext = createContext<PostsContextType | null>(null);
 export function PostsProvider({
   children,
   initialPosts,
-  fetchMorePosts = async () => ({ data: [], error: null }),
 }: {
   children: React.ReactNode;
   initialPosts: NestedPost[];
-  fetchMorePosts?: (cursor?: string) => Promise<{ data: NestedPost[] | null; error: unknown }>;
 }) {
   const [posts, setPosts] = useState<NestedPost[]>(initialPosts);
 
@@ -50,8 +47,6 @@ export function PostsProvider({
   }
 
   return (
-    <PostsContext.Provider value={{ posts, addPost, setPosts, fetchMorePosts }}>
-      {children}
-    </PostsContext.Provider>
+    <PostsContext.Provider value={{ posts, addPost, setPosts }}>{children}</PostsContext.Provider>
   );
 }

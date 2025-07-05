@@ -2,13 +2,6 @@ import { createServerSupabaseClient } from "@/db/supabase";
 import type { NestedPost } from "@/types/nested-posts";
 import type { PostgrestError } from "@supabase/supabase-js";
 
-// Service interface
-interface IUserService {
-  getUserFeed: (
-    cursor?: string,
-  ) => Promise<{ data: NestedPost[] | null; error: PostgrestError | null }>;
-}
-
 /**
  * Retrieves a user's feed posts with optional pagination cursor.
  *
@@ -37,8 +30,8 @@ async function getUserFeed(
 }
 
 /**
- * Real implementation of the user service
+ * Real implementation of the feed service
  */
-export const userService: IUserService = {
+export const feedService = {
   getUserFeed,
 };

@@ -2,11 +2,17 @@ import { usePostsContext } from "@/hooks/use-posts-context";
 import type { NestedPost } from "@/types/nested-posts";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-export function useFetchPosts() {
-  const { posts, fetchMorePosts } = usePostsContext();
+export function useFetchUserPosts() {
+  const { posts } = usePostsContext();
+
+  function fetchMorePosts(cursor?: string) {
+    const url = new URL("/api/posts/feed", window.location.href);
+    url.searchParams.set("cursor", cursor || "");
+    return fetch(url.toString()).then((res) => res.json());
+  }
 
   return useInfiniteQuery({
-    queryKey: ["posts", "feed"],
+    queryKey: ["posts", "user-feed"],
     queryFn: ({ pageParam }: { pageParam: string | undefined }) => fetchMorePosts(pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage: { data: NestedPost[] | null; error: unknown }) => {

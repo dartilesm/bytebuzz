@@ -1,10 +1,10 @@
 import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostList } from "@/components/post/post-list";
 import { PostsProvider } from "@/context/posts-context";
-import { userService } from "@/services/user.service";
+import { feedService } from "@/services/feed.service";
 
 export async function UserFeed() {
-  const { data: initialPosts, error } = await userService.getUserFeed();
+  const { data: initialPosts, error } = await feedService.getUserFeed();
 
   if (error) return <span>Ops! Error loading posts</span>;
 

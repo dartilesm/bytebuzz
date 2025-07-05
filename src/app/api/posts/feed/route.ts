@@ -1,4 +1,4 @@
-import { userService } from "@/services/user.service";
+import { feedService } from "@/services/feed.service";
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor") || undefined;
 
-    const result = await userService.getUserFeed(cursor);
+    const result = await feedService.getUserFeed(cursor);
 
     if (result.error) {
       return NextResponse.json({ error: result.error.message }, { status: 500 });
