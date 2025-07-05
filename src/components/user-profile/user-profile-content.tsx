@@ -2,6 +2,7 @@
 
 import { PostList } from "@/components/post/post-list";
 import { PostsProvider } from "@/context/posts-context";
+import { POST_QUERY_TYPE } from "@/hooks/fetch/use-posts-query";
 import type { NestedPost } from "@/types/nested-posts";
 import { Tab, Tabs } from "@heroui/react";
 import { AnimatePresence, motion } from "motion/react";
@@ -89,7 +90,7 @@ export function UserProfileContent({ posts }: UserProfileContentProps) {
           >
             {activeTab === UserProfileTabs.POSTS && (
               <PostsProvider initialPosts={posts}>
-                <PostList />
+                <PostList postQueryType={POST_QUERY_TYPE.USER_POSTS} />
               </PostsProvider>
             )}
             {activeTab === UserProfileTabs.MEDIA && (

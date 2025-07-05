@@ -2,30 +2,34 @@
 
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
-import { useFetchUserPosts } from "@/hooks/fetch/use-fetch-user-posts";
+import { usePostsQuery } from "@/hooks/fetch/use-posts-query";
 import { useIntersectionObserver } from "@uidotdev/usehooks";
 import { useEffect } from "react";
 import { UserPost } from "./user-post";
 import { UserPostLoading } from "@/components/loading/user-post.loading";
+import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 
-export function PostList() {
+interface PostListProps {
+  postQueryType?: POST_QUERY_TYPE;
+}
+
+export function PostList({ postQueryType }: PostListProps) {
   // Set up infinite query for posts
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchUserPosts();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsQuery(postQueryType);
 
   // Set up intersection observer for the last post
   const [ref, entry] = useIntersectionObserver({
     threshold: 1,
     root: null,
-    rootMargin: "100px",
+    rootMargin: "30%",
   });
 
   // Trigger loading more posts when last post becomes visible
   useEffect(() => {
     if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-      console.log("fetching next page");
       fetchNextPage({ cancelRefetch: false });
     }
-  }, [entry?.isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [entry?.isIntersecting]);
 
   return (
     <div className="flex flex-col gap-2">

@@ -39,7 +39,8 @@
         "noExplicitAny": "error",
         "noConsoleLog": "warn",
         "noEmptyInterface": "error",
-        "noRedundantUseStrict": "error"
+        "noRedundantUseStrict": "error",
+        "noConstEnum": "off"
       },
       "style": {
         "noNonNullAssertion": "error",
@@ -75,7 +76,9 @@
     }
   },
   "javascript": {
-    "globals": ["React"],
+    "globals": [
+      "React"
+    ],
     "formatter": {
       "quoteStyle": "double",
       "trailingCommas": "all",
