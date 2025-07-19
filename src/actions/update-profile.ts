@@ -23,6 +23,7 @@ export async function updateProfile(
       location: data.location,
       website: data.website,
       image_url: data.image_url,
+      cover_image_url: data.cover_image_url,
     })
     .eq("username", data.username)
     .select()

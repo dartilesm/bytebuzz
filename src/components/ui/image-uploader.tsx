@@ -1,20 +1,25 @@
 "use client";
 
-import { Icon } from "@iconify/react";
-import React from "react";
+import { cn } from "@/lib/utils";
+import { CameraIcon, ImageIcon, type LucideIcon } from "lucide-react";
+import { createElement, useRef, type ReactNode } from "react";
+
+const aspect_ratios = ["1:1", "3:1", "16:9", "4:3", "3:2", "2:1", "11:4"] as const;
+
+type AspectRatio = (typeof aspect_ratios)[number];
 
 interface ImageUploaderProps {
-  /** Callback function when image is uploaded */
-  onImageUpload: (imageUrl: string) => void;
+  /** Callback function when image file is selected */
+  onImageChange: (file: File) => void;
   /** Aspect ratio for the image container (e.g., "1:1", "3:1", "16:9") */
-  aspectRatio?: string;
+  aspectRatio?: AspectRatio;
   /** Children components to render inside the uploader */
-  children?: React.ReactNode;
+  children?: ReactNode;
   /** Additional CSS classes */
   className?: string;
   /** Custom upload area content when no image is present */
   uploadContent?: {
-    icon?: string;
+    icon?: LucideIcon;
     iconSize?: number;
     title?: string;
     description?: string;
@@ -28,7 +33,7 @@ interface ImageUploaderProps {
   showHoverOverlay?: boolean;
   /** Custom hover overlay content */
   hoverOverlayContent?: {
-    icon?: string;
+    icon?: LucideIcon;
     iconSize?: number;
     text?: string;
   };
@@ -37,10 +42,10 @@ interface ImageUploaderProps {
 }
 
 /**
- * Generic ImageUploader component for handling file uploads and generating blob URLs
+ * Generic ImageUploader component for handling file selection and validation
  * Supports customizable aspect ratios, descriptions, validation, and hover effects
  *
- * @param onImageUpload - Callback function when image is uploaded
+ * @param onImageChange - Callback function when image file is selected
  * @param aspectRatio - Aspect ratio for the image container
  * @param children - Child components to render
  * @param className - Additional CSS classes
@@ -51,12 +56,12 @@ interface ImageUploaderProps {
  * @param disabled - Whether the uploader is disabled
  */
 export function ImageUploader({
-  onImageUpload,
+  onImageChange,
   aspectRatio = "1:1",
   children,
   className = "",
   uploadContent = {
-    icon: "lucide:image",
+    icon: ImageIcon,
     iconSize: 24,
     title: "Click to upload image",
     description: undefined,
@@ -67,29 +72,13 @@ export function ImageUploader({
   },
   showHoverOverlay = true,
   hoverOverlayContent = {
-    icon: "lucide:camera",
+    icon: CameraIcon,
     iconSize: 24,
     text: "Click to change",
   },
   disabled = false,
 }: ImageUploaderProps) {
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  /**
-   * Gets the height based on aspect ratio for responsive design
-   */
-  function getAspectRatioHeight(): string {
-    const ratioMap: Record<string, string> = {
-      "1:1": "aspect-square",
-      "3:1": "aspect-[3/1]",
-      "16:9": "aspect-video",
-      "4:3": "aspect-[4/3]",
-      "3:2": "aspect-[3/2]",
-      "2:1": "aspect-[2/1]",
-    };
-
-    return ratioMap[aspectRatio] || "aspect-square";
-  }
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   /**
    * Validates the selected file against the validation rules
@@ -125,7 +114,7 @@ export function ImageUploader({
   }
 
   /**
-   * Handles file selection and creates a blob URL for the selected image
+   * Handles file selection and passes the file to the parent component
    */
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const files = event.target.files;
@@ -140,9 +129,8 @@ export function ImageUploader({
         return;
       }
 
-      // Create blob URL for immediate preview
-      const blobUrl = URL.createObjectURL(file);
-      onImageUpload(blobUrl);
+      // Pass the file to the parent component
+      onImageChange(file);
 
       // Reset the file input
       if (fileInputRef.current) {
@@ -168,19 +156,38 @@ export function ImageUploader({
     }
   }
 
+  const CustomImageIcon = createElement(uploadContent.icon || ImageIcon, {
+    size: uploadContent.iconSize || 24,
+    className: "mb-2",
+  });
+
+  const CustomHoverOverlayIcon = createElement(hoverOverlayContent.icon || CameraIcon, {
+    size: hoverOverlayContent.iconSize || 24,
+    className: "mb-1",
+  });
+
   return (
     <div
-      className={`cursor-pointer ${getAspectRatioHeight()} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
+      className={cn(
+        "cursor-pointer overflow-hidden",
+        {
+          "opacity-50 cursor-not-allowed": disabled,
+          "aspect-[11/4]": aspectRatio === "11:4",
+          "aspect-[2/1]": aspectRatio === "2:1",
+          "aspect-[3/2]": aspectRatio === "3:2",
+          "aspect-[4/3]": aspectRatio === "4:3",
+          "aspect-video": aspectRatio === "16:9",
+          "aspect-[3/1]": aspectRatio === "3:1",
+          "aspect-square": aspectRatio === "1:1",
+        },
+        className,
+      )}
       onClick={triggerFileInput}
     >
       {children || (
         <div className="w-full h-full bg-default-100 flex items-center justify-center border-2 border-dashed border-default-300 hover:border-default-400 transition-colors rounded-lg">
           <div className="flex flex-col items-center justify-center text-default-500 p-4">
-            <Icon
-              icon={uploadContent.icon || "lucide:image"}
-              width={uploadContent.iconSize || 24}
-              className="mb-2"
-            />
+            {CustomImageIcon}
             {uploadContent.title && <p className="text-small text-center">{uploadContent.title}</p>}
             {uploadContent.description && (
               <p className="text-tiny text-center text-default-400 mt-1">
@@ -195,11 +202,7 @@ export function ImageUploader({
       {showHoverOverlay && children && (
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
           <div className="flex flex-col items-center text-white">
-            <Icon
-              icon={hoverOverlayContent.icon || "lucide:camera"}
-              width={hoverOverlayContent.iconSize || 24}
-              className="mb-1"
-            />
+            {CustomHoverOverlayIcon}
             <p className="text-small">{hoverOverlayContent.text || "Click to change"}</p>
           </div>
         </div>
