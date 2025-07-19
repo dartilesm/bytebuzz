@@ -116,7 +116,6 @@ export function CodeBlock({
   if (!highlightedHtml) return <Skeleton className="w-full h-full">{code}</Skeleton>;
 
   return (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <div
       className={cn(
         "rounded-lg overflow-hidden border border-default-200 bg-content1 cursor-default",

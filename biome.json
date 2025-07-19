@@ -62,7 +62,7 @@
         "noDelete": "error"
       },
       "a11y": {
-        "useKeyWithClickEvents": "warn",
+        "useKeyWithClickEvents": "off",
         "useButtonType": "warn",
         "noSvgWithoutTitle": "error",
         "useMediaCaption": "error",

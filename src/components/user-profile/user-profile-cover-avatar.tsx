@@ -17,7 +17,7 @@ export function UserProfileCoverAvatar() {
           blurredImg: "opacity-20",
         }}
         isBlurred
-        src="https://heroui.com/images/album-cover.png"
+        src={profile.cover_image_url ?? undefined}
       />
       <div className="relative">
         <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-10 flex flex-col">
