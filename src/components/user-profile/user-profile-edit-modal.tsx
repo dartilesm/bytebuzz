@@ -15,6 +15,7 @@ import {
   Textarea,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import type { Tables } from "database.types";
 import Link from "next/link";
 import React from "react";
@@ -35,6 +36,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       location: profile.location || "",
       website: profile.website || "",
       image_url: profile.image_url || "",
+      cover_image_url: profile.cover_image_url || "",
     },
     mode: "onChange",
   });
@@ -65,7 +67,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   });
 
   // Handle image upload
-  const handleImageUpload = (field: "image_url", imageUrl: string) => {
+  const handleImageUpload = (field: "image_url" | "cover_image_url", imageUrl: string) => {
     setValue(field, imageUrl, { shouldDirty: true });
   };
 
@@ -78,6 +80,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       location: data.location || null,
       website: data.website || null,
       image_url: data.image_url || null,
+      cover_image_url: data.cover_image_url || null,
     });
   };
 
@@ -111,7 +114,17 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       <div className="flex items-center space-x-4">
                         <div className="w-20 h-20 rounded-full overflow-hidden">
                           {watch("image_url") ? (
-                            <div className="relative w-full h-full">
+                            <ImageUploader
+                              onImageUpload={(url) => handleImageUpload("image_url", url)}
+                              aspectRatio="1:1"
+                              className="relative w-full h-full group"
+                              showHoverOverlay={true}
+                              hoverOverlayContent={{
+                                icon: "lucide:camera",
+                                iconSize: 16,
+                                text: "Change",
+                              }}
+                            >
                               <Image
                                 src={watch("image_url") || ""}
                                 alt="Avatar"
@@ -123,22 +136,24 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                 size="sm"
                                 color="danger"
                                 variant="flat"
-                                className="absolute top-0 right-0"
+                                className="absolute top-0 right-0 z-10"
                                 onPress={() => handleImageUpload("image_url", "")}
                               >
                                 <Icon icon="lucide:x" width={16} />
                               </Button>
-                            </div>
+                            </ImageUploader>
                           ) : (
                             <ImageUploader
                               onImageUpload={(url) => handleImageUpload("image_url", url)}
                               aspectRatio="1:1"
-                              className="w-full h-full bg-default-100 flex items-center justify-center"
-                            >
-                              <div className="flex flex-col items-center justify-center text-default-500">
-                                <Icon icon="lucide:user" width={16} />
-                              </div>
-                            </ImageUploader>
+                              className="w-full h-full"
+                              uploadContent={{
+                                icon: "lucide:user",
+                                iconSize: 16,
+                                title: undefined,
+                                description: undefined,
+                              }}
+                            />
                           )}
                         </div>
                         <div className="flex-1">
@@ -181,6 +196,62 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       )}
                     />
                   </Card>
+                  {/* Cover Image */}
+                  <div className="space-y-2">
+                    <p className="text-small font-medium">Cover Image</p>
+                    <div className="space-y-4">
+                      <div className="w-full h-32 rounded-lg overflow-hidden">
+                        {watch("cover_image_url") ? (
+                          <ImageUploader
+                            onImageUpload={(url) => handleImageUpload("cover_image_url", url)}
+                            aspectRatio="3:1"
+                            className="relative w-full h-full group"
+                            showHoverOverlay={true}
+                            hoverOverlayContent={{
+                              icon: "lucide:camera",
+                              iconSize: 24,
+                              text: "Click to change",
+                            }}
+                          >
+                            <Image
+                              src={watch("cover_image_url") || ""}
+                              alt="Cover"
+                              className="w-full h-full object-cover"
+                              removeWrapper
+                            />
+                            {/* Remove button */}
+                            <Button
+                              isIconOnly
+                              size="sm"
+                              color="danger"
+                              variant="flat"
+                              className="absolute top-2 right-2 z-10"
+                              onPress={() => handleImageUpload("cover_image_url", "")}
+                            >
+                              <Icon icon="lucide:x" width={16} />
+                            </Button>
+                          </ImageUploader>
+                        ) : (
+                          <ImageUploader
+                            onImageUpload={(url) => handleImageUpload("cover_image_url", url)}
+                            aspectRatio="3:1"
+                            className="w-full h-full"
+                            uploadContent={{
+                              icon: "lucide:image",
+                              iconSize: 24,
+                              title: "Click to upload cover image",
+                              description: "Recommended size: 1200x400 pixels",
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-tiny text-default-500">
+                          Upload a cover image to personalize your profile header.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                   {/* Bio */}
                   <Controller
                     name="bio"
@@ -278,62 +349,3 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
     </Modal>
   );
 }
-
-interface ImageUploaderProps {
-  onImageUpload: (imageUrl: string) => void;
-  aspectRatio?: string;
-  children?: React.ReactNode;
-  className?: string;
-}
-
-const ImageUploader: React.FC<ImageUploaderProps> = ({
-  onImageUpload,
-  aspectRatio = "1:1",
-  children,
-  className,
-}) => {
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  // In a real application, you would upload to your storage service
-  // For this demo, we'll simulate uploading by generating a URL from the HeroUI image service
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-
-    if (files && files.length > 0) {
-      // Here we would normally upload the file to a server
-      // For demo purposes, we'll generate a random avatar URL
-      const imageCategory = aspectRatio === "1:1" ? "avatar" : "landscape";
-      const randomId = Math.floor(Math.random() * 100);
-      const width = aspectRatio === "1:1" ? 400 : 1200;
-      const height = aspectRatio === "1:1" ? 400 : 400;
-
-      const imageUrl = `https://img.heroui.chat/image/${imageCategory}?w=${width}&h=${height}&u=${randomId}`;
-      onImageUpload(imageUrl);
-
-      // Reset the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  return (
-    <div className={`cursor-pointer ${className || ""}`} onClick={triggerFileInput}>
-      {children}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/*"
-        className="hidden"
-        aria-label="Upload image"
-      />
-    </div>
-  );
-};
