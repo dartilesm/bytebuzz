@@ -2,12 +2,10 @@ import { UserProfile } from "@/components/user-profile/user-profile";
 import { createServerSupabaseClient } from "@/db/supabase";
 import { withAnalytics } from "@/lib/with-analytics";
 import { notFound } from "next/navigation";
+
 async function getUserProfile(username: string) {
   const supabaseClient = createServerSupabaseClient();
   const result = await supabaseClient.from("users").select("*").eq("username", username).single();
-
-  if (result.error) {
-  }
 
   return result;
 }
