@@ -18,6 +18,7 @@ import {
   Textarea,
 } from "@heroui/react";
 import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import type { TechnologyId } from "@/lib/technologies";
 import { TechnologySelector } from "./technology-selector";
@@ -25,6 +26,7 @@ import type { Tables } from "database.types";
 import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 
 interface UserProfileEditModalProps {
   onClose: () => void;
@@ -43,6 +45,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       image_url: profile.image_url || "",
       cover_image_url: profile.cover_image_url || "",
       top_technologies: profile.top_technologies || [],
+      github_url: profile.github_url || null,
+      linkedin_url: profile.linkedin_url || null,
     },
     mode: "onChange",
   });
@@ -98,14 +102,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   // Handle save with react-hook-form's handleSubmit
   const onSubmit = (data: Tables<"users">) => {
     const mutationData: UpdateProfileWithFilesData = {
-      username: data.username,
-      display_name: data.display_name,
-      bio: data.bio || undefined,
-      location: data.location || undefined,
-      website: data.website || undefined,
-      image_url: data.image_url || undefined,
-      cover_image_url: data.cover_image_url || undefined,
-      top_technologies: data.top_technologies || undefined,
+      ...data,
       imageFile,
       coverImageFile,
       currentImageUrl: profile.image_url || undefined,
@@ -351,6 +348,64 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       />
                     )}
                   />
+                  {/* Social Media Links */}
+                  {/* GitHub */}
+                  <Controller
+                    name="github_url"
+                    control={control}
+                    rules={{
+                      pattern: {
+                        value: /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/,
+                        message: "Please enter a valid GitHub profile URL",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <Input
+                        label="GitHub Profile"
+                        placeholder={`https://github.com/${profile.username}`}
+                        isInvalid={!!errors.github_url}
+                        errorMessage={errors.github_url?.message}
+                        startContent={<SiGithub className="text-default-400" size={16} />}
+                        classNames={{
+                          label: "top-0 pt-[inherit]",
+                        }}
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    )}
+                  />
+                  {/* LinkedIn */}
+                  <Controller
+                    name="linkedin_url"
+                    control={control}
+                    rules={{
+                      pattern: {
+                        value:
+                          /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/[a-zA-Z0-9-]+\/?|company\/[a-zA-Z0-9-]+\/?)$/,
+                        message: "Please enter a valid LinkedIn profile URL",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <Input
+                        label="LinkedIn Profile"
+                        placeholder={`https://linkedin.com/in/${profile.username}`}
+                        isInvalid={!!errors.linkedin_url}
+                        errorMessage={errors.linkedin_url?.message}
+                        startContent={
+                          <LinkedInIcon
+                            className="text-default-400"
+                            size={16}
+                            fill="currentColor"
+                          />
+                        }
+                        classNames={{
+                          label: "top-0 pt-[inherit]",
+                        }}
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    )}
+                  />
                   {/* Top Technologies */}
                   <Controller
                     name="top_technologies"
@@ -372,7 +427,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   type="submit"
                   color="primary"
                   isLoading={updateProfileMutation.isPending}
-                  isDisabled={updateProfileMutation.isPending}
+                  isDisabled={updateProfileMutation.isPending || !form.formState.isValid}
                 >
                   {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
