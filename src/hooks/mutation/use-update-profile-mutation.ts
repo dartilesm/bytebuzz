@@ -2,14 +2,9 @@ import { type UpdateProfileData, updateProfile } from "@/actions/update-profile"
 import { uploadProfileImage, deleteProfileImage } from "@/actions/upload-profile-image";
 import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
 
-export type UpdateProfileWithFilesData = Omit<
-  UpdateProfileData,
-  "image_url" | "cover_image_url"
-> & {
+export type UpdateProfileWithFilesData = UpdateProfileData & {
   imageFile?: File;
   coverImageFile?: File;
-  image_url?: string;
-  cover_image_url?: string;
   currentImageUrl?: string;
   currentCoverImageUrl?: string;
 };
@@ -30,13 +25,11 @@ export function useUpdateProfileMutation(
         handleImageUpload(data.coverImageFile, "cover", data.currentCoverImageUrl),
       ]);
 
+      const { currentImageUrl, currentCoverImageUrl, ...profileDataToUpdate } = data;
+
       // Prepare profile data for update
       const profileData: UpdateProfileData = {
-        username: data.username,
-        display_name: data.display_name,
-        bio: data.bio,
-        location: data.location,
-        website: data.website,
+        ...profileDataToUpdate,
         image_url: imageUrl || data.image_url,
         cover_image_url: coverImageUrl || data.cover_image_url,
         top_technologies: data.top_technologies,

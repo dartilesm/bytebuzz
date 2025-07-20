@@ -18,15 +18,7 @@ export async function updateProfile(
 
   const result = await supabaseClient
     .from("users")
-    .update({
-      display_name: data.display_name,
-      bio: data.bio,
-      location: data.location,
-      website: data.website,
-      image_url: data.image_url,
-      cover_image_url: data.cover_image_url,
-      top_technologies: data.top_technologies,
-    })
+    .update(data)
     .eq("username", data.username)
     .select()
     .single();
