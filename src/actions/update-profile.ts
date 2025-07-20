@@ -24,6 +24,7 @@ export async function updateProfile(
       website: data.website,
       image_url: data.image_url,
       cover_image_url: data.cover_image_url,
+      top_technologies: data.top_technologies,
     })
     .eq("username", data.username)
     .select()

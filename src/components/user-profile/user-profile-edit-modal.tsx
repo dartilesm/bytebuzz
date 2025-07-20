@@ -19,6 +19,8 @@ import {
 } from "@heroui/react";
 import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
 import { ImageUploader } from "@/components/ui/image-uploader";
+import type { TechnologyId } from "@/lib/technologies";
+import { TechnologySelector } from "./technology-selector";
 import type { Tables } from "database.types";
 import Link from "next/link";
 import { useState } from "react";
@@ -40,6 +42,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       website: profile.website || "",
       image_url: profile.image_url || "",
       cover_image_url: profile.cover_image_url || "",
+      top_technologies: profile.top_technologies || [],
     },
     mode: "onChange",
   });
@@ -102,6 +105,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       website: data.website || undefined,
       image_url: data.image_url || undefined,
       cover_image_url: data.cover_image_url || undefined,
+      top_technologies: data.top_technologies || undefined,
       imageFile,
       coverImageFile,
       currentImageUrl: profile.image_url || undefined,
@@ -344,6 +348,17 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                         }}
                         {...field}
                         value={field.value || ""}
+                      />
+                    )}
+                  />
+                  {/* Top Technologies */}
+                  <Controller
+                    name="top_technologies"
+                    control={control}
+                    render={({ field }) => (
+                      <TechnologySelector
+                        initialTechnologies={field.value as TechnologyId[]}
+                        onTechnologiesChange={field.onChange}
                       />
                     )}
                   />
