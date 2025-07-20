@@ -2,29 +2,59 @@
 
 import { useProfileContext } from "@/hooks/use-profile-context";
 import { Link } from "@heroui/react";
-import {
-  SiAstro,
-  SiAstroHex,
-  SiReact,
-  SiReactHex,
-  SiVuedotjs,
-  SiVuedotjsHex,
-} from "@icons-pack/react-simple-icons";
+import { getTechnologyById } from "@/lib/technologies";
 import { Link2Icon, MapPinIcon } from "lucide-react";
+import * as ReactIcons from "@icons-pack/react-simple-icons";
 
 export function UserProfileDescription() {
   const profile = useProfileContext();
+
+  /**
+   * Get icon component by name
+   */
+  function getIconComponent(iconName: string) {
+    const IconComponent = (
+      ReactIcons as unknown as Record<
+        string,
+        React.ComponentType<{ size?: number; color?: string; className?: string }>
+      >
+    )[iconName];
+    return IconComponent ? <IconComponent size={16} /> : null;
+  }
+
+  /**
+   * Get selected technologies
+   */
+  function getSelectedTechnologies() {
+    if (!profile.top_technologies || profile.top_technologies.length === 0) {
+      return [];
+    }
+    return profile.top_technologies
+      .map((id) => getTechnologyById(id))
+      .filter((tech): tech is NonNullable<typeof tech> => tech !== undefined);
+  }
+
+  const selectedTechnologies = getSelectedTechnologies();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-start w-full">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold flex flex-row items-center">
             <span>{profile.display_name}</span>
-            <span className="flex flex-row gap-2 rounded-2xl p-1.5 px-2 w-fit">
-              <SiReact className="size-4 dark:text-default-900" color={SiReactHex} />
-              <SiVuedotjs className="size-4 dark:text-default-900" color={SiVuedotjsHex} />
-              <SiAstro className="size-4 dark:text-default-900" color={SiAstroHex} />
-            </span>
+            {selectedTechnologies.length > 0 && (
+              <span className="flex flex-row gap-2 rounded-2xl p-1.5 px-2 w-fit">
+                {selectedTechnologies.map((tech) => (
+                  <div
+                    key={tech.id}
+                    style={{ color: tech.color }}
+                    className="size-4 dark:text-default-900"
+                  >
+                    {getIconComponent(tech.icon)}
+                  </div>
+                ))}
+              </span>
+            )}
           </h1>
           <p className="text-default-500">@{profile.username}</p>
         </div>
