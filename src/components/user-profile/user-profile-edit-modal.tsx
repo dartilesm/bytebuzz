@@ -45,8 +45,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       image_url: profile.image_url || "",
       cover_image_url: profile.cover_image_url || "",
       top_technologies: profile.top_technologies || [],
-      github_url: profile.github_url || null,
-      linkedin_url: profile.linkedin_url || null,
+      github_url: profile.github_url || "",
+      linkedin_url: profile.linkedin_url || "",
     },
     mode: "onChange",
   });

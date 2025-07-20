@@ -32,6 +32,7 @@ export function useUpdateProfileMutation(
         ...profileDataToUpdate,
         image_url: imageUrl || data.image_url,
         cover_image_url: coverImageUrl || data.cover_image_url,
+        top_technologies: data.top_technologies,
       };
 
       const response = await updateProfile(profileData);
