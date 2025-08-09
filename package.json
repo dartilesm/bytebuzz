@@ -6,10 +6,6 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "release": "./scripts/release.sh",
-    "release:patch": "./scripts/release.sh patch",
-    "release:minor": "./scripts/release.sh minor",
-    "release:major": "./scripts/release.sh major",
     "db:diff": "supabase db diff --linked",
     "db:dump-remote": "timestamp=$(date +%Y-%m-%d-%H:%M:%S) && mkdir -p supabase/dump/$timestamp && supabase db dump --linked --keep-comments -f supabase/dump/$timestamp/schemas.sql && supabase db dump --linked --data-only -f supabase/dump/$timestamp/data.sql && supabase db dump --linked --role-only -f supabase/dump/$timestamp/roles.sql",
     "db:link": "supabase link",
@@ -22,7 +18,10 @@
     "lint": "biome check .",
     "lint:fix": "biome check --apply .",
     "format": "biome format .",
-    "format:fix": "biome format --write ."
+    "format:fix": "biome format --write .",
+    "changeset": "changeset",
+    "release:version": "changeset version",
+    "release:tag": "changeset tag && git push --follow-tags"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.19.2",
@@ -79,6 +78,7 @@
     "@biomejs/biome": "1.9.4",
     "@emotion/is-prop-valid": "1.3.1",
     "@tailwindcss/postcss": "^4",
+    "@changesets/cli": "^2.27.9",
     "@types/node": "^20",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
