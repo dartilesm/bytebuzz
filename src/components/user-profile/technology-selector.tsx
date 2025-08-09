@@ -70,12 +70,10 @@ export function TechnologySelector({
             <div className="flex flex-wrap gap-2">
               {items.map((item) => {
                 const tech = getTechnologyById(item.data?.id || "");
-                const Icon = getIconComponent(tech?.icon || "");
                 return (
                   tech && (
                     <Chip
                       key={item.data?.id}
-                      startContent={Icon && <Icon size={16} color="currentColor" />}
                       onClose={() => {
                         handleChipClose(tech.id);
                       }}
