@@ -65,6 +65,7 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
           </Button>
 
           <Button
+            as={"div"}
             className="w-full justify-start mt-1"
             variant="light"
             startContent={<SunMoonIcon size={18} />}

@@ -1,11 +1,20 @@
 "use client";
 
 import { FollowButton } from "@/components/ui/follow-button";
+import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import { useProfileContext } from "@/hooks/use-profile-context";
 import { useUser } from "@clerk/nextjs";
-import { Button, Tooltip } from "@heroui/react";
-import { CheckIcon, Link2Icon, PencilIcon } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import {
+  addToast,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Tooltip,
+} from "@heroui/react";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import { Link2Icon, MoreHorizontalIcon, PencilIcon, Share2Icon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
@@ -17,17 +26,28 @@ const UserProfileEditModal = dynamic(
 export function UserProfileTopActions() {
   const { user } = useUser();
   const profile = useProfileContext();
-  const [isCopied, setIsCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const isCurrentUser = user?.username === profile.username;
 
   function handleCopyLink() {
     navigator.clipboard.writeText(window.location.href);
-    setIsCopied(true);
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 2000);
+    addToast({
+      title: "Profile link copied to clipboard",
+      color: "success",
+    });
+  }
+
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({
+        title: `${profile.display_name} (@${profile.username})`,
+        url: window.location.href,
+      });
+    } else {
+      // Fallback to copy if Web Share API is not available
+      handleCopyLink();
+    }
   }
 
   function toggleEditProfileModal() {
@@ -43,29 +63,59 @@ export function UserProfileTopActions() {
   }
 
   return (
-    <div className="flex justify-end">
+    <div className="flex justify-between">
+      <div>
+        {profile.github_url && (
+          <Tooltip content="View GitHub profile" closeDelay={0}>
+            <Button
+              as="a"
+              href={profile.github_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="light"
+              aria-label="View GitHub profile"
+              isIconOnly
+            >
+              <SiGithub size={16} />
+            </Button>
+          </Tooltip>
+        )}
+        {profile.linkedin_url && (
+          <Tooltip content="View LinkedIn profile" closeDelay={0}>
+            <Button
+              as="a"
+              href={profile.linkedin_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="light"
+              aria-label="View LinkedIn profile"
+              isIconOnly
+            >
+              <LinkedInIcon size={16} fill="currentColor" />
+            </Button>
+          </Tooltip>
+        )}
+      </div>
       <div className="flex flex-row gap-1.5 items-center">
-        <Tooltip content={isCopied ? "Copied!" : "Copy profile link"} closeDelay={0}>
-          <Button
-            className="mr-2"
-            variant="light"
-            onPress={handleCopyLink}
-            aria-label="Copy profile link"
-            isIconOnly
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={isCopied ? "copied" : "copy"}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.2 }}
-              >
-                {isCopied ? <CheckIcon size={16} /> : <Link2Icon size={16} />}
-              </motion.div>
-            </AnimatePresence>
-          </Button>
-        </Tooltip>
+        <Dropdown placement="left-start">
+          <DropdownTrigger>
+            <Button variant="light" aria-label="More options" isIconOnly>
+              <MoreHorizontalIcon size={16} />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Profile actions">
+            <DropdownItem
+              key="copy-link"
+              onPress={handleCopyLink}
+              startContent={<Link2Icon size={16} />}
+            >
+              Copy profile link
+            </DropdownItem>
+            <DropdownItem key="share" onPress={handleShare} startContent={<Share2Icon size={16} />}>
+              Share profile
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
         {!isCurrentUser && <FollowButton targetUserId={profile.id} size="md" />}
         {isCurrentUser && (
           <Button

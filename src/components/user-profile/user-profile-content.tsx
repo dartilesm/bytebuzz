@@ -1,6 +1,7 @@
 "use client";
 
 import { PostList } from "@/components/post/post-list";
+import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
 import type { NestedPost } from "@/types/nested-posts";
 import { Tab, Tabs } from "@heroui/react";
@@ -89,7 +90,7 @@ export function UserProfileContent({ posts }: UserProfileContentProps) {
           >
             {activeTab === UserProfileTabs.POSTS && (
               <PostsProvider initialPosts={posts}>
-                <PostList />
+                <PostList postQueryType={POST_QUERY_TYPE.USER_POSTS} />
               </PostsProvider>
             )}
             {activeTab === UserProfileTabs.MEDIA && (

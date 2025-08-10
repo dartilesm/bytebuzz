@@ -4,27 +4,15 @@ import { UserProfileCoverAvatar } from "@/components/user-profile/user-profile-c
 import { UserProfileDescription } from "@/components/user-profile/user-profile-description";
 import { UserProfileTopActions } from "@/components/user-profile/user-profile-top-actions";
 import { ProfileProvider } from "@/context/profile-provider";
-import { createServerSupabaseClient } from "@/db/supabase";
+import { feedService } from "@/services/feed.service";
 import type { Tables } from "database.types";
-
-async function getUsersPosts(username: string) {
-  const supabaseClient = createServerSupabaseClient();
-  const result = await supabaseClient.rpc("get_user_posts_by_username", {
-    input_username: username,
-  });
-
-  if (result.error) {
-  }
-
-  return result;
-}
 
 type UserProfileProps = {
   profile: Tables<"users">;
 };
 
 export async function UserProfile({ profile }: UserProfileProps) {
-  const posts = await getUsersPosts(profile.username);
+  const posts = await feedService.getUserPosts({ username: profile.username });
 
   return (
     <ProfileProvider profile={profile}>

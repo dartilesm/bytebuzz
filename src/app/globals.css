@@ -29,3 +29,25 @@ input:focus-visible,
 textarea:focus-visible {
   outline: none;
 }
+
+/* Lexical Editor Mention Styles */
+.mention {
+  @apply bg-primary-100 text-primary-800 rounded px-1 py-0.5 font-medium cursor-pointer transition-colors;
+}
+
+.mention:hover {
+  @apply bg-primary-200;
+}
+
+.mention:focus {
+  @apply outline-none ring-2 ring-primary ring-offset-1;
+}
+
+/* Lexical Editor Content Styles */
+.lexical-editor [data-lexical-editor] {
+  @apply outline-none;
+}
+
+.lexical-editor [data-lexical-editor]:focus {
+  @apply outline-none;
+}

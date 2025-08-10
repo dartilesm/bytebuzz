@@ -39,7 +39,8 @@
         "noExplicitAny": "error",
         "noConsoleLog": "warn",
         "noEmptyInterface": "error",
-        "noRedundantUseStrict": "error"
+        "noRedundantUseStrict": "error",
+        "noConstEnum": "off"
       },
       "style": {
         "noNonNullAssertion": "error",
@@ -61,7 +62,7 @@
         "noDelete": "error"
       },
       "a11y": {
-        "useKeyWithClickEvents": "warn",
+        "useKeyWithClickEvents": "off",
         "useButtonType": "warn",
         "noSvgWithoutTitle": "error",
         "useMediaCaption": "error",
@@ -75,7 +76,9 @@
     }
   },
   "javascript": {
-    "globals": ["React"],
+    "globals": [
+      "React"
+    ],
     "formatter": {
       "quoteStyle": "double",
       "trailingCommas": "all",

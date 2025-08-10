@@ -39,6 +39,11 @@ default_pool_size = 20
 # Maximum number of client connections allowed.
 max_client_conn = 100
 
+[db.seed]
+enabled = true
+# Path to the SQL files to seed the database with.
+sql_paths = ['./seeds/users.sql', './seeds/user_followers.sql', './seeds/posts.sql', './seeds/reactions.sql']
+
 [realtime]
 enabled = true
 # Bind realtime via either IPv4 or IPv6. (default: IPv4)

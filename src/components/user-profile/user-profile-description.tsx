@@ -1,34 +1,48 @@
 "use client";
 
 import { useProfileContext } from "@/hooks/use-profile-context";
-import { Link } from "@heroui/react";
-import {
-  SiAstro,
-  SiAstroHex,
-  SiReact,
-  SiReactHex,
-  SiVuedotjs,
-  SiVuedotjsHex,
-} from "@icons-pack/react-simple-icons";
+import { Link, Chip } from "@heroui/react";
+import { getTechnologyById } from "@/lib/technologies";
 import { Link2Icon, MapPinIcon } from "lucide-react";
 
 export function UserProfileDescription() {
   const profile = useProfileContext();
+
+  /**
+   * Get selected technologies
+   */
+  function getSelectedTechnologies() {
+    if (!profile.top_technologies || profile.top_technologies.length === 0) {
+      return [];
+    }
+    return profile.top_technologies
+      .map((id) => getTechnologyById(id))
+      .filter((tech): tech is NonNullable<typeof tech> => tech !== undefined);
+  }
+
+  const selectedTechnologies = getSelectedTechnologies();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-start w-full">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold flex flex-row items-center">
-            <span>{profile.display_name}</span>
-            <span className="flex flex-row gap-2 rounded-2xl p-1.5 px-2 w-fit">
-              <SiReact className="size-4 dark:text-default-900" color={SiReactHex} />
-              <SiVuedotjs className="size-4 dark:text-default-900" color={SiVuedotjsHex} />
-              <SiAstro className="size-4 dark:text-default-900" color={SiAstroHex} />
-            </span>
-          </h1>
+          <h1 className="text-2xl font-bold">{profile.display_name}</h1>
           <p className="text-default-500">@{profile.username}</p>
         </div>
       </div>
+
+      {/* Top Technologies Section */}
+      {selectedTechnologies.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-2">
+            {selectedTechnologies.map((tech) => (
+              <Chip key={tech.id} variant="flat" size="sm" className="text-xs font-medium">
+                {tech.name}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      )}
 
       <p className="text-default-700">{profile.bio}</p>
 

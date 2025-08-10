@@ -1,6 +1,6 @@
 "use client";
 
-import { PostCommentModal } from "@/components/post/post-comment-modal";
+import { PostActionModal } from "@/components/post/post-action-modal";
 import type { NestedPost } from "@/types/nested-posts";
 import { useParams } from "next/navigation";
 import { createContext, useState } from "react";
@@ -10,7 +10,11 @@ export interface PostContextType {
   isThread?: boolean;
   isFirstInThread?: boolean;
   isLastInThread?: boolean;
-  isModal?: boolean;
+  /**
+   * When true, disables click-to-navigate interaction on the post.
+   * Used when the post is displayed in a modal context where navigation should be prevented.
+   */
+  isNavigationDisabled?: boolean;
 
   /**
    * Indicates if this post is the main post being viewed in a thread page.
@@ -18,7 +22,7 @@ export interface PostContextType {
    * as it's the focus of the current page.
    */
   isThreadPagePost?: boolean;
-  togglePostModal: (isOpen?: boolean) => void;
+  togglePostModal: (isOpen?: boolean, action?: "reply" | "clone") => void;
 }
 
 export const PostContext = createContext<PostContextType>({} as PostContextType);
@@ -26,7 +30,7 @@ export const PostContext = createContext<PostContextType>({} as PostContextType)
 export interface PostProviderProps {
   children: React.ReactNode;
   post: NestedPost;
-  isModal?: boolean;
+  isNavigationDisabled?: boolean;
   isThread?: boolean;
   isFirstInThread?: boolean;
   isLastInThread?: boolean;
@@ -34,7 +38,7 @@ export interface PostProviderProps {
 
 export function PostProvider({
   children,
-  isModal = false,
+  isNavigationDisabled = false,
   post,
   isThread,
   isFirstInThread,
@@ -53,17 +57,17 @@ export function PostProvider({
     <PostContext.Provider
       value={{
         post,
-        isModal,
+        isNavigationDisabled,
         isThread,
         isFirstInThread,
         isLastInThread,
-        isThreadPagePost: !isModal && post.id === postId,
+        isThreadPagePost: !isNavigationDisabled && post.id === postId,
         togglePostModal,
       }}
     >
       {children}
       {isModalOpen && (
-        <PostCommentModal
+        <PostActionModal
           post={post}
           isOpen={isModalOpen}
           onOpenChange={togglePostModal}

@@ -1,11 +1,8 @@
-import { ButtonGroup } from "@heroui/react";
-import { Icon } from "@iconify/react";
-import { useTheme } from "next-themes";
-import dynamic from "next/dynamic";
+"use client";
 
-const Button = dynamic(() => import("@heroui/react").then((mod) => mod.Button), {
-  ssr: false,
-});
+import { Button, ButtonGroup } from "@heroui/react";
+import { LaptopIcon, MoonIcon, SunIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export function SidebarThemeSwitcher() {
   const { theme, setTheme } = useTheme();
@@ -17,21 +14,21 @@ export function SidebarThemeSwitcher() {
         color={theme === "light" ? "primary" : "default"}
         onPress={() => setTheme("light")}
       >
-        <Icon icon="lucide:sun" width={16} height={16} />
+        <SunIcon size={16} />
       </Button>
       <Button
         isIconOnly
         color={theme === "system" ? "primary" : "default"}
         onPress={() => setTheme("system")}
       >
-        <Icon icon="lucide:laptop" width={16} height={16} />
+        <LaptopIcon size={16} />
       </Button>
       <Button
         isIconOnly
         color={theme === "dark" ? "primary" : "default"}
         onPress={() => setTheme("dark")}
       >
-        <Icon icon="lucide:moon" width={16} height={16} />
+        <MoonIcon size={16} />
       </Button>
     </ButtonGroup>
   );

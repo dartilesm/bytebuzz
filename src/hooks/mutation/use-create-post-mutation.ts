@@ -1,23 +1,35 @@
-import { type CreatePostCommentProps, createPostComment } from "@/actions/post-comment";
-import type { useUser } from "@clerk/nextjs";
-import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import { createPostAction } from "@/actions/create-post";
+import { addToast } from "@heroui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function useCreatePostMutation(
-  useMutationProps: UseMutationOptions<
-    Awaited<ReturnType<typeof createPostComment>>,
-    Error,
-    CreatePostCommentProps
-  >,
-  user: ReturnType<typeof useUser>["user"],
-) {
-  const mutation = useMutation({
-    ...useMutationProps,
-    mutationKey: ["create-post", user?.id],
-    mutationFn: async (data: CreatePostCommentProps) => {
-      const response = await createPostComment(data);
-      return response;
+/**
+ * Hook for creating a post with optional media attachments
+ * Handles optimistic updates and error handling
+ * Supports multiple media files per post
+ */
+export function useCreatePostMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createPostAction,
+    onSuccess: () => {
+      // Invalidate the posts query to refetch the latest data
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      addToast({
+        title: "Post created",
+        description: "Your post has been published successfully",
+        variant: "flat",
+        color: "success",
+      });
+    },
+    onError: (error: Error) => {
+      addToast({
+        title: "Failed to create post",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "flat",
+        color: "danger",
+      });
     },
   });
-
-  return mutation;
 }

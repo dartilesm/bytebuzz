@@ -1,6 +1,9 @@
 "use client";
 
-import { useUpdateProfileMutation } from "@/hooks/mutation/use-update-profile-mutation";
+import {
+  useUpdateProfileMutation,
+  type UpdateProfileWithFilesData,
+} from "@/hooks/mutation/use-update-profile-mutation";
 import {
   Alert,
   Button,
@@ -14,11 +17,16 @@ import {
   ModalHeader,
   Textarea,
 } from "@heroui/react";
-import { Icon } from "@iconify/react";
+import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import { ImageUploader } from "@/components/ui/image-uploader";
+import type { TechnologyId } from "@/lib/technologies";
+import { TechnologySelector } from "./technology-selector";
 import type { Tables } from "database.types";
 import Link from "next/link";
-import React from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 
 interface UserProfileEditModalProps {
   onClose: () => void;
@@ -35,15 +43,22 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       location: profile.location || "",
       website: profile.website || "",
       image_url: profile.image_url || "",
+      cover_image_url: profile.cover_image_url || "",
+      top_technologies: profile.top_technologies || [],
+      github_url: profile.github_url || "",
+      linkedin_url: profile.linkedin_url || "",
     },
     mode: "onChange",
   });
+
+  // State to store file objects for upload
+  const [imageFile, setImageFile] = useState<File | undefined>();
+  const [coverImageFile, setCoverImageFile] = useState<File | undefined>();
 
   const {
     control,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
   } = form;
 
@@ -64,31 +79,47 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
     },
   });
 
-  // Handle image upload
-  const handleImageUpload = (field: "image_url", imageUrl: string) => {
-    setValue(field, imageUrl, { shouldDirty: true });
-  };
+  /**
+   * Handle image upload by creating blob URL for immediate preview
+   */
+  function handleImageUpload(
+    file: File,
+    onChange: (value: string) => void,
+    type: "avatar" | "cover",
+  ): void {
+    // Create blob URL for immediate preview
+    const blobUrl = URL.createObjectURL(file);
+    onChange(blobUrl);
+
+    // Store file for later upload
+    if (type === "avatar") {
+      setImageFile(file);
+    } else {
+      setCoverImageFile(file);
+    }
+  }
 
   // Handle save with react-hook-form's handleSubmit
   const onSubmit = (data: Tables<"users">) => {
-    updateProfileMutation.mutate({
-      username: data.username,
-      display_name: data.display_name,
-      bio: data.bio || null,
-      location: data.location || null,
-      website: data.website || null,
-      image_url: data.image_url || null,
-    });
+    const mutationData: UpdateProfileWithFilesData = {
+      ...data,
+      imageFile,
+      coverImageFile,
+      currentImageUrl: profile.image_url || undefined,
+      currentCoverImageUrl: profile.cover_image_url || undefined,
+    };
+
+    updateProfileMutation.mutate(mutationData);
   };
 
   return (
     <Modal onClose={onClose} size="xl" scrollBehavior="inside" defaultOpen backdrop="blur">
-      <ModalContent>
-        {(onModalClose) => (
-          <div>
-            <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ModalContent>
+          {(onModalClose) => (
+            <>
               <ModalHeader className="flex flex-col gap-1">Edit Profile</ModalHeader>
-              <ModalBody className="overflow-hidden">
+              <ModalBody>
                 <div className="space-y-6">
                   <Alert
                     color="primary"
@@ -110,36 +141,50 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       <p className="text-small font-medium">Profile Picture</p>
                       <div className="flex items-center space-x-4">
                         <div className="w-20 h-20 rounded-full overflow-hidden">
-                          {watch("image_url") ? (
-                            <div className="relative w-full h-full">
-                              <Image
-                                src={watch("image_url") || ""}
-                                alt="Avatar"
-                                className="w-full h-full object-cover"
-                                removeWrapper
-                              />
-                              <Button
-                                isIconOnly
-                                size="sm"
-                                color="danger"
-                                variant="flat"
-                                className="absolute top-0 right-0"
-                                onPress={() => handleImageUpload("image_url", "")}
-                              >
-                                <Icon icon="lucide:x" width={16} />
-                              </Button>
-                            </div>
-                          ) : (
-                            <ImageUploader
-                              onImageUpload={(url) => handleImageUpload("image_url", url)}
-                              aspectRatio="1:1"
-                              className="w-full h-full bg-default-100 flex items-center justify-center"
-                            >
-                              <div className="flex flex-col items-center justify-center text-default-500">
-                                <Icon icon="lucide:user" width={16} />
-                              </div>
-                            </ImageUploader>
-                          )}
+                          <Controller
+                            name="image_url"
+                            control={control}
+                            render={({ field }) => (
+                              <>
+                                {field.value ? (
+                                  <ImageUploader
+                                    onImageChange={(file) =>
+                                      handleImageUpload(file, field.onChange, "avatar")
+                                    }
+                                    aspectRatio="1:1"
+                                    className="relative w-full h-full group"
+                                    hoverOverlayContent={{
+                                      icon: CameraIcon,
+                                      iconSize: 16,
+                                      text: "Change",
+                                    }}
+                                    disabled
+                                  >
+                                    <Image
+                                      src={field.value}
+                                      alt="Avatar"
+                                      className="w-full h-full object-cover"
+                                      removeWrapper
+                                    />
+                                  </ImageUploader>
+                                ) : (
+                                  <ImageUploader
+                                    onImageChange={(file) =>
+                                      handleImageUpload(file, field.onChange, "avatar")
+                                    }
+                                    aspectRatio="1:1"
+                                    className="w-full h-full"
+                                    uploadContent={{
+                                      icon: UserIcon,
+                                      iconSize: 16,
+                                      title: undefined,
+                                      description: undefined,
+                                    }}
+                                  />
+                                )}
+                              </>
+                            )}
+                          />
                         </div>
                         <div className="flex-1">
                           <p className="text-tiny text-default-500">
@@ -181,6 +226,63 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       )}
                     />
                   </Card>
+                  {/* Cover Image */}
+                  <div className="space-y-2">
+                    <p className="text-small font-medium">Cover Image</p>
+                    <div className="space-y-4">
+                      <div className="w-full rounded-lg overflow-hidden">
+                        <Controller
+                          name="cover_image_url"
+                          control={control}
+                          render={({ field }) => (
+                            <>
+                              {field.value ? (
+                                <ImageUploader
+                                  onImageChange={(file) =>
+                                    handleImageUpload(file, field.onChange, "cover")
+                                  }
+                                  aspectRatio="11:4"
+                                  className="relative w-full h-full group"
+                                  showHoverOverlay={true}
+                                  hoverOverlayContent={{
+                                    icon: CameraIcon,
+                                    iconSize: 24,
+                                    text: "Click to change",
+                                  }}
+                                >
+                                  <Image
+                                    src={field.value}
+                                    alt="Cover"
+                                    className="w-full h-full object-cover"
+                                    removeWrapper
+                                  />
+                                </ImageUploader>
+                              ) : (
+                                <ImageUploader
+                                  onImageChange={(file) =>
+                                    handleImageUpload(file, field.onChange, "cover")
+                                  }
+                                  aspectRatio="11:4"
+                                  className="w-full h-full"
+                                  uploadContent={{
+                                    icon: ImageIcon,
+                                    iconSize: 24,
+                                    title: "Click to upload cover image",
+                                    description: "Recommended size: 1200x400 pixels",
+                                  }}
+                                />
+                              )}
+                            </>
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <p className="text-tiny text-default-500">
+                          Upload a cover image to personalize your profile header.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                   {/* Bio */}
                   <Controller
                     name="bio"
@@ -237,14 +339,81 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                         placeholder="https://yourwebsite.com"
                         isInvalid={!!errors.website}
                         errorMessage={errors.website?.message}
+                        startContent={<GlobeIcon className="text-default-400" size={16} />}
+                        classNames={{
+                          label: "top-0 pt-[inherit]",
+                        }}
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    )}
+                  />
+                  {/* Social Media Links */}
+                  {/* GitHub */}
+                  <Controller
+                    name="github_url"
+                    control={control}
+                    rules={{
+                      pattern: {
+                        value: /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/,
+                        message: "Please enter a valid GitHub profile URL",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <Input
+                        label="GitHub Profile"
+                        placeholder={`https://github.com/${profile.username}`}
+                        isInvalid={!!errors.github_url}
+                        errorMessage={errors.github_url?.message}
+                        startContent={<SiGithub className="text-default-400" size={16} />}
+                        classNames={{
+                          label: "top-0 pt-[inherit]",
+                        }}
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    )}
+                  />
+                  {/* LinkedIn */}
+                  <Controller
+                    name="linkedin_url"
+                    control={control}
+                    rules={{
+                      pattern: {
+                        value:
+                          /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/[a-zA-Z0-9-]+\/?|company\/[a-zA-Z0-9-]+\/?)$/,
+                        message: "Please enter a valid LinkedIn profile URL",
+                      },
+                    }}
+                    render={({ field }) => (
+                      <Input
+                        label="LinkedIn Profile"
+                        placeholder={`https://linkedin.com/in/${profile.username}`}
+                        isInvalid={!!errors.linkedin_url}
+                        errorMessage={errors.linkedin_url?.message}
                         startContent={
-                          <Icon icon="lucide:globe" className="text-default-400" width={16} />
+                          <LinkedInIcon
+                            className="text-default-400"
+                            size={16}
+                            fill="currentColor"
+                          />
                         }
                         classNames={{
                           label: "top-0 pt-[inherit]",
                         }}
                         {...field}
                         value={field.value || ""}
+                      />
+                    )}
+                  />
+                  {/* Top Technologies */}
+                  <Controller
+                    name="top_technologies"
+                    control={control}
+                    render={({ field }) => (
+                      <TechnologySelector
+                        initialTechnologies={field.value as TechnologyId[]}
+                        onTechnologiesChange={field.onChange}
                       />
                     )}
                   />
@@ -258,82 +427,23 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   type="submit"
                   color="primary"
                   isLoading={updateProfileMutation.isPending}
-                  isDisabled={updateProfileMutation.isPending}
+                  isDisabled={updateProfileMutation.isPending || !form.formState.isValid}
                 >
                   {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </ModalFooter>
-            </form>
-            {/* <UserProfile
+              {/* <UserProfile
               appearance={{
                 elements: {
                   rootBox: "max-w-full",
                   cardBox: "max-w-full",
-                },
-              }}
-            /> */}
-          </div>
-        )}
-      </ModalContent>
+                  },
+                  }}
+                  /> */}
+            </>
+          )}
+        </ModalContent>
+      </form>
     </Modal>
   );
 }
-
-interface ImageUploaderProps {
-  onImageUpload: (imageUrl: string) => void;
-  aspectRatio?: string;
-  children?: React.ReactNode;
-  className?: string;
-}
-
-const ImageUploader: React.FC<ImageUploaderProps> = ({
-  onImageUpload,
-  aspectRatio = "1:1",
-  children,
-  className,
-}) => {
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  // In a real application, you would upload to your storage service
-  // For this demo, we'll simulate uploading by generating a URL from the HeroUI image service
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-
-    if (files && files.length > 0) {
-      // Here we would normally upload the file to a server
-      // For demo purposes, we'll generate a random avatar URL
-      const imageCategory = aspectRatio === "1:1" ? "avatar" : "landscape";
-      const randomId = Math.floor(Math.random() * 100);
-      const width = aspectRatio === "1:1" ? 400 : 1200;
-      const height = aspectRatio === "1:1" ? 400 : 400;
-
-      const imageUrl = `https://img.heroui.chat/image/${imageCategory}?w=${width}&h=${height}&u=${randomId}`;
-      onImageUpload(imageUrl);
-
-      // Reset the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  return (
-    <div className={`cursor-pointer ${className || ""}`} onClick={triggerFileInput}>
-      {children}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/*"
-        className="hidden"
-        aria-label="Upload image"
-      />
-    </div>
-  );
-};
