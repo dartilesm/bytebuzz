@@ -29,15 +29,36 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Create/Update Version PR
-        uses: changesets/action@v1
-        with:
-          version: bun run release:version
-          commit: "Version Packages"
-          title: "Version Packages"
-          setupGitUser: true
+      - name: Create/Update Version PR using GitHub CLI
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --all --tags
+
+          # Run Changesets versioning; this updates package versions and changelogs if changesets exist
+          bun run release:version || true
+
+          # If no changes produced by versioning, exit gracefully
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changesets to version. Skipping PR creation."
+            exit 0
+          fi
+
+          BRANCH="changeset/release-${GITHUB_REF_NAME}"
+          git checkout -B "$BRANCH"
+          git add -A
+          git commit -m "chore: version packages"
+          git push --force --set-upstream origin "$BRANCH"
+
+          # Create or update the PR targeting develop
+          if gh pr view --head "$BRANCH" >/dev/null 2>&1; then
+            gh pr edit --head "$BRANCH" --title "Version Packages" --body "Automated version bump and changelog." --base develop
+          else
+            gh pr create --title "Version Packages" --body "Automated version bump and changelog." --base develop --head "$BRANCH"
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish_release:
     if: github.ref == 'refs/heads/main'
@@ -56,11 +77,26 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Tag and Create GitHub Release
-        uses: changesets/action@v1
-        with:
-          publish: bun run release:tag
-          setupGitUser: true
-          createGithubReleases: true
+      - name: Tag and Create GitHub Release using GitHub CLI
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --all --tags
+
+          # Create and push tag from current version in package.json
+          VERSION="v$(jq -r .version package.json)"
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists. Skipping tag creation."
+          else
+            bun run release:tag
+          fi
+
+          # Create GitHub Release if it doesn't exist
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists."
+          else
+            gh release create "$VERSION" --generate-notes
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
