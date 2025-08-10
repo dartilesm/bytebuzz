@@ -19,21 +19,29 @@ export function useUpdateProfileMutation(
   const mutation = useMutation({
     ...useMutationProps,
     mutationFn: async (data: UpdateProfileWithFilesData) => {
+      const {
+        currentImageUrl,
+        currentCoverImageUrl,
+        coverImageFile,
+        imageFile,
+        ...profileDataToUpdate
+      } = data;
+
       // Handle image uploads with cleanup
       const [imageUrl, coverImageUrl] = await Promise.all([
-        handleImageUpload(data.imageFile, "avatar", data.currentImageUrl),
-        handleImageUpload(data.coverImageFile, "cover", data.currentCoverImageUrl),
+        handleImageUpload(imageFile, "avatar", currentImageUrl),
+        handleImageUpload(coverImageFile, "cover", currentCoverImageUrl),
       ]);
-
-      const { currentImageUrl, currentCoverImageUrl, ...profileDataToUpdate } = data;
 
       // Prepare profile data for update
       const profileData: UpdateProfileData = {
         ...profileDataToUpdate,
-        image_url: imageUrl || data.image_url,
-        cover_image_url: coverImageUrl || data.cover_image_url,
-        top_technologies: data.top_technologies,
+        image_url: imageUrl || currentImageUrl,
+        cover_image_url: coverImageUrl || currentCoverImageUrl,
+        top_technologies: profileDataToUpdate.top_technologies,
       };
+
+      console.log("profileData", profileData);
 
       const response = await updateProfile(profileData);
 
