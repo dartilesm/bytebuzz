@@ -22,11 +22,7 @@ export const metadata: Metadata = {
     "ByteBuzz is a social platform for developers and tech enthusiasts to share code snippets, tech news, and programming memes.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
