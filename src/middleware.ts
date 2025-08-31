@@ -12,7 +12,7 @@ const isProtectedRoute = createRouteMatcher(["/((?!sign-in|sign-up).*)"]);
  * @see https://clerk.com/docs/references/nextjs/clerk-middleware
  */
 export default clerkMiddleware(async function middleware(auth, req: NextMiddlewareRequestParam) {
-  if (isProtectedRoute(req)) await auth.protect();
+  /* if (isProtectedRoute(req)) await auth.protect(); */
 
   if (req.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/root", req.url));
