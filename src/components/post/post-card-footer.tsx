@@ -11,6 +11,7 @@ import {
   getSortedReactions,
   getTotalReactions,
 } from "./functions/reactions-utils";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 
 const reactions: Reaction[] = [
   { type: "star", icon: "🌟", label: "Star" },
@@ -27,6 +28,8 @@ export function PostFooter() {
   const [isReactionsTooltipOpen, setIsReactionsTooltipOpen] = useState(false);
 
   const toggleReactionMutation = useToggleReactionMutation();
+
+  const { withAuth } = useAuthGuard();
 
   /**
    * Handles toggling a reaction on a post
@@ -132,7 +135,7 @@ export function PostFooter() {
                       size="sm"
                       className="p-2 group"
                       isIconOnly
-                      onPress={() => handleReaction(reaction.type)}
+                      onPress={withAuth(() => handleReaction(reaction.type))}
                     >
                       <span className="text-xl group-hover:text-3xl transition-all duration-200">
                         {reaction.icon}
@@ -171,7 +174,7 @@ export function PostFooter() {
                   variant="light"
                   size="sm"
                   className="flex flex-row gap-2 text-gray-400"
-                  onPress={() => togglePostModal(true, "reply")}
+                  onPress={withAuth(() => togglePostModal(true, "reply"))}
                   aria-label="Comment"
                   tabIndex={0}
                 >
@@ -187,7 +190,7 @@ export function PostFooter() {
                   variant="light"
                   size="sm"
                   className="text-gray-400"
-                  onPress={() => togglePostModal(true, "clone")}
+                  onPress={withAuth(() => togglePostModal(true, "clone"))}
                   aria-label="Repost"
                   tabIndex={0}
                 >
