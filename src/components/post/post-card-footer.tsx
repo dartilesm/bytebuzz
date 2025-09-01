@@ -35,12 +35,20 @@ export function PostFooter() {
   function handleReaction(reaction: Reaction["type"]) {
     setIsReactionsTooltipOpen(false);
     if (!post?.id) return;
+    const lastReaction = selectedReaction;
 
     setSelectedReaction((prev) => (prev === reaction ? null : reaction));
-    toggleReactionMutation.mutate({
-      post_id: post.id,
-      reaction_type: reaction,
-    });
+    toggleReactionMutation.mutate(
+      {
+        post_id: post.id,
+        reaction_type: reaction,
+      },
+      {
+        onError: () => {
+          setSelectedReaction(lastReaction);
+        },
+      },
+    );
   }
 
   // Use utility functions for reactions logic
