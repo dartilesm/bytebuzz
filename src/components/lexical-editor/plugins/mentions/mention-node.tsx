@@ -75,7 +75,7 @@ export class MentionNode extends TextNode {
    * Sets the user data for this mention
    */
   setUser(user: User): void {
-    // biome-ignore lint/suspicious/noExplicitAny: Lexical API requires any type for getWritable
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const writable = this.getWritable() as any;
     writable.__user = user;
     writable.__text = `@${user.username}`;
@@ -93,7 +93,7 @@ export class MentionNode extends TextNode {
   }
 
   updateDOM(prevNode: MentionNode, anchor: HTMLElement, config: EditorConfig): boolean {
-    // biome-ignore lint/suspicious/noExplicitAny: Lexical API type compatibility issue
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updated = super.updateDOM(prevNode as any, anchor, config);
     if (this.__user !== prevNode.__user) {
       anchor.setAttribute("data-mention-id", this.__user.id);
