@@ -33,7 +33,7 @@ export function PostActionModal({ post, action, onOpenChange }: PostActionModalP
             <ModalHeader className="flex justify-between p-2 pl-4 items-center">
               <span className="text-sm font-medium flex items-center gap-1 text-content4-foreground/60">
                 <Repeat2Icon size={14} />
-                {action === "reply" ? "Reply to" : "Repost"} @{post.user?.username}'s post
+                {action === "reply" ? "Reply to" : "Repost"} @{post.user?.username}&apos;s post
               </span>
               <Button isIconOnly variant="light" onPress={onClose} size="sm">
                 <XIcon size={14} />
