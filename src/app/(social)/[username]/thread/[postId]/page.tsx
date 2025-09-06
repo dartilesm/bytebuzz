@@ -5,9 +5,14 @@ import { UserPost } from "@/components/post/user-post";
 import { PageHeader } from "@/components/ui/page-header";
 import { PostsProvider } from "@/context/posts-context";
 import { createServerSupabaseClient } from "@/db/supabase";
+import { generatePostThreadMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
 import { withAnalytics } from "@/lib/with-analytics";
 import type { NestedPost } from "@/types/nested-posts";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+// Cache post threads for 30 minutes
+export const revalidate = 1800;
 
 function nestReplies(posts: NestedPost[]) {
   const map = new Map();
@@ -72,11 +77,31 @@ interface ThreadPageProps {
   }>;
 }
 
+/**
+ * Generates dynamic metadata for post thread pages
+ * Includes Open Graph and Twitter Card tags for better social sharing
+ */
+export async function generateMetadata({ params }: ThreadPageProps): Promise<Metadata> {
+  const { postId } = await params;
+
+  try {
+    const { postAncestry } = await getPostData(postId);
+    const mainPost = postAncestry?.[postAncestry.length - 1];
+
+    if (!mainPost) {
+      return generateFallbackMetadata("thread");
+    }
+
+    return generatePostThreadMetadata(mainPost);
+  } catch (error) {
+    console.error("Error generating post thread metadata:", error);
+    return generateFallbackMetadata("thread");
+  }
+}
+
 async function ThreadPage({ params }: ThreadPageProps) {
   const { postId } = await params;
   const { postAncestry, directReplies } = await getPostData(postId);
-
-  console.log({ postAncestry, directReplies });
 
   if (!postAncestry || postAncestry.length === 0) {
     notFound();
