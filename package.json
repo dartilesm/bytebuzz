@@ -2,6 +2,7 @@
   "name": "bytebuzz",
   "version": "0.1.2",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
