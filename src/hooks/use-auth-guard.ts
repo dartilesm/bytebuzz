@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { addToast } from "@heroui/react";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 export function useAuthGuard() {
   const { user } = useUser();
@@ -12,7 +12,7 @@ export function useAuthGuard() {
           title: "You need to be signed in to do that",
           color: "warning",
         });
-        redirect("/sign-in");
+        redirect("/sign-in", RedirectType.push);
       }
       return fn(...args);
     };
