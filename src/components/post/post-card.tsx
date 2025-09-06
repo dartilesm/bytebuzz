@@ -22,7 +22,8 @@ export function PostCard({ children, className, classNames, ref }: PostCardProps
     const isAnchorElement = (event.target as HTMLElement).closest("a");
     if (isAnchorElement || isNavigationDisabled) return;
 
-    const pushPath = `/@${post.user?.username}/thread/${post.id}`;
+    // Casting to a more specific type to fix TypeScript errors
+    const pushPath = `/@${post.user?.username}/thread/${post.id}` as `/${string}/thread/${string}`;
 
     if (pathname !== pushPath) router.push(pushPath);
   }
