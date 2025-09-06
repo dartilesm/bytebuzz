@@ -11,6 +11,7 @@ import {
   getSortedReactions,
   getTotalReactions,
 } from "./functions/reactions-utils";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 
 const reactions: Reaction[] = [
   { type: "star", icon: "🌟", label: "Star" },
@@ -28,6 +29,8 @@ export function PostFooter() {
 
   const toggleReactionMutation = useToggleReactionMutation();
 
+  const { withAuth } = useAuthGuard();
+
   /**
    * Handles toggling a reaction on a post
    * @param reaction - The type of reaction to toggle
@@ -35,12 +38,20 @@ export function PostFooter() {
   function handleReaction(reaction: Reaction["type"]) {
     setIsReactionsTooltipOpen(false);
     if (!post?.id) return;
+    const lastReaction = selectedReaction;
 
     setSelectedReaction((prev) => (prev === reaction ? null : reaction));
-    toggleReactionMutation.mutate({
-      post_id: post.id,
-      reaction_type: reaction,
-    });
+    toggleReactionMutation.mutate(
+      {
+        post_id: post.id,
+        reaction_type: reaction,
+      },
+      {
+        onError: () => {
+          setSelectedReaction(lastReaction);
+        },
+      },
+    );
   }
 
   // Use utility functions for reactions logic
@@ -124,7 +135,7 @@ export function PostFooter() {
                       size="sm"
                       className="p-2 group"
                       isIconOnly
-                      onPress={() => handleReaction(reaction.type)}
+                      onPress={withAuth(() => handleReaction(reaction.type))}
                     >
                       <span className="text-xl group-hover:text-3xl transition-all duration-200">
                         {reaction.icon}
@@ -163,7 +174,7 @@ export function PostFooter() {
                   variant="light"
                   size="sm"
                   className="flex flex-row gap-2 text-gray-400"
-                  onPress={() => togglePostModal(true, "reply")}
+                  onPress={withAuth(() => togglePostModal(true, "reply"))}
                   aria-label="Comment"
                   tabIndex={0}
                 >
@@ -179,7 +190,7 @@ export function PostFooter() {
                   variant="light"
                   size="sm"
                   className="text-gray-400"
-                  onPress={() => togglePostModal(true, "clone")}
+                  onPress={withAuth(() => togglePostModal(true, "clone"))}
                   aria-label="Repost"
                   tabIndex={0}
                 >

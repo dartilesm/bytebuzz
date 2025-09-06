@@ -2,6 +2,7 @@
 
 import { FollowButton } from "@/components/ui/follow-button";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { useProfileContext } from "@/hooks/use-profile-context";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -27,7 +28,7 @@ export function UserProfileTopActions() {
   const { user } = useUser();
   const profile = useProfileContext();
   const [isEditing, setIsEditing] = useState(false);
-
+  const { withAuth } = useAuthGuard();
   const isCurrentUser = user?.username === profile.username;
 
   function handleCopyLink() {
@@ -121,7 +122,7 @@ export function UserProfileTopActions() {
           <Button
             variant="flat"
             color="primary"
-            onPress={toggleEditProfileModal}
+            onPress={withAuth(toggleEditProfileModal)}
             startContent={<PencilIcon size={16} />}
           >
             Edit profile
@@ -130,9 +131,9 @@ export function UserProfileTopActions() {
       </div>
       {isEditing && (
         <UserProfileEditModal
-          onClose={toggleEditProfileModal}
+          onClose={withAuth(toggleEditProfileModal)}
           profile={profile}
-          onSave={handleOnSave}
+          onSave={withAuth(handleOnSave)}
         />
       )}
     </div>

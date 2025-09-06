@@ -4,6 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { Button, Spinner } from "@heroui/react";
 import { UserRoundMinusIcon, UserRoundPlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 
 interface FollowButtonProps {
   targetUserId: string;
@@ -17,6 +18,7 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
 
   const [isFollowed, setIsFollowed] = useState(isFollowing);
   const { user: currentUser } = useUser();
+  const { withAuth } = useAuthGuard();
 
   useEffect(() => {
     setIsFollowed(isFollowing);
@@ -47,7 +49,7 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
       color={isFollowed ? "default" : "primary"}
       size={size}
       variant="flat"
-      onPress={handleFollowToggle}
+      onPress={withAuth(handleFollowToggle)}
       aria-label={isLoading ? "Loading follow status" : isFollowed ? "Unfollow" : "Follow"}
       disabled={isLoading}
       className={className}

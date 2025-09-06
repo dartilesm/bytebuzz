@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
   cn,
 } from "@heroui/react";
-import { LogOutIcon, SettingsIcon, SunMoonIcon } from "lucide-react";
+import { LogInIcon, LogOutIcon, SettingsIcon, SunMoonIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import type { SidebarItemProps } from "./sidebar-item";
@@ -22,6 +22,25 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const { user } = useUser();
   const { signOut } = useAuth();
+
+  if (!user)
+    return (
+      <Button
+        className={cn("w-full px-2 max-xl:px-0 text-left flex justify-between", {
+          "bg-content3 dark:bg-content3/50": isActive,
+        })}
+        variant="light"
+        as={Link}
+        href="/sign-in"
+      >
+        <span className="flex items-center gap-2">
+          <UserIcon size={24} />
+          Sign in
+        </span>
+        <LogInIcon size={18} />
+      </Button>
+    );
+
   return (
     <Popover isOpen={isPopoverOpen} onOpenChange={setIsPopoverOpen} placement="right-start">
       <PopoverTrigger>
