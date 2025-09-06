@@ -22,5 +22,6 @@ export async function toggleReaction({
     })
     .select()
     .single();
+
   return toggleReaction;
 }

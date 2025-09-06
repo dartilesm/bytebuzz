@@ -5,15 +5,13 @@ import type { NextMiddlewareRequestParam } from "node_modules/@clerk/nextjs/dist
 /**
  * Route matcher to protect all routes except for the sign-in and sign-up pages
  */
-const isProtectedRoute = createRouteMatcher(["/((?!sign-in|sign-up).*)"]);
+const _isProtectedRoute = createRouteMatcher(["/((?!sign-in|sign-up).*)"]);
 
 /**
  * Clerk middleware to handle authentication and authorization
  * @see https://clerk.com/docs/references/nextjs/clerk-middleware
  */
-export default clerkMiddleware(async function middleware(auth, req: NextMiddlewareRequestParam) {
-  if (isProtectedRoute(req)) await auth.protect();
-
+export default clerkMiddleware(async function middleware(_auth, req: NextMiddlewareRequestParam) {
   if (req.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/root", req.url));
   }

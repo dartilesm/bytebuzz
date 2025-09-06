@@ -18,10 +18,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --apply .",
     "format": "biome format .",
-    "format:fix": "biome format --write .",
-    "changeset": "changeset",
-    "release:version": "changeset version",
-    "release:tag": "changeset tag && git push --follow-tags"
+    "format:fix": "biome format --write ."
   },
   "dependencies": {
     "@clerk/nextjs": "6.19.2",
@@ -62,10 +59,10 @@
     "lexical": "0.31.2",
     "lucide-react": "0.509.0",
     "motion": "12.12.1",
-    "next": "15.4.2",
+    "next": "15.5.2",
     "next-themes": "0.4.6",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "react-hook-form": "7.56.3",
     "react-markdown": "10.1.0",
     "react-syntax-highlighter": "15.6.1",
@@ -76,20 +73,23 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@changesets/cli": "^2.27.9",
     "@emotion/is-prop-valid": "1.3.1",
+    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "4",
     "@types/node": "20",
-    "@changesets/cli": "^2.27.9",
-    "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
     "@types/react-syntax-highlighter": "15.5.13",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
     "server-only": "0.0.1",
     "supabase": "2.23.4",
     "tailwindcss": "4",
     "typescript": "5"
   },
   "overrides": {
-    "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6"
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9"
   }
 }
