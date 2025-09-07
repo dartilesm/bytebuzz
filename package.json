@@ -7,6 +7,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "db:diff": "supabase db diff --linked",
     "db:dump-remote": "timestamp=$(date +%Y-%m-%d-%H:%M:%S) && mkdir -p supabase/dump/$timestamp && supabase db dump --linked --keep-comments -f supabase/dump/$timestamp/schemas.sql && supabase db dump --linked --data-only -f supabase/dump/$timestamp/data.sql && supabase db dump --linked --role-only -f supabase/dump/$timestamp/roles.sql",
     "db:link": "supabase link",
@@ -87,7 +91,8 @@
     "server-only": "0.0.1",
     "supabase": "2.23.4",
     "tailwindcss": "4",
-    "typescript": "5"
+    "typescript": "5",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "@types/react": "19.1.12",
