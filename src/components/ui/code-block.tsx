@@ -34,11 +34,11 @@ export function CodeBlock({
   hideSymbol = false,
   tooltipProps = {},
 }: CodeBlockProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [copied, setCopied] = React.useState(false);
   const [highlightedHtml, setHighlightedHtml] = React.useState<string>("");
 
-  const codeTheme: ThemeRegistration = theme === "dark" ? oneDarkProTheme : oneLightTheme;
+  const codeTheme: ThemeRegistration = resolvedTheme === "dark" ? oneDarkProTheme : oneLightTheme;
 
   // Highlight code with Shiki
   useEffect(() => {
@@ -70,7 +70,7 @@ export function CodeBlock({
     }
 
     highlightCode();
-  }, [code, language, showLineNumbers, hideSymbol, theme]);
+  }, [code, language, showLineNumbers, hideSymbol, resolvedTheme]);
 
   /**
    * Handles copying code to clipboard

@@ -7,6 +7,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
+import { Code } from "@heroui/react";
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
@@ -34,7 +35,24 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           code: ({ node, ...props }) => {
             const { children, className } = props;
             const language = className?.replace("language-", "");
+            if (!className) return <Code className="text-xs">{children}</Code>;
             return <CodeBlock code={children as string} language={language} />;
+          },
+          ul: ({ ...props }) => {
+            const { children, className } = props;
+            return (
+              <ul className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}>
+                {children}
+              </ul>
+            );
+          },
+          ol: ({ ...props }) => {
+            const { children, className } = props;
+            return (
+              <ol className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}>
+                {children}
+              </ol>
+            );
           },
         }}
         disallowedElements={["img"]}
