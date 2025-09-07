@@ -4,16 +4,17 @@ import { generateUserProfileMetadata, generateFallbackMetadata } from "@/lib/met
 import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 // Cache user profiles for 1 hour
 export const revalidate = 3600;
 
-async function getUserProfile(username: string) {
+const getUserProfile = cache(async (username: string) => {
   const supabaseClient = createServerSupabaseClient();
   const result = await supabaseClient.from("users").select("*").eq("username", username).single();
 
   return result;
-}
+});
 
 interface UserPageProps {
   params: Promise<{ username: string }>;

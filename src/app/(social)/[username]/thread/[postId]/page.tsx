@@ -10,6 +10,7 @@ import { withAnalytics } from "@/lib/with-analytics";
 import type { NestedPost } from "@/types/nested-posts";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 // Cache post threads for 30 minutes
 export const revalidate = 1800;
@@ -35,7 +36,7 @@ function nestReplies(posts: NestedPost[]) {
   return roots;
 }
 
-async function getPostData(postId: string) {
+const getPostData = cache(async (postId: string) => {
   const supabaseClient = createServerSupabaseClient();
 
   const { data: postAncestry, error: postAncestryError } = await supabaseClient.rpc(
@@ -47,7 +48,6 @@ async function getPostData(postId: string) {
 
   if (postAncestryError) {
     console.error("Error fetching thread:", postAncestryError);
-  } else {
   }
 
   const { data: directReplies, error: directRepliesError } = await supabaseClient
@@ -56,7 +56,6 @@ async function getPostData(postId: string) {
 
   if (directRepliesError) {
     console.error("Error fetching direct replies:", directRepliesError);
-  } else {
   }
 
   const result: {
@@ -68,7 +67,7 @@ async function getPostData(postId: string) {
   };
 
   return result;
-}
+});
 
 interface ThreadPageProps {
   params: Promise<{

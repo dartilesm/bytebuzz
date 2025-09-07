@@ -3,6 +3,10 @@ import type { Tables } from "database.types";
 import type { NestedPost } from "@/types/nested-posts";
 import { extractPlainTextFromMarkdown } from "./markdown-text-extractor";
 
+const metadataBase = process.env.VERCEL_URL
+  ? new URL(`https://${process.env.VERCEL_URL}`)
+  : new URL("http://localhost:3000");
+
 /**
  * Generates metadata for user profile pages
  * @param userProfile - The user profile data from database
@@ -41,6 +45,7 @@ export function generateUserProfileMetadata(userProfile: Tables<"users">): Metad
     alternates: {
       canonical: `/${userProfile.username}`,
     },
+    metadataBase,
   };
 }
 
@@ -93,6 +98,7 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
     alternates: {
       canonical: `/${author?.username}/thread/${post.id}`,
     },
+    metadataBase,
   };
 }
 
@@ -110,6 +116,7 @@ export function generateFallbackMetadata(type: "user" | "post" | "thread"): Meta
     twitter: {
       card: "summary" as const,
     },
+    metadataBase,
   };
 
   if (type === "user") {
