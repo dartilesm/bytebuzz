@@ -28,7 +28,7 @@ export function generateUserProfileMetadata(userProfile: Tables<"users">): Metad
       description,
       images: [
         {
-          url: `${supabaseUrl}/functions/v1/og-image?type=user&id=${encodeURIComponent(userProfile.username)}`,
+          url: `${supabaseUrl}/functions/v1/media-image?format=opengraph&type=user&id=${encodeURIComponent(userProfile.username)}`,
           width: 1200,
           height: 630,
           alt: `${userProfile.display_name} (@${userProfile.username}) on ByteBuzz`,
@@ -42,7 +42,7 @@ export function generateUserProfileMetadata(userProfile: Tables<"users">): Metad
       title: `${userProfile.display_name} (@${userProfile.username})`,
       description,
       images: [
-        `${supabaseUrl}/functions/v1/twitter-image?type=user&id=${encodeURIComponent(userProfile.username)}`,
+        `${supabaseUrl}/functions/v1/media-image?format=twitter&type=user&id=${encodeURIComponent(userProfile.username)}`,
       ],
       creator: `@${userProfile.username}`,
     },
@@ -82,7 +82,7 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
       description,
       images: [
         {
-          url: `${supabaseUrl}/functions/v1/og-image?type=post&id=${encodeURIComponent(post.id)}`,
+          url: `${supabaseUrl}/functions/v1/media-image?format=opengraph&type=post&id=${encodeURIComponent(post.id)}`,
           width: 1200,
           height: 630,
           alt: `Post by ${authorName} on ByteBuzz`,
@@ -97,7 +97,7 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
       title,
       description,
       images: [
-        `${supabaseUrl}/functions/v1/twitter-image?type=post&id=${encodeURIComponent(post.id)}`,
+        `${supabaseUrl}/functions/v1/media-image?format=twitter&type=post&id=${encodeURIComponent(post.id)}`,
       ],
       creator: author?.username ? `@${author.username}` : undefined,
     },

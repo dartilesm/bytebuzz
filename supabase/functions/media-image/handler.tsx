@@ -2,12 +2,10 @@ import React from "https://esm.sh/react@18.2.0?deno-std=0.177.0";
 import { ImageResponse } from "https://deno.land/x/og_edge@0.0.4/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const supabaseAdminClient = createClient(
-  // Supabase API URL - env var exported by default when deployed.
-  Deno.env.get("SUPABASE_URL") ?? "",
-  // Supabase API SERVICE ROLE KEY - env var exported by default when deployed.
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-);
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 interface UserProfileData {
   displayName: string;
@@ -27,66 +25,57 @@ interface PostThreadData {
   approveCount: number;
 }
 
+type ImageFormat = "opengraph" | "twitter";
+type ContentType = "user" | "post";
+
 export default async function handler(req: Request) {
   const url = new URL(req.url);
-  const type = url.searchParams.get("type");
+  const format = url.searchParams.get("format") as ImageFormat; // "opengraph" or "twitter"
+  const type = url.searchParams.get("type") as ContentType; // "user" or "post"
   const identifier = url.searchParams.get("id"); // username or postId
 
-  if (!type || !identifier) {
-    return new ImageResponse(
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 48,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          fontFamily: "system-ui, sans-serif",
-        }}
-      >
-        <div style={{ fontSize: 72, marginBottom: 24 }}>❌</div>
-        <div style={{ fontSize: 48, fontWeight: "bold", marginBottom: 16 }}>Missing Parameters</div>
-        <div style={{ fontSize: 32, opacity: 0.8 }}>ByteBuzz</div>
-      </div>,
-      { width: 1200, height: 600 },
-    );
+  if (!format || !type || !identifier) {
+    return createErrorImage("Missing required parameters: format, type, and id");
+  }
+
+  if (!["opengraph", "twitter"].includes(format)) {
+    return createErrorImage("Invalid format. Use 'opengraph' or 'twitter'");
+  }
+
+  if (!["user", "post"].includes(type)) {
+    return createErrorImage("Invalid type. Use 'user' or 'post'");
   }
 
   try {
     if (type === "user") {
       const userData = await fetchUserData(identifier);
       if (!userData) {
-        return createNotFoundImage("user");
+        return createNotFoundImage("user", format);
       }
-      return createUserProfileImage(userData);
+      return createUserProfileImage(userData, format);
     } else if (type === "post") {
       const postData = await fetchPostData(identifier);
       if (!postData) {
-        return createNotFoundImage("post");
+        return createNotFoundImage("post", format);
       }
-      return createPostThreadImage(postData);
-    } else {
-      return createNotFoundImage(type);
+      return createPostThreadImage(postData, format);
     }
   } catch (error) {
-    console.error("Error generating image:", error);
-    return createNotFoundImage("error");
+    console.error("Error generating social media image:", error);
+    return createErrorImage("Failed to generate image");
   }
 }
 
 async function fetchUserData(username: string): Promise<UserProfileData | null> {
   try {
-    const { data: userProfile, error } = await supabaseAdminClient
+    const { data: userProfile, error } = await supabase
       .from("users")
       .select("*")
       .eq("username", username)
       .single();
 
     if (error || !userProfile) {
+      console.error("Error fetching user:", error);
       return null;
     }
 
@@ -105,11 +94,12 @@ async function fetchUserData(username: string): Promise<UserProfileData | null> 
 
 async function fetchPostData(postId: string): Promise<PostThreadData | null> {
   try {
-    const { data: postAncestry, error } = await supabaseAdminClient.rpc("get_post_ancestry", {
+    const { data: postAncestry, error } = await supabase.rpc("get_post_ancestry", {
       start_id: postId,
     });
 
     if (error || !postAncestry || postAncestry.length === 0) {
+      console.error("Error fetching post:", error);
       return null;
     }
 
@@ -149,7 +139,13 @@ async function fetchPostData(postId: string): Promise<PostThreadData | null> {
   }
 }
 
-function createUserProfileImage(userData: UserProfileData) {
+function getImageDimensions(format: ImageFormat) {
+  return format === "opengraph" ? { width: 1200, height: 630 } : { width: 1200, height: 600 }; // Twitter
+}
+
+function createUserProfileImage(userData: UserProfileData, format: ImageFormat) {
+  const dimensions = getImageDimensions(format);
+
   return new ImageResponse(
     <div
       style={{
@@ -289,11 +285,13 @@ function createUserProfileImage(userData: UserProfileData) {
         bytebuzz.dev
       </div>
     </div>,
-    { width: 1200, height: 600 },
+    dimensions,
   );
 }
 
-function createPostThreadImage(postData: PostThreadData) {
+function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
+  const dimensions = getImageDimensions(format);
+
   return new ImageResponse(
     <div
       style={{
@@ -462,13 +460,14 @@ function createPostThreadImage(postData: PostThreadData) {
         </div>
       </div>
     </div>,
-    { width: 1200, height: 600 },
+    dimensions,
   );
 }
 
-function createNotFoundImage(type: string) {
-  const emoji = type === "user" ? "👤" : type === "post" ? "📝" : "❌";
-  const title = type === "user" ? "User Not Found" : type === "post" ? "Post Not Found" : "Error";
+function createNotFoundImage(type: string, format: ImageFormat) {
+  const dimensions = getImageDimensions(format);
+  const emoji = type === "user" ? "👤" : "📝";
+  const title = type === "user" ? "User Not Found" : "Post Not Found";
 
   return new ImageResponse(
     <div
@@ -489,6 +488,40 @@ function createNotFoundImage(type: string) {
       <div style={{ fontSize: 48, fontWeight: "bold", marginBottom: 16 }}>{title}</div>
       <div style={{ fontSize: 32, opacity: 0.8 }}>ByteBuzz</div>
     </div>,
-    { width: 1200, height: 600 },
+    dimensions,
+  );
+}
+
+function createErrorImage(message: string) {
+  return new ImageResponse(
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 48,
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        color: "white",
+        fontFamily: "system-ui, sans-serif",
+      }}
+    >
+      <div style={{ fontSize: 72, marginBottom: 24 }}>❌</div>
+      <div
+        style={{
+          fontSize: 32,
+          fontWeight: "bold",
+          marginBottom: 16,
+          textAlign: "center",
+          maxWidth: "80%",
+        }}
+      >
+        {message}
+      </div>
+      <div style={{ fontSize: 24, opacity: 0.8 }}>ByteBuzz</div>
+    </div>,
+    { width: 1200, height: 630 },
   );
 }
