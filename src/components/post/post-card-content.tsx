@@ -14,7 +14,7 @@ export function PostContent({ children }: PostContentProps) {
 
   return (
     <CardBody
-      className={cn("flex-1 py-0 flex flex-col gap-2", {
+      className={cn("flex-1 py-0 flex flex-col gap-2 text-sm", {
         "px-8.5": isThreadPagePost,
       })}
     >
