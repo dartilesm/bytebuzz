@@ -20,24 +20,22 @@ export function generateUserProfileMetadata(userProfile: Tables<"users">): Metad
     openGraph: {
       title: `${userProfile.display_name} (@${userProfile.username})`,
       description,
-      images: userProfile.image_url
-        ? [
-            {
-              url: userProfile.image_url,
-              width: 400,
-              height: 400,
-              alt: `${userProfile.display_name}'s profile picture`,
-            },
-          ]
-        : undefined,
+      images: [
+        {
+          url: `/${userProfile.username}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `${userProfile.display_name} (@${userProfile.username}) on ByteBuzz`,
+        },
+      ],
       type: "profile",
       siteName: "ByteBuzz",
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: `${userProfile.display_name} (@${userProfile.username})`,
       description,
-      images: userProfile.image_url ? [userProfile.image_url] : undefined,
+      images: [`/${userProfile.username}/opengraph-image`],
       creator: `@${userProfile.username}`,
     },
     alternates: {
@@ -54,7 +52,9 @@ export function generateUserProfileMetadata(userProfile: Tables<"users">): Metad
 export function generatePostThreadMetadata(post: NestedPost): Metadata {
   const author = post.user as Tables<"users">;
   const authorName = author?.display_name || author?.username || "Unknown User";
-  const postContent = post.content?.substring(0, 160) || "View this post on ByteBuzz";
+  const postContent =
+    extractPlainTextFromMarkdown(post.content || "").substring(0, 160) ||
+    "View this post on ByteBuzz";
 
   // Create a more engaging title that includes content preview
   const cleanContent = extractPlainTextFromMarkdown(post.content || "");
@@ -71,25 +71,23 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
     openGraph: {
       title,
       description,
-      images: author?.image_url
-        ? [
-            {
-              url: author.image_url,
-              width: 400,
-              height: 400,
-              alt: `${authorName}'s profile picture`,
-            },
-          ]
-        : undefined,
+      images: [
+        {
+          url: `/${author?.username}/thread/${post.id}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `Post by ${authorName} on ByteBuzz`,
+        },
+      ],
       type: "article",
       siteName: "ByteBuzz",
       publishedTime: post.created_at || undefined,
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: author?.image_url ? [author.image_url] : undefined,
+      images: [`/${author?.username}/thread/${post.id}/opengraph-image`],
       creator: author?.username ? `@${author.username}` : undefined,
     },
     alternates: {
