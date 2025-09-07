@@ -7,6 +7,8 @@ const metadataBase = process.env.VERCEL_URL
   ? new URL(`https://${process.env.VERCEL_URL}`)
   : new URL("http://localhost:3000");
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
 /**
  * Generates metadata for user profile pages
  * @param userProfile - The user profile data from database
@@ -24,6 +26,14 @@ export function generateUserProfileMetadata(userProfile: Tables<"users">): Metad
     openGraph: {
       title: `${userProfile.display_name} (@${userProfile.username})`,
       description,
+      images: [
+        {
+          url: `${supabaseUrl}/functions/v1/og-image?type=user&id=${encodeURIComponent(userProfile.username)}`,
+          width: 1200,
+          height: 630,
+          alt: `${userProfile.display_name} (@${userProfile.username}) on ByteBuzz`,
+        },
+      ],
       type: "profile",
       siteName: "ByteBuzz",
     },
@@ -31,6 +41,9 @@ export function generateUserProfileMetadata(userProfile: Tables<"users">): Metad
       card: "summary_large_image",
       title: `${userProfile.display_name} (@${userProfile.username})`,
       description,
+      images: [
+        `${supabaseUrl}/functions/v1/twitter-image?type=user&id=${encodeURIComponent(userProfile.username)}`,
+      ],
       creator: `@${userProfile.username}`,
     },
     alternates: {
@@ -67,6 +80,14 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
     openGraph: {
       title,
       description,
+      images: [
+        {
+          url: `${supabaseUrl}/functions/v1/og-image?type=post&id=${encodeURIComponent(post.id)}`,
+          width: 1200,
+          height: 630,
+          alt: `Post by ${authorName} on ByteBuzz`,
+        },
+      ],
       type: "article",
       siteName: "ByteBuzz",
       publishedTime: post.created_at || undefined,
@@ -75,6 +96,9 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
       card: "summary_large_image",
       title,
       description,
+      images: [
+        `${supabaseUrl}/functions/v1/twitter-image?type=post&id=${encodeURIComponent(post.id)}`,
+      ],
       creator: author?.username ? `@${author.username}` : undefined,
     },
     alternates: {
