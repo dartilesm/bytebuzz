@@ -5,6 +5,7 @@ import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider"
 import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
 import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
 import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { useCreatePostMutation } from "@/hooks/mutation/use-create-post-mutation";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
@@ -62,6 +63,7 @@ export function PostComposer({
 
   const { mutateAsync: uploadPostMedia } = useUploadPostMediaMutation();
   const { mutate: createPost, isPending } = useCreatePostMutation();
+  const { withAuth } = useAuthGuard();
 
   async function handleMediaUpload(file: File): Promise<{ error?: string; data?: MediaData }> {
     try {
@@ -157,7 +159,7 @@ export function PostComposer({
         "dark:bg-default-100 bg-default-100 dark:hover:bg-default-200 hover:bg-default-200 rounded-xl overflow-hidden min-h-24 group/post-composer",
         className,
       )}
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
         <div className="flex flex-row gap-4 p-4">

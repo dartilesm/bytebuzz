@@ -5,9 +5,15 @@ import { UserPost } from "@/components/post/user-post";
 import { PageHeader } from "@/components/ui/page-header";
 import { PostsProvider } from "@/context/posts-context";
 import { createServerSupabaseClient } from "@/db/supabase";
+import { generatePostThreadMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
 import { withAnalytics } from "@/lib/with-analytics";
 import type { NestedPost } from "@/types/nested-posts";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
+
+// Cache post threads for 30 minutes
+export const revalidate = 1800;
 
 function nestReplies(posts: NestedPost[]) {
   const map = new Map();
@@ -30,7 +36,7 @@ function nestReplies(posts: NestedPost[]) {
   return roots;
 }
 
-async function getPostData(postId: string) {
+const getPostData = cache(async (postId: string) => {
   const supabaseClient = createServerSupabaseClient();
 
   const { data: postAncestry, error: postAncestryError } = await supabaseClient.rpc(
@@ -42,7 +48,6 @@ async function getPostData(postId: string) {
 
   if (postAncestryError) {
     console.error("Error fetching thread:", postAncestryError);
-  } else {
   }
 
   const { data: directReplies, error: directRepliesError } = await supabaseClient
@@ -51,7 +56,6 @@ async function getPostData(postId: string) {
 
   if (directRepliesError) {
     console.error("Error fetching direct replies:", directRepliesError);
-  } else {
   }
 
   const result: {
@@ -63,7 +67,7 @@ async function getPostData(postId: string) {
   };
 
   return result;
-}
+});
 
 interface ThreadPageProps {
   params: Promise<{
@@ -72,11 +76,31 @@ interface ThreadPageProps {
   }>;
 }
 
+/**
+ * Generates dynamic metadata for post thread pages
+ * Includes Open Graph and Twitter Card tags for better social sharing
+ */
+export async function generateMetadata({ params }: ThreadPageProps): Promise<Metadata> {
+  const { postId } = await params;
+
+  try {
+    const { postAncestry } = await getPostData(postId);
+    const mainPost = postAncestry?.[postAncestry.length - 1];
+
+    if (!mainPost) {
+      return generateFallbackMetadata("thread");
+    }
+
+    return generatePostThreadMetadata(mainPost);
+  } catch (error) {
+    console.error("Error generating post thread metadata:", error);
+    return generateFallbackMetadata("thread");
+  }
+}
+
 async function ThreadPage({ params }: ThreadPageProps) {
   const { postId } = await params;
   const { postAncestry, directReplies } = await getPostData(postId);
-
-  console.log({ postAncestry, directReplies });
 
   if (!postAncestry || postAncestry.length === 0) {
     notFound();
