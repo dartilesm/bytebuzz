@@ -3,7 +3,7 @@
  * @param content - The raw markdown content
  * @returns Plain text content with all markdown syntax removed
  */
-export function extractPlainTextFromMarkdown(content: string): string {
+export function extractPlainTextFromMarkdown(content?: string): string {
   if (!content) return "";
 
   return (
