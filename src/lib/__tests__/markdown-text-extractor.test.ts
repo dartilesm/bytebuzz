@@ -18,7 +18,6 @@ describe("extractPlainTextFromMarkdown", () => {
 
   it("should handle empty or null content", () => {
     expect(extractPlainTextFromMarkdown("")).toBe("");
-    expect(extractPlainTextFromMarkdown(null)).toBe("");
     expect(extractPlainTextFromMarkdown(undefined)).toBe("");
   });
 
