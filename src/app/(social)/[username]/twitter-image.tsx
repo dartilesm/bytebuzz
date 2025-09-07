@@ -2,17 +2,17 @@ import { createServerSupabaseClient } from "@/db/supabase";
 import {
   createUserProfileImage,
   createNotFoundImage,
-  ogImageSize,
+  twitterImageSize,
   contentType,
   type UserProfileImageData,
 } from "@/lib/metadata-image-utils";
 
 // Image metadata
-export const size = ogImageSize;
+export const size = twitterImageSize;
 export { contentType };
 
 /**
- * Generates dynamic Open Graph image for user profile pages
+ * Generates dynamic Twitter image for user profile pages
  * Shows user avatar, name, username, bio, and follower count
  */
 export default async function Image({ params }: { params: Promise<{ username: string }> }) {
