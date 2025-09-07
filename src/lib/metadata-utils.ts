@@ -82,7 +82,7 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
       description,
       images: [
         {
-          url: `${supabaseUrl}/functions/v1/media-image?format=opengraph&type=post&id=${encodeURIComponent(post.id)}`,
+          url: `${supabaseUrl}/functions/v1/media-image?format=opengraph&type=post&id=${encodeURIComponent(post.id ?? "")}`,
           width: 1200,
           height: 630,
           alt: `Post by ${authorName} on ByteBuzz`,
@@ -97,7 +97,7 @@ export function generatePostThreadMetadata(post: NestedPost): Metadata {
       title,
       description,
       images: [
-        `${supabaseUrl}/functions/v1/media-image?format=twitter&type=post&id=${encodeURIComponent(post.id)}`,
+        `${supabaseUrl}/functions/v1/media-image?format=twitter&type=post&id=${encodeURIComponent(post.id ?? "")}`,
       ],
       creator: author?.username ? `@${author.username}` : undefined,
     },
