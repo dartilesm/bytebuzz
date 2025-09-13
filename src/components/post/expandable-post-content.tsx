@@ -53,11 +53,11 @@ export function ExpandablePostContent({
   const canExpand = expansionLevel < expansionData.levels - 1;
   const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
 
-  const handleExpand = () => {
+  function handleExpand() {
     if (canExpand) {
       setExpansionLevel((prev) => prev + 1);
     }
-  };
+  }
 
   if (!canExpand) {
     return (

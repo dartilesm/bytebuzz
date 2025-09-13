@@ -22,6 +22,8 @@ export interface PostContextType {
    * as it's the focus of the current page.
    */
   isThreadPagePost?: boolean;
+  minContentLength?: number;
+  charsPerLevel?: number;
   togglePostModal: (isOpen?: boolean, action?: "reply" | "clone") => void;
 }
 
@@ -34,6 +36,14 @@ export interface PostProviderProps {
   isThread?: boolean;
   isFirstInThread?: boolean;
   isLastInThread?: boolean;
+  /**
+   * Minimum content length before expansion controls appear
+   */
+  minContentLength?: number;
+  /**
+   * Initial characters per each expansion level
+   */
+  charsPerLevel?: number;
 }
 
 export function PostProvider({
@@ -43,6 +53,8 @@ export function PostProvider({
   isThread,
   isFirstInThread,
   isLastInThread,
+  minContentLength,
+  charsPerLevel,
 }: PostProviderProps) {
   const { postId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,6 +75,8 @@ export function PostProvider({
         isLastInThread,
         isThreadPagePost: !isNavigationDisabled && post.id === postId,
         togglePostModal,
+        minContentLength,
+        charsPerLevel,
       }}
     >
       {children}
