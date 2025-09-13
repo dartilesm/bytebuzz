@@ -15,6 +15,8 @@ interface UserPostProps {
   className?: string;
   isNavigationDisabled?: boolean;
   children?: React.ReactNode;
+  minVisibleContentLength?: number;
+  charsPerLevel?: number;
 }
 
 export function UserPost({
@@ -27,6 +29,8 @@ export function UserPost({
   className,
   isNavigationDisabled,
   children,
+  minVisibleContentLength,
+  charsPerLevel,
 }: UserPostProps) {
   if (!post && !ancestry) {
     throw new Error("Either post or ancestry must be provided");
@@ -50,6 +54,8 @@ export function UserPost({
           isFirstInThread={firstInThread}
           isLastInThread={lastInThread}
           isNavigationDisabled={isNavigationDisabled}
+          minVisibleContentLength={minVisibleContentLength}
+          charsPerLevel={charsPerLevel}
         >
           <PostCard ref={ref} className={className}>
             <PostHeader />
