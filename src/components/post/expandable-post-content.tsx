@@ -1,19 +1,23 @@
 "use client";
 
 import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
+import {
+  getDisplayContent,
+  getExpansionData,
+} from "@/components/post/functions/expandable-content-utils";
 import { Button, ScrollShadow, cn } from "@heroui/react";
 import { ChevronDownIcon } from "lucide-react";
-import { useRef, useState } from "react";
-import {
-  getEstimatedHeightForBlocks,
-  getInitialBlockCount,
-  shouldContentBeExpandable,
-  splitContentIntoBlocks,
-} from "@/components/post/functions/expandable-content-utils";
+import { useEffect, useRef, useState } from "react";
 
-const CONTENT_BLOCK_HEIGHT_PX = 500;
+interface ExpandableMarkdownConfig {
+  /** Minimum content length before expansion controls appear */
+  minContentLength?: number;
 
-interface ExpandablePostContentProps {
+  /** Chars per level */
+  charsPerLevel?: number;
+}
+
+interface ExpandablePostContentProps extends ExpandableMarkdownConfig {
   content: string;
   postId: string;
   className?: string;
@@ -23,67 +27,39 @@ interface ExpandablePostContentProps {
  * Component that renders post content with expandable blocks functionality
  * Shows content progressively with "View more" button to expand next block
  */
-export function ExpandablePostContent({ content, postId, className }: ExpandablePostContentProps) {
-  const blocks = splitContentIntoBlocks(content, CONTENT_BLOCK_HEIGHT_PX);
-  const isExpandable = shouldContentBeExpandable(content, CONTENT_BLOCK_HEIGHT_PX);
-  const initialBlockCount = getInitialBlockCount(blocks, CONTENT_BLOCK_HEIGHT_PX);
+export function ExpandablePostContent({
+  content,
+  postId,
+  className,
+  ...config
+}: ExpandablePostContentProps) {
+  const { minContentLength = 1000, charsPerLevel = 300 } = config;
+
+  const [expansionLevel, setExpansionLevel] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState<number | undefined>(undefined);
 
-  const [visibleBlockCount, setVisibleBlockCount] = useState(
-    isExpandable ? initialBlockCount : blocks.length,
-  );
-  const [contentCurrentHeight, setContentCurrentHeight] = useState(CONTENT_BLOCK_HEIGHT_PX);
+  const expansionData = getExpansionData({ content, minContentLength, charsPerLevel });
 
-  const hasMoreBlocks = visibleBlockCount < blocks.length;
+  const displayContent = getDisplayContent({ content, expansionLevel, expansionData });
 
-  /**
-   * Handles expanding to show the next block
-   */
-  function handleViewMore() {
-    if (containerRef.current && contentRef.current) {
-      // Get current height before expanding
-      const currentHeight = contentRef.current.scrollHeight;
-      containerRef.current.style.height = `${currentHeight}px`;
-
-      // Update visible block count
-      const nextCount = Math.min(visibleBlockCount + 1, blocks.length);
-      setVisibleBlockCount(nextCount);
-
-      // Update content current height
-      const heightInterval =
-        (contentRef.current?.clientHeight - CONTENT_BLOCK_HEIGHT_PX) / blocks.length;
-
-      setContentCurrentHeight(CONTENT_BLOCK_HEIGHT_PX + heightInterval * nextCount);
-
-      // Use requestAnimationFrame to get new height after DOM updates
-      requestAnimationFrame(() => {
-        if (containerRef.current && contentRef.current) {
-          let newHeight = contentRef.current.scrollHeight;
-
-          // Fallback to estimated height if actual height seems too small
-          const estimatedHeight = getEstimatedHeightForBlocks(
-            blocks,
-            nextCount,
-            CONTENT_BLOCK_HEIGHT_PX,
-          );
-          if (newHeight < estimatedHeight * 0.8) {
-            newHeight = estimatedHeight;
-          }
-
-          containerRef.current.style.height = `${newHeight}px`;
-        }
-      });
+  useEffect(() => {
+    if (contentRef.current) {
+      const height = contentRef.current.scrollHeight;
+      setContentHeight(height);
     }
-  }
+  }, [displayContent]);
 
-  console.log({
-    contentCurrentHeight,
-    visibleBlockCount,
-    blocks,
-  });
+  const canExpand = expansionLevel < expansionData.levels - 1;
+  const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
 
-  if (!isExpandable) {
+  const handleExpand = () => {
+    if (canExpand) {
+      setExpansionLevel((prev) => prev + 1);
+    }
+  };
+
+  if (!canExpand) {
     return (
       <ScrollShadow className={cn("max-h-none overflow-visible", className)} hideScrollBar size={0}>
         <MarkdownViewer markdown={content} postId={postId} />
@@ -94,27 +70,26 @@ export function ExpandablePostContent({ content, postId, className }: Expandable
   return (
     <>
       <div
-        ref={containerRef}
         className="transition-all duration-500 ease-out overflow-hidden"
-        style={{ height: "auto", maxHeight: `${contentCurrentHeight}px` }}
+        style={{ height: contentHeight ? `${contentHeight}px` : "auto" }}
       >
         <ScrollShadow
           size={100}
           style={{ overflow: "hidden" }}
           hideScrollBar
           className={cn("transition-all duration-300", className)}
-          visibility={hasMoreBlocks ? "bottom" : undefined}
+          visibility={!isFullyExpanded ? "bottom" : undefined}
           ref={contentRef}
         >
-          <MarkdownViewer markdown={content} postId={postId} />
+          <MarkdownViewer markdown={displayContent} postId={postId} />
         </ScrollShadow>
       </div>
 
-      {hasMoreBlocks && (
+      {canExpand && (
         <Button
           variant="light"
           size="sm"
-          onPress={handleViewMore}
+          onPress={handleExpand}
           className="self-start text-primary hover:text-primary-600 transition-colors"
           startContent={<ChevronDownIcon size={16} />}
         >

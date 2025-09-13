@@ -14,11 +14,15 @@ export function PostContent({ children }: PostContentProps) {
 
   return (
     <CardBody
-      className={cn("flex-1 py-0 flex flex-col gap-2 text-sm", {
+      className={cn("flex-1 py-0 text-sm", {
         "px-8.5": isThreadPagePost,
       })}
     >
-      <ExpandablePostContent content={content ?? ""} postId={post.id ?? ""} />
+      <ExpandablePostContent
+        className="flex flex-col gap-2"
+        content={content ?? ""}
+        postId={post.id ?? ""}
+      />
       {children}
     </CardBody>
   );
