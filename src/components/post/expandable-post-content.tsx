@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface ExpandableMarkdownConfig {
   /** Minimum content length before expansion controls appear */
-  minContentLength?: number;
+  minVisibleContentLength?: number;
 
   /** Chars per level */
   charsPerLevel?: number;
@@ -33,13 +33,13 @@ export function ExpandablePostContent({
   className,
   ...config
 }: ExpandablePostContentProps) {
-  const { minContentLength = 1000, charsPerLevel = 300 } = config;
+  const { minVisibleContentLength = 1000, charsPerLevel = 300 } = config;
 
   const [expansionLevel, setExpansionLevel] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<number | undefined>(undefined);
 
-  const expansionData = getExpansionData({ content, minContentLength, charsPerLevel });
+  const expansionData = getExpansionData({ content, minVisibleContentLength, charsPerLevel });
 
   const displayContent = getDisplayContent({ content, expansionLevel, expansionData });
 

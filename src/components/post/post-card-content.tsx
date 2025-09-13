@@ -15,7 +15,12 @@ interface PostContentProps {
 }
 
 export function PostContent({ children }: PostContentProps) {
-  const { isThreadPagePost, post, minContentLength = 1000, charsPerLevel = 300 } = usePostContext();
+  const {
+    isThreadPagePost,
+    post,
+    minVisibleContentLength = 1000,
+    charsPerLevel = 300,
+  } = usePostContext();
   const { content } = post;
 
   const [expansionLevel, setExpansionLevel] = useState(0);
@@ -24,7 +29,7 @@ export function PostContent({ children }: PostContentProps) {
 
   const expansionData = getExpansionData({
     content: content ?? "",
-    minContentLength,
+    minVisibleContentLength,
     charsPerLevel,
   });
 

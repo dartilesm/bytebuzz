@@ -185,7 +185,8 @@ describe("expandable-content-utils", () => {
     });
 
     it("should use natural breaks when they are beyond 80% threshold", () => {
-      const content = "This is a longer introduction text.\n\nThis is a much longer paragraph that should be cut at the natural break point.";
+      const content =
+        "This is a longer introduction text.\n\nThis is a much longer paragraph that should be cut at the natural break point.";
       const expansionData: ExpansionData = {
         levels: 2,
         thresholds: [40, 100],
@@ -208,7 +209,7 @@ describe("expandable-content-utils", () => {
       const content = "Short content";
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -223,7 +224,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(100);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -238,7 +239,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(300);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -253,7 +254,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(200);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -265,7 +266,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(200);
       const result = getExpansionData({
         content,
-        minContentLength: 50, // 60% would be 30, but should be at least 100
+        minVisibleContentLength: 50, // 60% would be 30, but should be at least 100
         charsPerLevel: 25,
       });
 
@@ -276,7 +277,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(400);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -293,7 +294,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(1000);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -305,7 +306,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(200);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 10,
       });
 
@@ -318,7 +319,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(200);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 1000,
       });
 
@@ -330,7 +331,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(300);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -345,7 +346,7 @@ describe("expandable-content-utils", () => {
       const content = "";
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 
@@ -360,7 +361,7 @@ describe("expandable-content-utils", () => {
       const content = "a".repeat(101);
       const result = getExpansionData({
         content,
-        minContentLength: 100,
+        minVisibleContentLength: 100,
         charsPerLevel: 50,
       });
 

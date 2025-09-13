@@ -37,18 +37,18 @@ export function getDisplayContent({
 
 export function getExpansionData({
   content,
-  minContentLength,
+  minVisibleContentLength,
   charsPerLevel,
 }: {
   content: string;
-  minContentLength: number;
+  minVisibleContentLength: number;
   charsPerLevel: number;
 }) {
-  const maxLevels = Math.ceil(((content.length - minContentLength) / charsPerLevel) * 1.5);
+  const maxLevels = Math.ceil(((content.length - minVisibleContentLength) / charsPerLevel) * 1.5);
   const contentLength = content.length;
 
   // Don't show expansion controls if content is too short
-  if (contentLength <= minContentLength) {
+  if (contentLength <= minVisibleContentLength) {
     return {
       levels: 1,
       thresholds: [contentLength],
@@ -56,7 +56,7 @@ export function getExpansionData({
     };
   }
 
-  const initialThreshold = Math.max(minContentLength * 0.6, 100); // Show 60% of minContentLength initially
+  const initialThreshold = Math.max(minVisibleContentLength * 0.6, 100); // Show 60% of minVisibleContentLength initially
   const remainingContent = contentLength - initialThreshold;
   const remainingLevels = maxLevels - 1;
   const remainingCharsPerLevels =
