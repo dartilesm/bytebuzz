@@ -237,7 +237,6 @@ async function fetchPostData(postId: string): Promise<PostThreadData | null> {
       .replace(/```[\s\S]*?```/g, "") // Remove code blocks
       .replace(/`[^`]*`/g, "") // Remove inline code
       .replace(/#{1,6}\s+/g, "") // Remove headers
-      .replace(/\*([^*]+)\*/g, "$1") // Remove italic
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links
       .trim();
 
@@ -613,7 +612,7 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
       background: "lavender",
     }}
   >
-    {parseHtmlSafely(render(postData.content))}
+    {parseHtmlSafely(render(postData.displayContent))}
   </div>,
   {
     ...dimensions,
@@ -624,6 +623,7 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
   console.log({ 
     html: render(postData.content).substring(0, 200), 
     parsedHtml: parseHtmlSafely(render(postData.content)), 
+    displayContent: postData.displayContent,
     image: !!image, 
     image2: !!image2 
   })
@@ -647,7 +647,6 @@ function createNotFoundImage(type: string, format: ImageFormat) {
         fontSize: 48,
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         color: "white",
-        fontFamily: "system-ui, sans-serif",
       }}
     >
       <div style={{ fontSize: 72, marginBottom: 24 }}>{emoji}</div>
