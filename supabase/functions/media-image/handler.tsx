@@ -14,6 +14,8 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     display: DEFAULT_DISPLAY,
     marginTop: "1em",
     marginBottom: "1em",
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   div: {
     display: DEFAULT_DISPLAY,
@@ -349,6 +351,7 @@ async function fetchPostData(postId: string): Promise<PostThreadData | null> {
     }
 
     const mainPost = postAncestry[postAncestry.length - 1];
+    console.log({ mainPost })
     const author = mainPost.user;
     const authorName = author?.display_name || author?.username || "Unknown User";
     const authorUsername = author?.username || "";
@@ -363,7 +366,7 @@ async function fetchPostData(postId: string): Promise<PostThreadData | null> {
       .trim();
 
     const displayContent =
-      cleanContent.length > 200 ? `${cleanContent.substring(0, 200)}...` : cleanContent;
+      cleanContent.length > 200 ? `${cleanContent.substring(0, 500)}...` : cleanContent;
 
     return {
       authorName,
@@ -672,9 +675,10 @@ async function createPostThreadImage(postData: PostThreadData, format: ImageForm
               maxWidth: "900px",
               opacity: 0.95,
               maxHeight: "400px",
-              overflow: "hidden",
               display: "flex",
-              flexDirection: "column",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              overflow: "hidden",
             }}
           >
             {parseHtmlSafely(render(postData.displayContent))}
