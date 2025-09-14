@@ -1,3 +1,15 @@
 {
-  "importMap": "../import_map.json"
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "imports": {
+    "og_edge": "https://deno.land/x/og_edge/mod.ts",
+    "react": "npm:react",
+    "@types/react": "npm:@types/react",
+    "react/jsx-runtime": "npm:react/jsx-runtime",
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@2",
+    "@deno/gfm": "jsr:@deno/gfm@0.11.0",
+    "html-react-parser": "npm:html-react-parser"
+  }
 }

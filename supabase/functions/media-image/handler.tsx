@@ -1,6 +1,9 @@
-import React from "https://esm.sh/react@18.2.0?deno-std=0.177.0";
-import { ImageResponse } from "https://deno.land/x/og_edge@0.0.4/mod.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "@supabase/supabase-js";
+import React from "react";
+import { ImageResponse } from "og_edge";
+import { CSS, render } from "@deno/gfm";
+import HTMLReactParser, { domToReact } from "html-react-parser";
+
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -19,6 +22,7 @@ interface PostThreadData {
   authorName: string;
   authorUsername: string;
   avatarUrl?: string;
+  displayContent: string;
   content: string;
   starCount: number;
   coffeeCount: number;
@@ -128,7 +132,8 @@ async function fetchPostData(postId: string): Promise<PostThreadData | null> {
       authorName,
       authorUsername,
       avatarUrl,
-      content: displayContent,
+      displayContent,
+      content: mainPost.content || "",
       starCount: mainPost.star_count || 0,
       coffeeCount: mainPost.coffee_count || 0,
       approveCount: mainPost.approve_count || 0,
@@ -292,7 +297,7 @@ function createUserProfileImage(userData: UserProfileData, format: ImageFormat) 
 function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
   const dimensions = getImageDimensions(format);
 
-  return new ImageResponse(
+  const image = new ImageResponse(
     <div
       style={{
         width: "100%",
@@ -416,9 +421,11 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
             marginBottom: "30px",
             maxWidth: "900px",
             opacity: 0.95,
+            maxHeight: "500px",
+            overflow: "hidden",
           }}
         >
-          {postData.content}
+          {HTMLReactParser('<p>This is a test</p>')}
         </div>
 
         {/* Engagement Stats */}
@@ -460,8 +467,33 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
         </div>
       </div>
     </div>,
-    dimensions,
+   {
+    ...dimensions,
+    debug: true
+  }
   );
+
+  const image2 = new ImageResponse(<div
+    style={{
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 14,
+      background: "lavender",
+    }}
+  >
+    {HTMLReactParser(render(postData.content))}
+  </div>,
+  {
+    ...dimensions,
+    debug: true
+  },
+  );
+
+  console.log({ content: postData.content, html: render(postData.content), HTMLReactParser: HTMLReactParser(render(postData.content)), image, image2 })
+  return image2;
 }
 
 function createNotFoundImage(type: string, format: ImageFormat) {
@@ -524,4 +556,12 @@ function createErrorImage(message: string) {
     </div>,
     { width: 1200, height: 630 },
   );
+}
+
+
+function renderMarkdownToHtml(markdown: string) {
+  console.log("running renderMarkdownToHtml")
+  const html = render(markdown)
+  const jsx = HTMLReactParser(html)
+  return jsx;
 }
