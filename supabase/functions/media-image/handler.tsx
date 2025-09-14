@@ -4,11 +4,129 @@ import { ImageResponse } from "og_edge";
 import { CSS, render } from "@deno/gfm";
 import HTMLReactParser, { domToReact } from "html-react-parser";
 
+// Supported HTML elements for og_edge/Satori
+const SUPPORTED_ELEMENTS = new Set([
+  'div',
+  'span', 
+  'p',
+  'a',
+  'img',
+  'br',
+  'strong',
+  'b',
+  'em',
+  'i',
+  'u',
+  'h1',
+  'h2', 
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
+  'code',
+  'pre',
+  'hr',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+  'section',
+  'article',
+  'header',
+  'footer',
+  'main',
+  'aside',
+  'nav'
+]);
+
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+/**
+ * Safely parses HTML content and returns only elements supported by og_edge/Satori
+ * @param html - The HTML string to parse
+ * @returns React elements with only supported HTML tags
+ */
+function parseHtmlSafely(html: string) {
+  if (!html || typeof html !== 'string') {
+    return null;
+  }
+
+  const options = {
+    replace: (domNode: any) => {
+      // Handle text nodes
+      if (domNode.type === 'text') {
+        return domNode.data;
+      }
+      
+      // Handle tag nodes
+      if (domNode.type === 'tag') {
+        // If element is not supported, return null to remove it
+        if (!SUPPORTED_ELEMENTS.has(domNode.name)) {
+          return null;
+        }
+        
+        // Clean attributes to only include safe ones for og_edge
+        const cleanAttribs: Record<string, string> = {};
+        if (domNode.attribs) {
+          // Only allow safe attributes
+          const safeAttribs = ['style', 'class', 'id', 'src', 'alt', 'href', 'target'];
+          for (const [key, value] of Object.entries(domNode.attribs)) {
+            if (safeAttribs.includes(key) && typeof value === 'string') {
+              cleanAttribs[key] = value;
+            }
+          }
+        }
+        
+        // For supported elements, process children recursively
+        if (domNode.children && domNode.children.length > 0) {
+          const processedChildren = domNode.children
+            .map((child: any) => {
+              if (child.type === 'text') {
+                return child.data;
+              }
+              if (child.type === 'tag' && SUPPORTED_ELEMENTS.has(child.name)) {
+                return React.createElement(
+                  child.name,
+                  child.attribs || {},
+                  ...(child.children || []).map((grandChild: any) => 
+                    grandChild.type === 'text' ? grandChild.data : null
+                  ).filter(Boolean)
+                );
+              }
+              return null;
+            })
+            .filter(Boolean);
+          
+          return React.createElement(domNode.name, cleanAttribs, ...processedChildren);
+        }
+        
+        // Self-closing or empty elements
+        return React.createElement(domNode.name, cleanAttribs);
+      }
+      
+      return null;
+    }
+  };
+  
+  try {
+    const result = HTMLReactParser(html, options);
+    console.log('Successfully parsed HTML:', { html: html.substring(0, 200), result });
+    return result;
+  } catch (error) {
+    console.error('Error parsing HTML:', error, { html: html.substring(0, 200) });
+    return null;
+  }
+}
 
 interface UserProfileData {
   displayName: string;
@@ -119,10 +237,8 @@ async function fetchPostData(postId: string): Promise<PostThreadData | null> {
       .replace(/```[\s\S]*?```/g, "") // Remove code blocks
       .replace(/`[^`]*`/g, "") // Remove inline code
       .replace(/#{1,6}\s+/g, "") // Remove headers
-      .replace(/\*\*([^*]+)\*\*/g, "$1") // Remove bold
       .replace(/\*([^*]+)\*/g, "$1") // Remove italic
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links
-      .replace(/\n+/g, " ") // Replace newlines with spaces
       .trim();
 
     const displayContent =
@@ -416,16 +532,30 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
         {/* Post Content */}
         <div
           style={{
-            fontSize: "24px",
-            lineHeight: 1.4,
+            fontSize: "20px",
+            lineHeight: 1.3,
             marginBottom: "30px",
             maxWidth: "900px",
             opacity: 0.95,
-            maxHeight: "500px",
+            maxHeight: "400px",
             overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          {HTMLReactParser('<p>This is a test</p>')}
+          {parseHtmlSafely(render(postData.displayContent))}
+          {/* {(() => {
+            try {
+              const html = render(postData.content);
+              console.log('Rendered HTML:', html.substring(0, 300));
+              const parsed = parseHtmlSafely(html);
+              console.log('Parsed result:', !!parsed);
+              return parsed || <div style={{ color: 'white', fontSize: '18px' }}>{postData.displayContent}</div>;
+            } catch (error) {
+              console.error('Error rendering post content:', error);
+              return <div style={{ color: 'white', fontSize: '18px' }}>{postData.displayContent}</div>;
+            }
+          })()} */}
         </div>
 
         {/* Engagement Stats */}
@@ -468,8 +598,7 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
       </div>
     </div>,
    {
-    ...dimensions,
-    debug: true
+    ...dimensions
   }
   );
 
@@ -484,7 +613,7 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
       background: "lavender",
     }}
   >
-    {HTMLReactParser(render(postData.content))}
+    {parseHtmlSafely(render(postData.content))}
   </div>,
   {
     ...dimensions,
@@ -492,8 +621,13 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
   },
   );
 
-  console.log({ content: postData.content, html: render(postData.content), HTMLReactParser: HTMLReactParser(render(postData.content)), image, image2 })
-  return image2;
+  console.log({ 
+    html: render(postData.content).substring(0, 200), 
+    parsedHtml: parseHtmlSafely(render(postData.content)), 
+    image: !!image, 
+    image2: !!image2 
+  })
+  return image;
 }
 
 function createNotFoundImage(type: string, format: ImageFormat) {
@@ -556,12 +690,4 @@ function createErrorImage(message: string) {
     </div>,
     { width: 1200, height: 630 },
   );
-}
-
-
-function renderMarkdownToHtml(markdown: string) {
-  console.log("running renderMarkdownToHtml")
-  const html = render(markdown)
-  const jsx = HTMLReactParser(html)
-  return jsx;
 }
