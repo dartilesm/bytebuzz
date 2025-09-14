@@ -3,6 +3,8 @@ import React from "react";
 import { ImageResponse } from "og_edge";
 import { CSS, render } from "@deno/gfm";
 import HTMLReactParser, { domToReact } from "html-react-parser";
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 const DEFAULT_DISPLAY = "flex";
 
@@ -112,6 +114,9 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
   },
   code: {
     fontFamily: "monospace",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    padding: "0px 4px",
+    margin: "0px 8px",
   },
   kbd: {
     fontFamily: "monospace",
@@ -239,10 +244,6 @@ function parseHtmlSafely(html: string) {
 
   try {
     const result = HTMLReactParser(html, options);
-    console.log("Successfully parsed HTML with default styles:", {
-      html: html.substring(0, 200),
-      result,
-    });
     return result;
   } catch (error) {
     console.error("Error parsing HTML:", error, { html: html.substring(0, 200) });
@@ -302,7 +303,7 @@ export default async function handler(req: Request) {
       if (!postData) {
         return createNotFoundImage("post", format);
       }
-      return createPostThreadImage(postData, format);
+      return await createPostThreadImage(postData, format);
     }
   } catch (error) {
     console.error("Error generating social media image:", error);
@@ -357,7 +358,6 @@ async function fetchPostData(postId: string): Promise<PostThreadData | null> {
     const cleanContent = (mainPost.content || "")
       .replace(/!\[.*?\]\(.*?\)/g, "") // Remove images
       .replace(/```[\s\S]*?```/g, "") // Remove code blocks
-      .replace(/`[^`]*`/g, "") // Remove inline code
       .replace(/#{1,6}\s+/g, "") // Remove headers
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links
       .trim();
@@ -533,8 +533,18 @@ function createUserProfileImage(userData: UserProfileData, format: ImageFormat) 
   );
 }
 
-function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
+async function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
   const dimensions = getImageDimensions(format);
+  const interBold = await readFile(
+    join(process.cwd(), 'fonts/Inter/Inter_18pt-Bold.ttf')
+  )
+  const interFont = await readFile(
+    join(process.cwd(), 'fonts/Inter/Inter_18pt-Regular.ttf')
+  )
+
+  const interItalic = await readFile(
+    join(process.cwd(), 'fonts/Inter/Inter_18pt-Italic.ttf')
+  )
 
   const image = new ImageResponse(
     (
@@ -724,6 +734,26 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
     ),
     {
       ...dimensions,
+      fonts: [
+        {
+          name: "Inter",
+          data: interBold,
+          weight: 700,
+          style: "normal",
+        },
+        {
+          name: "Inter",
+          data: interFont,
+          weight: 400,
+          style: "normal",
+        },
+        {
+          name: "Inter",
+          data: interItalic,
+          weight: 400,
+          style: "italic",
+        },
+      ]
     }
   );
 
@@ -749,13 +779,7 @@ function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
     }
   );
 
-  console.log({
-    html: render(postData.displayContent),
-    parsedHtml: JSON.stringify(parseHtmlSafely(render(postData.displayContent))),
-    displayContent: postData.displayContent,
-    image: !!image,
-    image2: !!image2,
-  });
+
   return image;
 }
 
