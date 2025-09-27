@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-interface PostThreadData {
+export interface PostThreadData {
   authorName: string;
   authorUsername: string;
   avatarUrl?: string;

@@ -2,38 +2,20 @@ import { render } from "@deno/gfm";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "og_edge";
-import React from "react";
 import { parseHtmlSafely } from "./html-parser.ts";
+import { UserProfileData } from "./fetch-user-data.ts";
+import { PostThreadData } from "./fetch-post-data.ts";
 
 type ImageFormat = "opengraph" | "twitter";
-type ContentType = "user" | "post";
-
-interface UserProfileData {
-  displayName: string;
-  username: string;
-  bio: string;
-  followerCount: number;
-  avatarUrl?: string;
-}
-
-interface PostThreadData {
-  createdAt: string;
-  authorName: string;
-  authorUsername: string;
-  avatarUrl?: string;
-  displayContent: string;
-  content: string;
-  starCount: number;
-  coffeeCount: number;
-  approveCount: number;
-}
 
 export function getImageDimensions(format: ImageFormat) {
   return format === "opengraph" ? { width: 1200, height: 630 } : { width: 1200, height: 600 }; // Twitter
 }
 
-export function createUserProfileImage(userData: UserProfileData, format: ImageFormat) {
+export async function createUserProfileImage(userData: UserProfileData, format: ImageFormat) {
   const dimensions = getImageDimensions(format);
+  const interBold = await readFile(join(process.cwd(), "fonts/Inter/Inter_18pt-Bold.ttf"));
+  const interFont = await readFile(join(process.cwd(), "fonts/Inter/Inter_18pt-Regular.ttf"));
 
   return new ImageResponse(
     (
@@ -43,140 +25,226 @@ export function createUserProfileImage(userData: UserProfileData, format: ImageF
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "black",
           color: "white",
-          fontFamily: "system-ui, sans-serif",
           padding: "60px",
+          backgroundImage: "linear-gradient(to right, #24243e, #302b63, #0f0c29)",
         }}
       >
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "40px",
-            width: "100%",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 32,
-              fontWeight: "bold",
-              opacity: 0.9,
-            }}
-          >
-            ByteBuzz
-          </div>
-        </div>
-
-        {/* Main Content */}
+        {/* Profile Card */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            textAlign: "center",
-            maxWidth: "800px",
+            background: "rgba(24, 24, 27, 0.95)",
+            border: "1px solid #27272a",
+            borderRadius: "16px",
+            maxWidth: "600px",
+            width: "100%",
+            margin: "0 auto",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
           }}
         >
-          {/* Avatar */}
+          {/* Profile Header with Background */}
           <div
             style={{
-              width: "120px",
               height: "120px",
-              borderRadius: "60px",
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              backgroundImage: `linear-gradient(135deg, #18181b 0%, #23233a 100%), url(${userData.coverImageUrl})`,
               display: "flex",
-              alignItems: "center",
+              alignItems: "flex-end",
               justifyContent: "center",
-              marginBottom: "30px",
-              fontSize: "48px",
-              overflow: "hidden",
+              paddingBottom: "20px",
+              borderRadius: "16px 16px 0 0",
             }}
           >
-            {userData.avatarUrl ? (
-              <img
-                src={userData.avatarUrl}
-                alt={userData.displayName}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            ) : (
-              <div style={{ fontSize: "48px" }}>👤</div>
-            )}
+            {/* Avatar positioned on the gradient */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "-75px",
+                width: "150px",
+                height: "150px",
+                borderRadius: "100%",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "48px",
+                border: "4px solid rgba(24, 24, 27, 0.95)",
+                overflow: "hidden",
+              }}
+            >
+              {userData.avatarUrl ? (
+                <img
+                  src={userData.avatarUrl}
+                  alt={userData.displayName}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <div style={{ fontSize: "48px" }}>👤</div>
+              )}
+            </div>
           </div>
 
-          {/* Name and Username */}
+          {/* Profile Content */}
           <div
             style={{
-              fontSize: "48px",
-              fontWeight: "bold",
-              marginBottom: "16px",
-              lineHeight: 1.2,
-            }}
-          >
-            {userData.displayName}
-          </div>
-
-          <div
-            style={{
-              fontSize: "32px",
-              opacity: 0.8,
-              marginBottom: "24px",
-            }}
-          >
-            {`@${userData.username}`}
-          </div>
-
-          {/* Bio */}
-          <div
-            style={{
-              fontSize: "24px",
-              lineHeight: 1.4,
-              marginBottom: "24px",
-              opacity: 0.9,
-              maxWidth: "600px",
-            }}
-          >
-            {userData.bio.length > 100 ? `${userData.bio.substring(0, 100)}...` : userData.bio}
-          </div>
-
-          {/* Follower Count */}
-          <div
-            style={{
-              fontSize: "20px",
-              opacity: 0.7,
               display: "flex",
-              alignItems: "center",
-              gap: "8px",
+              flexDirection: "column",
+              padding: "74px 24px 24px 24px",
+              rowGap: "12px",
             }}
           >
-            <span>👥</span>
-            <span>{userData.followerCount.toLocaleString()} followers</span>
-          </div>
-        </div>
+            {/* Name and Username */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                rowGap: "8px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "28px",
+                  fontWeight: "bold",
+                }}
+              >
+                {userData.displayName}
+              </div>
+              <div
+                style={{
+                  fontSize: "18px",
+                  opacity: 0.7,
+                  color: "#d4d4d8",
+                }}
+              >
+                {`@${userData.username}`}
+              </div>
+            </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "40px",
-            right: "60px",
-            fontSize: "20px",
-            opacity: 0.6,
-          }}
-        >
-          bytebuzz.dev
+            {/* Top Technologies */}
+            <div
+              style={{
+                display: "flex",
+                columnGap: "8px",
+                fontSize: "16px",
+                opacity: 0.7,
+                color: "#ffffff",
+              }}
+            >
+              {userData.topTechnologies?.map((technology) => (
+                <span
+                  key={technology}
+                  style={{ backgroundColor: "#3f3f46", padding: "4px 8px", borderRadius: "40px" }}
+                >
+                  {technology}
+                </span>
+              ))}
+            </div>
+
+            {/* Bio */}
+            <div
+              style={{
+                fontSize: "18px",
+                lineHeight: 1.5,
+                opacity: 0.9,
+                textAlign: "center",
+                color: "#e4e4e7",
+              }}
+            >
+              {userData.bio.length > 150 ? `${userData.bio.substring(0, 150)}...` : userData.bio}
+            </div>
+
+            {/* Location and Website */}
+            <div
+              style={{
+                display: "flex",
+                columnGap: "24px",
+              }}
+            >
+              {userData.location && (
+                <div style={{ fontSize: "14px", opacity: 0.7, color: "#d4d4d8" }}>
+                  {userData.location}
+                </div>
+              )}
+              {userData.website && (
+                <div style={{ fontSize: "14px", opacity: 0.7, color: "#d4d4d8" }}>
+                  {userData.website}
+                </div>
+              )}
+            </div>
+
+            {/* Stats */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                columnGap: "24px",
+                padding: "16px 0",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  columnGap: "4px",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ fontSize: "14px" }}>{userData.followerCount.toLocaleString()}</div>
+                <div style={{ fontSize: "14px", opacity: 0.7, color: "#d4d4d8" }}>Followers</div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  columnGap: "4px",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ fontSize: "14px" }}>{userData.followingCount.toLocaleString()}</div>
+                <div style={{ fontSize: "14px", opacity: 0.7, color: "#d4d4d8" }}>Following</div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div
+              style={{
+                fontSize: "14px",
+                opacity: 0.6,
+                color: "#a1a1aa",
+                textAlign: "center",
+              }}
+            >
+              bytebuzz.dev
+            </div>
+          </div>
         </div>
       </div>
     ),
-    dimensions
+    {
+      ...dimensions,
+      fonts: [
+        {
+          name: "Inter",
+          data: interBold,
+          weight: 700,
+          style: "normal",
+        },
+        {
+          name: "Inter",
+          data: interFont,
+          weight: 400,
+          style: "normal",
+        },
+      ],
+    }
   );
 }
 
