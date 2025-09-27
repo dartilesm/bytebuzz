@@ -195,6 +195,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "center",
           background: "black",
           color: "white",
           fontFamily: "Inter",
@@ -236,17 +237,18 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
           style={{
             display: "flex",
             flexDirection: "column",
-            flex: 1,
-            justifyContent: "center",
+            justifyContent: "space-between",
             background: "#18181b",
             border: "1px solid #27272a",
             borderRadius: "12px",
             padding: "32px",
             maxWidth: "80%",
+            maxHeight: "100%",
+            width: "100%",
             margin: "0 auto",
           }}
         >
-          {/* Author Info */}
+          {/* Content Header */}
           <div
             style={{
               display: "flex",
@@ -321,7 +323,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
             <div style={{ fontSize: "24px", fontWeight: "bold", color: "#d4d4d8" }}>ByteBuzz</div>
           </div>
 
-          {/* Post Content */}
+          {/* Content Body */}
           <div
             style={{
               fontSize: "20px",
@@ -329,15 +331,36 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
               marginBottom: "30px",
               maxWidth: "900px",
               opacity: 0.95,
+              rowGap: "16px",
               maxHeight: "400px",
               display: "flex",
               flexDirection: "row",
               flexWrap: "wrap",
               overflow: "hidden",
-              boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+              position: "relative",
+              border: "1px solid rgba(0, 0, 0, 0.1)",
+              borderRadius: "4px",
             }}
           >
+            {/* Inner shadow simulation using gradient overlay */}
+
             {parseHtmlSafely(render(postData.displayContent))}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background:
+                  postData.content.length > postData.displayContent.length
+                    ? "linear-gradient(to bottom, transparent 0%, transparent 80%, rgba(24, 24, 27, 0.6) 100%)"
+                    : "transparent",
+                // background: "blue",
+                borderRadius: "4px",
+                pointerEvents: "none",
+              }}
+            />
             {/* {(() => {
               try {
                 const html = render(postData.content);
@@ -352,53 +375,56 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
             })()} */}
           </div>
 
-          {/* Date */}
-          <div style={{ fontSize: "16px", opacity: 0.8, marginBottom: "30px" }}>
-            {new Date(postData.createdAt).toLocaleDateString("en-US", {
-              hour: "numeric",
-              minute: "numeric",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </div>
+          {/* Content Footer */}
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+            {/* Date */}
+            <div style={{ fontSize: "16px", opacity: 0.8 }}>
+              {new Date(postData.createdAt).toLocaleDateString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </div>
 
-          {/* Engagement Stats */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "24px",
-              fontSize: "18px",
-              opacity: 0.8,
-            }}
-          >
-            {postData.starCount > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span>⭐</span>
-                <span>{postData.starCount}</span>
-              </div>
-            )}
-            {postData.coffeeCount > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span>☕</span>
-                <span>{postData.coffeeCount}</span>
-              </div>
-            )}
-            {postData.approveCount > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span>👍</span>
-                <span>{postData.approveCount}</span>
-              </div>
-            )}
-            {postData.starCount === 0 &&
-              postData.coffeeCount === 0 &&
-              postData.approveCount === 0 && (
+            {/* Engagement Stats */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "24px",
+                fontSize: "18px",
+                opacity: 0.8,
+              }}
+            >
+              {postData.starCount > 0 && (
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span>💬</span>
-                  <span>New post</span>
+                  <span>⭐</span>
+                  <span>{postData.starCount}</span>
                 </div>
               )}
+              {postData.coffeeCount > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>☕</span>
+                  <span>{postData.coffeeCount}</span>
+                </div>
+              )}
+              {postData.approveCount > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span>👍</span>
+                  <span>{postData.approveCount}</span>
+                </div>
+              )}
+              {postData.starCount === 0 &&
+                postData.coffeeCount === 0 &&
+                postData.approveCount === 0 && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>💬</span>
+                    <span>New post</span>
+                  </div>
+                )}
+            </div>
           </div>
         </div>
       </div>
