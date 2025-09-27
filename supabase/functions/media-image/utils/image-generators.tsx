@@ -1,257 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
-import React from "react";
+import { render } from "@deno/gfm";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "og_edge";
-import { CSS, render } from "@deno/gfm";
-import HTMLReactParser, { domToReact } from "html-react-parser";
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import React from "react";
+import { parseHtmlSafely } from "./html-parser.ts";
 
-const DEFAULT_DISPLAY = "flex";
-
-// Supported HTML elements for og_edge/Satori with their default styles
-const SUPPORTED_ELEMENTS_WITH_STYLES = {
-  p: {
-    display: DEFAULT_DISPLAY,
-    marginTop: "1em",
-    marginBottom: "1em",
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  div: {
-    display: DEFAULT_DISPLAY,
-  },
-  blockquote: {
-    display: DEFAULT_DISPLAY,
-    marginTop: "1em",
-    marginBottom: "1em",
-    marginLeft: 40,
-    marginRight: 40,
-  },
-  center: {
-    display: DEFAULT_DISPLAY,
-    textAlign: "center",
-  },
-  hr: {
-    display: DEFAULT_DISPLAY,
-    marginTop: "0.5em",
-    marginBottom: "0.5em",
-    marginLeft: "auto",
-    marginRight: "auto",
-    borderWidth: 1,
-    // We don't have `inset`
-    borderStyle: "solid",
-  },
-  // Heading elements
-  h1: {
-    display: DEFAULT_DISPLAY,
-    fontSize: "2em",
-    marginTop: "0.67em",
-    marginBottom: "0.67em",
-    marginLeft: 0,
-    marginRight: 0,
-    fontWeight: "bold",
-  },
-  h2: {
-    display: DEFAULT_DISPLAY,
-    fontSize: "1.5em",
-    marginTop: "0.83em",
-    marginBottom: "0.83em",
-    marginLeft: 0,
-    marginRight: 0,
-    fontWeight: "bold",
-  },
-  h3: {
-    display: DEFAULT_DISPLAY,
-    fontSize: "1.17em",
-    marginTop: "1em",
-    marginBottom: "1em",
-    marginLeft: 0,
-    marginRight: 0,
-    fontWeight: "bold",
-  },
-  h4: {
-    display: DEFAULT_DISPLAY,
-    marginTop: "1.33em",
-    marginBottom: "1.33em",
-    marginLeft: 0,
-    marginRight: 0,
-    fontWeight: "bold",
-  },
-  h5: {
-    display: DEFAULT_DISPLAY,
-    fontSize: "0.83em",
-    marginTop: "1.67em",
-    marginBottom: "1.67em",
-    marginLeft: 0,
-    marginRight: 0,
-    fontWeight: "bold",
-  },
-  h6: {
-    display: DEFAULT_DISPLAY,
-    fontSize: "0.67em",
-    marginTop: "2.33em",
-    marginBottom: "2.33em",
-    marginLeft: 0,
-    marginRight: 0,
-    fontWeight: "bold",
-  },
-  // Tables
-  // Lists
-  // Form elements
-  // Inline elements
-  u: {
-    textDecoration: "underline",
-  },
-  strong: {
-    fontWeight: "bold",
-  },
-  b: {
-    fontWeight: "bold",
-  },
-  i: {
-    fontStyle: "italic",
-  },
-  em: {
-    fontStyle: "italic",
-  },
-  code: {
-    fontFamily: "monospace",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    padding: "0px 4px",
-    margin: "0px 8px",
-  },
-  kbd: {
-    fontFamily: "monospace",
-  },
-  pre: {
-    display: DEFAULT_DISPLAY,
-    fontFamily: "monospace",
-    whiteSpace: "pre",
-    marginTop: "1em",
-    marginBottom: "1em",
-  },
-  mark: {
-    backgroundColor: "yellow",
-    color: "black",
-  },
-  big: {
-    fontSize: "larger",
-  },
-  small: {
-    fontSize: "smaller",
-  },
-  s: {
-    textDecoration: "line-through",
-  },
-};
-
-const SUPPORTED_ELEMENTS = new Set(Object.keys(SUPPORTED_ELEMENTS_WITH_STYLES));
-
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-/**
- * Safely parses HTML content and returns only elements supported by og_edge/Satori
- * with their default styles applied
- * @param html - The HTML string to parse
- * @returns React elements with only supported HTML tags and default styles
- */
-function parseHtmlSafely(html: string) {
-  if (!html || typeof html !== "string") {
-    return null;
-  }
-
-  const options = {
-    replace: (domNode: any) => {
-      // Handle text nodes
-      if (domNode.type === "text") {
-        return domNode.data;
-      }
-
-      // Handle tag nodes
-      if (domNode.type === "tag") {
-        // If element is not supported, return null to remove it
-        if (!SUPPORTED_ELEMENTS.has(domNode.name)) {
-          return null;
-        }
-
-        // Get default styles for this element
-        const defaultStyles = SUPPORTED_ELEMENTS_WITH_STYLES[domNode.name] || {};
-
-        // Clean attributes to only include safe ones for og_edge
-        const cleanAttribs: Record<string, any> = {};
-        if (domNode.attribs) {
-          // Only allow safe attributes
-          const safeAttribs = ["class", "id", "src", "alt", "href", "target"];
-          for (const [key, value] of Object.entries(domNode.attribs)) {
-            if (safeAttribs.includes(key) && typeof value === "string") {
-              cleanAttribs[key] = value;
-            }
-          }
-        }
-
-        // Merge default styles with any existing inline styles
-        let mergedStyles = { ...defaultStyles };
-        if (domNode.attribs && domNode.attribs.style) {
-          // Parse existing inline styles and merge with defaults
-          const existingStyles: Record<string, string> = {};
-          if (typeof domNode.attribs.style === "string") {
-            domNode.attribs.style.split(";").forEach((rule: string) => {
-              const [property, value] = rule.split(":").map((s) => s.trim());
-              if (property && value) {
-                existingStyles[property] = value;
-              }
-            });
-          }
-          mergedStyles = { ...defaultStyles, ...existingStyles };
-        }
-
-        // Add the merged styles to attributes
-        cleanAttribs.style = mergedStyles;
-
-        // For supported elements, process children recursively
-        if (domNode.children && domNode.children.length > 0) {
-          const processedChildren = domNode.children
-            .map((child: any) => {
-              if (child.type === "text") {
-                return child.data;
-              }
-              if (child.type === "tag" && SUPPORTED_ELEMENTS.has(child.name)) {
-                const childDefaultStyles = SUPPORTED_ELEMENTS_WITH_STYLES[child.name] || {};
-                const childAttribs = { ...child.attribs, style: childDefaultStyles };
-                return React.createElement(
-                  child.name,
-                  childAttribs,
-                  ...(child.children || [])
-                    .map((grandChild: any) => (grandChild.type === "text" ? grandChild.data : null))
-                    .filter(Boolean)
-                );
-              }
-              return null;
-            })
-            .filter(Boolean);
-
-          return React.createElement(domNode.name, cleanAttribs, ...processedChildren);
-        }
-
-        // Self-closing or empty elements
-        return React.createElement(domNode.name, cleanAttribs);
-      }
-
-      return null;
-    },
-  };
-
-  try {
-    const result = HTMLReactParser(html, options);
-    return result;
-  } catch (error) {
-    console.error("Error parsing HTML:", error, { html: html.substring(0, 200) });
-    return null;
-  }
-}
+type ImageFormat = "opengraph" | "twitter";
+type ContentType = "user" | "post";
 
 interface UserProfileData {
   displayName: string;
@@ -272,123 +27,11 @@ interface PostThreadData {
   approveCount: number;
 }
 
-type ImageFormat = "opengraph" | "twitter";
-type ContentType = "user" | "post";
-
-export default async function handler(req: Request) {
-  const url = new URL(req.url);
-  const format = url.searchParams.get("format") as ImageFormat; // "opengraph" or "twitter"
-  const type = url.searchParams.get("type") as ContentType; // "user" or "post"
-  const identifier = url.searchParams.get("id"); // username or postId
-
-  if (!format || !type || !identifier) {
-    return createErrorImage("Missing required parameters: format, type, and id");
-  }
-
-  if (!["opengraph", "twitter"].includes(format)) {
-    return createErrorImage("Invalid format. Use 'opengraph' or 'twitter'");
-  }
-
-  if (!["user", "post"].includes(type)) {
-    return createErrorImage("Invalid type. Use 'user' or 'post'");
-  }
-
-  try {
-    if (type === "user") {
-      const userData = await fetchUserData(identifier);
-      if (!userData) {
-        return createNotFoundImage("user", format);
-      }
-      return createUserProfileImage(userData, format);
-    } else if (type === "post") {
-      const postData = await fetchPostData(identifier);
-      if (!postData) {
-        return createNotFoundImage("post", format);
-      }
-      return await createPostThreadImage(postData, format);
-    }
-  } catch (error) {
-    console.error("Error generating social media image:", error);
-    return createErrorImage("Failed to generate image");
-  }
-}
-
-async function fetchUserData(username: string): Promise<UserProfileData | null> {
-  try {
-    const { data: userProfile, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("username", username)
-      .single();
-
-    if (error || !userProfile) {
-      console.error("Error fetching user:", error);
-      return null;
-    }
-
-    return {
-      displayName: userProfile.display_name || userProfile.username,
-      username: userProfile.username,
-      bio: userProfile.bio || "Developer on ByteBuzz",
-      followerCount: userProfile.follower_count || 0,
-      avatarUrl: userProfile.image_url,
-    };
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    return null;
-  }
-}
-
-async function fetchPostData(postId: string): Promise<PostThreadData | null> {
-  try {
-    const { data: postAncestry, error } = await supabase.rpc("get_post_ancestry", {
-      start_id: postId,
-    });
-
-    if (error || !postAncestry || postAncestry.length === 0) {
-      console.error("Error fetching post:", error);
-      return null;
-    }
-
-    const mainPost = postAncestry[postAncestry.length - 1];
-    console.log({ mainPost })
-    const author = mainPost.user;
-    const authorName = author?.display_name || author?.username || "Unknown User";
-    const authorUsername = author?.username || "";
-    const avatarUrl = author?.image_url;
-
-    // Clean the post content for display (basic markdown removal)
-    const cleanContent = (mainPost.content || "")
-      .replace(/!\[.*?\]\(.*?\)/g, "") // Remove images
-      .replace(/```[\s\S]*?```/g, "") // Remove code blocks
-      .replace(/#{1,6}\s+/g, "") // Remove headers
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links
-      .trim();
-
-    const displayContent =
-      cleanContent.length > 200 ? `${cleanContent.substring(0, 500)}...` : cleanContent;
-
-    return {
-      authorName,
-      authorUsername,
-      avatarUrl,
-      displayContent,
-      content: mainPost.content || "",
-      starCount: mainPost.star_count || 0,
-      coffeeCount: mainPost.coffee_count || 0,
-      approveCount: mainPost.approve_count || 0,
-    };
-  } catch (error) {
-    console.error("Error fetching post data:", error);
-    return null;
-  }
-}
-
-function getImageDimensions(format: ImageFormat) {
+export function getImageDimensions(format: ImageFormat) {
   return format === "opengraph" ? { width: 1200, height: 630 } : { width: 1200, height: 600 }; // Twitter
 }
 
-function createUserProfileImage(userData: UserProfileData, format: ImageFormat) {
+export function createUserProfileImage(userData: UserProfileData, format: ImageFormat) {
   const dimensions = getImageDimensions(format);
 
   return new ImageResponse(
@@ -536,18 +179,12 @@ function createUserProfileImage(userData: UserProfileData, format: ImageFormat) 
   );
 }
 
-async function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
+export async function createPostThreadImage(postData: PostThreadData, format: ImageFormat) {
   const dimensions = getImageDimensions(format);
-  const interBold = await readFile(
-    join(process.cwd(), 'fonts/Inter/Inter_18pt-Bold.ttf')
-  )
-  const interFont = await readFile(
-    join(process.cwd(), 'fonts/Inter/Inter_18pt-Regular.ttf')
-  )
+  const interBold = await readFile(join(process.cwd(), "fonts/Inter/Inter_18pt-Bold.ttf"));
+  const interFont = await readFile(join(process.cwd(), "fonts/Inter/Inter_18pt-Regular.ttf"));
 
-  const interItalic = await readFile(
-    join(process.cwd(), 'fonts/Inter/Inter_18pt-Italic.ttf')
-  )
+  const interItalic = await readFile(join(process.cwd(), "fonts/Inter/Inter_18pt-Italic.ttf"));
 
   const image = new ImageResponse(
     (
@@ -683,17 +320,17 @@ async function createPostThreadImage(postData: PostThreadData, format: ImageForm
           >
             {parseHtmlSafely(render(postData.displayContent))}
             {/* {(() => {
-            try {
-              const html = render(postData.content);
-              console.log('Rendered HTML:', html.substring(0, 300));
-              const parsed = parseHtmlSafely(html);
-              console.log('Parsed result:', !!parsed);
-              return parsed || <div style={{ color: 'white', fontSize: '18px' }}>{postData.displayContent}</div>;
-            } catch (error) {
-              console.error('Error rendering post content:', error);
-              return <div style={{ color: 'white', fontSize: '18px' }}>{postData.displayContent}</div>;
-            }
-          })()} */}
+              try {
+                const html = render(postData.content);
+                console.log('Rendered HTML:', html.substring(0, 300));
+                const parsed = parseHtmlSafely(html);
+                console.log('Parsed result:', !!parsed);
+                return parsed || <div style={{ color: 'white', fontSize: '18px' }}>{postData.displayContent}</div>;
+              } catch (error) {
+                console.error('Error rendering post content:', error);
+                return <div style={{ color: 'white', fontSize: '18px' }}>{postData.displayContent}</div>;
+              }
+            })()} */}
           </div>
 
           {/* Engagement Stats */}
@@ -757,7 +394,7 @@ async function createPostThreadImage(postData: PostThreadData, format: ImageForm
           weight: 400,
           style: "italic",
         },
-      ]
+      ],
     }
   );
 
@@ -783,11 +420,10 @@ async function createPostThreadImage(postData: PostThreadData, format: ImageForm
     }
   );
 
-
   return image;
 }
 
-function createNotFoundImage(type: string, format: ImageFormat) {
+export function createNotFoundImage(type: string, format: ImageFormat) {
   const dimensions = getImageDimensions(format);
   const emoji = type === "user" ? "👤" : "📝";
   const title = type === "user" ? "User Not Found" : "Post Not Found";
@@ -816,7 +452,7 @@ function createNotFoundImage(type: string, format: ImageFormat) {
   );
 }
 
-function createErrorImage(message: string) {
+export function createErrorImage(message: string) {
   return new ImageResponse(
     (
       <div
