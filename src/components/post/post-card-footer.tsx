@@ -3,6 +3,7 @@
 import { useToggleReactionMutation } from "@/hooks/mutation/use-toggle-reaction-mutation";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostContext } from "@/hooks/use-post-context";
+import type { NestedPost } from "@/types/nested-posts";
 import {
   Button,
   CardFooter,
@@ -16,14 +17,9 @@ import {
   addToast,
   cn,
 } from "@heroui/react";
-import {
-  CopyIcon,
-  EllipsisIcon,
-  MessageSquareIcon,
-  Repeat2Icon,
-  Share2Icon,
-  StarIcon,
-} from "lucide-react";
+import { SiX } from "@icons-pack/react-simple-icons";
+import { CopyIcon, MessageSquareIcon, Repeat2Icon, Share2Icon, StarIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import {
   type Reaction,
@@ -31,9 +27,6 @@ import {
   getSortedReactions,
   getTotalReactions,
 } from "./functions/reactions-utils";
-import { SiX } from "@icons-pack/react-simple-icons";
-import Link from "next/link";
-import type { NestedPost } from "@/types/nested-posts";
 
 const reactions: Reaction[] = [
   { type: "star", icon: "🌟", label: "Star" },
