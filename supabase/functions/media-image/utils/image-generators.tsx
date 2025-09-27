@@ -238,7 +238,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            background: "#18181b",
+            background: "rgba(24, 24, 27, 0.85)",
             border: "1px solid #27272a",
             borderRadius: "12px",
             padding: "32px",
@@ -354,7 +354,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
                 bottom: 0,
                 background:
                   postData.content.length > postData.displayContent.length
-                    ? "linear-gradient(to bottom, transparent 0%, transparent 80%, rgba(24, 24, 27, 0.6) 100%)"
+                    ? "linear-gradient(to bottom, transparent 0%, transparent 80%, rgba(24, 24, 27, 0.3) 100%)"
                     : "transparent",
                 // background: "blue",
                 borderRadius: "4px",
