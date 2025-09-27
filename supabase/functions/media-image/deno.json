@@ -1,3 +1,27 @@
 {
-  "importMap": "../import_map.json"
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "allowJs": true,
+    "lib": [
+      "deno.window",
+      "dom"
+    ],
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": [
+      "@types/react"
+    ]
+  },
+  "imports": {
+    "og_edge": "https://deno.land/x/og_edge/mod.ts",
+    "react": "npm:react@^18.0.0",
+    "@types/react": "npm:@types/react@^18.0.0",
+    "react/jsx-runtime": "npm:react@^18.0.0/jsx-runtime",
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@2",
+    "@deno/gfm": "jsr:@deno/gfm@0.11.0",
+    "html-react-parser": "npm:html-react-parser"
+  }
 }
