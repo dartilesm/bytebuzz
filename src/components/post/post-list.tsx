@@ -36,7 +36,7 @@ export function PostList({ postQueryType }: PostListProps) {
       {data.pages.map((page) => {
         return page.data?.map((post) => (
           <PostWrapper key={post.id}>
-            <UserPost post={post}>
+            <UserPost post={post} minVisibleContentLength={800}>
               {post.repost && <CondensedUserPost post={post.repost} />}
             </UserPost>
           </PostWrapper>

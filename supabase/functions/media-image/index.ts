@@ -4,11 +4,11 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import handler from "./handler.tsx";
+import handler from "./handler.ts";
 
 console.log("Hello from Social Media Image Generator Function!");
 
-Deno.serve(handler);
+Deno.serve(handler as Deno.ServeHandler<Deno.NetAddr>);
 
 /* To invoke locally:
 
