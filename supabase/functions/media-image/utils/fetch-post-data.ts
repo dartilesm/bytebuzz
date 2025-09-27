@@ -38,7 +38,6 @@ export async function fetchPostData(postId: string): Promise<PostThreadData | nu
     // Clean the post content for display (basic markdown removal)
     const cleanContent = (mainPost.content || "")
       .replace(/!\[.*?\]\(.*?\)/g, "") // Remove images
-      .replace(/```[\s\S]*?```/g, "") // Remove code blocks
       .replace(/#{1,6}\s+/g, "") // Remove headers
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Remove links
       .trim();

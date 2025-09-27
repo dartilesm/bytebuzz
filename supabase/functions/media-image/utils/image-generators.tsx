@@ -394,7 +394,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
                 display: "flex",
                 alignItems: "center",
                 gap: "24px",
-                fontSize: "18px",
+                fontSize: "16px",
                 opacity: 0.8,
               }}
             >
@@ -416,14 +416,6 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
                   <span>{postData.approveCount}</span>
                 </div>
               )}
-              {postData.starCount === 0 &&
-                postData.coffeeCount === 0 &&
-                postData.approveCount === 0 && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>💬</span>
-                    <span>New post</span>
-                  </div>
-                )}
             </div>
           </div>
         </div>
@@ -454,27 +446,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
     }
   );
 
-  const image2 = new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 14,
-          background: "lavender",
-        }}
-      >
-        {parseHtmlSafely(render(postData.displayContent))}
-      </div>
-    ),
-    {
-      ...dimensions,
-      debug: true,
-    }
-  );
+  console.log(parseHtmlSafely(render(postData.displayContent)));
 
   return image;
 }

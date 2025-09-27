@@ -10,10 +10,12 @@ type SupportedElementName = keyof typeof SUPPORTED_ELEMENTS_WITH_STYLES;
 const SUPPORTED_ELEMENTS_WITH_STYLES = {
   p: {
     display: DEFAULT_DISPLAY,
+    columnGap: "8px",
     marginTop: 0,
     marginBottom: 0,
     flexDirection: "row",
     flexWrap: "wrap",
+    width: "100%",
   },
   div: {
     display: DEFAULT_DISPLAY,
@@ -38,6 +40,7 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     borderWidth: 1,
     // We don't have `inset`
     borderStyle: "solid",
+    width: "100%",
   },
   // Heading elements
   h1: {
@@ -48,6 +51,7 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     marginLeft: 0,
     marginRight: 0,
     fontWeight: "bold",
+    width: "100%",
   },
   h2: {
     display: DEFAULT_DISPLAY,
@@ -57,6 +61,7 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     marginLeft: 0,
     marginRight: 0,
     fontWeight: "bold",
+    width: "100%",
   },
   h3: {
     display: DEFAULT_DISPLAY,
@@ -66,6 +71,7 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     marginLeft: 0,
     marginRight: 0,
     fontWeight: "bold",
+    width: "100%",
   },
   h4: {
     display: DEFAULT_DISPLAY,
@@ -74,6 +80,7 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     marginLeft: 0,
     marginRight: 0,
     fontWeight: "bold",
+    width: "100%",
   },
   h5: {
     display: DEFAULT_DISPLAY,
@@ -83,6 +90,7 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     marginLeft: 0,
     marginRight: 0,
     fontWeight: "bold",
+    width: "100%",
   },
   h6: {
     display: DEFAULT_DISPLAY,
@@ -92,6 +100,7 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     marginLeft: 0,
     marginRight: 0,
     fontWeight: "bold",
+    width: "100%",
   },
   // Tables
   // Lists
@@ -114,9 +123,8 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
   },
   code: {
     fontFamily: "monospace",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: "rgba(40, 40, 44, 1)",
     padding: "0px 8px",
-    margin: "0px 8px",
     borderRadius: "8px",
   },
   kbd: {
@@ -128,6 +136,9 @@ const SUPPORTED_ELEMENTS_WITH_STYLES = {
     whiteSpace: "pre",
     marginTop: 0,
     marginBottom: 0,
+    backgroundColor: "rgba(40, 40, 44, 1)",
+    padding: "8px",
+    borderRadius: "8px",
   },
   mark: {
     backgroundColor: "yellow",
