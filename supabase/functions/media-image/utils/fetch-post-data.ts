@@ -9,6 +9,7 @@ interface PostThreadData {
   starCount: number;
   coffeeCount: number;
   approveCount: number;
+  createdAt: string;
 }
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -54,6 +55,7 @@ export async function fetchPostData(postId: string): Promise<PostThreadData | nu
       starCount: mainPost.star_count || 0,
       coffeeCount: mainPost.coffee_count || 0,
       approveCount: mainPost.approve_count || 0,
+      createdAt: mainPost.created_at || "",
     };
   } catch (error) {
     console.error("Error fetching post data:", error);

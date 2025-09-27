@@ -17,6 +17,7 @@ interface UserProfileData {
 }
 
 interface PostThreadData {
+  createdAt: string;
   authorName: string;
   authorUsername: string;
   avatarUrl?: string;
@@ -194,14 +195,15 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "black",
           color: "white",
           fontFamily: "Inter",
           padding: "60px",
+          backgroundImage: "linear-gradient(to right, #24243e, #302b63, #0f0c29)",
         }}
       >
         {/* Header */}
-        <div
+        {/* <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -227,7 +229,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
           >
             bytebuzz.dev
           </div>
-        </div>
+        </div> */}
 
         {/* Main Content */}
         <div
@@ -236,71 +238,87 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
             flexDirection: "column",
             flex: 1,
             justifyContent: "center",
+            background: "#18181b",
+            border: "1px solid #27272a",
+            borderRadius: "12px",
+            padding: "32px",
+            maxWidth: "80%",
+            margin: "0 auto",
           }}
         >
           {/* Author Info */}
           <div
             style={{
               display: "flex",
+              flexDirection: "row",
               alignItems: "center",
               marginBottom: "30px",
+              justifyContent: "space-between",
             }}
           >
-            {/* Avatar */}
-            <div
-              style={{
-                width: "80px",
-                height: "80px",
-                borderRadius: "40px",
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: "20px",
-                fontSize: "32px",
-                overflow: "hidden",
-              }}
-            >
-              {postData.avatarUrl ? (
-                <img
-                  src={postData.avatarUrl}
-                  alt={postData.authorName}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <div style={{ fontSize: "32px" }}>👤</div>
-              )}
-            </div>
+            {/* User Avatar */}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {/* Avatar */}
+              <div
+                style={{
+                  width: "60px",
+                  height: "60px",
+                  borderRadius: "40px",
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: "20px",
+                  fontSize: "32px",
+                  overflow: "hidden",
+                  outline: "20px solid blue",
+                }}
+              >
+                {postData.avatarUrl && (
+                  <img
+                    src={postData.avatarUrl}
+                    alt={postData.authorName}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
+                {(!postData.avatarUrl || postData.avatarUrl === "") && (
+                  <div style={{ fontSize: "32px" }}>👤</div>
+                )}
+              </div>
 
-            {/* Author Details */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+              {/* User Details */}
               <div
                 style={{
-                  fontSize: "28px",
-                  fontWeight: "bold",
-                  marginBottom: "4px",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-                {postData.authorName}
-              </div>
-              <div
-                style={{
-                  fontSize: "20px",
-                  opacity: 0.8,
-                }}
-              >
-                {`@${postData.authorUsername}`}
+                <div
+                  style={{
+                    fontSize: "24px",
+                    fontWeight: "bold",
+                    marginBottom: "4px",
+                  }}
+                >
+                  {postData.authorName}
+                </div>
+                <div
+                  style={{
+                    fontSize: "20px",
+                    opacity: 0.8,
+                    color: "#d4d4d8",
+                  }}
+                >
+                  {`@${postData.authorUsername}`}
+                </div>
               </div>
             </div>
+            {/* ByteBuzz logo */}
+            <div style={{ fontSize: "24px", fontWeight: "bold", color: "#d4d4d8" }}>ByteBuzz</div>
           </div>
 
           {/* Post Content */}
@@ -316,6 +334,7 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
               flexDirection: "row",
               flexWrap: "wrap",
               overflow: "hidden",
+              boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
             }}
           >
             {parseHtmlSafely(render(postData.displayContent))}
@@ -331,6 +350,17 @@ export async function createPostThreadImage(postData: PostThreadData, format: Im
                 return <div style={{ color: 'white', fontSize: '18px' }}>{postData.displayContent}</div>;
               }
             })()} */}
+          </div>
+
+          {/* Date */}
+          <div style={{ fontSize: "16px", opacity: 0.8, marginBottom: "30px" }}>
+            {new Date(postData.createdAt).toLocaleDateString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </div>
 
           {/* Engagement Stats */}
