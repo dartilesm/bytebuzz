@@ -17,8 +17,6 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
   // Extract image count from markdown by counting ![] patterns
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
 
-  const markdownWithLineBreaks = markdown.replace(/\n/gi, "&nbsp;  \n");
-
   return (
     <>
       <Markdown
@@ -59,7 +57,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
         }}
         disallowedElements={["img"]}
       >
-        {markdownWithLineBreaks}
+        {markdown}
       </Markdown>
       {imageCount > 0 && (
         <div

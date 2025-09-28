@@ -57,6 +57,7 @@ export function PostContent({ children }: PostContentProps) {
     <CardBody
       className={cn("flex-1 py-0 text-sm", {
         "px-8.5": isThreadPagePost,
+        "flex flex-col gap-2": !expansionData.shouldShowControls,
       })}
     >
       {!expansionData.shouldShowControls && (
@@ -65,14 +66,14 @@ export function PostContent({ children }: PostContentProps) {
       {expansionData.shouldShowControls && (
         <>
           <div
-            className="transition-all duration-300 ease-out overflow-hidden"
+            className='transition-all duration-300 ease-out overflow-hidden'
             style={{ height: contentHeight || "auto" }}
           >
             <ScrollShadow
               size={50}
               style={{ overflow: "hidden" }}
               hideScrollBar
-              className="transition-all duration-300 flex flex-col gap-2"
+              className='transition-all duration-300 flex flex-col gap-2'
               visibility={!isFullyExpanded ? "bottom" : undefined}
               ref={contentRef}
             >
@@ -81,10 +82,10 @@ export function PostContent({ children }: PostContentProps) {
           </div>
           {canExpand && (
             <Button
-              variant="light"
-              size="sm"
+              variant='light'
+              size='sm'
               onPress={handleExpand}
-              className="self-start text-primary hover:text-primary-600 transition-colors"
+              className='self-start text-primary hover:text-primary-600 transition-colors'
               startContent={<ChevronDownIcon size={16} />}
             >
               View more
