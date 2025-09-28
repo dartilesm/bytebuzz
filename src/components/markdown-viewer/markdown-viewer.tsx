@@ -35,7 +35,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           code: ({ node, ...props }) => {
             const { children, className } = props;
             const language = className?.replace("language-", "");
-            if (!className) return <Code className="text-xs">{children}</Code>;
+            if (!className) return <Code className='text-xs'>{children}</Code>;
             return <CodeBlock code={children as string} language={language} />;
           },
           ul: ({ ...props }) => {
@@ -71,7 +71,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
               "[&_>:nth-child(1)]:[grid-area:1/1/3/2]",
               "[&_>:nth-child(2)]:[grid-area:1/2/2/3]",
               "[&_>:nth-child(3)]:[grid-area:2/2/3/3]",
-            ],
+            ]
           )}
         >
           <Markdown
@@ -93,15 +93,15 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 return (
                   <div
                     className={cn(
-                      "relative outline-[0.5px] dark:outline-content2 outline-content3",
+                      "relative outline-[0.5px] dark:outline-content2 outline-content3"
                     )}
                   >
                     <Image
-                      className="h-full"
+                      className='h-full'
                       src={imageUrl}
                       alt={alt || "Image"}
                       fill
-                      objectFit="cover"
+                      objectFit='cover'
                       unoptimized
                     />
                   </div>

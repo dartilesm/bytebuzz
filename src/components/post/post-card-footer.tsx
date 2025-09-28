@@ -1,9 +1,25 @@
 "use client";
 
 import { useToggleReactionMutation } from "@/hooks/mutation/use-toggle-reaction-mutation";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostContext } from "@/hooks/use-post-context";
-import { Button, CardFooter, Divider, Tooltip, cn } from "@heroui/react";
-import { ArchiveIcon, EllipsisIcon, MessageSquareIcon, Repeat2Icon, StarIcon } from "lucide-react";
+import type { NestedPost } from "@/types/nested-posts";
+import {
+  Button,
+  CardFooter,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownSection,
+  DropdownTrigger,
+  Tooltip,
+  addToast,
+  cn,
+} from "@heroui/react";
+import { SiX } from "@icons-pack/react-simple-icons";
+import { CopyIcon, MessageSquareIcon, Repeat2Icon, Share2Icon, StarIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import {
   type Reaction,
@@ -11,7 +27,6 @@ import {
   getSortedReactions,
   getTotalReactions,
 } from "./functions/reactions-utils";
-import { useAuthGuard } from "@/hooks/use-auth-guard";
 
 const reactions: Reaction[] = [
   { type: "star", icon: "🌟", label: "Star" },
@@ -20,10 +35,33 @@ const reactions: Reaction[] = [
   { type: "cache", icon: "🧠", label: "Cache" },
 ];
 
+function getPostUrl(post: NestedPost) {
+  if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/${post.user.username}/thread/${post.id}`;
+  }
+  return `http://localhost:3000/${post.user.username}/thread/${post.id}`;
+}
+
+function getXPostPreview(post: NestedPost) {
+  const content = `Check out this post by @${post.user.username} on ByteBuzz 🚀!
+  %0A%0AJoin the conversation at bytebuzz.dev - where developers share insights, code, and connect! 💻✨
+  %0A%0A${getPostUrl(post)}`;
+
+  return `https://x.com/intent/post?text=${content}`;
+}
+
+function shareUrl(post: NestedPost) {
+  const url = getPostUrl(post);
+  navigator.share({
+    text: post.content || "Check out this post on ByteBuzz!",
+    url,
+  });
+}
+
 export function PostFooter() {
   const { isThreadPagePost, togglePostModal, post, isNavigationDisabled } = usePostContext();
   const [selectedReaction, setSelectedReaction] = useState<Reaction["type"] | null>(
-    post.reaction?.reaction_type ?? null,
+    post.reaction?.reaction_type ?? null
   );
   const [isReactionsTooltipOpen, setIsReactionsTooltipOpen] = useState(false);
 
@@ -50,15 +88,24 @@ export function PostFooter() {
         onError: () => {
           setSelectedReaction(lastReaction);
         },
-      },
+      }
     );
+  }
+
+  function copyUrl(post: NestedPost) {
+    const url = getPostUrl(post);
+    navigator.clipboard.writeText(url);
+    addToast({
+      title: "Post link copied to clipboard",
+      color: "success",
+    });
   }
 
   // Use utility functions for reactions logic
   const reactionsWithCounts = getReactionsWithCounts(
     post,
     reactions,
-    post.reaction?.reaction_type ?? null,
+    post.reaction?.reaction_type ?? null
   );
   const sortedReactions = getSortedReactions(reactionsWithCounts);
   const totalReactions = getTotalReactions(sortedReactions);
@@ -74,9 +121,9 @@ export function PostFooter() {
                 className={cn("flex flex-row items-center ml-2 w-full gap-2 py-1", {
                   "px-3.5": isThreadPagePost,
                 })}
-                aria-label="Reactions legend"
+                aria-label='Reactions legend'
               >
-                <div className="flex flex-row items-center">
+                <div className='flex flex-row items-center'>
                   {sortedReactions.map((reaction, reactionIndex) => (
                     <span
                       key={reaction.type}
@@ -88,16 +135,16 @@ export function PostFooter() {
                           "z-[3]": reactionIndex === 1,
                           "z-[2]": reactionIndex === 2,
                           "z-[1]": reactionIndex === 3,
-                        },
+                        }
                       )}
                       aria-label={reaction.label}
                     >
-                      <span aria-hidden="true">{reaction.icon}</span>
+                      <span aria-hidden='true'>{reaction.icon}</span>
                     </span>
                   ))}
                 </div>
                 {totalReactions > 0 && (
-                  <span className="text-gray-400 text-xs" aria-label="Total reactions">
+                  <span className='text-gray-400 text-xs' aria-label='Total reactions'>
                     {totalReactions}
                   </span>
                 )}
@@ -115,14 +162,14 @@ export function PostFooter() {
             >
               {/* Reaction Button with Tooltip (original) */}
               <Tooltip
-                className="relative mt-4 flex flex-row gap-2 p-1"
-                placement="top-start"
+                className='relative mt-4 flex flex-row gap-2 p-1'
+                placement='top-start'
                 isOpen={isReactionsTooltipOpen}
                 onOpenChange={setIsReactionsTooltipOpen}
                 content={reactions.map((reaction) => (
                   <Tooltip
                     key={reaction.type}
-                    className="group relative"
+                    className='group relative'
                     content={reaction.label}
                     onOpenChange={(open) => {
                       if (open) {
@@ -131,13 +178,13 @@ export function PostFooter() {
                     }}
                   >
                     <Button
-                      variant="light"
-                      size="sm"
-                      className="p-2 group"
+                      variant='light'
+                      size='sm'
+                      className='p-2 group'
                       isIconOnly
                       onPress={withAuth(() => handleReaction(reaction.type))}
                     >
-                      <span className="text-xl group-hover:text-3xl transition-all duration-200">
+                      <span className='text-xl group-hover:text-3xl transition-all duration-200'>
                         {reaction.icon}
                       </span>
                     </Button>
@@ -147,78 +194,97 @@ export function PostFooter() {
                 <Button
                   variant={!selectedReaction ? "light" : "flat"}
                   color={!selectedReaction ? "default" : "primary"}
-                  size="sm"
+                  size='sm'
                   isIconOnly={!selectedReaction}
                   className={cn("group flex items-center gap-2", {
                     "text-gray-400": !selectedReaction,
                   })}
                 >
                   {selectedReaction ? (
-                    <span className="text-lg">
+                    <span className='text-lg'>
                       {reactions.find((r) => r.type === selectedReaction)?.icon}
                     </span>
                   ) : (
-                    <span className="text-lg">
-                      <StarIcon className="text-inherit" size={18} />
+                    <span className='text-lg'>
+                      <StarIcon className='text-inherit' size={18} />
                     </span>
                   )}
                   {selectedReaction && (
-                    <span className="text-sm capitalize">{selectedReaction}</span>
+                    <span className='text-sm capitalize'>{selectedReaction}</span>
                   )}
                 </Button>
                 {/* Legend: All reactions ordered + total counter */}
               </Tooltip>
               {/* Comment Button */}
-              <Tooltip content="Comment">
+              <Tooltip content='Comment'>
                 <Button
-                  variant="light"
-                  size="sm"
-                  className="flex flex-row gap-2 text-gray-400"
+                  variant='light'
+                  size='sm'
+                  className='flex flex-row gap-2 text-gray-400'
                   onPress={withAuth(() => togglePostModal(true, "reply"))}
-                  aria-label="Comment"
+                  aria-label='Comment'
                   tabIndex={0}
                 >
-                  <MessageSquareIcon className="text-inherit" size={18} />
+                  <MessageSquareIcon className='text-inherit' size={18} />
                   {Boolean(post?.reply_count) && (
-                    <span className="text-sm">{post?.reply_count}</span>
+                    <span className='text-sm'>{post?.reply_count}</span>
                   )}
                 </Button>
               </Tooltip>
               {/* Other Buttons (Repost, Backup, More) */}
-              <Tooltip content="Repost">
+              <Tooltip content='Repost'>
                 <Button
-                  variant="light"
-                  size="sm"
-                  className="text-gray-400"
+                  variant='light'
+                  size='sm'
+                  className='text-gray-400'
                   onPress={withAuth(() => togglePostModal(true, "clone"))}
-                  aria-label="Repost"
+                  aria-label='Repost'
                   tabIndex={0}
                 >
-                  <Repeat2Icon className="text-inherit" size={22} strokeWidth={1.5} />
+                  <Repeat2Icon className='text-inherit' size={22} strokeWidth={1.5} />
                 </Button>
               </Tooltip>
-              <Tooltip content="Backup (coming soon)">
-                <Button
-                  variant="light"
-                  size="sm"
-                  className="text-gray-400"
-                  aria-label="Backup (coming soon)"
-                  tabIndex={0}
-                >
-                  <ArchiveIcon className="text-inherit" size={18} />
-                </Button>
-              </Tooltip>
-              <Tooltip content="More (coming soon)">
-                <Button
-                  variant="light"
-                  size="sm"
-                  className="text-gray-400"
-                  aria-label="More (coming soon)"
-                  tabIndex={0}
-                  isIconOnly
-                >
-                  <EllipsisIcon className="text-inherit" size={18} />
-                </Button>
+              <Tooltip content='Share'>
+                <Dropdown placement='bottom-end'>
+                  <DropdownTrigger>
+                    <Button
+                      variant='light'
+                      size='sm'
+                      className='text-gray-400 max-w-32'
+                      aria-label='Share'
+                      tabIndex={0}
+                    >
+                      <Share2Icon className='text-inherit' size={18} />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu>
+                    <DropdownSection showDivider>
+                      <DropdownItem
+                        key='x'
+                        startContent={<SiX className='text-inherit' size={16} />}
+                        as={Link}
+                        href={getXPostPreview(post)}
+                        target='_blank'
+                      >
+                        Share on X
+                      </DropdownItem>
+                    </DropdownSection>
+                    <DropdownItem
+                      key='copy'
+                      startContent={<CopyIcon className='text-inherit' size={16} />}
+                      onPress={() => copyUrl(post)}
+                    >
+                      Copy link
+                    </DropdownItem>
+                    <DropdownItem
+                      key='native'
+                      startContent={<Share2Icon className='text-inherit' size={16} />}
+                      onPress={() => shareUrl(post)}
+                    >
+                      Share via ...
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </Tooltip>
             </div>
           </>
