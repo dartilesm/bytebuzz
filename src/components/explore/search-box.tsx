@@ -19,8 +19,6 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
     error,
   } = useUsersSearch(searchTerm);
 
-  console.log({ users, isLoading });
-
   function handleSearch(term: string) {
     onSearch?.(term);
     setSearchTerm(term);
@@ -29,14 +27,13 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
   return (
     <Autocomplete
       aria-label='Select an employee'
-      allowsCustomValue
+      allowsEmptyCollection
       classNames={{
         listboxWrapper: "max-h-[320px]",
         selectorButton: "text-default-500",
       }}
       defaultInputValue={searchTerm}
       defaultItems={users}
-      isLoading={isLoading}
       errorMessage='Error fetching users'
       inputProps={{
         classNames: {
@@ -64,6 +61,7 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
       }}
       placeholder={placeholder}
       popoverProps={{
+        isOpen: true,
         offset: 10,
         classNames: {
           base: "rounded-large",
@@ -104,28 +102,4 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
       )}
     </Autocomplete>
   );
-
-  /* return (
-    <div className='relative w-full max-w-2xl mx-auto'>
-      <div className='relative'>
-        <Input
-          onChange={(e) => debouncedSearch(e.target.value)}
-          placeholder={placeholder}
-          aria-label='Search'
-          startContent={
-            <SearchIcon
-              className='text-default-400 pointer-events-none flex-shrink-0'
-              width={20}
-              height={20}
-            />
-          }
-          classNames={{
-            input: "pl-12",
-            inputWrapper:
-              "bg-default-100/50 dark:bg-content2/50 backdrop-blur-xl hover:bg-default-200/50 dark:hover:bg-content2 group-data-[focused=true]:bg-default-200/50 dark:group-data-[focused=true]:bg-content2",
-          }}
-        />
-      </div>
-    </div>
-  ); */
 }
