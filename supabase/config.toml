@@ -42,7 +42,7 @@ max_client_conn = 100
 [db.seed]
 enabled = true
 # Path to the SQL files to seed the database with.
-sql_paths = ['./seeds/users.sql', './seeds/user_followers.sql', './seeds/posts.sql', './seeds/reactions.sql']
+sql_paths = ['./seeds/users.sql', './seeds/user_followers.sql', './seeds/posts.sql', './seeds/reactions.sql', './seeds/storage.sql', './seeds/post_media.sql']
 
 [realtime]
 enabled = true
@@ -71,7 +71,7 @@ port = 54324
 # pop3_port = 54326
 
 [storage]
-enabled = true
+enabled = false
 # The maximum file size allowed (e.g. "5MB", "500KB").
 file_size_limit = "50MiB"
 
