@@ -9,24 +9,16 @@ import { PostsProvider } from "@/context/posts-context";
 import { exploreMockData } from "@/lib/mock/explore-data";
 import { Alert, ScrollShadow } from "@heroui/react";
 import type { Tables } from "database.types";
-import { useState } from "react";
 
-export function ExploreView() {
-  const [searchTerm, setSearchTerm] = useState("");
+interface ExploreViewProps {
+  users: Tables<"users">[];
+}
 
-  const filteredUsers = exploreMockData.users.filter((user) => {
-    const searchLower = searchTerm?.toLowerCase() || "";
-    return (
-      user.username?.toLowerCase().includes(searchLower) ||
-      user.display_name?.toLowerCase().includes(searchLower) ||
-      user.bio?.toLowerCase().includes(searchLower)
-    );
-  });
-
+export function ExploreView({ users }: ExploreViewProps) {
   return (
     <>
-      <PageHeader title='Explore'>
-        <SearchBox onSearch={setSearchTerm} placeholder='Search users or posts...' />
+      <PageHeader title='Explore' className='bg-transparent backdrop-blur-none'>
+        <SearchBox placeholder='Search users or posts...' />
       </PageHeader>
       <Alert
         color='warning'
@@ -41,18 +33,16 @@ export function ExploreView() {
             className='flex gap-4 flex-row scrollbar-auto pb-4'
             orientation='horizontal'
           >
-            {filteredUsers.map((user) => (
+            {users.map((user) => (
               <UserCard2 key={user.id} user={user as Tables<"users">} />
             ))}
-            {filteredUsers.length === 0 && (
-              <p className='text-center text-default-500'>No users found</p>
-            )}
+            {users.length === 0 && <p className='text-center text-default-500'>No users found</p>}
           </ScrollShadow>
         </section>
 
         {/* Posts Section */}
         <section className='space-y-4'>
-          <h2 className='text-lg font-medium'>{searchTerm ? "Related Posts" : "Trending Posts"}</h2>
+          <h2 className='text-lg font-medium'>{"Related Posts"}</h2>
           <PostsProvider initialPosts={exploreMockData.posts}>
             <div className='grid gap-4'>
               {exploreMockData.posts.map((post) => (

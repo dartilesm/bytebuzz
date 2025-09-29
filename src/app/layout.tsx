@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ClientProviders } from "@/app/client-providers";
 import { ThemeProvider } from "next-themes";
 import "@/app/globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         <ClerkProvider>
-          <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-            <ClientProviders>{children}</ClientProviders>
-          </ThemeProvider>
+          <NuqsAdapter>
+            <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+              <ClientProviders>{children}</ClientProviders>
+            </ThemeProvider>
+          </NuqsAdapter>
         </ClerkProvider>
       </body>
     </html>

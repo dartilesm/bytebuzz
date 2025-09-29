@@ -1,6 +1,5 @@
-import { ExploreView } from "@/components/containers/explore-view";
 import { createServerSupabaseClient } from "@/db/supabase";
-import { withAnalytics } from "@/lib/with-analytics";
+import { type NextRequest, NextResponse } from "next/server";
 
 async function getUsers(searchTerm: string) {
   if (!searchTerm) {
@@ -17,11 +16,9 @@ async function getUsers(searchTerm: string) {
   return randomeUnfollwedUsers;
 }
 
-async function ExplorePage({ searchParams }: PageProps<"/explore">) {
-  const { searchTerm } = await searchParams;
-
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const searchTerm = searchParams.get("searchTerm");
   const users = await getUsers(searchTerm as string);
-  return <ExploreView users={users.data} />;
+  return NextResponse.json(users);
 }
-
-export default withAnalytics(ExplorePage, { event: "page-view" });

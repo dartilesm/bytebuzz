@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -200,6 +200,7 @@ export type Database = {
           display_name: string
           follower_count: number | null
           following_count: number | null
+          fts: unknown | null
           github_url: string | null
           id: string
           image_url: string | null
@@ -216,6 +217,7 @@ export type Database = {
           display_name: string
           follower_count?: number | null
           following_count?: number | null
+          fts?: unknown | null
           github_url?: string | null
           id?: string
           image_url?: string | null
@@ -232,6 +234,7 @@ export type Database = {
           display_name?: string
           follower_count?: number | null
           following_count?: number | null
+          fts?: unknown | null
           github_url?: string | null
           id?: string
           image_url?: string | null
@@ -260,18 +263,18 @@ export type Database = {
       get_post_ancestry: {
         Args: { start_id: string }
         Returns: {
-          id: string
-          content: string
-          created_at: string
-          parent_post_id: string
-          repost_post_id: string
-          star_count: number
-          coffee_count: number
           approve_count: number
           cache_count: number
-          user: Json
+          coffee_count: number
+          content: string
+          created_at: string
+          id: string
+          parent_post_id: string
           reaction: Json
           repost: Json
+          repost_post_id: string
+          star_count: number
+          user: Json
         }[]
       }
       get_random_unfollowed_users: {
@@ -282,6 +285,7 @@ export type Database = {
           display_name: string
           follower_count: number | null
           following_count: number | null
+          fts: unknown | null
           github_url: string | null
           id: string
           image_url: string | null
@@ -294,58 +298,78 @@ export type Database = {
         }[]
       }
       get_replies_to_depth: {
-        Args: { target_id: string; max_depth: number }
+        Args: { max_depth: number; target_id: string }
         Returns: {
-          id: string
-          content: string
-          created_at: string
-          parent_post_id: string
-          repost_post_id: string
-          star_count: number
-          coffee_count: number
           approve_count: number
           cache_count: number
+          coffee_count: number
+          content: string
+          created_at: string
+          id: string
           level: number
-          user: Json
+          parent_post_id: string
           reaction: Json
+          repost_post_id: string
+          star_count: number
+          user: Json
         }[]
       }
       get_user_feed: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          content: string
-          created_at: string
-          parent_post_id: string
-          repost_post_id: string
-          reply_count: number
-          repost_count: number
-          star_count: number
-          coffee_count: number
           approve_count: number
           cache_count: number
-          user: Json
+          coffee_count: number
+          content: string
+          created_at: string
+          id: string
+          parent_post_id: string
           reaction: Json
+          reply_count: number
           repost: Json
+          repost_count: number
+          repost_post_id: string
+          star_count: number
+          user: Json
         }[]
       }
       get_user_posts_by_username: {
         Args: { input_username: string }
         Returns: {
-          id: string
-          content: string
-          created_at: string
-          parent_post_id: string
-          repost_post_id: string
-          reply_count: number
-          repost_count: number
-          star_count: number
-          coffee_count: number
           approve_count: number
           cache_count: number
-          user: Json
+          coffee_count: number
+          content: string
+          created_at: string
+          id: string
+          parent_post_id: string
           reaction: Json
+          reply_count: number
           repost: Json
+          repost_count: number
+          repost_post_id: string
+          star_count: number
+          user: Json
+        }[]
+      }
+      search_users: {
+        Args: { limit_count?: number; search_term: string }
+        Returns: {
+          bio: string
+          cover_image_url: string
+          display_name: string
+          follower_count: number
+          following_count: number
+          github_url: string
+          id: string
+          image_url: string
+          join_date: string
+          linkedin_url: string
+          location: string
+          rank: number
+          top_technologies: string[]
+          username: string
+          website: string
         }[]
       }
       toggle_follow: {
