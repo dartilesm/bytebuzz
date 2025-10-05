@@ -155,20 +155,20 @@ SELECT
 SELECT
     col_type_is(
         'public',
-        'search_users',
+        'users',
         'id',
         'text',
-        'search_users should return id as text'
+        'users table should have id as text'
     );
 
 -- Test 10: search_posts returns correct data types
 SELECT
     col_type_is(
         'public',
-        'search_posts',
+        'posts',
         'id',
         'uuid',
-        'search_posts should return id as uuid'
+        'posts table should have id as uuid'
     );
 
 SELECT

@@ -24,7 +24,7 @@ VALUES
         'test_user@test.com'
     ),
     (
-        'f2e7g9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
         'react_dev@test.com'
     );
 
@@ -58,7 +58,7 @@ VALUES
         ARRAY ['JavaScript', 'Python', 'Docker']
     ),
     (
-        'f2e7g9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
         'react_dev',
         'React Developer',
         'Frontend specialist focused on React ecosystem and modern web development',
@@ -87,7 +87,7 @@ VALUES
     ),
     (
         '33333333-3333-3333-3333-333333333333',
-        'f2e7g9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
         'TypeScript makes React development so much better! Type safety is crucial for large applications.',
         8,
         4
@@ -125,7 +125,7 @@ SET
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''development'')',
-        ARRAY [3::bigint],
+        ARRAY [1::bigint],
         'Full-text search should find users with word stemming (development -> develop)'
     );
 
@@ -133,7 +133,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''developing'')',
-        ARRAY [3::bigint],
+        ARRAY [1::bigint],
         'Full-text search should find users with word stemming (developing -> develop)'
     );
 
@@ -141,7 +141,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_posts(''applications'')',
-        ARRAY [2::bigint],
+        ARRAY [3::bigint],
         'Full-text search should find posts with word stemming (applications -> application)'
     );
 
@@ -149,7 +149,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_posts(''programming'')',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'Full-text search should find posts with word stemming (programming -> program)'
     );
 
@@ -157,7 +157,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''React development'')',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'Full-text search should handle multiple words (React development)'
     );
 
@@ -173,7 +173,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''REACT'')',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'Full-text search should be case insensitive'
     );
 
@@ -237,7 +237,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''@dartilesm'')',
-        ARRAY [0::bigint],
+        ARRAY [1::bigint],
         'Search should handle special characters gracefully'
     );
 

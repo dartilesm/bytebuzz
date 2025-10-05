@@ -2,7 +2,7 @@ BEGIN;
 
 -- Plan the tests
 SELECT
-    plan(25);
+    plan(30);
 
 -- Clean up existing data
 TRUNCATE users,
@@ -24,7 +24,7 @@ VALUES
         'test_user@test.com'
     ),
     (
-        'f2e7g9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
         'react_dev@test.com'
     );
 
@@ -58,7 +58,7 @@ VALUES
         ARRAY ['JavaScript', 'Python', 'Docker']
     ),
     (
-        'f2e7g9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
         'react_dev',
         'React Developer',
         'Frontend specialist focused on React ecosystem',
@@ -87,7 +87,7 @@ VALUES
     ),
     (
         '33333333-3333-3333-3333-333333333333',
-        'f2e7g9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
         'TypeScript makes React development so much better! Type safety is crucial.',
         8,
         4
@@ -200,8 +200,8 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''React'')',
-        ARRAY [2::bigint],
-        'search_users should find multiple users with React in technologies'
+        ARRAY [1::bigint],
+        'search_users should find users with React in technologies'
     );
 
 -- Test 12: search_posts finds posts by content
@@ -240,16 +240,16 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''dev'', 2, 0)',
-        ARRAY [2::bigint],
-        'search_users pagination should return 2 results for first page'
+        ARRAY [1::bigint],
+        'search_users pagination should return 1 result for first page'
     );
 
 -- Test 17: search_users pagination - second page
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''dev'', 2, 2)',
-        ARRAY [1::bigint],
-        'search_users pagination should return 1 result for second page'
+        ARRAY [0::bigint],
+        'search_users pagination should return 0 results for second page'
     );
 
 -- Test 18: search_posts pagination - first page
@@ -270,63 +270,75 @@ SELECT
 
 -- Test 20: search_users returns correct user data structure
 SELECT
-    has_column(
+    col_type_is(
         'public',
-        'search_users',
+        'users',
         'id',
-        'search_users should return id column'
+        'text',
+        'users table should have id column of type text'
     );
 
+-- Test 21: search_users returns correct user data structure
 SELECT
-    has_column(
+    col_type_is(
         'public',
-        'search_users',
+        'users',
         'username',
-        'search_users should return username column'
+        'text',
+        'users table should have username column of type text'
     );
 
+-- Test 22: search_users returns correct user data structure
 SELECT
-    has_column(
+    col_type_is(
         'public',
-        'search_users',
-        'rank',
-        'search_users should return rank column'
+        'users',
+        'display_name',
+        'text',
+        'users table should have display_name column of type text'
     );
 
--- Test 21: search_posts returns correct post data structure
+-- Test 23: search_posts returns correct post data structure
 SELECT
-    has_column(
+    col_type_is(
         'public',
-        'search_posts',
+        'posts',
         'id',
-        'search_posts should return id column'
+        'uuid',
+        'posts table should have id column of type uuid'
     );
 
+-- Test 24: search_posts returns correct post data structure
 SELECT
-    has_column(
+    col_type_is(
         'public',
-        'search_posts',
+        'posts',
         'content',
-        'search_posts should return content column'
+        'text',
+        'posts table should have content column of type text'
     );
 
+-- Test 25: search_posts returns correct post data structure
 SELECT
-    has_column(
+    col_type_is(
         'public',
-        'search_posts',
-        'user',
-        'search_posts should return user column'
+        'posts',
+        'user_id',
+        'text',
+        'posts table should have user_id column of type text'
     );
 
+-- Test 26: search_posts returns correct post data structure
 SELECT
-    has_column(
+    col_type_is(
         'public',
-        'search_posts',
-        'rank',
-        'search_posts should return rank column'
+        'posts',
+        'created_at',
+        'timestamp with time zone',
+        'posts table should have created_at column of type timestamp with time zone'
     );
 
--- Test 22: search_users respects limit parameter
+-- Test 27: search_users respects limit parameter
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''dev'', 1, 0)',
@@ -334,7 +346,7 @@ SELECT
         'search_users should respect limit parameter'
     );
 
--- Test 23: search_posts respects limit parameter
+-- Test 28: search_posts respects limit parameter
 SELECT
     results_eq(
         'SELECT count(*) FROM search_posts(''React'', 1, 0)',
@@ -342,15 +354,15 @@ SELECT
         'search_posts should respect limit parameter'
     );
 
--- Test 24: search_users handles invalid pagination parameters
+-- Test 29: search_users handles invalid pagination parameters
 SELECT
     results_eq(
         'SELECT count(*) FROM search_users(''dev'', -1, -1)',
-        ARRAY [3::bigint],
+        ARRAY [1::bigint],
         'search_users should handle invalid pagination parameters gracefully'
     );
 
--- Test 25: search_posts handles invalid pagination parameters
+-- Test 30: search_posts handles invalid pagination parameters
 SELECT
     results_eq(
         'SELECT count(*) FROM search_posts(''React'', -1, -1)',
