@@ -1,9 +1,16 @@
 "use client";
 
+import { SearchBoxEmpty } from "@/components/explore/search-box-empty";
+import { SearchBoxItem } from "@/components/explore/search-box-item";
 import { useUsersSearch } from "@/hooks/fetch/use-users-search";
-import { Autocomplete, AutocompleteItem, Avatar, Button, Spinner } from "@heroui/react";
-import { SearchIcon } from "lucide-react";
+import { Autocomplete, AutocompleteItem, Card, CardBody, Spinner } from "@heroui/react";
+import type { Database } from "database.types";
+import { SearchIcon, UsersIcon } from "lucide-react";
 import { useDebounceValue } from "usehooks-ts";
+
+type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
+type SearchItem = { id: string; type: "search"; term: string };
+type CombinedItem = User | SearchItem;
 
 interface SearchBoxProps {
   onSearch?: (term: string) => void;
@@ -16,13 +23,22 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
   const {
     data: { data: users },
     isLoading,
-    error,
   } = useUsersSearch(searchTerm);
 
   function handleSearch(term: string) {
     onSearch?.(term);
     setSearchTerm(term);
   }
+
+  function handleExactSearch() {
+    onSearch?.(searchTerm);
+  }
+
+  // Create combined items with search item first if there's a search term
+  const combinedItems: CombinedItem[] =
+    searchTerm && searchTerm.trim() !== ""
+      ? [{ id: "search-exact", type: "search", term: searchTerm }, ...users]
+      : users;
 
   return (
     <Autocomplete
@@ -33,8 +49,10 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
         selectorButton: "text-default-500",
       }}
       defaultInputValue={searchTerm}
-      defaultItems={users}
-      errorMessage='Error fetching users'
+      defaultItems={combinedItems}
+      items={combinedItems}
+      isLoading={isLoading}
+      errorMessage='Error fetching content'
       inputProps={{
         classNames: {
           input: "ml-1",
@@ -42,20 +60,25 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
             "bg-default-100/50 dark:bg-content2/50 backdrop-blur-xl hover:bg-default-200/50 dark:hover:bg-content2 group-data-[focused=true]:bg-default-200/50 dark:group-data-[focused=true]:bg-content2 rounded-medium",
         },
       }}
+      selectorIcon={null}
       listboxProps={{
-        emptyContent: "No users found",
+        emptyContent: <SearchBoxEmpty searchTerm={searchTerm} />,
         hideSelectedIcon: true,
         itemClasses: {
           base: [
-            "rounded-medium",
+            "rounded-large",
             "text-default-500",
-            "transition-opacity",
+            "transition-all",
+            "duration-200",
             "data-[hover=true]:text-foreground",
-            "dark:data-[hover=true]:bg-default-50",
+            "data-[hover=true]:bg-default-100/80",
+            "dark:data-[hover=true]:bg-default-50/50",
             "data-[pressed=true]:opacity-70",
-            "data-[hover=true]:bg-default-200",
+            "data-[pressed=true]:scale-[0.98]",
             "data-[selectable=true]:focus:bg-default-100",
-            "data-[focus-visible=true]:ring-default-500",
+            "data-[focus-visible=true]:ring-2",
+            "data-[focus-visible=true]:ring-primary-200",
+            "dark:data-[focus-visible=true]:ring-primary-800",
           ],
         },
       }}
@@ -65,7 +88,8 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
         offset: 10,
         classNames: {
           base: "rounded-large",
-          content: "p-1 border-small border-default-100 bg-background",
+          content:
+            "p-2 border-small border-default-100 bg-background/95 backdrop-blur-xl shadow-large",
         },
       }}
       radius='full'
@@ -74,32 +98,19 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
       variant='flat'
       onInputChange={handleSearch}
     >
-      {(item) => (
-        <AutocompleteItem key={item.id} textValue={item.display_name}>
-          <div className='flex justify-between items-center'>
-            <div className='flex gap-2 items-center'>
-              <Avatar
-                alt={item.display_name}
-                className='shrink-0'
-                size='sm'
-                src={item.image_url ?? undefined}
-              />
-              <div className='flex flex-col'>
-                <span className='text-small'>{item.display_name}</span>
-                <span className='text-tiny text-default-400'>{item.username}</span>
-              </div>
-            </div>
-            <Button
-              className='border-small mr-0.5 font-medium shadow-small'
-              radius='full'
-              size='sm'
-              variant='bordered'
-            >
-              Add
-            </Button>
-          </div>
-        </AutocompleteItem>
-      )}
+      {(item) => {
+        const textValue =
+          typeof item === "object" && "display_name" in item ? item.display_name : item.term;
+        return (
+          <AutocompleteItem
+            key={item.id}
+            textValue={textValue}
+            className='data-[hover=true]:bg-default-200 dark:data-[hover=true]:bg-default-100'
+          >
+            <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
+          </AutocompleteItem>
+        );
+      }}
     </Autocomplete>
   );
 }
