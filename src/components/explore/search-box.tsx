@@ -3,9 +3,9 @@
 import { SearchBoxEmpty } from "@/components/explore/search-box-empty";
 import { SearchBoxItem } from "@/components/explore/search-box-item";
 import { useUsersSearch } from "@/hooks/fetch/use-users-search";
-import { Autocomplete, AutocompleteItem, Card, CardBody, Spinner } from "@heroui/react";
+import { Autocomplete, AutocompleteItem, Spinner } from "@heroui/react";
 import type { Database } from "database.types";
-import { SearchIcon, UsersIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import { useDebounceValue } from "usehooks-ts";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
@@ -14,19 +14,23 @@ type CombinedItem = User | SearchItem;
 
 interface SearchBoxProps {
   onSearch?: (term: string) => void;
+  initialSearchTerm?: string;
   placeholder?: string;
 }
 
-export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProps) {
-  const [searchTerm, setSearchTerm] = useDebounceValue("", 300);
+export function SearchBox({
+  onSearch,
+  initialSearchTerm = "",
+  placeholder = "Search...",
+}: SearchBoxProps) {
+  const [searchTerm, setSearchTerm] = useDebounceValue(initialSearchTerm, 300);
 
   const {
     data: { data: users },
     isLoading,
   } = useUsersSearch(searchTerm);
 
-  function handleSearch(term: string) {
-    onSearch?.(term);
+  function handleInputChange(term: string) {
     setSearchTerm(term);
   }
 
@@ -57,7 +61,7 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
         classNames: {
           input: "ml-1",
           inputWrapper:
-            "bg-default-100/50 dark:bg-content2/50 backdrop-blur-xl hover:bg-default-200/50 dark:hover:bg-content2 group-data-[focused=true]:bg-default-200/50 dark:group-data-[focused=true]:bg-content2 rounded-medium",
+            "bg-default-100/50 dark:bg-content2/50 backdrop-blur-xl hover:bg-default-200/50 dark:hover:bg-content2 group-data-[focused=true]:bg-default-200/50 dark:group-data-[focused=true]:bg-content2 rounded-medium border-content3 border",
         },
       }}
       selectorIcon={null}
@@ -96,7 +100,7 @@ export function SearchBox({ onSearch, placeholder = "Search..." }: SearchBoxProp
       startContent={<SearchIcon className='text-default-400' size={20} strokeWidth={2.5} />}
       endContent={isLoading ? <Spinner size='sm' variant='dots' /> : undefined}
       variant='flat'
-      onInputChange={handleSearch}
+      onInputChange={handleInputChange}
     >
       {(item) => {
         const textValue =
