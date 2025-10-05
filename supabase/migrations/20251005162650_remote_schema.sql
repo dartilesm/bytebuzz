@@ -562,7 +562,9 @@ OR REPLACE FUNCTION public.search_posts(
   "user" json,
   reaction json,
   repost json
-) LANGUAGE plpgsql SECURITY DEFINER AS $ function $ DECLARE current_user_id TEXT := auth.jwt() ->> 'sub';
+) LANGUAGE plpgsql SECURITY DEFINER AS $$
+DECLARE 
+  current_user_id TEXT := auth.jwt() ->> 'sub';
 
 BEGIN -- Return early if search term is empty or null (returns empty result set)
 IF search_term IS NULL
@@ -731,8 +733,7 @@ LIMIT
 -- PostgreSQL automatically returns an empty result set when no rows match the WHERE clause
 -- This means the function will return an empty array when no search results are found
 END;
-
-$ function $;
+$$;
 
 CREATE
 OR REPLACE FUNCTION public.search_users(
@@ -755,7 +756,9 @@ OR REPLACE FUNCTION public.search_users(
   follower_count integer,
   following_count integer,
   rank real
-) LANGUAGE plpgsql SECURITY DEFINER AS $ function $ BEGIN -- Return early if search term is empty or null
+) LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN 
+  -- Return early if search term is empty or null
 IF search_term IS NULL
 OR TRIM(search_term) = '' THEN RETURN;
 
@@ -819,14 +822,14 @@ LIMIT
 -- If no rows were returned, the function will naturally return an empty result set
 -- PostgreSQL functions that return TABLE automatically return empty arrays when no matches
 END;
-
-$ function $;
+$$;
 
 CREATE
 OR REPLACE FUNCTION public.cleanup_orphaned_images() RETURNS void LANGUAGE plpgsql SECURITY DEFINER
 SET
   search_path TO 'public',
-  'storage' AS $ function $ DECLARE orphaned_record RECORD;
+  'storage' AS $$
+DECLARE orphaned_record RECORD;
 
 BEGIN -- Log start of cleanup
 RAISE NOTICE 'Starting cleanup of temporary and orphaned files';
@@ -871,11 +874,12 @@ END LOOP;
 RAISE NOTICE 'Cleanup completed';
 
 END;
-
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.decrement_reply_count() RETURNS trigger LANGUAGE plpgsql AS $ function $ BEGIN IF OLD.parent_post_id IS NOT NULL THEN
+OR REPLACE FUNCTION public.decrement_reply_count() RETURNS trigger LANGUAGE plpgsql AS $$ 
+BEGIN 
+  IF OLD.parent_post_id IS NOT NULL THEN
 UPDATE
   posts
 SET
@@ -888,11 +892,12 @@ END IF;
 RETURN OLD;
 
 END;
-
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.decrement_repost_count() RETURNS trigger LANGUAGE plpgsql AS $ function $ BEGIN IF OLD.repost_post_id IS NOT NULL THEN
+OR REPLACE FUNCTION public.decrement_repost_count() RETURNS trigger LANGUAGE plpgsql AS $$ 
+BEGIN 
+  IF OLD.repost_post_id IS NOT NULL THEN
 UPDATE
   posts
 SET
@@ -906,10 +911,10 @@ RETURN OLD;
 
 END;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.delete_storage_object(file_path text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $ function $ begin -- Log the deletion attempt
+OR REPLACE FUNCTION public.delete_storage_object(file_path text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER AS $$ begin -- Log the deletion attempt
 raise notice 'Attempting to delete file: %',
 file_path;
 
@@ -934,7 +939,7 @@ raise;
 
 end;
 
-$ function $;
+$$;
 
 CREATE
 OR REPLACE FUNCTION public.get_post_ancestry(start_id uuid) RETURNS TABLE(
@@ -950,7 +955,7 @@ OR REPLACE FUNCTION public.get_post_ancestry(start_id uuid) RETURNS TABLE(
   "user" json,
   reaction json,
   repost json
-) LANGUAGE sql STABLE AS $ function $ WITH RECURSIVE thread AS (
+) LANGUAGE sql STABLE AS $$ WITH RECURSIVE thread AS (
   SELECT
     p.id,
     p.content,
@@ -1114,10 +1119,10 @@ FROM
 ORDER BY
   created_at ASC;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.get_random_unfollowed_users(count integer) RETURNS SETOF users LANGUAGE plpgsql SECURITY DEFINER AS $ function $ DECLARE authenticated_user TEXT := auth.jwt() ->> 'sub';
+OR REPLACE FUNCTION public.get_random_unfollowed_users(count integer) RETURNS SETOF users LANGUAGE plpgsql SECURITY DEFINER AS $$ DECLARE authenticated_user TEXT := auth.jwt() ->> 'sub';
 
 BEGIN IF authenticated_user IS NULL THEN RAISE EXCEPTION 'Not authenticated';
 
@@ -1145,7 +1150,7 @@ LIMIT
 
 END;
 
-$ function $;
+$$;
 
 CREATE
 OR REPLACE FUNCTION public.get_replies_to_depth(target_id uuid, max_depth integer) RETURNS TABLE(
@@ -1161,7 +1166,7 @@ OR REPLACE FUNCTION public.get_replies_to_depth(target_id uuid, max_depth intege
   level integer,
   "user" json,
   reaction json
-) LANGUAGE sql STABLE AS $ function $ WITH RECURSIVE reply_tree AS (
+) LANGUAGE sql STABLE AS $$ WITH RECURSIVE reply_tree AS (
   SELECT
     p.id,
     p.content,
@@ -1276,7 +1281,7 @@ ORDER BY
   level,
   created_at;
 
-$ function $;
+$$;
 
 CREATE
 OR REPLACE FUNCTION public.get_user_feed() RETURNS TABLE(
@@ -1294,7 +1299,7 @@ OR REPLACE FUNCTION public.get_user_feed() RETURNS TABLE(
   "user" json,
   reaction json,
   repost json
-) LANGUAGE plpgsql STABLE AS $ function $ DECLARE current_user_id TEXT := auth.jwt() ->> 'sub';
+) LANGUAGE plpgsql STABLE AS $$ DECLARE current_user_id TEXT := auth.jwt() ->> 'sub';
 
 BEGIN RETURN QUERY
 SELECT
@@ -1370,7 +1375,7 @@ ORDER BY
 
 END;
 
-$ function $;
+$$;
 
 CREATE
 OR REPLACE FUNCTION public.get_user_posts_by_username(input_username text) RETURNS TABLE(
@@ -1388,7 +1393,7 @@ OR REPLACE FUNCTION public.get_user_posts_by_username(input_username text) RETUR
   "user" json,
   reaction json,
   repost json
-) LANGUAGE plpgsql STABLE AS $ function $ BEGIN RETURN QUERY
+) LANGUAGE plpgsql STABLE AS $$ BEGIN RETURN QUERY
 SELECT
   p.id,
   p.content,
@@ -1471,10 +1476,10 @@ ORDER BY
 
 END;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.handle_deleted_media() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $ function $ begin -- Log the trigger execution
+OR REPLACE FUNCTION public.handle_deleted_media() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER AS $$ begin -- Log the trigger execution
 raise notice 'Post media deleted - File path: %',
 old.file_path;
 
@@ -1485,10 +1490,10 @@ return old;
 
 end;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.increment_reply_count() RETURNS trigger LANGUAGE plpgsql AS $ function $ BEGIN IF NEW.parent_post_id IS NOT NULL THEN
+OR REPLACE FUNCTION public.increment_reply_count() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.parent_post_id IS NOT NULL THEN
 UPDATE
   posts
 SET
@@ -1502,10 +1507,10 @@ RETURN NEW;
 
 END;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.increment_repost_count() RETURNS trigger LANGUAGE plpgsql AS $ function $ BEGIN IF NEW.repost_post_id IS NOT NULL THEN
+OR REPLACE FUNCTION public.increment_repost_count() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.repost_post_id IS NOT NULL THEN
 UPDATE
   posts
 SET
@@ -1519,10 +1524,10 @@ RETURN NEW;
 
 END;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.toggle_follow(target_user_id text) RETURNS boolean LANGUAGE plpgsql AS $ function $ DECLARE authenticated_user TEXT;
+OR REPLACE FUNCTION public.toggle_follow(target_user_id text) RETURNS boolean LANGUAGE plpgsql AS $$ DECLARE authenticated_user TEXT;
 
 is_following BOOLEAN;
 
@@ -1580,10 +1585,10 @@ END IF;
 
 END;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.toggle_reaction(input_post_id uuid, input_reaction_type text) RETURNS reactions LANGUAGE plpgsql SECURITY DEFINER AS $ function $ DECLARE current_user_id TEXT := auth.jwt() ->> 'sub';
+OR REPLACE FUNCTION public.toggle_reaction(input_post_id uuid, input_reaction_type text) RETURNS reactions LANGUAGE plpgsql SECURITY DEFINER AS $$ DECLARE current_user_id TEXT := auth.jwt() ->> 'sub';
 
 existing_id UUID;
 
@@ -1635,10 +1640,10 @@ END IF;
 
 END;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.update_follow_counts() RETURNS trigger LANGUAGE plpgsql AS $ function $ BEGIN -- When a new follow is added
+OR REPLACE FUNCTION public.update_follow_counts() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN -- When a new follow is added
 IF TG_OP = 'INSERT' THEN -- Increase follower count of the followed user
 UPDATE
   users
@@ -1677,10 +1682,10 @@ RETURN NULL;
 
 END;
 
-$ function $;
+$$;
 
 CREATE
-OR REPLACE FUNCTION public.update_post_reaction_counts() RETURNS trigger LANGUAGE plpgsql AS $ function $ BEGIN RAISE NOTICE 'Trigger fired for operation: %, post_id: %, reaction_type: %',
+OR REPLACE FUNCTION public.update_post_reaction_counts() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE NOTICE 'Trigger fired for operation: %, post_id: %, reaction_type: %',
 TG_OP,
 NEW.post_id,
 NEW.reaction_type;
@@ -1845,11 +1850,11 @@ RETURN NULL;
 -- This is correct for a trigger that does not modify the row
 END;
 
-$ function $;
+$$;
 
 -- Conditionally create storage triggers only if storage functions exist
 -- This allows the migration to work both locally and on the server
-DO $ $ BEGIN -- Check if storage.enforce_bucket_name_length function exists
+DO $$ BEGIN -- Check if storage.enforce_bucket_name_length function exists
 IF EXISTS (
   SELECT
     1
@@ -1865,7 +1870,12 @@ IF EXISTS (
       WHERE
         nspname = 'storage'
     )
-) THEN CREATE TRIGGER enforce_bucket_name_length_trigger BEFORE
+) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.triggers
+    WHERE trigger_name = 'enforce_bucket_name_length_trigger'
+    AND event_object_schema = 'storage'
+    AND event_object_table = 'buckets'
+  ) THEN CREATE TRIGGER enforce_bucket_name_length_trigger BEFORE
 INSERT
   OR
 UPDATE
@@ -1889,7 +1899,12 @@ IF EXISTS (
       WHERE
         nspname = 'storage'
     )
-) THEN CREATE TRIGGER objects_delete_delete_prefix
+) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.triggers
+    WHERE trigger_name = 'objects_delete_delete_prefix'
+    AND event_object_schema = 'storage'
+    AND event_object_table = 'objects'
+  ) THEN CREATE TRIGGER objects_delete_delete_prefix
 AFTER
   DELETE ON storage.objects FOR EACH ROW EXECUTE FUNCTION storage.delete_prefix_hierarchy_trigger();
 
@@ -1911,7 +1926,12 @@ IF EXISTS (
       WHERE
         nspname = 'storage'
     )
-) THEN CREATE TRIGGER objects_insert_create_prefix BEFORE
+) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.triggers
+    WHERE trigger_name = 'objects_insert_create_prefix'
+    AND event_object_schema = 'storage'
+    AND event_object_table = 'objects'
+  ) THEN CREATE TRIGGER objects_insert_create_prefix BEFORE
 INSERT
   ON storage.objects FOR EACH ROW EXECUTE FUNCTION storage.objects_insert_prefix_trigger();
 
@@ -1933,7 +1953,12 @@ IF EXISTS (
       WHERE
         nspname = 'storage'
     )
-) THEN CREATE TRIGGER objects_update_create_prefix BEFORE
+) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.triggers
+    WHERE trigger_name = 'objects_update_create_prefix'
+    AND event_object_schema = 'storage'
+    AND event_object_table = 'objects'
+  ) THEN CREATE TRIGGER objects_update_create_prefix BEFORE
 UPDATE
   ON storage.objects FOR EACH ROW
   WHEN (
@@ -1961,7 +1986,12 @@ IF EXISTS (
       WHERE
         nspname = 'storage'
     )
-) THEN CREATE TRIGGER update_objects_updated_at BEFORE
+) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.triggers
+    WHERE trigger_name = 'update_objects_updated_at'
+    AND event_object_schema = 'storage'
+    AND event_object_table = 'objects'
+  ) THEN CREATE TRIGGER update_objects_updated_at BEFORE
 UPDATE
   ON storage.objects FOR EACH ROW EXECUTE FUNCTION storage.update_updated_at_column();
 
@@ -1983,7 +2013,12 @@ IF EXISTS (
       WHERE
         nspname = 'storage'
     )
-) THEN CREATE TRIGGER prefixes_create_hierarchy BEFORE
+) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.triggers
+    WHERE trigger_name = 'prefixes_create_hierarchy'
+    AND event_object_schema = 'storage'
+    AND event_object_table = 'prefixes'
+  ) THEN CREATE TRIGGER prefixes_create_hierarchy BEFORE
 INSERT
   ON storage.prefixes FOR EACH ROW
   WHEN ((pg_trigger_depth() < 1)) EXECUTE FUNCTION storage.prefixes_insert_trigger();
@@ -2006,10 +2041,15 @@ IF EXISTS (
       WHERE
         nspname = 'storage'
     )
-) THEN CREATE TRIGGER prefixes_delete_hierarchy
+) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.triggers
+    WHERE trigger_name = 'prefixes_delete_hierarchy'
+    AND event_object_schema = 'storage'
+    AND event_object_table = 'prefixes'
+  ) THEN CREATE TRIGGER prefixes_delete_hierarchy
 AFTER
   DELETE ON storage.prefixes FOR EACH ROW EXECUTE FUNCTION storage.delete_prefix_hierarchy_trigger();
 
 END IF;
 
-END $ $;
+END $$;
