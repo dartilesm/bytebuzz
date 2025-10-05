@@ -18,29 +18,29 @@ async function getRandomUnfollowedUsers() {
 export async function SuggestionsSection() {
   const { data: users } = await getRandomUnfollowedUsers();
   return (
-    <div className="space-y-4 max-w-80">
+    <div className='space-y-4 max-w-80'>
       {/* Suggestions Card */}
-      {users?.length > 0 && <UserToFollowList users={users} />}
+      {users?.length && users.length > 0 && <UserToFollowList users={users} />}
 
       {/* Promoted Content */}
       <PromotedAd />
 
       {/* Footer Links */}
-      <div className="text-sm text-default-500">
-        <div className="flex flex-wrap gap-2 mb-2">
-          <a href="#" className="hover:underline">
+      <div className='text-sm text-default-500'>
+        <div className='flex flex-wrap gap-2 mb-2'>
+          <a href='#' className='hover:underline'>
             Terms
           </a>
           <span>·</span>
-          <a href="#" className="hover:underline">
+          <a href='#' className='hover:underline'>
             Privacy
           </a>
           <span>·</span>
-          <a href="#" className="hover:underline">
+          <a href='#' className='hover:underline'>
             Cookies
           </a>
           <span>·</span>
-          <a href="#" className="hover:underline">
+          <a href='#' className='hover:underline'>
             More
           </a>
         </div>
