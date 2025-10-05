@@ -2,7 +2,7 @@
 
 import { UserCard2 } from "@/components/explore/user-card-2";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
-import { Avatar, AvatarGroup, Button } from "@heroui/react";
+import { Button } from "@heroui/react";
 import type { Tables } from "database.types";
 import { User2Icon } from "lucide-react";
 

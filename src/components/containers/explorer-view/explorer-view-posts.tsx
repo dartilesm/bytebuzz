@@ -3,9 +3,9 @@
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import { Button, Card, CardBody } from "@heroui/react";
 import type { getCachedPosts } from "@/lib/db/calls/get-posts";
 import type { NestedPost } from "@/types/nested-posts";
+import { Button } from "@heroui/react";
 import { PaperclipIcon } from "lucide-react";
 
 interface ExplorerViewPostsProps {
