@@ -4,10 +4,6 @@ import { cache } from "react";
 export const getCachedUsers = cache(getUsers);
 
 async function getUsers(searchTerm: string, limitCount: number = 10) {
-  if (!searchTerm) {
-    return { data: [] };
-  }
-
   const supabaseClient = createServerSupabaseClient();
 
   const randomeUnfollwedUsers = await supabaseClient.rpc("search_users", {

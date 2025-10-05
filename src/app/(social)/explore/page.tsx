@@ -16,7 +16,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   const { searchTerm } = await searchParams;
 
   const { users, posts } = await getExploreData(searchTerm as string);
-  return <ExploreView users={users} posts={posts} />;
+  return <ExploreView users={users || []} posts={posts || []} />;
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });
