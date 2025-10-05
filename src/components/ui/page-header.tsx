@@ -9,7 +9,7 @@ type PageHeaderProps = {
   /**
    * The main title to display in the header
    */
-  title: string;
+  title?: string;
   /**
    * Optional subtitle to display below the title
    */
