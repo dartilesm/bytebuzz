@@ -317,6 +317,48 @@ export type Database = {
           user: Json
         }[]
       }
+      get_trending_posts: {
+        Args: { limit_count?: number; offset_count?: number }
+        Returns: {
+          approve_count: number
+          cache_count: number
+          coffee_count: number
+          content: string
+          created_at: string
+          engagement_score: number
+          id: string
+          parent_post_id: string
+          reaction: Json
+          reply_count: number
+          repost: Json
+          repost_count: number
+          repost_post_id: string
+          star_count: number
+          user: Json
+        }[]
+      }
+      get_trending_users: {
+        Args: { limit_count?: number; offset_count?: number }
+        Returns: {
+          bio: string
+          cover_image_url: string
+          display_name: string
+          follower_count: number
+          following_count: number
+          github_url: string
+          id: string
+          image_url: string
+          join_date: string
+          last_post_date: string
+          linkedin_url: string
+          location: string
+          recent_engagement_score: number
+          recent_posts_count: number
+          top_technologies: string[]
+          username: string
+          website: string
+        }[]
+      }
       get_user_feed: {
         Args: Record<PropertyKey, never>
         Returns: {
