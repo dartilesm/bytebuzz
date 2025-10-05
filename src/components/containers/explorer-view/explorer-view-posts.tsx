@@ -4,12 +4,15 @@ import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
 import type { getCachedPosts } from "@/lib/db/calls/get-posts";
+import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
 import type { NestedPost } from "@/types/nested-posts";
 import { Button } from "@heroui/react";
 import { PaperclipIcon } from "lucide-react";
 
 interface ExplorerViewPostsProps {
-  posts?: Awaited<ReturnType<typeof getCachedPosts>>;
+  posts?:
+    | Awaited<ReturnType<typeof getCachedPosts>>
+    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
   postsSearchTerm?: string;
   onExploreAll?: () => void;
 }

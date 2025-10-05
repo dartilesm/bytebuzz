@@ -2,11 +2,14 @@
 
 import type { ExplorerPageSearchParams } from "@/app/(social)/explore/page";
 import { ExplorerViewAll } from "@/components/containers/explorer-view/explorer-view-all";
+import { ExplorerMixedView } from "@/components/containers/explorer-view/explorer-mixed-view";
 import { ExplorerViewPosts } from "@/components/containers/explorer-view/explorer-view-posts";
 import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
 import type { getCachedPosts } from "@/lib/db/calls/get-posts";
+import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
+import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
 import { Tab, Tabs } from "@heroui/react";
 import { parseAsInteger, parseAsString, type Parser, useQueryStates } from "nuqs";
@@ -15,8 +18,12 @@ import { useRef } from "react";
 type SearchType = "all" | "users" | "posts";
 
 interface ExploreViewProps {
-  users?: Awaited<ReturnType<typeof getCachedUsers>>;
-  posts?: Awaited<ReturnType<typeof getCachedPosts>>;
+  users?:
+    | Awaited<ReturnType<typeof getCachedUsers>>
+    | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
+  posts?:
+    | Awaited<ReturnType<typeof getCachedPosts>>
+    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
 }
 
 function getInitialSearchType(searchOptions: ExplorerPageSearchParams): SearchType {
@@ -25,7 +32,7 @@ function getInitialSearchType(searchOptions: ExplorerPageSearchParams): SearchTy
     ([key]) => key !== "page" && !!searchOptions[key as keyof ExplorerPageSearchParams]
   );
   const [searchType] = searchOptionEntry ?? [];
-  return (searchType || "all") as SearchType;
+  return searchType as SearchType;
 }
 
 export function ExploreView({ users, posts }: ExploreViewProps) {
@@ -71,35 +78,38 @@ export function ExploreView({ users, posts }: ExploreViewProps) {
           initialSearchTerm={searchOptions[activeSearchTypeRef.current]}
         />
       </PageHeader>
-      <Tabs
-        aria-label='Explore sections'
-        variant='underlined'
-        color='primary'
-        className='sticky top-16 z-30 backdrop-blur-xl bg-background/70'
-        classNames={{
-          tabList: "w-full",
-        }}
-        selectedKey={activeSearchTypeRef.current}
-        onSelectionChange={(key) => handleSearchTypeChange(key as SearchType)}
-      >
-        <Tab key='all' title='All'>
-          <ExplorerViewAll users={users} posts={posts} allSearchTerm={searchOptions.all} />
-        </Tab>
-        <Tab key='users' title='Users'>
-          <ExplorerViewUsers
-            users={users}
-            usersSearchTerm={searchOptions.users}
-            onExploreAll={() => handleSearchTypeChange("all")}
-          />
-        </Tab>
-        <Tab key='posts' title='Posts'>
-          <ExplorerViewPosts
-            posts={posts}
-            onExploreAll={() => handleSearchTypeChange("all")}
-            postsSearchTerm={searchOptions.posts}
-          />
-        </Tab>
-      </Tabs>
+      {activeSearchTypeRef.current && (
+        <Tabs
+          aria-label='Explore sections'
+          variant='underlined'
+          color='primary'
+          className='sticky top-16 z-30 backdrop-blur-xl bg-background/70'
+          classNames={{
+            tabList: "w-full",
+          }}
+          selectedKey={activeSearchTypeRef.current}
+          onSelectionChange={(key) => handleSearchTypeChange(key as SearchType)}
+        >
+          <Tab key='all' title='All'>
+            <ExplorerViewAll users={users} posts={posts} allSearchTerm={searchOptions.all} />
+          </Tab>
+          <Tab key='users' title='Users'>
+            <ExplorerViewUsers
+              users={users}
+              usersSearchTerm={searchOptions.users}
+              onExploreAll={() => handleSearchTypeChange("all")}
+            />
+          </Tab>
+          <Tab key='posts' title='Posts'>
+            <ExplorerViewPosts
+              posts={posts}
+              onExploreAll={() => handleSearchTypeChange("all")}
+              postsSearchTerm={searchOptions.posts}
+            />
+          </Tab>
+        </Tabs>
+      )}
+      {!activeSearchTypeRef.current && <ExplorerMixedView users={users} posts={posts} />}
     </>
   );
 }

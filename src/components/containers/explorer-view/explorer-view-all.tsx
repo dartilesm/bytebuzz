@@ -5,6 +5,8 @@ import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
 import type { getCachedPosts } from "@/lib/db/calls/get-posts";
+import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
+import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
 import type { NestedPost } from "@/types/nested-posts";
 import { ScrollShadow } from "@heroui/react";
@@ -12,8 +14,12 @@ import type { Tables } from "database.types";
 import { FilesIcon } from "lucide-react";
 
 interface ExplorerViewAllProps {
-  users?: Awaited<ReturnType<typeof getCachedUsers>>;
-  posts?: Awaited<ReturnType<typeof getCachedPosts>>;
+  users?:
+    | Awaited<ReturnType<typeof getCachedUsers>>
+    | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
+  posts?:
+    | Awaited<ReturnType<typeof getCachedPosts>>
+    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
   allSearchTerm?: string;
 }
 
