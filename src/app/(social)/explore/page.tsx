@@ -1,27 +1,22 @@
 import { ExploreView } from "@/components/containers/explore-view";
-import { createServerSupabaseClient } from "@/db/supabase";
+import { getCachedPosts } from "@/lib/db/calls/get-posts";
+import { getCachedUsers } from "@/lib/db/calls/get-users";
 import { withAnalytics } from "@/lib/with-analytics";
 
-async function getUsers(searchTerm: string) {
-  if (!searchTerm) {
-    return { data: [] };
-  }
+async function getExploreData(searchTerm: string) {
+  const usersPromise = getCachedUsers(searchTerm as string, 50);
+  const postsPromise = getCachedPosts(searchTerm as string, 10);
 
-  const supabaseClient = createServerSupabaseClient();
+  const [users, posts] = await Promise.all([usersPromise, postsPromise]);
 
-  const randomeUnfollwedUsers = await supabaseClient.rpc("search_users", {
-    search_term: searchTerm,
-    limit_count: 10,
-  });
-
-  return randomeUnfollwedUsers;
+  return { users: users.data, posts: posts.data };
 }
 
 async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   const { searchTerm } = await searchParams;
 
-  const users = await getUsers(searchTerm as string);
-  return <ExploreView users={users.data} />;
+  const { users, posts } = await getExploreData(searchTerm as string);
+  return <ExploreView users={users} posts={posts} />;
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });
