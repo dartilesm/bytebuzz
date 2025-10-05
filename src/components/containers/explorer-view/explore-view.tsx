@@ -53,7 +53,9 @@ export function ExploreView({ users, posts }: ExploreViewProps) {
   const activeSearchTypeRef = useRef<SearchType>(getInitialSearchType(searchOptions));
 
   function handleSearch(term: string) {
-    setSearchOptions({ [activeSearchTypeRef.current]: term });
+    const activeSearchType = activeSearchTypeRef.current || "all";
+    activeSearchTypeRef.current = activeSearchType;
+    setSearchOptions({ [activeSearchType]: term });
   }
 
   function handleSearchTypeChange(type: SearchType) {

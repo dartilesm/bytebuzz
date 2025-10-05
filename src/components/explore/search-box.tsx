@@ -42,6 +42,12 @@ export function SearchBox({
     onSearch?.(debouncedSearchTerm);
   }
 
+  function handleClear() {
+    setSearchTerm("");
+    setDebouncedSearchTerm("");
+    onSearch?.("");
+  }
+
   // Create combined items with search item first if there's a search term
   const combinedItems: CombinedItem[] =
     debouncedSearchTerm && debouncedSearchTerm.trim() !== ""
@@ -107,6 +113,7 @@ export function SearchBox({
       endContent={isLoading ? <Spinner size='sm' variant='dots' /> : undefined}
       variant='flat'
       onInputChange={handleInputChange}
+      onClear={handleClear}
     >
       {(item) => {
         const textValue =

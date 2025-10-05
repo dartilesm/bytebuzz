@@ -1,6 +1,7 @@
 "use client";
 
 import { FollowButton } from "@/components/ui/follow-button";
+import { useUser } from "@clerk/nextjs";
 import { Avatar, Card, CardBody, CardFooter, cn } from "@heroui/react";
 import type { Tables } from "database.types";
 import Image from "next/image";
@@ -15,6 +16,9 @@ interface UserCardProps {
  * A modern user card component with a gradient background and centered layout
  */
 export function UserCard2({ user }: UserCardProps) {
+  const { user: currentUser } = useUser();
+  const isSameUser = currentUser?.id === user.id;
+
   return (
     <Card className='relative rounded-2xl overflow-hidden max-w-[220px] shrink-0 border border-default-200 dark:border-default-100 shadow-xs hover:shadow-sm transition-shadow duration-300 bg-secondary-500/10 dark:bg-secondary-400/10'>
       {/* Gradient Background Accent */}
@@ -54,7 +58,14 @@ export function UserCard2({ user }: UserCardProps) {
           </div>
 
           {/* Stats */}
-          <div className='flex gap-6 text-sm w-full justify-center py-2 border-y border-default-200'>
+          <div
+            className={cn(
+              "flex gap-6 text-sm w-full justify-center py-2 border-y border-default-200",
+              {
+                "border-b-0 pb-0": isSameUser,
+              }
+            )}
+          >
             <div className='text-center'>
               <p className='font-bold text-foreground text-base'>{user.follower_count}</p>
               <p className='text-xs text-default-500'>Followers</p>
@@ -67,12 +78,14 @@ export function UserCard2({ user }: UserCardProps) {
           </div>
         </div>
       </CardBody>
-      <CardFooter className='pt-0'>
-        {/* Follow button */}
-        <div className='w-full'>
-          <FollowButton targetUserId={user.id} className='w-full' />
-        </div>
-      </CardFooter>
+      {!isSameUser && (
+        <CardFooter className='pt-0'>
+          {/* Follow button */}
+          <div className='w-full'>
+            <FollowButton targetUserId={user.id} className='w-full' />
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }
