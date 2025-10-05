@@ -356,7 +356,11 @@ export type Database = {
         }[]
       }
       search_posts: {
-        Args: { limit_count?: number; search_term: string }
+        Args: {
+          limit_count?: number
+          offset_count?: number
+          search_term: string
+        }
         Returns: {
           approve_count: number
           cache_count: number
@@ -376,7 +380,11 @@ export type Database = {
         }[]
       }
       search_users: {
-        Args: { limit_count?: number; search_term: string }
+        Args: {
+          limit_count?: number
+          offset_count?: number
+          search_term: string
+        }
         Returns: {
           bio: string
           cover_image_url: string
