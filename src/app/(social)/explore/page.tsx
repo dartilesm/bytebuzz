@@ -1,5 +1,7 @@
 import { ExploreView } from "@/components/containers/explorer-view/explore-view";
 import { getCachedPosts } from "@/lib/db/calls/get-posts";
+import { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
+import { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import { getCachedUsers } from "@/lib/db/calls/get-users";
 import { withAnalytics } from "@/lib/with-analytics";
 
@@ -45,7 +47,10 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
     return <ExploreView posts={posts} />;
   }
 
-  return <ExploreView />;
+  const trendingPosts = await getCachedTrendingPosts();
+  const trendingUsers = await getCachedTrendingUsers();
+
+  return <ExploreView posts={trendingPosts} users={trendingUsers} />;
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });

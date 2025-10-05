@@ -1,9 +1,11 @@
 "use client";
 
 import { FollowButton } from "@/components/ui/follow-button";
-import { Avatar, Card } from "@heroui/react";
+import { Avatar, Card, CardBody, CardFooter, cn } from "@heroui/react";
 import type { Tables } from "database.types";
+import Image from "next/image";
 import Link from "next/link";
+import type { UrlObject } from "url";
 
 interface UserCardProps {
   user: Tables<"users">;
@@ -14,65 +16,63 @@ interface UserCardProps {
  */
 export function UserCard2({ user }: UserCardProps) {
   return (
-    <Card className="relative rounded-xl overflow-hidden max-w-52 shrink-0">
-      {/* Content */}
-      <div className="p-6 flex flex-col items-center">
-        {/* Avatar */}
-        <Link href={`/@${user.username}`} className="block mb-3">
-          <Avatar
-            src={user.image_url || undefined}
+    <Card className='relative rounded-2xl overflow-hidden max-w-[220px] shrink-0 border border-default-200 dark:border-default-100 shadow-xs hover:shadow-sm transition-shadow duration-300 bg-secondary-500/10 dark:bg-secondary-400/10'>
+      {/* Gradient Background Accent */}
+      <div
+        className={cn("absolute top-0 left-0 right-0 h-20 border-b border-default-200", {
+          "bg-gradient-to-br from-primary-400/20 via-secondary-400/10 to-transparent":
+            !user.cover_image_url,
+        })}
+      >
+        {user.cover_image_url && (
+          <Image
+            src={user.cover_image_url || ""}
             alt={user.display_name}
-            className="size-20"
-            isBordered
+            fill
+            className='w-full h-full object-cover'
           />
-        </Link>
-
-        {/* User info */}
-        <div className="text-center mb-3">
-          <Link href={`/@${user.username}`}>
-            <div className="flex items-center justify-center gap-1">
-              <h3 className="font-semibold text-md hover:underline truncate max-w-2xs">
-                {user.display_name}
-              </h3>
-              <span className="">(@{user.username})</span>
-            </div>
-          </Link>
-          {/* {user.bio && <p className='text-sm mt-1 line-clamp-2'>{user.bio}</p>} */}
-        </div>
-
-        {/* Mutual Connections */}
-        <div className="flex items-center gap-2 text-xs mb-4">
-          <div className="flex -space-x-2">
-            {[1, 2].map((i) => (
-              <div
-                key={i}
-                className="w-5 h-5 rounded-full border-2 border-white/20 overflow-hidden"
-              >
-                <Avatar
-                  src={`https://i.pravatar.cc/150?u=mutual${i}`}
-                  alt="Mutual connection"
-                  className="w-full h-full object-cover"
-                  isBordered
-                />
-              </div>
-            ))}
-          </div>
-          <span>Felipe and {Math.floor(Math.random() * 100)} other mutual connections</span>
-        </div>
-
-        {/* Follow button */}
-        <FollowButton targetUserId={user.id} />
-
-        {/* Stats */}
-        {/* <div className='flex flex-col justify-center mt-4 text-xs'>
-          <p>
-            <span className='font-semibold text-white'>{user.followers_count}</span> followers
-          </p>
-          <p>
-            <span className='font-semibold text-white'>{user.following_count}</span> following
-          </p>
-        </div> */}
+        )}
       </div>
+
+      <CardBody className='p-0' as={Link} href={`/@${user.username}` as unknown as UrlObject}>
+        <div className='relative px-5 py-6 flex flex-col items-center gap-4'>
+          {/* Avatar with ring */}
+          <div className='relative'>
+            <Avatar
+              src={user.image_url || undefined}
+              alt={user.display_name}
+              className='size-24 ring-4 ring-background group-hover:scale-105 transition-transform duration-200 border-default-200'
+            />
+          </div>
+
+          {/* User info */}
+          <div className='text-center w-full space-y-1'>
+            <h3 className='font-bold text-lg truncate max-w-full group-hover:text-primary transition-colors'>
+              {user.display_name}
+            </h3>
+            <p className='text-sm text-default-500 truncate'>@{user.username}</p>
+          </div>
+
+          {/* Stats */}
+          <div className='flex gap-6 text-sm w-full justify-center py-2 border-y border-default-200'>
+            <div className='text-center'>
+              <p className='font-bold text-foreground text-base'>{user.follower_count}</p>
+              <p className='text-xs text-default-500'>Followers</p>
+            </div>
+            <div className='h-auto w-px bg-default-200' />
+            <div className='text-center'>
+              <p className='font-bold text-foreground text-base'>{user.following_count}</p>
+              <p className='text-xs text-default-500'>Following</p>
+            </div>
+          </div>
+        </div>
+      </CardBody>
+      <CardFooter className='pt-0'>
+        {/* Follow button */}
+        <div className='w-full'>
+          <FollowButton targetUserId={user.id} className='w-full' />
+        </div>
+      </CardFooter>
     </Card>
   );
 }

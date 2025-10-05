@@ -6,6 +6,7 @@ import { useUsersSearch } from "@/hooks/fetch/use-users-search";
 import { Autocomplete, AutocompleteItem, Spinner } from "@heroui/react";
 import type { Database } from "database.types";
 import { SearchIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
@@ -23,25 +24,28 @@ export function SearchBox({
   initialSearchTerm = "",
   placeholder = "Search...",
 }: SearchBoxProps) {
-  const [searchTerm, setSearchTerm] = useDebounceValue(initialSearchTerm, 300);
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounceValue(searchTerm, 300);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const {
     data: { data: users },
     isLoading,
-  } = useUsersSearch(searchTerm);
+  } = useUsersSearch(debouncedSearchTerm);
 
   function handleInputChange(term: string) {
-    setSearchTerm(term);
+    setSearchTerm(inputRef.current?.value || "");
+    setDebouncedSearchTerm(term);
   }
 
   function handleExactSearch() {
-    onSearch?.(searchTerm);
+    onSearch?.(debouncedSearchTerm);
   }
 
   // Create combined items with search item first if there's a search term
   const combinedItems: CombinedItem[] =
-    searchTerm && searchTerm.trim() !== ""
-      ? [{ id: "search-exact", type: "search", term: searchTerm }, ...users]
+    debouncedSearchTerm && debouncedSearchTerm.trim() !== ""
+      ? [{ id: "search-exact", type: "search", term: debouncedSearchTerm }, ...users]
       : users;
 
   return (
@@ -52,12 +56,14 @@ export function SearchBox({
         listboxWrapper: "max-h-[320px]",
         selectorButton: "text-default-500",
       }}
-      defaultInputValue={searchTerm}
+      defaultInputValue={debouncedSearchTerm}
       defaultItems={combinedItems}
+      inputValue={searchTerm}
       items={combinedItems}
       isLoading={isLoading}
       errorMessage='Error fetching content'
       inputProps={{
+        ref: inputRef,
         classNames: {
           input: "ml-1",
           inputWrapper:
@@ -66,7 +72,7 @@ export function SearchBox({
       }}
       selectorIcon={null}
       listboxProps={{
-        emptyContent: <SearchBoxEmpty searchTerm={searchTerm} />,
+        emptyContent: <SearchBoxEmpty searchTerm={debouncedSearchTerm} />,
         hideSelectedIcon: true,
         itemClasses: {
           base: [

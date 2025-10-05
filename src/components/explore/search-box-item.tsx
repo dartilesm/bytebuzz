@@ -4,6 +4,8 @@ import { FollowButton } from "@/components/ui/follow-button";
 import { Avatar, Card, CardBody } from "@heroui/react";
 import type { Database } from "database.types";
 import { SearchIcon } from "lucide-react";
+import Link from "next/link";
+import type { UrlObject } from "url";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
 type SearchItem = { id: string; type: "search"; term: string };
@@ -38,7 +40,11 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
   // Handle user item
   const user = item as User;
   return (
-    <Card className='w-full border-none shadow-none bg-transparent'>
+    <Card
+      className='w-full border-none shadow-none bg-transparent'
+      as={Link}
+      href={`/@${user.username}` as unknown as UrlObject}
+    >
       <CardBody className='p-0'>
         <div className='flex justify-between items-center gap-3'>
           <div className='flex gap-3 items-center flex-1 min-w-0'>
