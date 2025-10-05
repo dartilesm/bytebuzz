@@ -68,6 +68,7 @@ export type Database = {
           coffee_count: number | null
           content: string | null
           created_at: string | null
+          fts: unknown | null
           id: string
           parent_post_id: string | null
           reply_count: number | null
@@ -82,6 +83,7 @@ export type Database = {
           coffee_count?: number | null
           content?: string | null
           created_at?: string | null
+          fts?: unknown | null
           id?: string
           parent_post_id?: string | null
           reply_count?: number | null
@@ -96,6 +98,7 @@ export type Database = {
           coffee_count?: number | null
           content?: string | null
           created_at?: string | null
+          fts?: unknown | null
           id?: string
           parent_post_id?: string | null
           reply_count?: number | null
@@ -343,6 +346,26 @@ export type Database = {
           created_at: string
           id: string
           parent_post_id: string
+          reaction: Json
+          reply_count: number
+          repost: Json
+          repost_count: number
+          repost_post_id: string
+          star_count: number
+          user: Json
+        }[]
+      }
+      search_posts: {
+        Args: { limit_count?: number; search_term: string }
+        Returns: {
+          approve_count: number
+          cache_count: number
+          coffee_count: number
+          content: string
+          created_at: string
+          id: string
+          parent_post_id: string
+          rank: number
           reaction: Json
           reply_count: number
           repost: Json
