@@ -685,7 +685,7 @@ WHERE
     to_tsvector(
       'english',
       COALESCE(p.content, '') || ' ' || COALESCE(u.username, '') || ' ' || COALESCE(u.display_name, '')
-    ) @ @ plainto_tsquery('english', search_term)
+    ) @@ plainto_tsquery('english', search_term)
     OR -- Fallback: Partial search in post content
     (
       p.content IS NOT NULL
@@ -712,7 +712,7 @@ ORDER BY
     WHEN to_tsvector(
       'english',
       COALESCE(p.content, '') || ' ' || COALESCE(u.username, '') || ' ' || COALESCE(u.display_name, '')
-    ) @ @ plainto_tsquery('english', search_term) THEN ts_rank(
+    ) @@ plainto_tsquery('english', search_term) THEN ts_rank(
       to_tsvector(
         'english',
         COALESCE(p.content, '') || ' ' || COALESCE(u.username, '') || ' ' || COALESCE(u.display_name, '')
@@ -799,7 +799,7 @@ FROM
   users u
 WHERE
   -- Use full-text search with the fts column
-  u.fts @ @ plainto_tsquery('english', search_term)
+  u.fts @@ plainto_tsquery('english', search_term)
   OR -- Fallback: exact username match for precise searches
   LOWER(u.username) = LOWER(search_term)
   OR -- Fallback: partial username match
