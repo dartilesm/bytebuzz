@@ -2,7 +2,7 @@ BEGIN;
 
 -- Plan the tests
 SELECT
-    plan(20);
+    plan(23);
 
 -- Clean up existing data
 TRUNCATE users,
@@ -131,6 +131,16 @@ VALUES
         NOW() - INTERVAL '1 day'
     );
 
+-- Create following relationships for edge case testing
+INSERT INTO
+    public.user_followers (user_id, follower_id)
+VALUES
+    (
+        'e1d6f8c2-3a4b-5d7e-9f0a-1b2c3d4e5f67',
+        -- test_user
+        'd0c5340a-1b19-4762-9213-f2b9f0b8f351' -- dartilesm (authenticated user)
+    );
+
 -- Set up test environment
 SET
     client_min_messages TO warning;
@@ -171,7 +181,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users() WHERE bio IS NULL',
-        ARRAY [1::bigint],
+        ARRAY [0::bigint],
         'get_trending_users should handle NULL bio gracefully'
     );
 
@@ -187,7 +197,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(-1, 0)',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should handle negative limit gracefully'
     );
 
@@ -203,7 +213,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(10, -1)',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should handle negative offset gracefully'
     );
 
@@ -219,7 +229,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(0, 0)',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should handle zero limit gracefully'
     );
 
@@ -235,7 +245,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(1000, 0)',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should handle very large limit gracefully'
     );
 
@@ -283,7 +293,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users() WHERE recent_posts_count > 0',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should include only users with recent posts'
     );
 
@@ -299,6 +309,29 @@ SELECT
     lives_ok(
         'SELECT * FROM get_trending_users(10, 0)',
         'get_trending_users function should execute without error'
+    );
+
+-- Test 21: get_trending_users handles only_following parameter with NULL values
+SELECT
+    lives_ok(
+        'SELECT * FROM get_trending_users(10, 0, true)',
+        'get_trending_users should handle only_following parameter with NULL values'
+    );
+
+-- Test 22: get_trending_users handles only_following parameter with edge case data
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users(10, 0, false)',
+        ARRAY [1::bigint],
+        'get_trending_users should handle only_following parameter with edge case data'
+    );
+
+-- Test 23: get_trending_users handles only_following parameter with invalid pagination
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users(-1, -1, true)',
+        ARRAY [1::bigint],
+        'get_trending_users should handle only_following parameter with invalid pagination'
     );
 
 SELECT

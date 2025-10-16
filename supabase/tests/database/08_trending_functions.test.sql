@@ -2,7 +2,7 @@ BEGIN;
 
 -- Plan the tests
 SELECT
-    plan(25);
+    plan(30);
 
 -- Clean up existing data
 TRUNCATE users,
@@ -197,6 +197,21 @@ VALUES
         NOW() - INTERVAL '1 day'
     );
 
+-- Create following relationships for testing
+INSERT INTO
+    public.user_followers (user_id, follower_id)
+VALUES
+    (
+        'e1d6f8c2-3a4b-5d7e-9f0a-1b2c3d4e5f67',
+        -- test_user
+        'd0c5340a-1b19-4762-9213-f2b9f0b8f351' -- dartilesm (authenticated user)
+    ),
+    (
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        -- react_dev
+        'd0c5340a-1b19-4762-9213-f2b9f0b8f351' -- dartilesm (authenticated user)
+    );
+
 -- Set up test environment
 SET
     client_min_messages TO warning;
@@ -225,8 +240,8 @@ SELECT
     has_function(
         'public',
         'get_trending_users',
-        ARRAY ['integer', 'integer'],
-        'get_trending_users function should exist'
+        ARRAY ['integer', 'integer', 'boolean'],
+        'get_trending_users function should exist with only_following parameter'
     );
 
 -- Test 3: get_trending_posts returns recent high-engagement posts
@@ -237,12 +252,12 @@ SELECT
         'get_trending_posts should return recent high-engagement posts'
     );
 
--- Test 4: get_trending_users returns users with recent high-engagement posts
+-- Test 4: get_trending_users returns users with recent high-engagement posts (excluding followed users)
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users()',
-        ARRAY [3::bigint],
-        'get_trending_users should return users with recent high-engagement posts'
+        ARRAY [1::bigint],
+        'get_trending_users should return users with recent high-engagement posts (excluding followed users)'
     );
 
 -- Test 5: get_trending_posts excludes authenticated user from results
@@ -265,7 +280,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(2, 0)',
-        ARRAY [2::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should respect limit parameter'
     );
 
@@ -281,7 +296,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(2, 2)',
-        ARRAY [1::bigint],
+        ARRAY [0::bigint],
         'get_trending_users should respect pagination'
     );
 
@@ -297,7 +312,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT username FROM get_trending_users(1, 0)',
-        ARRAY ['react_dev'::text],
+        ARRAY ['popular_user'::text],
         'get_trending_users should order by recent engagement (highest first)'
     );
 
@@ -337,7 +352,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(-1, -1)',
-        ARRAY [3::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should handle invalid pagination parameters gracefully'
     );
 
@@ -353,7 +368,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(0, 0)',
-        ARRAY [3::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should handle zero limit gracefully'
     );
 
@@ -397,7 +412,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users() WHERE recent_posts_count > 0',
-        ARRAY [3::bigint],
+        ARRAY [1::bigint],
         'get_trending_users should include only users with recent posts'
     );
 
@@ -413,6 +428,46 @@ SELECT
     lives_ok(
         'SELECT * FROM get_trending_users(10, 0)',
         'get_trending_users function should execute without error'
+    );
+
+-- Test 26: get_trending_users with only_following=true returns only followed users
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users(10, 0, true)',
+        ARRAY [2::bigint],
+        'get_trending_users with only_following=true should return only followed users'
+    );
+
+-- Test 27: get_trending_users with only_following=false excludes followed users (default behavior)
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users(10, 0, false)',
+        ARRAY [1::bigint],
+        'get_trending_users with only_following=false should exclude followed users'
+    );
+
+-- Test 28: get_trending_users default behavior excludes followed users
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users()',
+        ARRAY [1::bigint],
+        'get_trending_users default behavior should exclude followed users'
+    );
+
+-- Test 29: get_trending_users with only_following=true returns correct followed users
+SELECT
+    results_eq(
+        'SELECT username FROM get_trending_users(10, 0, true) ORDER BY username',
+        ARRAY ['react_dev'::text, 'test_user'::text],
+        'get_trending_users with only_following=true should return correct followed users'
+    );
+
+-- Test 30: get_trending_users with only_following=false returns only non-followed users
+SELECT
+    results_eq(
+        'SELECT username FROM get_trending_users(10, 0, false)',
+        ARRAY ['popular_user'::text],
+        'get_trending_users with only_following=false should return only non-followed users'
     );
 
 SELECT

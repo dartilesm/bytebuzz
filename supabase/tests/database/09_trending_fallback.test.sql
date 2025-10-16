@@ -2,7 +2,7 @@ BEGIN;
 
 -- Plan the tests
 SELECT
-    plan(15);
+    plan(18);
 
 -- Clean up existing data
 TRUNCATE users,
@@ -197,6 +197,21 @@ VALUES
         NOW() - INTERVAL '2 days'
     );
 
+-- Create following relationships for fallback testing
+INSERT INTO
+    public.user_followers (user_id, follower_id)
+VALUES
+    (
+        'e1d6f8c2-3a4b-5d7e-9f0a-1b2c3d4e5f67',
+        -- test_user
+        'd0c5340a-1b19-4762-9213-f2b9f0b8f351' -- dartilesm (authenticated user)
+    ),
+    (
+        'f2e7f9d3-4b5c-6e8f-0a1b-2c3d4e5f6789',
+        -- react_dev
+        'd0c5340a-1b19-4762-9213-f2b9f0b8f351' -- dartilesm (authenticated user)
+    );
+
 -- Set up test environment
 SET
     client_min_messages TO warning;
@@ -223,7 +238,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users()',
-        ARRAY [4::bigint],
+        ARRAY [2::bigint],
         'get_trending_users should fall back to popular users when no trending users'
     );
 
@@ -239,7 +254,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT username FROM get_trending_users(4, 0)',
-        ARRAY ['very_popular'::text, 'popular_user'::text, 'react_dev'::text, 'test_user'::text],
+        ARRAY ['very_popular'::text, 'popular_user'::text],
         'get_trending_users fallback should order by follower count'
     );
 
@@ -263,7 +278,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(3, 0)',
-        ARRAY [4::bigint],
+        ARRAY [2::bigint],
         'get_trending_users fallback should respect limit parameter'
     );
 
@@ -279,7 +294,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(2, 2)',
-        ARRAY [2::bigint],
+        ARRAY [0::bigint],
         'get_trending_users fallback should respect pagination'
     );
 
@@ -303,7 +318,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(1, 0) WHERE recent_posts_count >= 0',
-        ARRAY [4::bigint],
+        ARRAY [1::bigint],
         'get_trending_users fallback should include activity metrics'
     );
 
@@ -319,7 +334,7 @@ SELECT
 SELECT
     results_eq(
         'SELECT count(*) FROM get_trending_users(-1, -1)',
-        ARRAY [4::bigint],
+        ARRAY [2::bigint],
         'get_trending_users fallback should handle invalid pagination parameters gracefully'
     );
 
@@ -328,6 +343,30 @@ SELECT
     lives_ok(
         'SELECT * FROM get_trending_posts(10, 0)',
         'get_trending_posts fallback function should execute without error'
+    );
+
+-- Test 16: get_trending_users fallback with only_following=true returns only followed users
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users(10, 0, true)',
+        ARRAY [2::bigint],
+        'get_trending_users fallback with only_following=true should return only followed users'
+    );
+
+-- Test 17: get_trending_users fallback with only_following=false excludes followed users
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users(10, 0, false)',
+        ARRAY [2::bigint],
+        'get_trending_users fallback with only_following=false should exclude followed users'
+    );
+
+-- Test 18: get_trending_users fallback default behavior excludes followed users
+SELECT
+    results_eq(
+        'SELECT count(*) FROM get_trending_users()',
+        ARRAY [2::bigint],
+        'get_trending_users fallback default behavior should exclude followed users'
     );
 
 SELECT
