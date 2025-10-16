@@ -338,7 +338,11 @@ export type Database = {
         }[]
       }
       get_trending_users: {
-        Args: { limit_count?: number; offset_count?: number }
+        Args: {
+          limit_count?: number
+          offset_count?: number
+          only_following?: boolean
+        }
         Returns: {
           bio: string
           cover_image_url: string
