@@ -1,208 +1,8 @@
+drop function if exists "public"."get_trending_users"(limit_count integer, offset_count integer);
+
 set check_function_bodies = off;
 
-CREATE OR REPLACE FUNCTION public.get_trending_posts(limit_count integer DEFAULT 20, offset_count integer DEFAULT 0)
- RETURNS TABLE(id uuid, content text, created_at timestamp with time zone, parent_post_id uuid, repost_post_id uuid, reply_count integer, repost_count integer, star_count integer, coffee_count integer, approve_count integer, cache_count integer, engagement_score integer, "user" json, reaction json, repost json)
- LANGUAGE plpgsql
- SECURITY DEFINER
-AS $function$
-DECLARE
-  current_user_id TEXT := auth.jwt() ->> 'sub';
-  trending_count INTEGER;
-BEGIN
-  -- Validate pagination parameters
-  IF limit_count <= 0 THEN
-    limit_count := 20; -- Default to 20 if invalid
-  END IF;
-  
-  IF offset_count < 0 THEN
-    offset_count := 0; -- Default to 0 if negative
-  END IF;
-
-  -- First, try to get trending posts (last 7 days with high engagement)
-  RETURN QUERY
-  SELECT 
-    p.id,
-    p.content,
-    p.created_at,
-    p.parent_post_id,
-    p.repost_post_id,
-    p.reply_count,
-    p.repost_count,
-    p.star_count,
-    p.coffee_count,
-    p.approve_count,
-    p.cache_count,
-    -- Calculate engagement score (weighted)
-    (COALESCE(p.star_count, 0) * 3 + 
-     COALESCE(p.coffee_count, 0) * 2 + 
-     COALESCE(p.approve_count, 0) * 2 + 
-     COALESCE(p.cache_count, 0) * 1 + 
-     COALESCE(p.reply_count, 0) * 2 + 
-     COALESCE(p.repost_count, 0) * 4) as engagement_score,
-    -- User information as nested JSON object
-    json_build_object(
-      'id', u.id,
-      'username', u.username,
-      'display_name', u.display_name,
-      'image_url', u.image_url,
-      'bio', u.bio,
-      'location', u.location,
-      'website', u.website,
-      'github_url', u.github_url,
-      'linkedin_url', u.linkedin_url,
-      'cover_image_url', u.cover_image_url,
-      'top_technologies', u.top_technologies,
-      'join_date', u.join_date,
-      'follower_count', u.follower_count,
-      'following_count', u.following_count
-    ) AS "user",
-    -- Current user's reaction (if any)
-    COALESCE(
-      json_build_object(
-        'id', r.id,
-        'reaction_type', r.reaction_type,
-        'created_at', r.created_at
-      ),
-      NULL
-    ) AS reaction,
-    -- Repost information (if this is a repost)
-    CASE 
-      WHEN p.repost_post_id IS NOT NULL THEN
-        json_build_object(
-          'id', rp.id,
-          'content', rp.content,
-          'created_at', rp.created_at,
-          'user', json_build_object(
-            'id', ru.id,
-            'username', ru.username,
-            'display_name', ru.display_name,
-            'image_url', ru.image_url
-          )
-        )
-      ELSE NULL
-    END AS repost
-  FROM posts p
-  INNER JOIN users u ON p.user_id = u.id
-  LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = current_user_id
-  LEFT JOIN posts rp ON p.repost_post_id = rp.id
-  LEFT JOIN users ru ON rp.user_id = ru.id
-  WHERE 
-    -- Only return top-level posts (not replies)
-    p.parent_post_id IS NULL
-    AND
-    -- Posts from the last 7 days
-    p.created_at >= NOW() - INTERVAL '7 days'
-    AND
-    -- Minimum engagement threshold (5 points)
-    (COALESCE(p.star_count, 0) * 3 + 
-     COALESCE(p.coffee_count, 0) * 2 + 
-     COALESCE(p.approve_count, 0) * 2 + 
-     COALESCE(p.cache_count, 0) * 1 + 
-     COALESCE(p.reply_count, 0) * 2 + 
-     COALESCE(p.repost_count, 0) * 4) >= 5
-  ORDER BY 
-    -- First by engagement score (highest first)
-    (COALESCE(p.star_count, 0) * 3 + 
-     COALESCE(p.coffee_count, 0) * 2 + 
-     COALESCE(p.approve_count, 0) * 2 + 
-     COALESCE(p.cache_count, 0) * 1 + 
-     COALESCE(p.reply_count, 0) * 2 + 
-     COALESCE(p.repost_count, 0) * 4) DESC,
-    -- Then by recency (newest first)
-    p.created_at DESC
-  LIMIT limit_count
-  OFFSET offset_count;
-
-  -- Check if we got any trending posts
-  GET DIAGNOSTICS trending_count = ROW_COUNT;
-  
-  -- If no trending posts found, return fallback: most popular posts
-  IF trending_count = 0 THEN
-    RETURN QUERY
-    SELECT 
-      p.id,
-      p.content,
-      p.created_at,
-      p.parent_post_id,
-      p.repost_post_id,
-      p.reply_count,
-      p.repost_count,
-      p.star_count,
-      p.coffee_count,
-      p.approve_count,
-      p.cache_count,
-      -- Calculate engagement score (weighted)
-      (COALESCE(p.star_count, 0) * 3 + 
-       COALESCE(p.coffee_count, 0) * 2 + 
-       COALESCE(p.approve_count, 0) * 2 + 
-       COALESCE(p.cache_count, 0) * 1 + 
-       COALESCE(p.reply_count, 0) * 2 + 
-       COALESCE(p.repost_count, 0) * 4) as engagement_score,
-      -- User information as nested JSON object
-      json_build_object(
-        'id', u.id,
-        'username', u.username,
-        'display_name', u.display_name,
-        'image_url', u.image_url,
-        'bio', u.bio,
-        'location', u.location,
-        'website', u.website,
-        'github_url', u.github_url,
-        'linkedin_url', u.linkedin_url,
-        'cover_image_url', u.cover_image_url,
-        'top_technologies', u.top_technologies,
-        'join_date', u.join_date,
-        'follower_count', u.follower_count,
-        'following_count', u.following_count
-      ) AS "user",
-      -- Current user's reaction (if any)
-      COALESCE(
-        json_build_object(
-          'id', r.id,
-          'reaction_type', r.reaction_type,
-          'created_at', r.created_at
-        ),
-        NULL
-      ) AS reaction,
-      -- Repost information (if this is a repost)
-      CASE 
-        WHEN p.repost_post_id IS NOT NULL THEN
-          json_build_object(
-            'id', rp.id,
-            'content', rp.content,
-            'created_at', rp.created_at,
-            'user', json_build_object(
-              'id', ru.id,
-              'username', ru.username,
-              'display_name', ru.display_name,
-              'image_url', ru.image_url
-            )
-          )
-        ELSE NULL
-      END AS repost
-    FROM posts p
-    INNER JOIN users u ON p.user_id = u.id
-    LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = current_user_id
-    LEFT JOIN posts rp ON p.repost_post_id = rp.id
-    LEFT JOIN users ru ON rp.user_id = ru.id
-    WHERE 
-      -- Only return top-level posts (not replies)
-      p.parent_post_id IS NULL
-    ORDER BY 
-      -- Order by total engagement (reactions + replies + reposts)
-      (COALESCE(p.star_count, 0) + COALESCE(p.coffee_count, 0) + 
-       COALESCE(p.approve_count, 0) + COALESCE(p.cache_count, 0) + 
-       COALESCE(p.reply_count, 0) + COALESCE(p.repost_count, 0)) DESC,
-      -- Then by creation date (newest first)
-      p.created_at DESC
-    LIMIT GREATEST(limit_count, 10) -- Ensure at least 10 results for fallback
-    OFFSET offset_count;
-  END IF;
-END;
-$function$
-;
-
-CREATE OR REPLACE FUNCTION public.get_trending_users(limit_count integer DEFAULT 20, offset_count integer DEFAULT 0)
+CREATE OR REPLACE FUNCTION public.get_trending_users(limit_count integer DEFAULT 20, offset_count integer DEFAULT 0, only_following boolean DEFAULT false)
  RETURNS TABLE(id text, username text, display_name text, bio text, location text, image_url text, website text, github_url text, linkedin_url text, cover_image_url text, top_technologies text[], join_date timestamp with time zone, follower_count integer, following_count integer, recent_posts_count integer, recent_engagement_score integer, last_post_date timestamp with time zone)
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -211,19 +11,30 @@ DECLARE
   trending_count INTEGER;
   current_user_id TEXT := auth.jwt() ->> 'sub';
 BEGIN
-  -- Validate pagination parameters
-  IF limit_count <= 0 THEN
-    limit_count := 20; -- Default to 20 if invalid
-  END IF;
-  
-  IF offset_count < 0 THEN
-    offset_count := 0; -- Default to 0 if negative
+  IF limit_count IS NULL OR limit_count <= 0 THEN
+    limit_count := 20;
   END IF;
 
-  -- First, try to get trending users (recent activity with high engagement)
+  IF offset_count IS NULL OR offset_count < 0 THEN
+    offset_count := 0;
+  END IF;
+
+  -- Trending users based on posts in last 7 days
   RETURN QUERY
-  SELECT 
-    u.id,
+  WITH recent_posts AS (
+    SELECT p.*, 
+      (COALESCE(p.star_count,0)*3 +
+       COALESCE(p.coffee_count,0)*2 +
+       COALESCE(p.approve_count,0)*2 +
+       COALESCE(p.cache_count,0)*1 +
+       COALESCE(p.reply_count,0)*2 +
+       COALESCE(p.repost_count,0)*4) AS engagement_score
+    FROM posts p
+    WHERE p.parent_post_id IS NULL
+      AND p.created_at >= NOW() - INTERVAL '7 days'
+  )
+  SELECT
+    u.id::text,
     u.username,
     u.display_name,
     u.bio,
@@ -237,69 +48,37 @@ BEGIN
     u.join_date,
     u.follower_count,
     u.following_count,
-    -- Count of recent posts (last 7 days)
-    COUNT(p.id)::INTEGER as recent_posts_count,
-    -- Sum of engagement scores from recent posts
-    COALESCE(SUM(
-      COALESCE(p.star_count, 0) * 3 + 
-      COALESCE(p.coffee_count, 0) * 2 + 
-      COALESCE(p.approve_count, 0) * 2 + 
-      COALESCE(p.cache_count, 0) * 1 + 
-      COALESCE(p.reply_count, 0) * 2 + 
-      COALESCE(p.repost_count, 0) * 4
-    ), 0)::INTEGER as recent_engagement_score,
-    -- Most recent post date
-    MAX(p.created_at) as last_post_date
+    COUNT(rp.id)::INTEGER AS recent_posts_count,
+    COALESCE(SUM(rp.engagement_score),0)::INTEGER AS recent_engagement_score,
+    MAX(rp.created_at) AS last_post_date
   FROM users u
-  INNER JOIN posts p ON u.id = p.user_id
-  WHERE 
-    -- Only top-level posts (not replies)
-    p.parent_post_id IS NULL
-    AND
-    -- Posts from the last 7 days
-    p.created_at >= NOW() - INTERVAL '7 days'
-    AND
-    -- Exclude authenticated user
-    u.id != current_user_id
-  GROUP BY 
-    u.id, u.username, u.display_name, u.bio, u.location, u.image_url, 
-    u.website, u.github_url, u.linkedin_url, u.cover_image_url, 
+  JOIN recent_posts rp ON rp.user_id = u.id
+  LEFT JOIN user_followers uf ON u.id = uf.user_id AND uf.follower_id = current_user_id
+  WHERE u.id IS NOT NULL
+    AND (current_user_id IS NULL OR u.id != current_user_id)  -- exclude auth user if present
+    AND (
+      (only_following AND uf.user_id IS NOT NULL)
+      OR
+      (NOT only_following AND uf.user_id IS NULL)
+    )
+  GROUP BY
+    u.id, u.username, u.display_name, u.bio, u.location, u.image_url,
+    u.website, u.github_url, u.linkedin_url, u.cover_image_url,
     u.top_technologies, u.join_date, u.follower_count, u.following_count
-  HAVING 
-    -- Minimum engagement threshold (10 points across all recent posts)
-    COALESCE(SUM(
-      COALESCE(p.star_count, 0) * 3 + 
-      COALESCE(p.coffee_count, 0) * 2 + 
-      COALESCE(p.approve_count, 0) * 2 + 
-      COALESCE(p.cache_count, 0) * 1 + 
-      COALESCE(p.reply_count, 0) * 2 + 
-      COALESCE(p.repost_count, 0) * 4
-    ), 0) >= 10
-  ORDER BY 
-    -- First by recent engagement score (highest first)
-    COALESCE(SUM(
-      COALESCE(p.star_count, 0) * 3 + 
-      COALESCE(p.coffee_count, 0) * 2 + 
-      COALESCE(p.approve_count, 0) * 2 + 
-      COALESCE(p.cache_count, 0) * 1 + 
-      COALESCE(p.reply_count, 0) * 2 + 
-      COALESCE(p.repost_count, 0) * 4
-    ), 0) DESC,
-    -- Then by follower count (popularity)
-    u.follower_count DESC NULLS LAST,
-    -- Finally by most recent post date
-    MAX(p.created_at) DESC
+  HAVING COALESCE(SUM(rp.engagement_score),0) >= 10
+  ORDER BY COALESCE(SUM(rp.engagement_score),0) DESC,
+           u.follower_count DESC NULLS LAST,
+           MAX(rp.created_at) DESC
   LIMIT limit_count
   OFFSET offset_count;
 
-  -- Check if we got any trending users
   GET DIAGNOSTICS trending_count = ROW_COUNT;
-  
-  -- If no trending users found, return fallback: users with most followers
+
   IF trending_count = 0 THEN
+    -- Fallback: top users by follower_count (exclude current user and optionally exclude people you follow)
     RETURN QUERY
-    SELECT 
-      u.id,
+    SELECT
+      u.id::text,
       u.username,
       u.display_name,
       u.bio,
@@ -313,45 +92,38 @@ BEGIN
       u.join_date,
       u.follower_count,
       u.following_count,
-      -- Count of all posts (not just recent)
-      COUNT(p.id)::INTEGER as recent_posts_count,
-      -- Sum of all engagement scores
-      COALESCE(SUM(
-        COALESCE(p.star_count, 0) + 
-        COALESCE(p.coffee_count, 0) + 
-        COALESCE(p.approve_count, 0) + 
-        COALESCE(p.cache_count, 0) + 
-        COALESCE(p.reply_count, 0) + 
-        COALESCE(p.repost_count, 0)
-      ), 0)::INTEGER as recent_engagement_score,
-      -- Most recent post date
-      MAX(p.created_at) as last_post_date
+      COALESCE(p_counts.post_count,0)::INTEGER AS recent_posts_count,
+      COALESCE(p_counts.total_engagement,0)::INTEGER AS recent_engagement_score,
+      p_counts.last_post_date
     FROM users u
-    LEFT JOIN posts p ON u.id = p.user_id AND p.parent_post_id IS NULL
-    WHERE 
-      -- Exclude authenticated user
-      u.id != current_user_id
-    GROUP BY 
-      u.id, u.username, u.display_name, u.bio, u.location, u.image_url, 
-      u.website, u.github_url, u.linkedin_url, u.cover_image_url, 
-      u.top_technologies, u.join_date, u.follower_count, u.following_count
-    ORDER BY 
-      -- Order by follower count (highest first)
-      u.follower_count DESC NULLS LAST,
-      -- Then by total engagement across all posts
-      COALESCE(SUM(
-        COALESCE(p.star_count, 0) + 
-        COALESCE(p.coffee_count, 0) + 
-        COALESCE(p.approve_count, 0) + 
-        COALESCE(p.cache_count, 0) + 
-        COALESCE(p.reply_count, 0) + 
-        COALESCE(p.repost_count, 0)
-      ), 0) DESC,
-      -- Finally by join date (newest first)
-      u.join_date DESC
-    LIMIT GREATEST(limit_count, 10) -- Ensure at least 10 results for fallback
+    LEFT JOIN LATERAL (
+      SELECT COUNT(*) AS post_count,
+             COALESCE(SUM(
+               COALESCE(p.star_count,0)*3 +
+               COALESCE(p.coffee_count,0)*2 +
+               COALESCE(p.approve_count,0)*2 +
+               COALESCE(p.cache_count,0)*1 +
+               COALESCE(p.reply_count,0)*2 +
+               COALESCE(p.repost_count,0)*4
+             ),0) AS total_engagement,
+             MAX(p.created_at) AS last_post_date
+      FROM posts p
+      WHERE p.user_id = u.id
+        AND p.parent_post_id IS NULL
+    ) p_counts ON true
+    LEFT JOIN user_followers uf ON u.id = uf.user_id AND uf.follower_id = current_user_id
+    WHERE (current_user_id IS NULL OR u.id != current_user_id)
+      AND (
+        (only_following AND uf.user_id IS NOT NULL)
+        OR
+        (NOT only_following AND uf.user_id IS NULL)
+      )
+    ORDER BY u.follower_count DESC NULLS LAST, p_counts.total_engagement DESC
+    LIMIT limit_count
     OFFSET offset_count;
   END IF;
+
+  RETURN;
 END;
 $function$
 ;
@@ -687,6 +459,208 @@ AS $function$
   )
   SELECT * FROM reply_tree
   ORDER BY level, created_at;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.get_trending_posts(limit_count integer DEFAULT 20, offset_count integer DEFAULT 0)
+ RETURNS TABLE(id uuid, content text, created_at timestamp with time zone, parent_post_id uuid, repost_post_id uuid, reply_count integer, repost_count integer, star_count integer, coffee_count integer, approve_count integer, cache_count integer, engagement_score integer, "user" json, reaction json, repost json)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+DECLARE
+  current_user_id TEXT := auth.jwt() ->> 'sub';
+  trending_count INTEGER;
+BEGIN
+  -- Validate pagination parameters
+  IF limit_count <= 0 THEN
+    limit_count := 20; -- Default to 20 if invalid
+  END IF;
+  
+  IF offset_count < 0 THEN
+    offset_count := 0; -- Default to 0 if negative
+  END IF;
+
+  -- First, try to get trending posts (last 7 days with high engagement)
+  RETURN QUERY
+  SELECT 
+    p.id,
+    p.content,
+    p.created_at,
+    p.parent_post_id,
+    p.repost_post_id,
+    p.reply_count,
+    p.repost_count,
+    p.star_count,
+    p.coffee_count,
+    p.approve_count,
+    p.cache_count,
+    -- Calculate engagement score (weighted)
+    (COALESCE(p.star_count, 0) * 3 + 
+     COALESCE(p.coffee_count, 0) * 2 + 
+     COALESCE(p.approve_count, 0) * 2 + 
+     COALESCE(p.cache_count, 0) * 1 + 
+     COALESCE(p.reply_count, 0) * 2 + 
+     COALESCE(p.repost_count, 0) * 4) as engagement_score,
+    -- User information as nested JSON object
+    json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'display_name', u.display_name,
+      'image_url', u.image_url,
+      'bio', u.bio,
+      'location', u.location,
+      'website', u.website,
+      'github_url', u.github_url,
+      'linkedin_url', u.linkedin_url,
+      'cover_image_url', u.cover_image_url,
+      'top_technologies', u.top_technologies,
+      'join_date', u.join_date,
+      'follower_count', u.follower_count,
+      'following_count', u.following_count
+    ) AS "user",
+    -- Current user's reaction (if any)
+    COALESCE(
+      json_build_object(
+        'id', r.id,
+        'reaction_type', r.reaction_type,
+        'created_at', r.created_at
+      ),
+      NULL
+    ) AS reaction,
+    -- Repost information (if this is a repost)
+    CASE 
+      WHEN p.repost_post_id IS NOT NULL THEN
+        json_build_object(
+          'id', rp.id,
+          'content', rp.content,
+          'created_at', rp.created_at,
+          'user', json_build_object(
+            'id', ru.id,
+            'username', ru.username,
+            'display_name', ru.display_name,
+            'image_url', ru.image_url
+          )
+        )
+      ELSE NULL
+    END AS repost
+  FROM posts p
+  INNER JOIN users u ON p.user_id = u.id
+  LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = current_user_id
+  LEFT JOIN posts rp ON p.repost_post_id = rp.id
+  LEFT JOIN users ru ON rp.user_id = ru.id
+  WHERE 
+    -- Only return top-level posts (not replies)
+    p.parent_post_id IS NULL
+    AND
+    -- Posts from the last 7 days
+    p.created_at >= NOW() - INTERVAL '7 days'
+    AND
+    -- Minimum engagement threshold (5 points)
+    (COALESCE(p.star_count, 0) * 3 + 
+     COALESCE(p.coffee_count, 0) * 2 + 
+     COALESCE(p.approve_count, 0) * 2 + 
+     COALESCE(p.cache_count, 0) * 1 + 
+     COALESCE(p.reply_count, 0) * 2 + 
+     COALESCE(p.repost_count, 0) * 4) >= 5
+  ORDER BY 
+    -- First by engagement score (highest first)
+    (COALESCE(p.star_count, 0) * 3 + 
+     COALESCE(p.coffee_count, 0) * 2 + 
+     COALESCE(p.approve_count, 0) * 2 + 
+     COALESCE(p.cache_count, 0) * 1 + 
+     COALESCE(p.reply_count, 0) * 2 + 
+     COALESCE(p.repost_count, 0) * 4) DESC,
+    -- Then by recency (newest first)
+    p.created_at DESC
+  LIMIT limit_count
+  OFFSET offset_count;
+
+  -- Check if we got any trending posts
+  GET DIAGNOSTICS trending_count = ROW_COUNT;
+  
+  -- If no trending posts found, return fallback: most popular posts
+  IF trending_count = 0 THEN
+    RETURN QUERY
+    SELECT 
+      p.id,
+      p.content,
+      p.created_at,
+      p.parent_post_id,
+      p.repost_post_id,
+      p.reply_count,
+      p.repost_count,
+      p.star_count,
+      p.coffee_count,
+      p.approve_count,
+      p.cache_count,
+      -- Calculate engagement score (weighted)
+      (COALESCE(p.star_count, 0) * 3 + 
+       COALESCE(p.coffee_count, 0) * 2 + 
+       COALESCE(p.approve_count, 0) * 2 + 
+       COALESCE(p.cache_count, 0) * 1 + 
+       COALESCE(p.reply_count, 0) * 2 + 
+       COALESCE(p.repost_count, 0) * 4) as engagement_score,
+      -- User information as nested JSON object
+      json_build_object(
+        'id', u.id,
+        'username', u.username,
+        'display_name', u.display_name,
+        'image_url', u.image_url,
+        'bio', u.bio,
+        'location', u.location,
+        'website', u.website,
+        'github_url', u.github_url,
+        'linkedin_url', u.linkedin_url,
+        'cover_image_url', u.cover_image_url,
+        'top_technologies', u.top_technologies,
+        'join_date', u.join_date,
+        'follower_count', u.follower_count,
+        'following_count', u.following_count
+      ) AS "user",
+      -- Current user's reaction (if any)
+      COALESCE(
+        json_build_object(
+          'id', r.id,
+          'reaction_type', r.reaction_type,
+          'created_at', r.created_at
+        ),
+        NULL
+      ) AS reaction,
+      -- Repost information (if this is a repost)
+      CASE 
+        WHEN p.repost_post_id IS NOT NULL THEN
+          json_build_object(
+            'id', rp.id,
+            'content', rp.content,
+            'created_at', rp.created_at,
+            'user', json_build_object(
+              'id', ru.id,
+              'username', ru.username,
+              'display_name', ru.display_name,
+              'image_url', ru.image_url
+            )
+          )
+        ELSE NULL
+      END AS repost
+    FROM posts p
+    INNER JOIN users u ON p.user_id = u.id
+    LEFT JOIN reactions r ON r.post_id = p.id AND r.user_id = current_user_id
+    LEFT JOIN posts rp ON p.repost_post_id = rp.id
+    LEFT JOIN users ru ON rp.user_id = ru.id
+    WHERE 
+      -- Only return top-level posts (not replies)
+      p.parent_post_id IS NULL
+    ORDER BY 
+      -- Order by total engagement (reactions + replies + reposts)
+      (COALESCE(p.star_count, 0) + COALESCE(p.coffee_count, 0) + 
+       COALESCE(p.approve_count, 0) + COALESCE(p.cache_count, 0) + 
+       COALESCE(p.reply_count, 0) + COALESCE(p.repost_count, 0)) DESC,
+      -- Then by creation date (newest first)
+      p.created_at DESC
+    LIMIT GREATEST(limit_count, 10) -- Ensure at least 10 results for fallback
+    OFFSET offset_count;
+  END IF;
+END;
 $function$
 ;
 
@@ -1259,6 +1233,3 @@ BEGIN
 END;
 $function$
 ;
-
-
-
