@@ -25,7 +25,7 @@ async function getUserFeed(
     query = query.lt("created_at", cursor);
   }
 
-  const result = await query;
+  const result = await query.overrideTypes<NestedPost[]>();
   return result;
 }
 
@@ -60,7 +60,7 @@ async function getUserPosts({
     query = query.lt("created_at", cursor);
   }
 
-  const result = await query;
+  const result = await query.overrideTypes<NestedPost[]>();
   return result;
 }
 

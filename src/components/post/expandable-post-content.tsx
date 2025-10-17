@@ -70,7 +70,7 @@ export function ExpandablePostContent({
   return (
     <>
       <div
-        className="transition-all duration-500 ease-out overflow-hidden"
+        className='transition-all duration-500 ease-out overflow-hidden'
         style={{ height: contentHeight ? `${contentHeight}px` : "auto" }}
       >
         <ScrollShadow
@@ -87,13 +87,13 @@ export function ExpandablePostContent({
 
       {canExpand && (
         <Button
-          variant="light"
-          size="sm"
+          variant='light'
+          size='sm'
           onPress={handleExpand}
-          className="self-start text-primary hover:text-primary-600 transition-colors"
+          className='self-start text-primary hover:text-primary-600 transition-colors'
           startContent={<ChevronDownIcon size={16} />}
         >
-          View more
+          View moree
         </Button>
       )}
     </>

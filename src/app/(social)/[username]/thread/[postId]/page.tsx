@@ -15,9 +15,13 @@ import { cache } from "react";
 // Cache post threads for 30 minutes
 export const revalidate = 1800;
 
-function nestReplies(posts: NestedPost[]) {
+function nestReplies(posts: NestedPost[] | null) {
   const map = new Map();
   const roots: NestedPost[] = [];
+
+  if (!posts) {
+    return roots;
+  }
 
   for (const post of posts) {
     post.replies = [];
@@ -39,12 +43,11 @@ function nestReplies(posts: NestedPost[]) {
 const getPostData = cache(async (postId: string) => {
   const supabaseClient = createServerSupabaseClient();
 
-  const { data: postAncestry, error: postAncestryError } = await supabaseClient.rpc(
-    "get_post_ancestry",
-    {
+  const { data: postAncestry, error: postAncestryError } = await supabaseClient
+    .rpc("get_post_ancestry", {
       start_id: postId,
-    },
-  );
+    })
+    .overrideTypes<NestedPost[]>();
 
   if (postAncestryError) {
     console.error("Error fetching thread:", postAncestryError);
@@ -52,16 +55,14 @@ const getPostData = cache(async (postId: string) => {
 
   const { data: directReplies, error: directRepliesError } = await supabaseClient
     .rpc("get_replies_to_depth", { target_id: postId, max_depth: 2 })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .overrideTypes<NestedPost[]>();
 
   if (directRepliesError) {
     console.error("Error fetching direct replies:", directRepliesError);
   }
 
-  const result: {
-    postAncestry: NestedPost[];
-    directReplies: NestedPost[];
-  } = {
+  const result = {
     postAncestry,
     directReplies: nestReplies(directReplies),
   };
@@ -108,8 +109,8 @@ async function ThreadPage({ params }: ThreadPageProps) {
 
   return (
     <>
-      <PageHeader title="Thread" />
-      <div className="flex flex-col gap-4 w-full">
+      <PageHeader title='Thread' />
+      <div className='flex flex-col gap-4 w-full'>
         <PostsProvider initialPosts={directReplies || []}>
           <PostWrapper isAncestry>
             <UserPost ancestry={postAncestry} />
@@ -118,8 +119,8 @@ async function ThreadPage({ params }: ThreadPageProps) {
             placeholder={`Reply to @${postAncestry?.at(-1)?.user?.username}`}
             replyPostId={postId}
           />
-          <div className="flex flex-col gap-4 min-h-[100dvh]">
-            <h2 className="text-lg font-medium">Replies</h2>
+          <div className='flex flex-col gap-4 min-h-[100dvh]'>
+            <h2 className='text-lg font-medium'>Replies</h2>
             {!!directReplies?.length && <PostList />}
           </div>
         </PostsProvider>
