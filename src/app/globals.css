@@ -4,14 +4,16 @@
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #f6f6f6;
-  --foreground: #171717;
-}
+@import "./utilities.css";
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+}
+
+:root {
+  --background: #f6f6f6;
+  --foreground: #171717;
 }
 
 .dark {
@@ -19,35 +21,37 @@
   --foreground: #ededed;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-}
+@layer base {
+  html {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
 
-input:focus-visible,
-textarea:focus-visible {
-  outline: none;
-}
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+  }
 
-/* Lexical Editor Mention Styles */
-.mention {
-  @apply bg-primary-100 text-primary-800 rounded px-1 py-0.5 font-medium cursor-pointer transition-colors;
-}
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--heroui-content4)) transparent;
 
-.mention:hover {
-  @apply bg-primary-200;
-}
+    &::-webkit-scrollbar {
+      width: 1rem;
+      height: 1rem;
+      background: transparent;
+    }
 
-.mention:focus {
-  @apply outline-none ring-2 ring-primary ring-offset-1;
-}
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-/* Lexical Editor Content Styles */
-.lexical-editor [data-lexical-editor] {
-  @apply outline-none;
-}
-
-.lexical-editor [data-lexical-editor]:focus {
-  @apply outline-none;
+    &::-webkit-scrollbar-thumb {
+      background-color: hsl(var(--heroui-content4));
+      border-radius: 0.25rem;
+      border: 0.125rem solid transparent;
+      background-clip: content-box;
+    }
+  }
 }

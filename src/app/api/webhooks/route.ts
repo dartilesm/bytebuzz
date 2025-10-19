@@ -1,4 +1,4 @@
-import { createUnauthenticatedSupabaseClient } from "@/db/supabase";
+import { createAdminSupabaseClient } from "@/db/supabase";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import type { RequestLike } from "node_modules/@clerk/nextjs/dist/types/server/types";
 export async function POST(req: Request) {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     if (eventType === "user.created" || eventType === "user.updated") {
       const { id, first_name, last_name, username, image_url } = evt.data;
 
-      const supabase = createUnauthenticatedSupabaseClient();
+      const supabase = createAdminSupabaseClient();
 
       const { data, error } = await supabase.from("users").upsert({
         id,
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     if (eventType === "user.deleted") {
       const { id } = evt.data;
 
-      const supabase = createUnauthenticatedSupabaseClient();
+      const supabase = createAdminSupabaseClient();
 
       const { data, error: deleteError } = await supabase.from("users").delete().eq("id", id);
 
