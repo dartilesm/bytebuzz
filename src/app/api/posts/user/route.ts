@@ -1,6 +1,9 @@
 import { feedService } from "@/services/feed.service";
 import { currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "posts-user-route" });
 
 /**
  * GET /api/posts/user
@@ -28,7 +31,7 @@ export async function GET(request: NextRequest) {
       success: true,
     });
   } catch (error) {
-    console.error("Error fetching user posts:", error);
+    log.error({ error }, "Error fetching user posts:");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

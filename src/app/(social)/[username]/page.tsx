@@ -5,6 +5,9 @@ import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "user-page" });
 
 // Cache user profiles for 1 hour
 export const revalidate = 3600;
@@ -37,7 +40,7 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
 
     return generateUserProfileMetadata(userProfile);
   } catch (error) {
-    console.error("Error generating user profile metadata:", error);
+    log.error({ error }, "Error generating user profile metadata:");
     return generateFallbackMetadata("user");
   }
 }

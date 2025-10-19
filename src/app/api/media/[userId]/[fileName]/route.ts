@@ -1,5 +1,8 @@
 import { createServerSupabaseClient } from "@/db/supabase";
+import { logger } from "@/lib/logger";
 import { type NextRequest, NextResponse } from "next/server";
+
+const log = logger.child({ module: "media-route" });
 
 /**
  * GET handler for media files
@@ -43,7 +46,7 @@ export async function GET(
       .download(`${path}/${matchingFile.name}`);
 
     if (error || !data) {
-      console.error("Error downloading file:", error);
+      log.error({ error }, "Error downloading file:");
       return NextResponse.json({ error: "Failed to download file" }, { status: 500 });
     }
 
@@ -66,7 +69,7 @@ export async function GET(
 
     return response;
   } catch (error) {
-    console.error("Error serving media file:", error);
+    log.error({ error }, "Error serving media file:");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

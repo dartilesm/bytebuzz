@@ -1,6 +1,9 @@
 import { createAdminSupabaseClient } from "@/db/supabase";
+import { logger } from "@/lib/logger";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import type { RequestLike } from "node_modules/@clerk/nextjs/dist/types/server/types";
+
+const log = logger.child({ module: "webhooks-route" });
 export async function POST(req: Request) {
   try {
     const evt = await verifyWebhook(req as RequestLike);
@@ -50,7 +53,7 @@ export async function POST(req: Request) {
       status: 200,
     });
   } catch (err) {
-    console.error("Error verifying webhook:", err);
+    log.error({ err }, "Error verifying webhook:");
     return new Response(JSON.stringify({ error: "Error verifying webhook" }), {
       status: 400,
     });

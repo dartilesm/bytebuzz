@@ -11,6 +11,9 @@ import type { NestedPost } from "@/types/nested-posts";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "thread-page" });
 
 // Cache post threads for 30 minutes
 export const revalidate = 1800;
@@ -50,7 +53,7 @@ const getPostData = cache(async (postId: string) => {
     .overrideTypes<NestedPost[]>();
 
   if (postAncestryError) {
-    console.error("Error fetching thread:", postAncestryError);
+    log.error({ postAncestryError }, "Error fetching thread:");
   }
 
   const { data: directReplies, error: directRepliesError } = await supabaseClient
@@ -59,7 +62,7 @@ const getPostData = cache(async (postId: string) => {
     .overrideTypes<NestedPost[]>();
 
   if (directRepliesError) {
-    console.error("Error fetching direct replies:", directRepliesError);
+    log.error({ directRepliesError }, "Error fetching direct replies:");
   }
 
   const result = {
@@ -94,7 +97,7 @@ export async function generateMetadata({ params }: ThreadPageProps): Promise<Met
 
     return generatePostThreadMetadata(mainPost);
   } catch (error) {
-    console.error("Error generating post thread metadata:", error);
+    log.error({ error }, "Error generating post thread metadata:");
     return generateFallbackMetadata("thread");
   }
 }

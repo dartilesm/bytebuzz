@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 import { Button, Link } from "@heroui/react";
 import { ArrowLeftIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "page-header" });
 
 type PageHeaderProps = {
   /**
@@ -55,7 +58,7 @@ export function PageHeader({
 
   function handleBack() {
     const previousUrl = document.referrer;
-    console.log("previousUrl", previousUrl);
+    log.info({ previousUrl }, "previousUrl");
     router.back();
   } */
 
