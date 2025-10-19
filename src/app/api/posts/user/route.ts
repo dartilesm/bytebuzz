@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       success: true,
     });
   } catch (error) {
-    log.error({ error }, "Error fetching user posts:");
+    log.error("Error fetching user posts", { error });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

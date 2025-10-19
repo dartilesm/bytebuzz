@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       status: 200,
     });
   } catch (err) {
-    log.error({ err }, "Error verifying webhook:");
+    log.error("Error verifying webhook", { err });
     return new Response(JSON.stringify({ error: "Error verifying webhook" }), {
       status: 400,
     });

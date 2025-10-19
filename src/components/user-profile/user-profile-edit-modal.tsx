@@ -76,7 +76,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       }
     },
     onError: (error) => {
-      log.error({ error }, "Failed to update profile:");
+      log.error("Failed to update profile", { error });
     },
   });
 

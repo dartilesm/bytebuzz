@@ -42,7 +42,7 @@ export function useUpdateProfileMutation(
         top_technologies: profileDataToUpdate.top_technologies,
       };
 
-      log.info({ profileData }, "profileData");
+      log.info("Profile data prepared", { profileData });
 
       const response = await updateProfile(profileData);
 
@@ -77,7 +77,7 @@ async function handleImageUpload(
       try {
         await deleteProfileImage(currentUrl);
       } catch (deleteError) {
-        log.warn({ deleteError }, `Failed to delete existing ${type}:`);
+        log.warn(`Failed to delete existing ${type}`, { deleteError });
         // Continue with upload even if deletion fails
       }
     }
@@ -86,7 +86,7 @@ async function handleImageUpload(
     const newUrl = await uploadProfileImage(file, type);
     return newUrl;
   } catch (error) {
-    log.error({ error }, `Failed to upload ${type}:`);
+    log.error(`Failed to upload ${type}`, { error });
     throw new Error(`Failed to upload ${type === "avatar" ? "profile picture" : "cover image"}`);
   }
 }

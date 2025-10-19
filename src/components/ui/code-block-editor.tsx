@@ -88,7 +88,7 @@ export function CodeBlockEditor({
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
-      log.error({ error }, "Failed to copy code:");
+      log.error("Failed to copy code", { error });
     }
   }, [code]);
 

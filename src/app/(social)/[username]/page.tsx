@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
 
     return generateUserProfileMetadata(userProfile);
   } catch (error) {
-    log.error({ error }, "Error generating user profile metadata:");
+    log.error("Error generating user profile metadata", { error });
     return generateFallbackMetadata("user");
   }
 }

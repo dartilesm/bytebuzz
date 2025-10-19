@@ -40,8 +40,8 @@ export async function sendPageViewEvent(data: PageViewEventData) {
       body: JSON.stringify(pageInfo),
     });
     // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-    log.info({ pageViewAnalyticsResponse: response });
+    log.info("Page view analytics response", { pageViewAnalyticsResponse: response });
   } catch (error) {
-    log.error({ error });
+    log.error("Error sending page view analytics", { error });
   }
 }

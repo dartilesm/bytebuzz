@@ -51,7 +51,7 @@ const getPostData = cache(async (postId: string) => {
     .overrideTypes<NestedPost[]>();
 
   if (postAncestryError) {
-    log.error({ postAncestryError }, "Error fetching thread:");
+    log.error("Error fetching thread", { postAncestryError });
   }
 
   const { data: directReplies, error: directRepliesError } = await supabaseClient
@@ -60,7 +60,7 @@ const getPostData = cache(async (postId: string) => {
     .overrideTypes<NestedPost[]>();
 
   if (directRepliesError) {
-    log.error({ directRepliesError }, "Error fetching direct replies:");
+    log.error("Error fetching direct replies", { directRepliesError });
   }
 
   const result = {
@@ -95,7 +95,7 @@ export async function generateMetadata({ params }: ThreadPageProps): Promise<Met
 
     return generatePostThreadMetadata(mainPost);
   } catch (error) {
-    log.error({ error }, "Error generating post thread metadata:");
+    log.error("Error generating post thread metadata", { error });
     return generateFallbackMetadata("thread");
   }
 }

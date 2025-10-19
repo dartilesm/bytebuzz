@@ -89,7 +89,7 @@ export function MentionPlugin({
         const results = await onSearch(query);
         return results.slice(0, maxSuggestions);
       } catch (error) {
-        log.error({ error }, "Error searching users:");
+        log.error("Error searching users", { error });
         return [];
       }
     },

@@ -45,7 +45,7 @@ export async function GET(
       .download(`${path}/${matchingFile.name}`);
 
     if (error || !data) {
-      log.error({ error }, "Error downloading file:");
+      log.error("Error downloading file", { error });
       return NextResponse.json({ error: "Failed to download file" }, { status: 500 });
     }
 
@@ -68,7 +68,7 @@ export async function GET(
 
     return response;
   } catch (error) {
-    log.error({ error }, "Error serving media file:");
+    log.error("Error serving media file", { error });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
