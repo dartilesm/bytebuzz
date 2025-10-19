@@ -147,7 +147,7 @@ export function PostComposer({
       form.reset();
       resetEditorState();
     } catch (error) {
-      log.error({ error }, "Error creating post:");
+      log.error("Error creating post", { error });
       form.setError("content", {
         message: error instanceof Error ? error.message : "Failed to create post",
       });

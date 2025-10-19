@@ -109,7 +109,7 @@ export async function createPostAction({
     revalidatePath("/");
     return post;
   } catch (error) {
-    log.error({ error }, "Error creating post with media:");
+    log.error("Error creating post with media", { error });
     throw error;
   }
 }

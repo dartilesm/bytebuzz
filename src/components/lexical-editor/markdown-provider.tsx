@@ -72,7 +72,7 @@ export function MarkdownProvider({
     namespace: "lexical-markdown-editor",
     theme,
     onError: (error: Error) => {
-      log.error({ error }, "Lexical Editor Error:");
+      log.error("Lexical Editor Error", { error });
     },
     nodes: [
       // Include nodes based on enabled features

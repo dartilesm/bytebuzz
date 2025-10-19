@@ -71,13 +71,13 @@ export function MarkdownToolbarDefaultActions({
   function handleInsertMedia(mediaData: MediaData): void {
     try {
       editor.update(() => {
-        log.info({ mediaData }, "Creating media node with data:");
+        log.info("Creating media node with data", { mediaData });
 
         const root = $getRoot();
 
         // Create the media node
         const mediaNode = $createMediaNode(mediaData);
-        log.info({ mediaNode }, "Media node created:");
+        log.info("Media node created", { mediaNode });
 
         // Always append media at the end
         root.append(mediaNode);
@@ -88,7 +88,7 @@ export function MarkdownToolbarDefaultActions({
       // Focus back to the editor after update
       editor.focus();
     } catch (error) {
-      log.error({ error }, "Error inserting media:");
+      log.error("Error inserting media", { error });
       alert(`Error adding media: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
@@ -153,7 +153,7 @@ export function MarkdownToolbarDefaultActions({
    * Handles upload error by removing the loading node
    */
   function handleUploadError(mediaId: string, errorMessage: string): void {
-    log.error({ errorMessage }, "Upload failed:");
+    log.error("Upload failed", { errorMessage });
     alert(`Failed to upload media: ${errorMessage}`);
 
     editor.update(() => {

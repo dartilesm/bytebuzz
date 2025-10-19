@@ -54,7 +54,7 @@ export async function uploadPostMediaAction(
       proxyUrl,
     };
   } catch (error) {
-    log.error({ error }, "Error uploading media:");
+    log.error("Error uploading media", { error });
     throw error;
   }
 }

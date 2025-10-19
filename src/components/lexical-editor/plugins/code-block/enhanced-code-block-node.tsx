@@ -131,7 +131,7 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
    * Renders the CodeBlockEditor component
    */
   decorate(): React.ReactElement {
-    log.info({ code: this.__code, language: this.__language }, "decorate");
+    log.info("Decorate code block", { code: this.__code, language: this.__language });
     return <EnhancedCodeBlockWrapper node={this} code={this.__code} language={this.__language} />;
   }
 

@@ -62,7 +62,7 @@ export function CodeBlock({
         const processedHtml = addLineNumbers(highlighted, showLineNumbers, hideSymbol);
         setHighlightedHtml(processedHtml);
       } catch (error) {
-        log.error({ error }, "Error highlighting code:");
+        log.error("Error highlighting code", { error });
         // Fallback to plain text
         const plainHtml = `<pre class="shiki ${codeTheme}" tabindex="0"><code>${code}</code></pre>`;
         const processedHtml = addLineNumbers(plainHtml, showLineNumbers, hideSymbol);

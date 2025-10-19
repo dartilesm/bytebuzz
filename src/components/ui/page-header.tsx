@@ -56,7 +56,7 @@ export function PageHeader({
 
   function handleBack() {
     const previousUrl = document.referrer;
-    log.info({ previousUrl }, "previousUrl");
+    log.info("Previous URL", { previousUrl });
     router.back();
   } */
 
