@@ -7,6 +7,9 @@ import { mergeRegister } from "@lexical/utils";
 import type { TextNode } from "lexical";
 import { $createMentionNode, type User } from "./mention-node";
 import { MentionSuggestions } from "@/components/lexical-editor/plugins/mentions/mention-suggestions";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "mention-plugin" });
 
 interface MentionPluginProps {
   /**
@@ -52,7 +55,7 @@ async function mockUserSearch(query: string): Promise<User[]> {
   return mockUsers.filter(
     (user) =>
       user.username.toLowerCase().includes(query.toLowerCase()) ||
-      user.displayName.toLowerCase().includes(query.toLowerCase()),
+      user.displayName.toLowerCase().includes(query.toLowerCase())
   );
 }
 
@@ -88,11 +91,11 @@ export function MentionPlugin({
         const results = await onSearch(query);
         return results.slice(0, maxSuggestions);
       } catch (error) {
-        console.error("Error searching users:", error);
+        log.error({ error }, "Error searching users:");
         return [];
       }
     },
-    [onSearch, maxSuggestions],
+    [onSearch, maxSuggestions]
   );
 
   /**
@@ -148,7 +151,7 @@ export function MentionPlugin({
 
       closeMentions();
     },
-    [editor, trigger, closeMentions],
+    [editor, trigger, closeMentions]
   );
 
   /**
@@ -285,7 +288,7 @@ export function MentionPlugin({
   useEffect(() => {
     return mergeRegister(
       // Handle text content changes for mention detection
-      editor.registerTextContentListener(detectMention),
+      editor.registerTextContentListener(detectMention)
     );
   }, [editor, detectMention]);
 

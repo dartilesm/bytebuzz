@@ -1,7 +1,10 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
+import { logger } from "@/lib/logger";
 import { auth } from "@clerk/nextjs/server";
+
+const log = logger.child({ module: "upload-profile-image" });
 
 export type ProfileImageType = "avatar" | "cover";
 
@@ -38,7 +41,7 @@ export async function uploadProfileImage(file: File, type: ProfileImageType): Pr
   const timestamp = Date.now();
   const fileName = `${timestamp}_${type}.${fileExtension}`;
 
-  console.log({ userId });
+  log.info({ userId });
 
   // Create file path following the structure: post-images/{user_id}/profile/{filename}
   const filePath = `${userId}/profile/${fileName}`;
@@ -51,7 +54,7 @@ export async function uploadProfileImage(file: File, type: ProfileImageType): Pr
     });
 
     if (error) {
-      console.error("Upload error:", error);
+      log.error({ error }, "Upload error:");
       throw new Error(`Failed to upload image: ${error.message}`);
     }
 
@@ -64,7 +67,7 @@ export async function uploadProfileImage(file: File, type: ProfileImageType): Pr
 
     return urlData.publicUrl;
   } catch (error) {
-    console.error("Profile image upload failed:", error);
+    log.error({ error }, "Profile image upload failed:");
     throw new Error(error instanceof Error ? error.message : "Failed to upload profile image");
   }
 }
@@ -97,11 +100,11 @@ export async function deleteProfileImage(imageUrl: string): Promise<void> {
     const { error } = await supabaseClient.storage.from("post-images").remove([filePath]);
 
     if (error) {
-      console.error("Delete error:", error);
+      log.error({ error }, "Delete error:");
       throw new Error(`Failed to delete image: ${error.message}`);
     }
   } catch (error) {
-    console.error("Profile image deletion failed:", error);
+    log.error({ error }, "Profile image deletion failed:");
     throw new Error(error instanceof Error ? error.message : "Failed to delete profile image");
   }
 }

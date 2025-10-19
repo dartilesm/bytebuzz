@@ -1,7 +1,10 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
+import { logger } from "@/lib/logger";
 import { currentUser } from "@clerk/nextjs/server";
+
+const log = logger.child({ module: "upload-post-media" });
 
 /**
  * Uploads a media file to Supabase storage in a temporary location
@@ -53,7 +56,7 @@ export async function uploadPostMediaAction(
       proxyUrl,
     };
   } catch (error) {
-    console.error("Error uploading media:", error);
+    log.error({ error }, "Error uploading media:");
     throw error;
   }
 }

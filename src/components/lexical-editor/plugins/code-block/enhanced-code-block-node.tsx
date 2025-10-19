@@ -11,6 +11,9 @@ import type {
 } from "lexical";
 import { DecoratorNode } from "lexical";
 import { EnhancedCodeBlockWrapper } from "./enhanced-code-block-wrapper";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "enhanced-code-block-node" });
 
 export interface SerializedEnhancedCodeBlockNode extends SerializedLexicalNode {
   language: string;
@@ -130,7 +133,7 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
    * Renders the CodeBlockEditor component
    */
   decorate(): React.ReactElement {
-    console.log("decorate", this.__code, this.__language);
+    log.info({ code: this.__code, language: this.__language }, "decorate");
     return <EnhancedCodeBlockWrapper node={this} code={this.__code} language={this.__language} />;
   }
 
@@ -154,7 +157,7 @@ export function $createEnhancedCodeBlockNode(language: string, code = ""): Enhan
  * Checks if a node is an EnhancedCodeBlockNode
  */
 export function $isEnhancedCodeBlockNode(
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is EnhancedCodeBlockNode {
   return node instanceof EnhancedCodeBlockNode;
 }
