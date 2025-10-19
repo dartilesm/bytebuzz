@@ -43,9 +43,14 @@ function formatCallerPrefix(caller: CallerInfo | null): string {
  * @param {string} msg - The message to log
  * @param {LogMetadata} [meta] - Optional metadata to include in the log
  */
-function logWithCaller(level: Level, msg: string, meta?: LogMetadata): void {
-  const caller = getCallerInfo();
-  const prefix = formatCallerPrefix(caller);
+function logWithCaller(
+  level: Level,
+  msg: string,
+  meta?: LogMetadata,
+  caller?: CallerInfo | null,
+): void {
+  const callerInfo = caller === undefined ? getCallerInfo() : caller;
+  const prefix = formatCallerPrefix(callerInfo);
 
   if (!pinoLogger[level as keyof typeof pinoLogger]) {
     return;
@@ -72,42 +77,48 @@ export const log = {
    * @param {string} msg - The message to log
    * @param {LogMetadata} [meta] - Optional metadata to include
    */
-  info: (msg: string, meta?: LogMetadata) => logWithCaller("info", msg, meta),
+  info: (msg: string, meta?: LogMetadata, caller?: CallerInfo | null) =>
+    logWithCaller("info", msg, meta, caller),
 
   /**
    * Logs a warning message
    * @param {string} msg - The message to log
    * @param {LogMetadata} [meta] - Optional metadata to include
    */
-  warn: (msg: string, meta?: LogMetadata) => logWithCaller("warn", msg, meta),
+  warn: (msg: string, meta?: LogMetadata, caller?: CallerInfo | null) =>
+    logWithCaller("warn", msg, meta, caller),
 
   /**
    * Logs an error message
    * @param {string} msg - The message to log
    * @param {LogMetadata} [meta] - Optional metadata to include
    */
-  error: (msg: string, meta?: LogMetadata) => logWithCaller("error", msg, meta),
+  error: (msg: string, meta?: LogMetadata, caller?: CallerInfo | null) =>
+    logWithCaller("error", msg, meta, caller),
 
   /**
    * Logs a debug message
    * @param {string} msg - The message to log
    * @param {LogMetadata} [meta] - Optional metadata to include
    */
-  debug: (msg: string, meta?: LogMetadata) => logWithCaller("debug", msg, meta),
+  debug: (msg: string, meta?: LogMetadata, caller?: CallerInfo | null) =>
+    logWithCaller("debug", msg, meta, caller),
 
   /**
    * Logs a fatal message
    * @param {string} msg - The message to log
    * @param {LogMetadata} [meta] - Optional metadata to include
    */
-  fatal: (msg: string, meta?: LogMetadata) => logWithCaller("fatal", msg, meta),
+  fatal: (msg: string, meta?: LogMetadata, caller?: CallerInfo | null) =>
+    logWithCaller("fatal", msg, meta, caller),
 
   /**
    * Logs a trace message
    * @param {string} msg - The message to log
    * @param {LogMetadata} [meta] - Optional metadata to include
    */
-  trace: (msg: string, meta?: LogMetadata) => logWithCaller("trace", msg, meta),
+  trace: (msg: string, meta?: LogMetadata, caller?: CallerInfo) =>
+    logWithCaller("trace", msg, meta, caller),
 
   /**
    * Logs a child logger
