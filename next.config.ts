@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
+  serverExternalPackages: ["pino", "pino-pretty"],
   experimental: {
-    serverComponentsExternalPackages: ["pino", "pino-pretty"],
     devtoolSegmentExplorer: true,
   },
   images: {
