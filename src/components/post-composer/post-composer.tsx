@@ -19,6 +19,9 @@ import { $getRoot } from "lexical";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "post-composer" });
 
 const postComposerSchema = z.object({
   content: z.string().min(1),
@@ -146,7 +149,7 @@ export function PostComposer({
       form.reset();
       resetEditorState();
     } catch (error) {
-      console.error("Error creating post:", error);
+      log.error({ error }, "Error creating post:");
       form.setError("content", {
         message: error instanceof Error ? error.message : "Failed to create post",
       });

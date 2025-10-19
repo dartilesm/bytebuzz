@@ -27,6 +27,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
+import { logger } from "@/lib/logger";
+
+const log = logger.child({ module: "user-profile-edit-modal" });
 
 interface UserProfileEditModalProps {
   onClose: () => void;
@@ -75,7 +78,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       }
     },
     onError: (error) => {
-      console.error("Failed to update profile:", error);
+      log.error({ error }, "Failed to update profile:");
     },
   });
 
