@@ -16,7 +16,6 @@ import { logger } from "@/lib/logger";
 
 const log = logger.child({ module: "markdown-provider" });
 
-
 // Create dynamic theme based on enabled features
 const theme = createMarkdownTheme();
 

@@ -142,7 +142,7 @@ export function PostComposer({
               },
             });
           },
-        },
+        }
       );
 
       if (onSubmitProp) onSubmitProp();
@@ -160,28 +160,28 @@ export function PostComposer({
     <form
       className={cn(
         "dark:bg-default-100 bg-default-100 dark:hover:bg-default-200 hover:bg-default-200 rounded-xl overflow-hidden min-h-24 group/post-composer",
-        className,
+        className
       )}
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
-        <div className="flex flex-row gap-4 p-4">
-          <div className="flex flex-row gap-2 z-10">
+        <div className='flex flex-row gap-4 p-4'>
+          <div className='flex flex-row gap-2 z-10'>
             <Avatar isBordered src={user?.imageUrl} />
           </div>
-          <div className="flex-1">
-            <MarkdownEditor placeholder={placeholder} contentClassName="min-h-12 p-0" autoFocus />
-            <div className="py-4">{children}</div>
-            <MarkdownToolbar className="bg-transparent border-none p-0">
+          <div className='flex-1'>
+            <MarkdownEditor placeholder={placeholder} contentClassName='min-h-12 p-0' autoFocus />
+            <div className='py-4'>{children}</div>
+            <MarkdownToolbar className='bg-transparent border-none p-0'>
               <MarkdownToolbarDefaultActions
-                buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary"
+                buttonClassName='bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary'
                 onMediaUpload={handleMediaUpload}
               />
               <Button
-                type="submit"
-                color="primary"
-                size="sm"
-                className="ml-auto"
+                type='submit'
+                color='primary'
+                size='sm'
+                className='ml-auto'
                 isDisabled={!form.formState.isValid || isPending}
               >
                 Post
