@@ -1,8 +1,8 @@
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 import { feedService } from "@/services/feed.service";
 import { type NextRequest, NextResponse } from "next/server";
 
-const log = logger.child({ module: "posts-feed-route" });
+const log = getLogger(__filename);
 
 /**
  * GET /api/posts/feed

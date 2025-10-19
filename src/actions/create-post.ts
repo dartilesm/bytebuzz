@@ -1,12 +1,12 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 import { currentUser } from "@clerk/nextjs/server";
 import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
 
-const log = logger.child({ module: "create-post" });
+const log = getLogger(__filename);
 
 type PostExpectedFields = Pick<
   Partial<Tables<"posts">>,

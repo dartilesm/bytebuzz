@@ -9,9 +9,9 @@ import oneDarkProTheme from "@shikijs/themes/github-dark";
 import oneLightTheme from "@shikijs/themes/one-light";
 import { CopyIcon, DownloadIcon } from "lucide-react";
 import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "code-block" });
+const log = getLogger(__filename);
 
 interface CodeBlockProps {
   code: string;

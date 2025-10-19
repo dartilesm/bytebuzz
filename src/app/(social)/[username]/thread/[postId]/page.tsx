@@ -11,9 +11,9 @@ import type { NestedPost } from "@/types/nested-posts";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "thread-page" });
+const log = getLogger(__filename);
 
 // Cache post threads for 30 minutes
 export const revalidate = 1800;

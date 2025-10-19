@@ -1,8 +1,8 @@
 import { createServerSupabaseClient } from "@/db/supabase";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 import { type NextRequest, NextResponse } from "next/server";
 
-const log = logger.child({ module: "media-route" });
+const log = getLogger(__filename);
 
 /**
  * GET handler for media files

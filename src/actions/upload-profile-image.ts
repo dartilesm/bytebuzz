@@ -1,10 +1,10 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 import { auth } from "@clerk/nextjs/server";
 
-const log = logger.child({ module: "upload-profile-image" });
+const log = getLogger(__filename);
 
 export type ProfileImageType = "avatar" | "cover";
 

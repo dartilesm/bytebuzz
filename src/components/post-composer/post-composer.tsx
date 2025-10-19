@@ -19,9 +19,9 @@ import { $getRoot } from "lexical";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "post-composer" });
+const log = getLogger(__filename);
 
 const postComposerSchema = z.object({
   content: z.string().min(1),

@@ -1,10 +1,10 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 import { currentUser } from "@clerk/nextjs/server";
 
-const log = logger.child({ module: "upload-post-media" });
+const log = getLogger(__filename);
 
 /**
  * Uploads a media file to Supabase storage in a temporary location

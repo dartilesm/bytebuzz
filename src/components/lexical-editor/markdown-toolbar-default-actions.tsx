@@ -16,9 +16,9 @@ import {
   createBlobMediaData,
   createLoadingMediaData,
 } from "./functions/upload-handlers";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "markdown-toolbar-default-actions" });
+const log = getLogger(__filename);
 
 interface MarkdownToolbarDefaultActionsProps {
   /**

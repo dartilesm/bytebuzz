@@ -12,9 +12,9 @@ import { EnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-
 import { createMarkdownTheme, MARKDOWN_FEATURES } from "./markdown-config";
 import { MediaNode } from "./plugins/media/media-node";
 import { MentionNode } from "./plugins/mentions/mention-node";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "markdown-provider" });
+const log = getLogger(__filename);
 
 // Create dynamic theme based on enabled features
 const theme = createMarkdownTheme();

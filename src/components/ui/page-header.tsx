@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 import { Button, Link } from "@heroui/react";
 import { ArrowLeftIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "page-header" });
+const log = getLogger(__filename);
 
 type PageHeaderProps = {
   /**

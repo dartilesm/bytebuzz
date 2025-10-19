@@ -1,7 +1,7 @@
 import { isDomainAllowed } from "@/lib/analytics/domain-check";
-import { logger } from "../logger";
+import { getLogger } from "../logger";
 
-const log = logger.child({ module: "page-view-events" });
+const log = getLogger(__filename);
 
 interface PageViewEventData {
   ip: string;

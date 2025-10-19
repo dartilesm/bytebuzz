@@ -13,9 +13,9 @@ import { vscDarkPlus, vs } from "react-syntax-highlighter/dist/esm/styles/prism"
 import { Copy, Download, Trash } from "lucide-react";
 import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
 import { cn } from "@/lib/utils";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "code-block-editor" });
+const log = getLogger(__filename);
 interface CodeBlockEditorProps {
   /** Initial code content */
   initialCode?: string;

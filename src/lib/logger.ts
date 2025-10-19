@@ -1,6 +1,9 @@
 import pino, { type Logger } from "pino";
+import path from "path";
 
-export const logger: Logger =
+const rootDir = process.cwd();
+
+const pinoLogger: Logger =
   process.env["NODE_ENV"] === "production"
     ? // JSON in production
       pino({ level: "warn" })
@@ -14,3 +17,8 @@ export const logger: Logger =
         },
         level: "debug",
       });
+
+export const getLogger = (filePath: string): Logger => {
+  const modulePath = path.relative(rootDir, filePath).replace(/\\/g, "/");
+  return pinoLogger.child({ module: modulePath });
+};

@@ -5,9 +5,9 @@ import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "user-page" });
+const log = getLogger(__filename);
 
 // Cache user profiles for 1 hour
 export const revalidate = 3600;

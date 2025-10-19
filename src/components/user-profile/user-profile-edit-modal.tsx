@@ -27,9 +27,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
-import { logger } from "@/lib/logger";
+import { getLogger } from "@/lib/logger";
 
-const log = logger.child({ module: "user-profile-edit-modal" });
+const log = getLogger(__filename);
 
 interface UserProfileEditModalProps {
   onClose: () => void;
