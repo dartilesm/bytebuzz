@@ -1,8 +1,7 @@
 import { createServerSupabaseClient } from "@/db/supabase";
-import { getLogger } from "@/lib/logger";
+import { log } from "@/lib/logger";
 import { type NextRequest, NextResponse } from "next/server";
 
-const log = getLogger(__filename);
 
 /**
  * GET handler for media files

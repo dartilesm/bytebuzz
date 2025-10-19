@@ -1,8 +1,7 @@
-import { getLogger } from "@/lib/logger";
+import { log } from "@/lib/logger";
 import { feedService } from "@/services/feed.service";
 import { type NextRequest, NextResponse } from "next/server";
 
-const log = getLogger(__filename);
 
 /**
  * GET /api/posts/feed

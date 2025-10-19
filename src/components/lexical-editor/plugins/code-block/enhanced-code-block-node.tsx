@@ -11,9 +11,7 @@ import type {
 } from "lexical";
 import { DecoratorNode } from "lexical";
 import { EnhancedCodeBlockWrapper } from "./enhanced-code-block-wrapper";
-import { getLogger } from "@/lib/logger";
-
-const log = getLogger(__filename);
+import { log } from "@/lib/logger";
 
 export interface SerializedEnhancedCodeBlockNode extends SerializedLexicalNode {
   language: string;

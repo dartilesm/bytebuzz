@@ -1,7 +1,6 @@
 import { isDomainAllowed } from "@/lib/analytics/domain-check";
-import { getLogger } from "../logger";
+import { log } from "../logger";
 
-const log = getLogger(__filename);
 
 interface PageViewEventData {
   ip: string;

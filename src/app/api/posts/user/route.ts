@@ -1,9 +1,7 @@
 import { feedService } from "@/services/feed.service";
 import { currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
-import { getLogger } from "@/lib/logger";
-
-const log = getLogger(__filename);
+import { log } from "@/lib/logger";
 
 /**
  * GET /api/posts/user

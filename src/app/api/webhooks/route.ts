@@ -1,9 +1,8 @@
 import { createAdminSupabaseClient } from "@/db/supabase";
-import { getLogger } from "@/lib/logger";
+import { log } from "@/lib/logger";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import type { RequestLike } from "node_modules/@clerk/nextjs/dist/types/server/types";
 
-const log = getLogger(__filename);
 export async function POST(req: Request) {
   try {
     const evt = await verifyWebhook(req as RequestLike);
