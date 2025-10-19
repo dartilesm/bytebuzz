@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button, Link } from "@heroui/react";
 import { ArrowLeftIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 type PageHeaderProps = {
   /**

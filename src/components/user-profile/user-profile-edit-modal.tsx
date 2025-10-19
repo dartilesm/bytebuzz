@@ -27,7 +27,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 interface UserProfileEditModalProps {
   onClose: () => void;

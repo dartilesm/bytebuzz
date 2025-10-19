@@ -1,7 +1,7 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 import { currentUser } from "@clerk/nextjs/server";
 
 /**

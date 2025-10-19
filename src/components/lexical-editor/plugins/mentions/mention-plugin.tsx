@@ -7,7 +7,7 @@ import { mergeRegister } from "@lexical/utils";
 import type { TextNode } from "lexical";
 import { $createMentionNode, type User } from "./mention-node";
 import { MentionSuggestions } from "@/components/lexical-editor/plugins/mentions/mention-suggestions";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 interface MentionPluginProps {
   /**

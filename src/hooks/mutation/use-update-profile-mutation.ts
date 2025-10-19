@@ -1,6 +1,6 @@
 import { type UpdateProfileData, updateProfile } from "@/actions/update-profile";
 import { uploadProfileImage, deleteProfileImage } from "@/actions/upload-profile-image";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
 
 export type UpdateProfileWithFilesData = UpdateProfileData & {

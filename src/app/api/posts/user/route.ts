@@ -1,7 +1,7 @@
 import { feedService } from "@/services/feed.service";
 import { currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 /**
  * GET /api/posts/user

@@ -1,5 +1,5 @@
 import { createAdminSupabaseClient } from "@/db/supabase";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import type { RequestLike } from "node_modules/@clerk/nextjs/dist/types/server/types";
 

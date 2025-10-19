@@ -19,7 +19,7 @@ import { $getRoot } from "lexical";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 const postComposerSchema = z.object({
   content: z.string().min(1),

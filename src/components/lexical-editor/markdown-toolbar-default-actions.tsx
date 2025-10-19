@@ -16,7 +16,7 @@ import {
   createBlobMediaData,
   createLoadingMediaData,
 } from "./functions/upload-handlers";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 interface MarkdownToolbarDefaultActionsProps {
   /**

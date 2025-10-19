@@ -5,7 +5,7 @@ import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 // Cache user profiles for 1 hour
 export const revalidate = 3600;

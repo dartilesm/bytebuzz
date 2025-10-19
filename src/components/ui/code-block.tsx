@@ -9,7 +9,7 @@ import oneDarkProTheme from "@shikijs/themes/github-dark";
 import oneLightTheme from "@shikijs/themes/one-light";
 import { CopyIcon, DownloadIcon } from "lucide-react";
 import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 
 interface CodeBlockProps {
   code: string;

@@ -1,4 +1,4 @@
-import { log } from "@/lib/logger";
+import { log } from "@/lib/logger/logger";
 import { feedService } from "@/services/feed.service";
 import { type NextRequest, NextResponse } from "next/server";
 
