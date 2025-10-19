@@ -132,27 +132,13 @@ function getCallerInfoServer(): CallerInfo | null {
 }
 
 /**
- * Returns placeholder caller information for browser environment
- * Stack traces in browsers are not reliable for extracting caller info
- * @returns {CallerInfo} Placeholder caller info for client
- */
-function getCallerInfoClient(): CallerInfo {
-  return {
-    functionName: "<client>",
-    filePath: "<browser>",
-    line: "0",
-    col: "0",
-  };
-}
-
-/**
  * Extracts caller information from the current stack trace
  * Automatically detects environment (browser vs Node.js) and uses appropriate method
  * @returns {CallerInfo | null} Caller information or null if unable to extract
  */
 export function getCallerInfo(): CallerInfo | null {
   if (typeof window !== "undefined") {
-    return getCallerInfoClient();
+    return null;
   }
 
   return getCallerInfoServer();

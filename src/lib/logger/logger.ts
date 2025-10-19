@@ -58,12 +58,14 @@ function logWithCaller(
 
   const logFn = (pinoLogger[level as keyof typeof pinoLogger] as LogFn).bind(pinoLogger);
 
+  const logMessage = prefix ? `${prefix}: ${msg}` : msg;
+
   // Pino best practice: metadata as first arg, message as 'msg' property
   // Only include metadata if provided, don't add caller to metadata as it's already in the prefix
   if (meta && Object.keys(meta).length > 0) {
-    logFn(meta, `${prefix}: ${msg}`);
+    logFn(meta, logMessage);
   } else {
-    logFn(`${prefix}: ${msg}`);
+    logFn(logMessage);
   }
 }
 
