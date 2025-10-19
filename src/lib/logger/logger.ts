@@ -1,5 +1,5 @@
-import pino, { type Logger, type LogFn, type Level } from "pino";
 import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
+import pino, { type Level, type LogFn, type Logger } from "pino";
 
 /**
  * Pino transport configuration for pretty printing
