@@ -1,13 +1,27 @@
 import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
-import pino, { type Level, type LogFn, type Logger } from "pino";
 import { pinoTransports } from "@/lib/logger/pino-transports";
+import pino, { type Level, type LogFn, type Logger } from "pino";
+
+/**
+ * Gets the pino logger instance based on the runtime environment
+ * If the runtime environment is nodejs, it uses the pino transports
+ * If the runtime environment is browser, it uses the pino default transport
+ * @returns {pino.Logger} Pino logger instance
+ */
+function getPinoLogger(): Logger {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    return pino({
+      transport: pinoTransports,
+    });
+  }
+
+  return pino();
+}
 
 /**
  * Pino logger instance configured with pino transports
  */
-const pinoLogger: Logger = pino({
-  transport: pinoTransports,
-});
+const pinoLogger: Logger = getPinoLogger();
 
 /**
  * Metadata object that can be passed to log functions
