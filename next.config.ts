@@ -3,12 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   typedRoutes: true,
   serverExternalPackages: [
+    "@logtail/pino",
     "thread-stream",
     "pino",
     "pino-worker",
     "pino-file",
     "pino-pretty",
-    "@logtail/pino",
   ],
   experimental: {
     devtoolSegmentExplorer: true,
