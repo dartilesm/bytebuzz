@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["thread-stream", "pino", "pino-pretty", "@logtail/pino"],
   experimental: {
     devtoolSegmentExplorer: true,
+    serverComponentsExternalPackages: ["thread-stream", "pino", "pino-pretty", "@logtail/pino"],
   },
   images: {
     remotePatterns: [
