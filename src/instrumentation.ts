@@ -1,5 +1,3 @@
-import { log } from "@/lib/logger/logger";
-
 const otelCollectorUrl = process.env.NEXT_PUBLIC_BETTERSTACK_ENDPOINT;
 
 const headers = {
@@ -31,7 +29,4 @@ export function onRequestError(
   },
 ) {
   const errorMessage = `Unhandled error in route "${context.routePath}" [${context.routeType}]: ${error?.message ?? "No error message provided"}`;
-  if (process.env.NEXT_RUNTIME === "nodejs") {
-    log.error(errorMessage, { error, request, context }, null);
-  }
 }
