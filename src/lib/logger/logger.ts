@@ -1,23 +1,13 @@
 import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
 import pino, { type Level, type LogFn, type Logger } from "pino";
+import { pinoTransports } from "@/lib/logger/pino-transports";
 
 /**
- * Pino transport configuration for pretty printing
+ * Pino logger instance configured with pino transports
  */
-const pinoTransport = { target: "pino-pretty", options: { colorize: true } };
-
-/**
- * Pino logger instance configured based on environment
- * - Production: warn level only
- * - Development: debug level with pretty printing
- */
-const pinoLogger: Logger =
-  process.env["NODE_ENV"] === "production"
-    ? pino({ level: "warn", transport: { ...pinoTransport } })
-    : pino({
-        level: "debug",
-        transport: { ...pinoTransport },
-      });
+const pinoLogger: Logger = pino({
+  transport: pinoTransports,
+});
 
 /**
  * Metadata object that can be passed to log functions
