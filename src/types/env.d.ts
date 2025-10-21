@@ -9,5 +9,8 @@ declare namespace NodeJS {
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: string;
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: string;
     SUPABASE_SECRET_KEY: string;
+    NEXT_PUBLIC_BETTERSTACK_ENDPOINT: string;
+    NEXT_PUBLIC_BETTERSTACK_SOURCE_TOKEN: string;
+    VERCEL_ENV: "production" | "development" | "preview";
   }
 }
