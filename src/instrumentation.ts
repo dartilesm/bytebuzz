@@ -60,5 +60,7 @@ export function onRequestError(
   },
 ) {
   const errorMessage = `Unhandled error in route "${context.routePath}" [${context.routeType}]: ${error?.message ?? "No error message provided"}`;
-  log.error(errorMessage, { error, request, context }, null);
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    log.error(errorMessage, { error, request, context }, null);
+  }
 }
