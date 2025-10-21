@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   serverExternalPackages: [
     "thread-stream",
+    "pino",
     "pino-worker",
     "pino-file",
     "pino-pretty",
