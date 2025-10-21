@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PinoWebpackPlugin } from "pino-webpack-plugin";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
@@ -28,6 +29,9 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
       },
     ],
+  },
+  webpack: (config) => {
+    config.plugins.push(new PinoWebpackPlugin({ transports: ["pino-pretty", "@logtail/pino"] }));
   },
 };
 
