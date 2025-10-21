@@ -1,12 +1,14 @@
 import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
 import pino, { type Level, type LogFn, type Logger } from "pino";
-import { pinoTransports } from "@/lib/logger/pino-transports";
+import { pinoPrettyTransport } from "@/lib/logger/pino-transports";
 
 /**
  * Pino logger instance configured with pino transports
  */
 const pinoLogger: Logger = pino({
-  transport: pinoTransports,
+  transport: {
+    targets: [pinoPrettyTransport],
+  },
 });
 
 /**
