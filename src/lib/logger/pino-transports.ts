@@ -2,7 +2,7 @@
  * Pino transport configuration for all transports
  * @returns {pino.Transport} Pino transport configuration for all transports
  */
-export const pinoBetterstackTransport = {
+const pinoBetterstackTransport = {
   target: "@logtail/pino",
   level: process.env.VERCEL_ENV === "production" ? "warn" : "debug",
   options: {
@@ -17,10 +17,18 @@ export const pinoBetterstackTransport = {
  * Pino transport configuration for pretty printing
  * @returns {pino.Transport} Pino transport configuration for pretty printing
  */
-export const pinoPrettyTransport = {
+const pinoPrettyTransport = {
   target: "pino-pretty",
   level: process.env.VERCEL_ENV === "production" ? "warn" : "debug",
   options: {
     colorize: true,
   },
+};
+
+/**
+ * Pino transport configuration for all transports
+ * @returns {pino.Transport} Pino transport configuration for all transports
+ */
+export const pinoTransports = {
+  targets: [pinoBetterstackTransport, pinoPrettyTransport],
 };

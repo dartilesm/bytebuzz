@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
-  serverExternalPackages: ["pino", "@logtail/pino", "pino-pretty"],
+  serverExternalPackages: ["@logtail/pino", "pino-pretty", "pino"],
   experimental: {
     devtoolSegmentExplorer: true,
   },
