@@ -4,7 +4,7 @@
  */
 const betterstackPinoTransport = {
   target: "@logtail/pino",
-  level: process.env["NODE_ENV"] === "production" ? "warn" : "debug",
+  level: process.env.VERCEL_ENV === "production" ? "warn" : "debug",
   options: {
     sourceToken: process.env.NEXT_PUBLIC_BETTERSTACK_SOURCE_TOKEN,
     options: {
@@ -19,7 +19,7 @@ const betterstackPinoTransport = {
  */
 const pinoPrettyTransport = {
   target: "pino-pretty",
-  level: process.env["NODE_ENV"] === "production" ? "warn" : "debug",
+  level: process.env.VERCEL_ENV === "production" ? "warn" : "debug",
   options: {
     colorize: true,
   },
