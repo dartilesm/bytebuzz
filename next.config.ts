@@ -1,11 +1,9 @@
 import type { NextConfig } from "next";
-import { PinoWebpackPlugin } from "pino-webpack-plugin";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
   serverExternalPackages: [
     "thread-stream",
-    "pino",
     "pino-worker",
     "pino-file",
     "pino-pretty",
@@ -29,31 +27,6 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
       },
     ],
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = [
-        ...config.externals,
-        "@logtail/pino",
-        "pino-pretty",
-        "pino",
-        "thread-stream",
-      ];
-    }
-    config.plugins.push(
-      new PinoWebpackPlugin({
-        transports: [
-          "thread-stream",
-          "pino",
-          "pino-worker",
-          "pino-file",
-          "pino-pretty",
-          "@logtail/pino",
-        ],
-      }),
-    );
-
-    return config;
   },
 };
 
