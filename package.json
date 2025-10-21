@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest",
+    "otel:dev": "docker run -p 4317:4317 -p 4318:4318 --rm -v $(pwd)/otel-collector-config.yaml:/etc/otelcol/config.yaml otel/opentelemetry-collector",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
