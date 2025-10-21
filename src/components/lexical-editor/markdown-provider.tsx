@@ -12,6 +12,7 @@ import { EnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-
 import { createMarkdownTheme, MARKDOWN_FEATURES } from "./markdown-config";
 import { MediaNode } from "./plugins/media/media-node";
 import { MentionNode } from "./plugins/mentions/mention-node";
+import { log } from "@/lib/logger/logger";
 
 // Create dynamic theme based on enabled features
 const theme = createMarkdownTheme();
@@ -71,7 +72,7 @@ export function MarkdownProvider({
     namespace: "lexical-markdown-editor",
     theme,
     onError: (error: Error) => {
-      console.error("Lexical Editor Error:", error);
+      log.error("Lexical Editor Error", { error });
     },
     nodes: [
       // Include nodes based on enabled features

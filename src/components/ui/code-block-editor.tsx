@@ -13,6 +13,7 @@ import { vscDarkPlus, vs } from "react-syntax-highlighter/dist/esm/styles/prism"
 import { Copy, Download, Trash } from "lucide-react";
 import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
 import { cn } from "@/lib/utils";
+import { log } from "@/lib/logger/logger";
 interface CodeBlockEditorProps {
   /** Initial code content */
   initialCode?: string;
@@ -87,7 +88,7 @@ export function CodeBlockEditor({
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
-      console.error("Failed to copy code:", error);
+      log.error("Failed to copy code", { error });
     }
   }, [code]);
 
@@ -139,30 +140,30 @@ export function CodeBlockEditor({
     <Card
       className={cn("w-full [box-shadow:none] border-default-300 border dark:border-0", className)}
     >
-      <CardHeader className="flex flex-row items-center justify-between gap-4 pb-2">
-        <div className="flex items-center gap-2">
+      <CardHeader className='flex flex-row items-center justify-between gap-4 pb-2'>
+        <div className='flex items-center gap-2'>
           <Select
-            size="sm"
+            size='sm'
             selectedKeys={[language]}
             onSelectionChange={(keys) => {
               const selectedLanguage = Array.from(keys)[0] as string;
               handleLanguageChange(selectedLanguage);
             }}
-            className="min-w-32"
-            aria-label="Select programming language"
+            className='min-w-32'
+            aria-label='Select programming language'
           >
             {supportedLanguages.map((lang: { value: string; label: string }) => (
               <SelectItem key={lang.value}>{lang.label}</SelectItem>
             ))}
           </Select>
 
-          <Chip size="sm" variant="flat" color="primary">
+          <Chip size='sm' variant='flat' color='primary'>
             {codeBlockEditorFunctions.getLineCount(code)} lines
           </Chip>
 
           <Chip
-            size="sm"
-            variant="flat"
+            size='sm'
+            variant='flat'
             color={
               codeBlockEditorFunctions.getCharacterLimitStatus(code, CHARACTER_LIMIT)
                 .isApproachingLimit
@@ -174,7 +175,7 @@ export function CodeBlockEditor({
           </Chip>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           {/* {!readOnly && (
             <Button
               size="sm"
@@ -189,36 +190,36 @@ export function CodeBlockEditor({
           )} */}
 
           <Button
-            size="sm"
-            variant="flat"
+            size='sm'
+            variant='flat'
             startContent={<Copy size={16} />}
             onPress={handleCopyToClipboard}
             color={copySuccess ? "success" : "default"}
-            aria-label="Copy code to clipboard"
-            className="cursor-pointer"
+            aria-label='Copy code to clipboard'
+            className='cursor-pointer'
             isIconOnly
           />
 
           <Button
-            size="sm"
-            variant="flat"
+            size='sm'
+            variant='flat'
             startContent={<Download size={16} />}
             onPress={handleDownload}
-            aria-label="Download code as file"
-            className="cursor-pointer"
+            aria-label='Download code as file'
+            className='cursor-pointer'
             isIconOnly
           />
 
           {!readOnly && (
             // Delete button
             <Button
-              size="sm"
-              variant="flat"
+              size='sm'
+              variant='flat'
               startContent={<Trash size={16} />}
               onPress={handleRemoveCodeBlock}
-              aria-label="Delete block code"
-              color="danger"
-              className="cursor-pointer"
+              aria-label='Delete block code'
+              color='danger'
+              className='cursor-pointer'
               isIconOnly
             />
           )}
@@ -230,8 +231,8 @@ export function CodeBlockEditor({
         const limitStatus = codeBlockEditorFunctions.getCharacterLimitStatus(code, CHARACTER_LIMIT);
         return (
           limitStatus.isApproachingLimit && (
-            <div className="px-4 py-2 bg-warning-50 border-b border-warning-200">
-              <p className="text-sm text-warning-700">
+            <div className='px-4 py-2 bg-warning-50 border-b border-warning-200'>
+              <p className='text-sm text-warning-700'>
                 {limitStatus.isAtLimit
                   ? `Character limit reached (${CHARACTER_LIMIT} characters)`
                   : `Approaching character limit: ${code.length}/${CHARACTER_LIMIT} characters (${limitStatus.percentage}%)`}
@@ -241,12 +242,12 @@ export function CodeBlockEditor({
         );
       })()}
 
-      <CardBody className="p-0">
-        <div className="relative" style={{ height: dynamicHeight }}>
+      <CardBody className='p-0'>
+        <div className='relative' style={{ height: dynamicHeight }}>
           {isEditing ? (
-            <div className="absolute inset-0">
+            <div className='absolute inset-0'>
               <Editor
-                height="100%"
+                height='100%'
                 language={monacoLanguage}
                 value={code}
                 onChange={handleEditorChange}
@@ -288,14 +289,14 @@ export function CodeBlockEditor({
                   rulers: [Math.floor(CHARACTER_LIMIT * 0.9)],
                 }}
                 loading={
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-default-500">Loading editor...</div>
+                  <div className='flex items-center justify-center h-full'>
+                    <div className='text-default-500'>Loading editor...</div>
                   </div>
                 }
               />
             </div>
           ) : (
-            <div className="absolute inset-0 overflow-auto">
+            <div className='absolute inset-0 overflow-auto'>
               <SyntaxHighlighter
                 language={language}
                 style={syntaxHighlighterStyle}

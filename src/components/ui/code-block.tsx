@@ -9,6 +9,7 @@ import oneDarkProTheme from "@shikijs/themes/github-dark";
 import oneLightTheme from "@shikijs/themes/one-light";
 import { CopyIcon, DownloadIcon } from "lucide-react";
 import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
+import { log } from "@/lib/logger/logger";
 
 interface CodeBlockProps {
   code: string;
@@ -61,7 +62,7 @@ export function CodeBlock({
         const processedHtml = addLineNumbers(highlighted, showLineNumbers, hideSymbol);
         setHighlightedHtml(processedHtml);
       } catch (error) {
-        console.error("Error highlighting code:", error);
+        log.error("Error highlighting code", { error });
         // Fallback to plain text
         const plainHtml = `<pre class="shiki ${codeTheme}" tabindex="0"><code>${code}</code></pre>`;
         const processedHtml = addLineNumbers(plainHtml, showLineNumbers, hideSymbol);
@@ -113,13 +114,13 @@ export function CodeBlock({
     event.stopPropagation();
   }
 
-  if (!highlightedHtml) return <Skeleton className="w-full h-full">{code}</Skeleton>;
+  if (!highlightedHtml) return <Skeleton className='w-full h-full'>{code}</Skeleton>;
 
   return (
     <div
       className={cn(
         "rounded-lg overflow-hidden border border-default-200 bg-content1 cursor-default",
-        className,
+        className
       )}
       style={
         {
@@ -128,21 +129,21 @@ export function CodeBlock({
       }
       onClick={handleClick}
     >
-      <div className="flex items-center justify-between px-2 pt-1 pr-1 bg-[var(--editor-background)]">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-base cursor-text font-sans text-default-500">
+      <div className='flex items-center justify-between px-2 pt-1 pr-1 bg-[var(--editor-background)]'>
+        <div className='flex items-center gap-2'>
+          <span className='text-xs font-base cursor-text font-sans text-default-500'>
             {formatLanguage(language)}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <Tooltip content="Download code" color="default">
+        <div className='flex items-center gap-2'>
+          <Tooltip content='Download code' color='default'>
             <Button
               isIconOnly
-              variant="light"
-              color="default"
+              variant='light'
+              color='default'
               onPress={handleDownload}
-              aria-label="Download code"
-              className="size-8 min-w-8 text-default-400 hover:text-default-500"
+              aria-label='Download code'
+              className='size-8 min-w-8 text-default-400 hover:text-default-500'
             >
               <DownloadIcon size={14} />
             </Button>
@@ -153,11 +154,11 @@ export function CodeBlock({
           >
             <Button
               isIconOnly
-              variant="light"
-              color="default"
+              variant='light'
+              color='default'
               onPress={handleCopy}
-              aria-label="Copy code"
-              className="size-8 min-w-8 text-default-400 hover:text-default-500"
+              aria-label='Copy code'
+              className='size-8 min-w-8 text-default-400 hover:text-default-500'
             >
               <CopyIcon size={14} />
             </Button>
@@ -168,9 +169,9 @@ export function CodeBlock({
       <ScrollShadow
         className={cn(
           "max-h-[500px] overflow-auto [&>pre]:m-0 bg-[var(--editor-background)] text-xs cursor-text [&>pre]:p-2",
-          "data-[left-scroll=true]:[mask-image:linear-gradient(270deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[right-scroll=true]:[mask-image:linear-gradient(90deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[left-right-scroll=true]:[mask-image:linear-gradient(to_right,var(--editor-background),var(--editor-background),transparent_0,var(--editor-background)_var(--scroll-shadow-size),var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)]",
+          "data-[left-scroll=true]:[mask-image:linear-gradient(270deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[right-scroll=true]:[mask-image:linear-gradient(90deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[left-right-scroll=true]:[mask-image:linear-gradient(to_right,var(--editor-background),var(--editor-background),transparent_0,var(--editor-background)_var(--scroll-shadow-size),var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)]"
         )}
-        orientation="horizontal"
+        orientation='horizontal'
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
         dangerouslySetInnerHTML={{ __html: highlightedHtml }}
       />

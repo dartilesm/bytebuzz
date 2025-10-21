@@ -1,6 +1,7 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
+import { log } from "@/lib/logger/logger";
 import { currentUser } from "@clerk/nextjs/server";
 
 /**
@@ -53,7 +54,7 @@ export async function uploadPostMediaAction(
       proxyUrl,
     };
   } catch (error) {
-    console.error("Error uploading media:", error);
+    log.error("Error uploading media", { error });
     throw error;
   }
 }

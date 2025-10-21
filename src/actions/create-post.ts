@@ -1,9 +1,11 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/db/supabase";
+import { log } from "@/lib/logger/logger";
 import { currentUser } from "@clerk/nextjs/server";
 import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
+
 
 type PostExpectedFields = Pick<
   Partial<Tables<"posts">>,
@@ -107,7 +109,7 @@ export async function createPostAction({
     revalidatePath("/");
     return post;
   } catch (error) {
-    console.error("Error creating post with media:", error);
+    log.error("Error creating post with media", { error });
     throw error;
   }
 }

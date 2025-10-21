@@ -16,6 +16,7 @@ import {
   createBlobMediaData,
   createLoadingMediaData,
 } from "./functions/upload-handlers";
+import { log } from "@/lib/logger/logger";
 
 interface MarkdownToolbarDefaultActionsProps {
   /**
@@ -70,24 +71,24 @@ export function MarkdownToolbarDefaultActions({
   function handleInsertMedia(mediaData: MediaData): void {
     try {
       editor.update(() => {
-        console.log("Creating media node with data:", mediaData);
+        log.info("Creating media node with data", { mediaData });
 
         const root = $getRoot();
 
         // Create the media node
         const mediaNode = $createMediaNode(mediaData);
-        console.log("Media node created:", mediaNode);
+        log.info("Media node created", { mediaNode });
 
         // Always append media at the end
         root.append(mediaNode);
 
-        console.log("Media node appended to root");
+        log.info("Media node appended to root");
       });
 
       // Focus back to the editor after update
       editor.focus();
     } catch (error) {
-      console.error("Error inserting media:", error);
+      log.error("Error inserting media", { error });
       alert(`Error adding media: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
@@ -152,7 +153,7 @@ export function MarkdownToolbarDefaultActions({
    * Handles upload error by removing the loading node
    */
   function handleUploadError(mediaId: string, errorMessage: string): void {
-    console.error("Upload failed:", errorMessage);
+    log.error("Upload failed", { errorMessage });
     alert(`Failed to upload media: ${errorMessage}`);
 
     editor.update(() => {
@@ -170,8 +171,8 @@ export function MarkdownToolbarDefaultActions({
   return (
     <>
       <Button
-        variant="flat"
-        size="sm"
+        variant='flat'
+        size='sm'
         className={cn("text-default-600 hover:text-default-900 cursor-pointer", buttonClassName)}
         onPress={() => handleInsertCodeBlock("javascript")}
         isIconOnly
@@ -180,8 +181,8 @@ export function MarkdownToolbarDefaultActions({
       </Button>
 
       <Button
-        variant="flat"
-        size="sm"
+        variant='flat'
+        size='sm'
         className={cn("text-default-600 hover:text-default-900 cursor-pointer", buttonClassName)}
         onPress={handleMediaButtonClick}
         isIconOnly
@@ -191,17 +192,17 @@ export function MarkdownToolbarDefaultActions({
 
       {showMarkdownInfo && (
         <Chip
-          variant="bordered"
-          size="sm"
-          className="text-default-500 hover:text-default-500"
+          variant='bordered'
+          size='sm'
+          className='text-default-500 hover:text-default-500'
           classNames={{
             content: "inline-flex gap-2 items-center",
           }}
         >
-          <Tooltip content="Certain markdown features are supported, click to learn more.">
-            <span className="inline-flex gap-2 items-center">
-              <SiMarkdown size={16} fill="currentColor" />
-              <span className="leading-0">Markdown supported*</span>
+          <Tooltip content='Certain markdown features are supported, click to learn more.'>
+            <span className='inline-flex gap-2 items-center'>
+              <SiMarkdown size={16} fill='currentColor' />
+              <span className='leading-0'>Markdown supported*</span>
             </span>
           </Tooltip>
         </Chip>
@@ -210,11 +211,11 @@ export function MarkdownToolbarDefaultActions({
       {/* Hidden file input for media upload */}
       <input
         ref={fileInputRef}
-        type="file"
-        accept="image/*,video/*"
+        type='file'
+        accept='image/*,video/*'
         onChange={handleFileUpload}
-        className="hidden"
-        aria-label="Upload media file"
+        className='hidden'
+        aria-label='Upload media file'
       />
     </>
   );

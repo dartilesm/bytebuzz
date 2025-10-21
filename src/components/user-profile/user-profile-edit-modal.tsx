@@ -27,6 +27,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
+import { log } from "@/lib/logger/logger";
 
 interface UserProfileEditModalProps {
   onClose: () => void;
@@ -75,7 +76,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
       }
     },
     onError: (error) => {
-      console.error("Failed to update profile:", error);
+      log.error("Failed to update profile", { error });
     },
   });
 
@@ -85,7 +86,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   function handleImageUpload(
     file: File,
     onChange: (value: string) => void,
-    type: "avatar" | "cover",
+    type: "avatar" | "cover"
   ): void {
     // Create blob URL for immediate preview
     const blobUrl = URL.createObjectURL(file);
@@ -113,36 +114,36 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   };
 
   return (
-    <Modal onClose={onClose} size="xl" scrollBehavior="inside" defaultOpen backdrop="blur">
+    <Modal onClose={onClose} size='xl' scrollBehavior='inside' defaultOpen backdrop='blur'>
       <form onSubmit={handleSubmit(onSubmit)}>
         <ModalContent>
           {(onModalClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Edit Profile</ModalHeader>
+              <ModalHeader className='flex flex-col gap-1'>Edit Profile</ModalHeader>
               <ModalBody>
-                <div className="space-y-6">
+                <div className='space-y-6'>
                   <Alert
-                    color="primary"
+                    color='primary'
                     description={
                       <span>
                         To edit avatar and username, go to{" "}
                         <Link
-                          href="/account-settings"
-                          className="[font-size:inherit] text-inherit underline"
+                          href='/account-settings'
+                          className='[font-size:inherit] text-inherit underline'
                         >
                           Account Settings
                         </Link>
                       </span>
                     }
                   />
-                  <Card isDisabled className="rounded-none space-y-6 shadow-none">
+                  <Card isDisabled className='rounded-none space-y-6 shadow-none'>
                     {/* Avatar */}
-                    <div className="space-y-2">
-                      <p className="text-small font-medium">Profile Picture</p>
-                      <div className="flex items-center space-x-4">
-                        <div className="w-20 h-20 rounded-full overflow-hidden">
+                    <div className='space-y-2'>
+                      <p className='text-small font-medium'>Profile Picture</p>
+                      <div className='flex items-center space-x-4'>
+                        <div className='w-20 h-20 rounded-full overflow-hidden'>
                           <Controller
-                            name="image_url"
+                            name='image_url'
                             control={control}
                             render={({ field }) => (
                               <>
@@ -151,8 +152,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                     onImageChange={(file) =>
                                       handleImageUpload(file, field.onChange, "avatar")
                                     }
-                                    aspectRatio="1:1"
-                                    className="relative w-full h-full group"
+                                    aspectRatio='1:1'
+                                    className='relative w-full h-full group'
                                     hoverOverlayContent={{
                                       icon: CameraIcon,
                                       iconSize: 16,
@@ -162,8 +163,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                   >
                                     <Image
                                       src={field.value}
-                                      alt="Avatar"
-                                      className="w-full h-full object-cover"
+                                      alt='Avatar'
+                                      className='w-full h-full object-cover'
                                       removeWrapper
                                     />
                                   </ImageUploader>
@@ -172,8 +173,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                     onImageChange={(file) =>
                                       handleImageUpload(file, field.onChange, "avatar")
                                     }
-                                    aspectRatio="1:1"
-                                    className="w-full h-full"
+                                    aspectRatio='1:1'
+                                    className='w-full h-full'
                                     uploadContent={{
                                       icon: UserIcon,
                                       iconSize: 16,
@@ -186,11 +187,11 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                             )}
                           />
                         </div>
-                        <div className="flex-1">
-                          <p className="text-tiny text-default-500">
+                        <div className='flex-1'>
+                          <p className='text-tiny text-default-500'>
                             Upload a profile picture to make your profile more personalized.
                           </p>
-                          <p className="text-tiny text-default-500 mt-1">
+                          <p className='text-tiny text-default-500 mt-1'>
                             Recommended size: 400x400 pixels.
                           </p>
                         </div>
@@ -198,7 +199,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     </div>
                     {/* Display Name */}
                     <Controller
-                      name="display_name"
+                      name='display_name'
                       control={control}
                       disabled
                       rules={{
@@ -210,12 +211,12 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       }}
                       render={({ field }) => (
                         <Input
-                          label="Display Name"
-                          placeholder="Enter your name"
+                          label='Display Name'
+                          placeholder='Enter your name'
                           isRequired
                           isInvalid={!!errors.display_name}
                           errorMessage={errors.display_name?.message}
-                          description="This is how your name will appear across the platform"
+                          description='This is how your name will appear across the platform'
                           isDisabled
                           classNames={{
                             label: "top-0 pt-[inherit]",
@@ -227,12 +228,12 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     />
                   </Card>
                   {/* Cover Image */}
-                  <div className="space-y-2">
-                    <p className="text-small font-medium">Cover Image</p>
-                    <div className="space-y-4">
-                      <div className="w-full rounded-lg overflow-hidden">
+                  <div className='space-y-2'>
+                    <p className='text-small font-medium'>Cover Image</p>
+                    <div className='space-y-4'>
+                      <div className='w-full rounded-lg overflow-hidden'>
                         <Controller
-                          name="cover_image_url"
+                          name='cover_image_url'
                           control={control}
                           render={({ field }) => (
                             <>
@@ -241,8 +242,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                   onImageChange={(file) =>
                                     handleImageUpload(file, field.onChange, "cover")
                                   }
-                                  aspectRatio="11:4"
-                                  className="relative w-full h-full group"
+                                  aspectRatio='11:4'
+                                  className='relative w-full h-full group'
                                   showHoverOverlay={true}
                                   hoverOverlayContent={{
                                     icon: CameraIcon,
@@ -252,8 +253,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                 >
                                   <Image
                                     src={field.value}
-                                    alt="Cover"
-                                    className="w-full h-full object-cover"
+                                    alt='Cover'
+                                    className='w-full h-full object-cover'
                                     removeWrapper
                                   />
                                 </ImageUploader>
@@ -262,8 +263,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                   onImageChange={(file) =>
                                     handleImageUpload(file, field.onChange, "cover")
                                   }
-                                  aspectRatio="11:4"
-                                  className="w-full h-full"
+                                  aspectRatio='11:4'
+                                  className='w-full h-full'
                                   uploadContent={{
                                     icon: ImageIcon,
                                     iconSize: 24,
@@ -277,7 +278,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                         />
                       </div>
                       <div>
-                        <p className="text-tiny text-default-500">
+                        <p className='text-tiny text-default-500'>
                           Upload a cover image to personalize your profile header.
                         </p>
                       </div>
@@ -285,7 +286,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   </div>
                   {/* Bio */}
                   <Controller
-                    name="bio"
+                    name='bio'
                     control={control}
                     rules={{
                       maxLength: {
@@ -295,8 +296,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     }}
                     render={({ field }) => (
                       <Textarea
-                        label="Biography"
-                        placeholder="Tell us about yourself..."
+                        label='Biography'
+                        placeholder='Tell us about yourself...'
                         maxRows={5}
                         isInvalid={!!errors.bio}
                         errorMessage={errors.bio?.message}
@@ -308,12 +309,12 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   />
                   {/* Location */}
                   <Controller
-                    name="location"
+                    name='location'
                     control={control}
                     render={({ field }) => (
                       <Input
-                        label="Location"
-                        placeholder="e.g., San Francisco, CA"
+                        label='Location'
+                        placeholder='e.g., San Francisco, CA'
                         {...field}
                         value={field.value || ""}
                         classNames={{
@@ -324,7 +325,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   />
                   {/* Website */}
                   <Controller
-                    name="website"
+                    name='website'
                     control={control}
                     rules={{
                       pattern: {
@@ -335,11 +336,11 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     }}
                     render={({ field }) => (
                       <Input
-                        label="Website"
-                        placeholder="https://yourwebsite.com"
+                        label='Website'
+                        placeholder='https://yourwebsite.com'
                         isInvalid={!!errors.website}
                         errorMessage={errors.website?.message}
-                        startContent={<GlobeIcon className="text-default-400" size={16} />}
+                        startContent={<GlobeIcon className='text-default-400' size={16} />}
                         classNames={{
                           label: "top-0 pt-[inherit]",
                         }}
@@ -351,7 +352,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   {/* Social Media Links */}
                   {/* GitHub */}
                   <Controller
-                    name="github_url"
+                    name='github_url'
                     control={control}
                     rules={{
                       pattern: {
@@ -361,11 +362,11 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     }}
                     render={({ field }) => (
                       <Input
-                        label="GitHub Profile"
+                        label='GitHub Profile'
                         placeholder={`https://github.com/${profile.username}`}
                         isInvalid={!!errors.github_url}
                         errorMessage={errors.github_url?.message}
-                        startContent={<SiGithub className="text-default-400" size={16} />}
+                        startContent={<SiGithub className='text-default-400' size={16} />}
                         classNames={{
                           label: "top-0 pt-[inherit]",
                         }}
@@ -376,7 +377,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   />
                   {/* LinkedIn */}
                   <Controller
-                    name="linkedin_url"
+                    name='linkedin_url'
                     control={control}
                     rules={{
                       pattern: {
@@ -387,15 +388,15 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     }}
                     render={({ field }) => (
                       <Input
-                        label="LinkedIn Profile"
+                        label='LinkedIn Profile'
                         placeholder={`https://linkedin.com/in/${profile.username}`}
                         isInvalid={!!errors.linkedin_url}
                         errorMessage={errors.linkedin_url?.message}
                         startContent={
                           <LinkedInIcon
-                            className="text-default-400"
+                            className='text-default-400'
                             size={16}
-                            fill="currentColor"
+                            fill='currentColor'
                           />
                         }
                         classNames={{
@@ -408,7 +409,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   />
                   {/* Top Technologies */}
                   <Controller
-                    name="top_technologies"
+                    name='top_technologies'
                     control={control}
                     render={({ field }) => (
                       <TechnologySelector
@@ -420,12 +421,12 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="default" variant="flat" onPress={onModalClose}>
+                <Button color='default' variant='flat' onPress={onModalClose}>
                   Cancel
                 </Button>
                 <Button
-                  type="submit"
-                  color="primary"
+                  type='submit'
+                  color='primary'
                   isLoading={updateProfileMutation.isPending}
                   isDisabled={updateProfileMutation.isPending || !form.formState.isValid}
                 >
