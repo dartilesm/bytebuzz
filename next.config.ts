@@ -12,14 +12,6 @@ const nextConfig: NextConfig = {
   ],
   experimental: {
     devtoolSegmentExplorer: true,
-    serverComponentsExternalPackages: [
-      "thread-stream",
-      "pino",
-      "pino-worker",
-      "pino-file",
-      "pino-pretty",
-      "@logtail/pino",
-    ],
   },
   images: {
     remotePatterns: [
