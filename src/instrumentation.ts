@@ -9,7 +9,7 @@ const otelCollectorUrl = process.env.NEXT_PUBLIC_BETTERSTACK_ENDPOINT;
 
 const headers = {
   Authorization: `Bearer ${process.env.NEXT_PUBLIC_BETTERSTACK_SOURCE_TOKEN}`,
-}
+};
 
 export function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
