@@ -31,7 +31,18 @@ const nextConfig: NextConfig = {
     ],
   },
   webpack: (config) => {
-    config.plugins.push(new PinoWebpackPlugin({ transports: ["pino-pretty", "@logtail/pino"] }));
+    config.plugins.push(
+      new PinoWebpackPlugin({
+        transports: [
+          "thread-stream",
+          "pino",
+          "pino-worker",
+          "pino-file",
+          "pino-pretty",
+          "@logtail/pino",
+        ],
+      }),
+    );
 
     return config;
   },
