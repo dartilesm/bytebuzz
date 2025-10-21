@@ -12,6 +12,8 @@ on:
       - "perf/**"
       - "test/**"
       - "style/**"
+    paths:
+      - "supabase/**"
   workflow_dispatch:
 
 jobs:
