@@ -2,12 +2,23 @@ import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
 import pino, { type Level, type LogFn, type Logger } from "pino";
 import { pinoTransports } from "@/lib/logger/pino-transports";
 
+let loggerInstance: Logger | null = null;
+
 /**
- * Pino logger instance configured with pino transports
+ * Creates a logger instance
+ * @returns {Logger} The logger instance
  */
-const pinoLogger: Logger = pino({
-  transport: pinoTransports,
-});
+function createLoggerInstance(): Logger {
+  if (loggerInstance) {
+    return loggerInstance;
+  }
+
+  loggerInstance = pino({
+    transport: pinoTransports,
+  });
+
+  return loggerInstance;
+}
 
 /**
  * Metadata object that can be passed to log functions
@@ -41,6 +52,8 @@ function logWithCaller(
 ): void {
   const callerInfo = caller === undefined ? getCallerInfo() : caller;
   const prefix = formatCallerPrefix(callerInfo);
+
+  const pinoLogger = createLoggerInstance();
 
   if (!pinoLogger[level as keyof typeof pinoLogger]) {
     return;
@@ -117,5 +130,5 @@ export const log = {
    * @param {string} name - The name of the child logger
    * @returns {Logger} The child logger
    */
-  child: (name: string) => pinoLogger.child({ name }),
+  child: (name: string) => createLoggerInstance().child({ name }),
 };
