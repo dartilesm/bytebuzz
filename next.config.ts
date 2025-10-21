@@ -30,7 +30,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = [
+        ...config.externals,
+        "@logtail/pino",
+        "pino-pretty",
+        "pino",
+        "thread-stream",
+      ];
+    }
     config.plugins.push(
       new PinoWebpackPlugin({
         transports: [
