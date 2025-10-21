@@ -2,10 +2,24 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
-  serverExternalPackages: ["thread-stream", "pino", "pino-pretty", "@logtail/pino"],
+  serverExternalPackages: [
+    "thread-stream",
+    "pino",
+    "pino-worker",
+    "pino-file",
+    "pino-pretty",
+    "@logtail/pino",
+  ],
   experimental: {
     devtoolSegmentExplorer: true,
-    serverComponentsExternalPackages: ["thread-stream", "pino", "pino-pretty", "@logtail/pino"],
+    serverComponentsExternalPackages: [
+      "thread-stream",
+      "pino",
+      "pino-worker",
+      "pino-file",
+      "pino-pretty",
+      "@logtail/pino",
+    ],
   },
   images: {
     remotePatterns: [
