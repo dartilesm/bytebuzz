@@ -2,7 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
-  serverExternalPackages: ["@logtail/pino", "pino-pretty", "pino"],
+  serverExternalPackages: [
+    'pino',
+    'thread-stream',
+    'pino-pretty',
+    '@logtail/pino',
+  ],
   experimental: {
     devtoolSegmentExplorer: true,
   },
@@ -21,7 +26,7 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
       },
     ],
-  },
+  }
 };
 
 export default nextConfig;
