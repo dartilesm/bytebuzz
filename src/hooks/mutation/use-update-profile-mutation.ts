@@ -1,5 +1,6 @@
 import { type UpdateProfileData, updateProfile } from "@/actions/update-profile";
 import { uploadProfileImage, deleteProfileImage } from "@/actions/upload-profile-image";
+import { log } from "@/lib/logger/logger";
 import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
 
 export type UpdateProfileWithFilesData = UpdateProfileData & {
@@ -41,7 +42,7 @@ export function useUpdateProfileMutation(
         top_technologies: profileDataToUpdate.top_technologies,
       };
 
-      console.log("profileData", profileData);
+      log.info("Profile data prepared", { profileData });
 
       const response = await updateProfile(profileData);
 
@@ -76,7 +77,7 @@ async function handleImageUpload(
       try {
         await deleteProfileImage(currentUrl);
       } catch (deleteError) {
-        console.warn(`Failed to delete existing ${type}:`, deleteError);
+        log.warn(`Failed to delete existing ${type}`, { deleteError });
         // Continue with upload even if deletion fails
       }
     }
@@ -85,7 +86,7 @@ async function handleImageUpload(
     const newUrl = await uploadProfileImage(file, type);
     return newUrl;
   } catch (error) {
-    console.error(`Failed to upload ${type}:`, error);
+    log.error(`Failed to upload ${type}`, { error });
     throw new Error(`Failed to upload ${type === "avatar" ? "profile picture" : "cover image"}`);
   }
 }

@@ -1,5 +1,7 @@
+import { log } from "@/lib/logger/logger";
 import { feedService } from "@/services/feed.service";
 import { type NextRequest, NextResponse } from "next/server";
+
 
 /**
  * GET /api/posts/feed
@@ -21,7 +23,7 @@ export async function GET(request: NextRequest) {
       success: true,
     });
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    log.error("Error fetching posts", { error });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
