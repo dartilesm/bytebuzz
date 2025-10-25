@@ -1,8 +1,6 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import type { NestedPost } from "@/types/nested-posts";
-import type { Tables, Database } from "database.types";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { withCache } from "@/lib/db/with-cache";
+import type { Tables } from "database.types";
 
 /**
  * Get user feed
