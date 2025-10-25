@@ -1,4 +1,4 @@
-import { userService } from "@/lib/db/services/user.service";
+import { adminService } from "@/lib/db/services/admin.service";
 import { log } from "@/lib/logger/logger";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import type { RequestLike } from "node_modules/@clerk/nextjs/dist/types/server/types";
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     if (eventType === "user.created" || eventType === "user.updated") {
       const { id, first_name, last_name, username, image_url } = evt.data;
 
-      const { data, error } = await userService.upsertUser({
+      const { data, error } = await adminService.user.upsert({
         id,
         username: username ?? undefined,
         display_name: `${first_name} ${last_name}`,
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     if (eventType === "user.deleted") {
       const { id } = evt.data;
 
-      const { data, error: deleteError } = await userService.deleteUser(id as string);
+      const { data, error: deleteError } = await adminService.user.delete(id as string);
 
       if (deleteError)
         return new Response(JSON.stringify({ error: deleteError.message }), {

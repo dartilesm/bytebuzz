@@ -1,4 +1,4 @@
-import { createAdminSupabaseClient, createServerSupabaseClient } from "@/db/supabase";
+import { createServerSupabaseClient } from "@/db/supabase";
 import type { Tables } from "database.types";
 
 /**
@@ -20,35 +20,13 @@ async function getUserById(userId: string) {
 }
 
 /**
- * Update user profile (no caching for mutations)
+ * Update user profile
  * @param username - Username of the user to update
  * @param data - Profile data to update
  */
 async function updateProfile(username: string, data: Partial<Tables<"users">>) {
   const supabase = createServerSupabaseClient();
   return await supabase.from("users").update(data).eq("username", username).select().single();
-}
-
-/**
- * Upsert user profile (used for webhook sync)
- * @param data - User data to upsert
- */
-async function upsertUser(data: Partial<Tables<"users">>) {
-  const supabase = createAdminSupabaseClient();
-  return await supabase
-    .from("users")
-    .upsert(data as Tables<"users">)
-    .select()
-    .single();
-}
-
-/**
- * Delete user (no caching for mutations)
- * @param userId - ID of the user to delete
- */
-async function deleteUser(userId: string) {
-  const supabase = createAdminSupabaseClient();
-  return await supabase.from("users").delete().eq("id", userId);
 }
 
 /**
@@ -130,6 +108,7 @@ async function getRandomUnfollowedUsers(count: number = 3) {
 
 /**
  * User service for all user-related database operations
+ * For admin operations (upsert/delete), use adminService instead
  *
  * @example
  * ```typescript
@@ -143,8 +122,6 @@ export const userService = {
   getUserByUsername,
   getUserById,
   updateProfile,
-  upsertUser,
-  deleteUser,
   toggleFollow,
   getFollowStatus,
   searchUsers,
