@@ -1,12 +1,14 @@
 import { createServerSupabaseClient } from "@/db/supabase";
+import { createServiceWithContext } from "@/lib/create-service-with-context";
+import { ServiceContext } from "@/types/services";
 import type { Tables } from "database.types";
 
 /**
  * Get user profile by username
  * @param username - Username to look up
  */
-async function getUserByUsername(username: string) {
-  const supabase = createServerSupabaseClient();
+async function getUserByUsername(this: ServiceContext, username: string) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.from("users").select("*").eq("username", username).single();
 }
 
@@ -14,8 +16,8 @@ async function getUserByUsername(username: string) {
  * Get user profile by ID
  * @param userId - User ID to look up
  */
-async function getUserById(userId: string) {
-  const supabase = createServerSupabaseClient();
+async function getUserById(this: ServiceContext, userId: string) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.from("users").select("*").eq("id", userId).single();
 }
 
@@ -24,8 +26,12 @@ async function getUserById(userId: string) {
  * @param username - Username of the user to update
  * @param data - Profile data to update
  */
-async function updateProfile(username: string, data: Partial<Tables<"users">>) {
-  const supabase = createServerSupabaseClient();
+async function updateProfile(
+  this: ServiceContext,
+  username: string,
+  data: Partial<Tables<"users">>
+) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.from("users").update(data).eq("username", username).select().single();
 }
 
@@ -33,8 +39,8 @@ async function updateProfile(username: string, data: Partial<Tables<"users">>) {
  * Toggle follow status for a user
  * @param targetUserId - ID of the user to follow/unfollow
  */
-async function toggleFollow(targetUserId: string) {
-  const supabase = createServerSupabaseClient();
+async function toggleFollow(this: ServiceContext, targetUserId: string) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.rpc("toggle_follow", { target_user_id: targetUserId }).select().single();
 }
 
@@ -43,8 +49,8 @@ async function toggleFollow(targetUserId: string) {
  * @param currentUserId - ID of the current user
  * @param targetUserId - ID of the target user
  */
-async function getFollowStatus(currentUserId: string, targetUserId: string) {
-  const supabase = createServerSupabaseClient();
+async function getFollowStatus(this: ServiceContext, currentUserId: string, targetUserId: string) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase
     .from("user_followers")
     .select("*")
@@ -59,16 +65,19 @@ async function getFollowStatus(currentUserId: string, targetUserId: string) {
  * @param limitCount - Maximum number of users to return (default: 10)
  * @param offsetCount - Number of users to skip (default: 0)
  */
-async function searchUsers({
-  searchTerm,
-  limitCount = 10,
-  offsetCount = 0,
-}: {
-  searchTerm: string;
-  limitCount?: number;
-  offsetCount?: number;
-}) {
-  const supabase = createServerSupabaseClient();
+async function searchUsers(
+  this: ServiceContext,
+  {
+    searchTerm,
+    limitCount = 10,
+    offsetCount = 0,
+  }: {
+    searchTerm: string;
+    limitCount?: number;
+    offsetCount?: number;
+  }
+) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.rpc("search_users", {
     search_term: searchTerm,
     limit_count: limitCount,
@@ -81,14 +90,17 @@ async function searchUsers({
  * @param limitCount - Maximum number of users to return (default: 10)
  * @param offsetCount - Number of users to skip (default: 0)
  */
-async function getTrendingUsers({
-  limitCount = 10,
-  offsetCount = 0,
-}: {
-  limitCount?: number;
-  offsetCount?: number;
-} = {}) {
-  const supabase = createServerSupabaseClient();
+async function getTrendingUsers(
+  this: ServiceContext,
+  {
+    limitCount = 10,
+    offsetCount = 0,
+  }: {
+    limitCount?: number;
+    offsetCount?: number;
+  } = {}
+) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.rpc("get_trending_users", {
     limit_count: limitCount,
     offset_count: offsetCount,
@@ -99,8 +111,8 @@ async function getTrendingUsers({
  * Get random unfollowed users
  * @param count - Number of users to return
  */
-async function getRandomUnfollowedUsers(count: number = 3) {
-  const supabase = createServerSupabaseClient();
+async function getRandomUnfollowedUsers(this: ServiceContext, count: number = 3) {
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.rpc("get_random_unfollowed_users", {
     count,
   });
@@ -118,7 +130,7 @@ async function getRandomUnfollowedUsers(count: number = 3) {
  * await userService.updateProfile(username, { bio: "New bio" });
  * ```
  */
-export const userService = {
+export const userService = createServiceWithContext({
   getUserByUsername,
   getUserById,
   updateProfile,
@@ -127,6 +139,6 @@ export const userService = {
   searchUsers,
   getTrendingUsers,
   getRandomUnfollowedUsers,
-};
+});
 
 export type UserService = typeof userService;

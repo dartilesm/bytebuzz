@@ -57,7 +57,7 @@ async function getTrendingPosts(
     offsetCount?: number;
   } = {}
 ) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.rpc("get_trending_posts", {
     limit_count: limitCount,
     offset_count: offsetCount,
