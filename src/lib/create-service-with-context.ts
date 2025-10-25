@@ -56,7 +56,7 @@ function withContext<T extends ServiceMethodWithContext>(fn: T) {
  * @example
  * ```typescript
  * async function getUser(this: ServiceContext, userId: string) {
- *   const supabase = createServerSupabaseClient(this?.accessToken);
+ *   const supabase = createServerSupabaseClient(this.accessToken);
  *   return supabase.from('users').select().eq('id', userId);
  * }
  *
