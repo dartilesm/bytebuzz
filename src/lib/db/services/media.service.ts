@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import { PostgrestResponse, PostgrestSingleResponse } from "@supabase/supabase-js";
 import type { Tables } from "database.types";
-import { cached, type StorageResult } from "./base.service";
+import { cached } from "./base.service";
 
 /**
  * Media record structure for creating post media
@@ -34,7 +34,7 @@ async function moveFile(
   bucket: string,
   fromPath: string,
   toPath: string
-): Promise<StorageResult> {
+) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).move(fromPath, toPath);
 }
@@ -58,7 +58,7 @@ function getPublicUrl(bucket: string, path: string): string {
  * @param bucket - The storage bucket name
  * @param paths - Array of file paths to remove
  */
-async function removeFiles(bucket: string, paths: string[]): Promise<StorageResult> {
+async function removeFiles(bucket: string, paths: string[]) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).remove(paths);
 }
