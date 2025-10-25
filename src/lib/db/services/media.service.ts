@@ -1,7 +1,6 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import { PostgrestResponse, PostgrestSingleResponse } from "@supabase/supabase-js";
 import type { Tables } from "database.types";
-import { cached } from "./base.service";
 
 /**
  * Media record structure for creating post media
@@ -116,18 +115,16 @@ async function downloadFile(bucket: string, path: string) {
 }
 
 /**
- * Get media records for a post with automatic caching
+ * Get media records for a post
  * @param postId - ID of the post
  */
-const getPostMedia = cached(
-  async (postId: string): Promise<PostgrestSingleResponse<Tables<"post_media">[]>> => {
-    const supabase = createServerSupabaseClient();
-    return await supabase
-      .from("post_media")
-      .select("*")
-      .eq("post_id", postId);
-  }
-);
+async function getPostMedia(postId: string): Promise<PostgrestSingleResponse<Tables<"post_media">[]>> {
+  const supabase = createServerSupabaseClient();
+  return await supabase
+    .from("post_media")
+    .select("*")
+    .eq("post_id", postId);
+}
 
 /**
  * Media service for all media and storage operations

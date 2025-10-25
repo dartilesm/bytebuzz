@@ -1,5 +1,5 @@
+import { createServerSupabaseClient } from "@/db/supabase";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { getSupabaseClient } from "./base.service";
 import type { Tables } from "database.types";
 
 /**
@@ -11,7 +11,7 @@ async function toggleReaction(
   postId: string,
   reactionType: Tables<"reactions">["reaction_type"]
 ): Promise<PostgrestSingleResponse<Tables<"reactions">>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase
     .rpc("toggle_reaction", {
       input_post_id: postId,

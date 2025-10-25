@@ -1,37 +1,32 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import type { Tables } from "database.types";
-import { cached } from "./base.service";
 
 /**
- * Get user profile by username with automatic caching
+ * Get user profile by username
  * @param username - Username to look up
  */
-const getUserByUsername = cached(
-  async (username: string): Promise<PostgrestSingleResponse<Tables<"users">>> => {
-    const supabase = createServerSupabaseClient();
-    return await supabase
-      .from("users")
-      .select("*")
-      .eq("username", username)
-      .single();
-  }
-);
+async function getUserByUsername(username: string): Promise<PostgrestSingleResponse<Tables<"users">>> {
+  const supabase = createServerSupabaseClient();
+  return await supabase
+    .from("users")
+    .select("*")
+    .eq("username", username)
+    .single();
+}
 
 /**
- * Get user profile by ID with automatic caching
+ * Get user profile by ID
  * @param userId - User ID to look up
  */
-const getUserById = cached(
-  async (userId: string): Promise<PostgrestSingleResponse<Tables<"users">>> => {
-    const supabase = createServerSupabaseClient();
-    return await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
-  }
-);
+async function getUserById(userId: string): Promise<PostgrestSingleResponse<Tables<"users">>> {
+  const supabase = createServerSupabaseClient();
+  return await supabase
+    .from("users")
+    .select("*")
+    .eq("id", userId)
+    .single();
+}
 
 /**
  * Update user profile (no caching for mutations)
@@ -88,83 +83,75 @@ async function toggleFollow(
 }
 
 /**
- * Get follow status between current user and target user with caching
+ * Get follow status between current user and target user
  * @param currentUserId - ID of the current user
  * @param targetUserId - ID of the target user
  */
-const getFollowStatus = cached(
-  async (
-    currentUserId: string,
-    targetUserId: string
-  ): Promise<PostgrestSingleResponse<Tables<"user_followers">>> => {
-    const supabase = createServerSupabaseClient();
-    return await supabase
-      .from("user_followers")
-      .select("*")
-      .eq("follower_id", currentUserId)
-      .eq("followed_id", targetUserId)
-      .single();
-  }
-);
+async function getFollowStatus(
+  currentUserId: string,
+  targetUserId: string
+): Promise<PostgrestSingleResponse<Tables<"user_followers">>> {
+  const supabase = createServerSupabaseClient();
+  return await supabase
+    .from("user_followers")
+    .select("*")
+    .eq("follower_id", currentUserId)
+    .eq("followed_id", targetUserId)
+    .single();
+}
 
 /**
- * Search users with automatic caching
+ * Search users
  * @param searchTerm - The search term to filter users
  * @param limitCount - Maximum number of users to return (default: 10)
  * @param offsetCount - Number of users to skip (default: 0)
  */
-const searchUsers = cached(
-  async ({
-    searchTerm,
-    limitCount = 10,
-    offsetCount = 0,
-  }: {
-    searchTerm: string;
-    limitCount?: number;
-    offsetCount?: number;
-  }): Promise<PostgrestSingleResponse<any>> => {
-    const supabase = createServerSupabaseClient();
-    return await supabase.rpc("search_users", {
-      search_term: searchTerm,
-      limit_count: limitCount,
-      offset_count: offsetCount,
-    });
-  }
-);
+async function searchUsers({
+  searchTerm,
+  limitCount = 10,
+  offsetCount = 0,
+}: {
+  searchTerm: string;
+  limitCount?: number;
+  offsetCount?: number;
+}): Promise<PostgrestSingleResponse<any>> {
+  const supabase = createServerSupabaseClient();
+  return await supabase.rpc("search_users", {
+    search_term: searchTerm,
+    limit_count: limitCount,
+    offset_count: offsetCount,
+  });
+}
 
 /**
- * Get trending users with automatic caching
+ * Get trending users
  * @param limitCount - Maximum number of users to return (default: 10)
  * @param offsetCount - Number of users to skip (default: 0)
  */
-const getTrendingUsers = cached(
-  async ({
-    limitCount = 10,
-    offsetCount = 0,
-  }: {
-    limitCount?: number;
-    offsetCount?: number;
-  } = {}): Promise<PostgrestSingleResponse<any>> => {
-    const supabase = createServerSupabaseClient();
-    return await supabase.rpc("get_trending_users", {
-      limit_count: limitCount,
-      offset_count: offsetCount,
-    });
-  }
-);
+async function getTrendingUsers({
+  limitCount = 10,
+  offsetCount = 0,
+}: {
+  limitCount?: number;
+  offsetCount?: number;
+} = {}): Promise<PostgrestSingleResponse<any>> {
+  const supabase = createServerSupabaseClient();
+  return await supabase.rpc("get_trending_users", {
+    limit_count: limitCount,
+    offset_count: offsetCount,
+  });
+}
 
 /**
- * Get random unfollowed users with automatic caching
+ * Get random unfollowed users
  * @param count - Number of users to return
  */
-const getRandomUnfollowedUsers = cached(
-  async (count: number = 3): Promise<PostgrestSingleResponse<any>> => {
-    const supabase = createServerSupabaseClient();
-    return await supabase.rpc("get_random_unfollowed_users", {
-      count,
-    });
-  }
-);
+async function getRandomUnfollowedUsers(count: number = 3): Promise<PostgrestSingleResponse<any>> {
+  const supabase = createServerSupabaseClient();
+  return await supabase.rpc("get_random_unfollowed_users", {
+    count,
+  });
+}
 
 /**
  * User service for all user-related database operations
