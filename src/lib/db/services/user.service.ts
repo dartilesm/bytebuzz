@@ -1,31 +1,22 @@
-import { createServerSupabaseClient } from "@/db/supabase";
-import { PostgrestSingleResponse } from "@supabase/supabase-js";
+import { createAdminSupabaseClient, createServerSupabaseClient } from "@/db/supabase";
 import type { Tables } from "database.types";
 
 /**
  * Get user profile by username
  * @param username - Username to look up
  */
-async function getUserByUsername(username: string): Promise<PostgrestSingleResponse<Tables<"users">>> {
+async function getUserByUsername(username: string) {
   const supabase = createServerSupabaseClient();
-  return await supabase
-    .from("users")
-    .select("*")
-    .eq("username", username)
-    .single();
+  return await supabase.from("users").select("*").eq("username", username).single();
 }
 
 /**
  * Get user profile by ID
  * @param userId - User ID to look up
  */
-async function getUserById(userId: string): Promise<PostgrestSingleResponse<Tables<"users">>> {
+async function getUserById(userId: string) {
   const supabase = createServerSupabaseClient();
-  return await supabase
-    .from("users")
-    .select("*")
-    .eq("id", userId)
-    .single();
+  return await supabase.from("users").select("*").eq("id", userId).single();
 }
 
 /**
@@ -33,28 +24,20 @@ async function getUserById(userId: string): Promise<PostgrestSingleResponse<Tabl
  * @param username - Username of the user to update
  * @param data - Profile data to update
  */
-async function updateProfile(
-  username: string,
-  data: Partial<Tables<"users">>
-): Promise<PostgrestSingleResponse<Tables<"users">>> {
+async function updateProfile(username: string, data: Partial<Tables<"users">>) {
   const supabase = createServerSupabaseClient();
-  return await supabase
-    .from("users")
-    .update(data)
-    .eq("username", username)
-    .select()
-    .single();
+  return await supabase.from("users").update(data).eq("username", username).select().single();
 }
 
 /**
  * Upsert user profile (used for webhook sync)
  * @param data - User data to upsert
  */
-async function upsertUser(data: any): Promise<PostgrestSingleResponse<Tables<"users">>> {
-  const supabase = createServerSupabaseClient();
+async function upsertUser(data: Partial<Tables<"users">>) {
+  const supabase = createAdminSupabaseClient();
   return await supabase
     .from("users")
-    .upsert(data)
+    .upsert(data as Tables<"users">)
     .select()
     .single();
 }
@@ -63,8 +46,8 @@ async function upsertUser(data: any): Promise<PostgrestSingleResponse<Tables<"us
  * Delete user (no caching for mutations)
  * @param userId - ID of the user to delete
  */
-async function deleteUser(userId: string): Promise<PostgrestSingleResponse<null>> {
-  const supabase = createServerSupabaseClient();
+async function deleteUser(userId: string) {
+  const supabase = createAdminSupabaseClient();
   return await supabase.from("users").delete().eq("id", userId);
 }
 
@@ -72,14 +55,9 @@ async function deleteUser(userId: string): Promise<PostgrestSingleResponse<null>
  * Toggle follow status for a user
  * @param targetUserId - ID of the user to follow/unfollow
  */
-async function toggleFollow(
-  targetUserId: string
-): Promise<PostgrestSingleResponse<Tables<"user_followers">>> {
+async function toggleFollow(targetUserId: string) {
   const supabase = createServerSupabaseClient();
-  return await supabase
-    .rpc("toggle_follow", { target_user_id: targetUserId })
-    .select()
-    .single();
+  return await supabase.rpc("toggle_follow", { target_user_id: targetUserId }).select().single();
 }
 
 /**
@@ -87,10 +65,7 @@ async function toggleFollow(
  * @param currentUserId - ID of the current user
  * @param targetUserId - ID of the target user
  */
-async function getFollowStatus(
-  currentUserId: string,
-  targetUserId: string
-): Promise<PostgrestSingleResponse<Tables<"user_followers">>> {
+async function getFollowStatus(currentUserId: string, targetUserId: string) {
   const supabase = createServerSupabaseClient();
   return await supabase
     .from("user_followers")
@@ -114,7 +89,7 @@ async function searchUsers({
   searchTerm: string;
   limitCount?: number;
   offsetCount?: number;
-}): Promise<PostgrestSingleResponse<any>> {
+}) {
   const supabase = createServerSupabaseClient();
   return await supabase.rpc("search_users", {
     search_term: searchTerm,
@@ -134,7 +109,7 @@ async function getTrendingUsers({
 }: {
   limitCount?: number;
   offsetCount?: number;
-} = {}): Promise<PostgrestSingleResponse<any>> {
+} = {}) {
   const supabase = createServerSupabaseClient();
   return await supabase.rpc("get_trending_users", {
     limit_count: limitCount,
@@ -146,7 +121,7 @@ async function getTrendingUsers({
  * Get random unfollowed users
  * @param count - Number of users to return
  */
-async function getRandomUnfollowedUsers(count: number = 3): Promise<PostgrestSingleResponse<any>> {
+async function getRandomUnfollowedUsers(count: number = 3) {
   const supabase = createServerSupabaseClient();
   return await supabase.rpc("get_random_unfollowed_users", {
     count,
@@ -155,11 +130,11 @@ async function getRandomUnfollowedUsers(count: number = 3): Promise<PostgrestSin
 
 /**
  * User service for all user-related database operations
- * 
+ *
  * @example
  * ```typescript
  * import { userService } from "@/lib/db/services/user.service";
- * 
+ *
  * const { data, error } = await userService.getUserByUsername("john");
  * await userService.updateProfile(username, { bio: "New bio" });
  * ```

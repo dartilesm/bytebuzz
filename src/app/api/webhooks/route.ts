@@ -1,4 +1,3 @@
-import { createAdminSupabaseClient } from "@/db/supabase";
 import { userService } from "@/lib/db/services/user.service";
 import { log } from "@/lib/logger/logger";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
@@ -15,7 +14,7 @@ export async function POST(req: Request) {
 
       const { data, error } = await userService.upsertUser({
         id,
-        username,
+        username: username ?? undefined,
         display_name: `${first_name} ${last_name}`,
         image_url: image_url,
       });

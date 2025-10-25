@@ -1,6 +1,4 @@
 import { createServerSupabaseClient } from "@/db/supabase";
-import { PostgrestResponse, PostgrestSingleResponse } from "@supabase/supabase-js";
-import type { Tables } from "database.types";
 
 /**
  * Media record structure for creating post media
@@ -16,9 +14,7 @@ export interface MediaRecord {
  * Create media records for a post
  * @param records - Array of media records to insert
  */
-async function createMediaRecords(
-  records: MediaRecord[]
-): Promise<PostgrestResponse<Tables<"post_media">[]>> {
+async function createMediaRecords(records: MediaRecord[]) {
   const supabase = createServerSupabaseClient();
   return await supabase.from("post_media").insert(records).select();
 }
@@ -29,11 +25,7 @@ async function createMediaRecords(
  * @param fromPath - Current path of the file
  * @param toPath - Destination path for the file
  */
-async function moveFile(
-  bucket: string,
-  fromPath: string,
-  toPath: string
-) {
+async function moveFile(bucket: string, fromPath: string, toPath: string) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).move(fromPath, toPath);
 }
@@ -78,7 +70,7 @@ async function uploadFile(
     contentType?: string;
     upsert?: boolean;
     duplex?: string;
-  }
+  },
 ) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).upload(path, file, options);
@@ -98,7 +90,7 @@ async function listFiles(
     offset?: number;
     sortBy?: { column: string; order: string };
     search?: string;
-  }
+  },
 ) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).list(path, options);
@@ -118,21 +110,18 @@ async function downloadFile(bucket: string, path: string) {
  * Get media records for a post
  * @param postId - ID of the post
  */
-async function getPostMedia(postId: string): Promise<PostgrestSingleResponse<Tables<"post_media">[]>> {
+async function getPostMedia(postId: string) {
   const supabase = createServerSupabaseClient();
-  return await supabase
-    .from("post_media")
-    .select("*")
-    .eq("post_id", postId);
+  return await supabase.from("post_media").select("*").eq("post_id", postId);
 }
 
 /**
  * Media service for all media and storage operations
- * 
+ *
  * @example
  * ```typescript
  * import { mediaService } from "@/lib/db/services/media.service";
- * 
+ *
  * const publicUrl = mediaService.getPublicUrl("post-images", path);
  * await mediaService.uploadFile("post-images", path, file);
  * ```
