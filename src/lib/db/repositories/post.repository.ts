@@ -73,6 +73,30 @@ class PostRepository extends BaseRepository {
   );
 
   /**
+   * Search posts with automatic caching
+   * @param searchTerm - The search term to filter posts
+   * @param limitCount - Maximum number of posts to return (default: 10)
+   * @param offsetCount - Number of posts to skip (default: 0)
+   */
+  searchPosts = this.cached(
+    async ({
+      searchTerm,
+      limitCount = 10,
+      offsetCount = 0,
+    }: {
+      searchTerm: string;
+      limitCount?: number;
+      offsetCount?: number;
+    }): Promise<DbResult<any>> => {
+      return await this.supabase.rpc("search_posts", {
+        search_term: searchTerm,
+        limit_count: limitCount,
+        offset_count: offsetCount,
+      });
+    }
+  );
+
+  /**
    * Create a new post (no caching for mutations)
    * @param data - Post data to insert
    */

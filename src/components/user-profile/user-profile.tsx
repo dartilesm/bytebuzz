@@ -4,7 +4,7 @@ import { UserProfileCoverAvatar } from "@/components/user-profile/user-profile-c
 import { UserProfileDescription } from "@/components/user-profile/user-profile-description";
 import { UserProfileTopActions } from "@/components/user-profile/user-profile-top-actions";
 import { ProfileProvider } from "@/context/profile-provider";
-import { feedService } from "@/services/feed.service";
+import { postRepository } from "@/lib/db/repositories";
 import type { Tables } from "database.types";
 
 type UserProfileProps = {
@@ -12,7 +12,7 @@ type UserProfileProps = {
 };
 
 export async function UserProfile({ profile }: UserProfileProps) {
-  const posts = await feedService.getUserPosts({ username: profile.username });
+  const posts = await postRepository.getUserPosts({ username: profile.username });
 
   return (
     <ProfileProvider profile={profile}>
