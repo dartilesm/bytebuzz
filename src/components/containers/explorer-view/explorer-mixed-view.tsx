@@ -4,18 +4,19 @@ import { UserCard2 } from "@/components/explore/user-card-2";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
-import type { getCachedUsers } from "@/lib/db/calls/get-users";
+import { userService } from "@/lib/db/services/user.service";
+import { postService } from "@/lib/db/services/post.service";
 import type { NestedPost } from "@/types/nested-posts";
 import { ScrollShadow } from "@heroui/react";
 import type { Tables } from "database.types";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 interface ExplorerMixedViewProps {
   users?:
-    | Awaited<ReturnType<typeof getCachedUsers>>
-    | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
-  posts?: PostgrestSingleResponse<Tables<"posts">[]>;
+    | Awaited<ReturnType<typeof userService.searchUsers>>
+    | Awaited<ReturnType<typeof userService.getTrendingUsers>>;
+  posts?:
+    | Awaited<ReturnType<typeof postService.searchPosts>>
+    | Awaited<ReturnType<typeof postService.getTrendingPosts>>;
 }
 
 /**
