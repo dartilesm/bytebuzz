@@ -1,18 +1,14 @@
-import { createServerSupabaseClient } from "@/db/supabase";
-import { cache } from "react";
+import { postRepository } from "@/lib/db/repositories";
 
 type GetTrendingPostsParams = {
   limitCount?: number;
   offsetCount?: number;
 };
 
-export const getCachedTrendingPosts = cache(getTrendingPosts);
-
-async function getTrendingPosts({ limitCount = 10, offsetCount = 0 }: GetTrendingPostsParams = {}) {
-  const supabaseClient = createServerSupabaseClient();
-  const trendingPosts = await supabaseClient.rpc("get_trending_posts", {
-    limit_count: limitCount,
-    offset_count: offsetCount,
-  });
-  return trendingPosts;
-}
+/**
+ * Get trending posts with automatic caching via repository
+ * @deprecated Use postRepository.getTrendingPosts() directly instead
+ */
+export const getCachedTrendingPosts = async (params?: GetTrendingPostsParams) => {
+  return await postRepository.getTrendingPosts(params);
+};

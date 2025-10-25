@@ -1,21 +1,13 @@
 import { UserProfile } from "@/components/user-profile/user-profile";
-import { createServerSupabaseClient } from "@/db/supabase";
+import { userRepository } from "@/lib/db/repositories";
 import { generateUserProfileMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
 import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cache } from "react";
 import { log } from "@/lib/logger/logger";
 
 // Cache user profiles for 1 hour
 export const revalidate = 3600;
-
-const getUserProfile = cache(async (username: string) => {
-  const supabaseClient = createServerSupabaseClient();
-  const result = await supabaseClient.from("users").select("*").eq("username", username).single();
-
-  return result;
-});
 
 interface UserPageProps {
   params: Promise<{ username: string }>;
@@ -30,7 +22,7 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
   const formattedUsername = decodeURIComponent(username).replace("@", "");
 
   try {
-    const { data: userProfile, error } = await getUserProfile(formattedUsername);
+    const { data: userProfile, error } = await userRepository.getUserByUsername(formattedUsername);
 
     if (!userProfile || error) {
       return generateFallbackMetadata("user");
@@ -46,7 +38,9 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
 async function UserPage({ params }: UserPageProps) {
   const { username } = await params;
   const formattedUsername = decodeURIComponent(username);
-  const { data: userProfile, error } = await getUserProfile(formattedUsername.replace("@", ""));
+  const { data: userProfile, error } = await userRepository.getUserByUsername(
+    formattedUsername.replace("@", "")
+  );
 
   if (!userProfile || error) {
     notFound();

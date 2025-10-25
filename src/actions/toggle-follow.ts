@@ -1,8 +1,8 @@
 "use server";
 
-import { createServerSupabaseClient } from "@/db/supabase";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+import { userRepository } from "@/lib/db/repositories";
 import type { Tables } from "database.types";
+import type { DbResult } from "@/lib/db/repositories";
 
 export interface ToggleFollowData {
   target_user_id: string;
@@ -10,14 +10,6 @@ export interface ToggleFollowData {
 
 export async function toggleFollow({
   target_user_id,
-}: ToggleFollowData): Promise<PostgrestSingleResponse<Tables<"user_followers">>> {
-  const supabaseClient = createServerSupabaseClient();
-
-  const toggleFollowResult = await supabaseClient
-    .rpc("toggle_follow", {
-      target_user_id,
-    })
-    .select()
-    .single();
-  return toggleFollowResult;
+}: ToggleFollowData): Promise<DbResult<Tables<"user_followers">>> {
+  return await userRepository.toggleFollow(target_user_id);
 }

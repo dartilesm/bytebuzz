@@ -1,11 +1,10 @@
 "use server";
 
-import { createServerSupabaseClient } from "@/db/supabase";
+import { postRepository, mediaRepository } from "@/lib/db/repositories";
 import { log } from "@/lib/logger/logger";
 import { currentUser } from "@clerk/nextjs/server";
 import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
-
 
 type PostExpectedFields = Pick<
   Partial<Tables<"posts">>,
@@ -33,27 +32,22 @@ export async function createPostAction({
   repost_post_id,
 }: CreatePost) {
   try {
-    const supabase = createServerSupabaseClient();
     const user = await currentUser();
 
     if (!user) {
       throw new Error("User not authenticated");
     }
 
-    // Start transaction
-    const { data: post, error: postError } = await supabase
-      .from("posts")
-      .insert({
-        content,
-        user_id: user.id,
-        parent_post_id,
-        repost_post_id,
-      })
-      .select()
-      .single();
+    // Create post using repository
+    const { data: post, error: postError } = await postRepository.createPost({
+      content: content ?? null,
+      user_id: user.id,
+      parent_post_id,
+      repost_post_id,
+    });
 
-    if (postError) {
-      throw new Error(`Failed to create post: ${postError.message}`);
+    if (postError || !post) {
+      throw new Error(`Failed to create post: ${postError?.message}`);
     }
 
     if (mediaData && mediaData.length > 0) {
@@ -62,19 +56,22 @@ export async function createPostAction({
         const fileName = media.path.split("/").pop() || "";
         const permanentPath = `${user.id}/posts/${post.id}/${fileName}`;
 
-        // Move file from temp to permanent location
-        const { error: moveError } = await supabase.storage
-          .from("post-images")
-          .move(media.path, permanentPath);
+        // Move file from temp to permanent location using repository
+        const { error: moveError } = await mediaRepository.moveFile(
+          "post-images",
+          media.path,
+          permanentPath
+        );
 
         if (moveError) {
           throw new Error(`Failed to move media file: ${moveError.message}`);
         }
 
-        // Generate the proxy URL for the permanent location
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("post-images").getPublicUrl(permanentPath);
+        // Generate the proxy URL for the permanent location using repository
+        const publicUrl = mediaRepository.getPublicUrl(
+          "post-images",
+          permanentPath
+        );
 
         return {
           post_id: post.id,
@@ -87,20 +84,23 @@ export async function createPostAction({
       try {
         const mediaRecords = await Promise.all(mediaPromises);
 
-        // Create media records
-        const { error: mediaError } = await supabase.from("post_media").insert(mediaRecords);
+        // Create media records using repository
+        const { error: mediaError } =
+          await mediaRepository.createMediaRecords(mediaRecords);
 
         if (mediaError) {
-          throw new Error(`Failed to create media records: ${mediaError.message}`);
+          throw new Error(
+            `Failed to create media records: ${mediaError.message}`
+          );
         }
       } catch (error) {
         // If any media operation fails, clean up post and all moved files
-        await supabase.from("posts").delete().eq("id", post.id);
+        await postRepository.deletePost(post.id);
         const permanentPaths = mediaData.map((media) => {
           const fileName = media.path.split("/").pop() || "";
           return `${user.id}/posts/${post.id}/${fileName}`;
         });
-        await supabase.storage.from("post-images").remove(permanentPaths);
+        await mediaRepository.removeFiles("post-images", permanentPaths);
         throw error;
       }
     }

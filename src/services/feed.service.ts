@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/db/supabase";
+import { postRepository } from "@/lib/db/repositories";
 import type { NestedPost } from "@/types/nested-posts";
 import type { PostgrestError } from "@supabase/supabase-js";
 
@@ -11,22 +11,7 @@ import type { PostgrestError } from "@supabase/supabase-js";
 async function getUserFeed(
   cursor?: string,
 ): Promise<{ data: NestedPost[] | null; error: PostgrestError | null }> {
-  const supabaseClient = createServerSupabaseClient();
-
-  let query = supabaseClient
-    .rpc("get_user_feed")
-    .order("created_at", {
-      ascending: false,
-    })
-    .limit(10);
-
-  // If cursor is provided, filter posts created before this timestamp
-  if (cursor) {
-    query = query.lt("created_at", cursor);
-  }
-
-  const result = await query.overrideTypes<NestedPost[]>();
-  return result;
+  return await postRepository.getUserFeed(cursor);
 }
 
 /**
@@ -44,24 +29,7 @@ async function getUserPosts({
   username: string;
   cursor?: string;
 }): Promise<{ data: NestedPost[] | null; error: PostgrestError | null }> {
-  const supabaseClient = createServerSupabaseClient();
-
-  let query = supabaseClient
-    .rpc("get_user_posts_by_username", {
-      input_username: username,
-    })
-    .order("created_at", {
-      ascending: false,
-    })
-    .limit(10);
-
-  // If cursor is provided, filter posts created before this timestamp
-  if (cursor) {
-    query = query.lt("created_at", cursor);
-  }
-
-  const result = await query.overrideTypes<NestedPost[]>();
-  return result;
+  return await postRepository.getUserPosts({ username, cursor });
 }
 
 /**
