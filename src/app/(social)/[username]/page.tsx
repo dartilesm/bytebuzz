@@ -1,5 +1,5 @@
 import { UserProfile } from "@/components/user-profile/user-profile";
-import { userRepository } from "@/lib/db/repositories";
+import { userRepository } from "@/lib/db/repositories/user.repository";
 import { generateUserProfileMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
 import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";

@@ -1,6 +1,7 @@
 "use server";
 
-import { postRepository, mediaRepository } from "@/lib/db/repositories";
+import { postRepository } from "@/lib/db/repositories/post.repository";
+import { mediaRepository } from "@/lib/db/repositories/media.repository";
 import { log } from "@/lib/logger/logger";
 import { currentUser } from "@clerk/nextjs/server";
 import type { Tables } from "database.types";

@@ -1,5 +1,5 @@
 import { log } from "@/lib/logger/logger";
-import { postRepository } from "@/lib/db/repositories";
+import { postRepository } from "@/lib/db/repositories/post.repository";
 import { type NextRequest, NextResponse } from "next/server";
 
 

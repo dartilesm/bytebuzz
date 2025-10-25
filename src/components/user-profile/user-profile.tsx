@@ -4,7 +4,7 @@ import { UserProfileCoverAvatar } from "@/components/user-profile/user-profile-c
 import { UserProfileDescription } from "@/components/user-profile/user-profile-description";
 import { UserProfileTopActions } from "@/components/user-profile/user-profile-top-actions";
 import { ProfileProvider } from "@/context/profile-provider";
-import { postRepository } from "@/lib/db/repositories";
+import { postRepository } from "@/lib/db/repositories/post.repository";
 import type { Tables } from "database.types";
 
 type UserProfileProps = {

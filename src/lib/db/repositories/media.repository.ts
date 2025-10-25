@@ -98,7 +98,7 @@ class MediaRepository extends BaseRepository {
  * 
  * @example
  * ```typescript
- * import { mediaRepository } from "@/lib/db/repositories";
+ * import { mediaRepository } from "@/lib/db/repositories/media.repository";
  * 
  * const publicUrl = mediaRepository.getPublicUrl("post-images", path);
  * ```

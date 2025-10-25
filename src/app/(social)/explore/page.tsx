@@ -1,5 +1,5 @@
 import { ExploreView } from "@/components/containers/explorer-view/explore-view";
-import { postRepository } from "@/lib/db/repositories";
+import { postRepository } from "@/lib/db/repositories/post.repository";
 import { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import { getCachedUsers } from "@/lib/db/calls/get-users";
 import { withAnalytics } from "@/lib/with-analytics";

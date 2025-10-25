@@ -138,7 +138,7 @@ class PostRepository extends BaseRepository {
  * 
  * @example
  * ```typescript
- * import { postRepository } from "@/lib/db/repositories";
+ * import { postRepository } from "@/lib/db/repositories/post.repository";
  * 
  * const { data, error } = await postRepository.getUserFeed();
  * ```

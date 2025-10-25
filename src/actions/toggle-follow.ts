@@ -1,6 +1,6 @@
 "use server";
 
-import { userRepository } from "@/lib/db/repositories";
+import { userRepository } from "@/lib/db/repositories/user.repository";
 
 export interface ToggleFollowData {
   target_user_id: string;

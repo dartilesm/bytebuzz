@@ -110,7 +110,7 @@ class UserRepository extends BaseRepository {
  * 
  * @example
  * ```typescript
- * import { userRepository } from "@/lib/db/repositories";
+ * import { userRepository } from "@/lib/db/repositories/user.repository";
  * 
  * const { data, error } = await userRepository.getUserByUsername("john");
  * ```

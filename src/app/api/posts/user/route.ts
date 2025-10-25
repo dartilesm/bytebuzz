@@ -1,4 +1,4 @@
-import { postRepository } from "@/lib/db/repositories";
+import { postRepository } from "@/lib/db/repositories/post.repository";
 import { currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { log } from "@/lib/logger/logger";

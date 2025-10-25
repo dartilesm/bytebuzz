@@ -1,6 +1,6 @@
 "use server";
 
-import { userRepository } from "@/lib/db/repositories";
+import { userRepository } from "@/lib/db/repositories/user.repository";
 import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
 
