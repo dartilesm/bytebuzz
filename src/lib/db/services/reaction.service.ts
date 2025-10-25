@@ -13,7 +13,7 @@ async function toggleReaction(
   postId: string,
   reactionType: Tables<"reactions">["reaction_type"]
 ) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase
     .rpc("toggle_reaction", {
       input_post_id: postId,

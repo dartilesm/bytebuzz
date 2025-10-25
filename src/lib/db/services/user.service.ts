@@ -8,7 +8,7 @@ import type { Tables } from "database.types";
  * @param username - Username to look up
  */
 async function getUserByUsername(this: ServiceContext, username: string) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.from("users").select("*").eq("username", username).single();
 }
 
@@ -17,7 +17,7 @@ async function getUserByUsername(this: ServiceContext, username: string) {
  * @param userId - User ID to look up
  */
 async function getUserById(this: ServiceContext, userId: string) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.from("users").select("*").eq("id", userId).single();
 }
 
@@ -31,7 +31,7 @@ async function updateProfile(
   username: string,
   data: Partial<Tables<"users">>
 ) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.from("users").update(data).eq("username", username).select().single();
 }
 
@@ -40,7 +40,7 @@ async function updateProfile(
  * @param targetUserId - ID of the user to follow/unfollow
  */
 async function toggleFollow(this: ServiceContext, targetUserId: string) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.rpc("toggle_follow", { target_user_id: targetUserId }).select().single();
 }
 
@@ -50,7 +50,7 @@ async function toggleFollow(this: ServiceContext, targetUserId: string) {
  * @param targetUserId - ID of the target user
  */
 async function getFollowStatus(this: ServiceContext, currentUserId: string, targetUserId: string) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase
     .from("user_followers")
     .select("*")
@@ -77,7 +77,7 @@ async function searchUsers(
     offsetCount?: number;
   }
 ) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.rpc("search_users", {
     search_term: searchTerm,
     limit_count: limitCount,
@@ -100,7 +100,7 @@ async function getTrendingUsers(
     offsetCount?: number;
   } = {}
 ) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.rpc("get_trending_users", {
     limit_count: limitCount,
     offset_count: offsetCount,

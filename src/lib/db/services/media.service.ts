@@ -17,7 +17,7 @@ export interface MediaRecord {
  * @param records - Array of media records to insert
  */
 async function createMediaRecords(this: ServiceContext, records: MediaRecord[]) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.from("post_media").insert(records).select();
 }
 
@@ -28,7 +28,7 @@ async function createMediaRecords(this: ServiceContext, records: MediaRecord[]) 
  * @param toPath - Destination path for the file
  */
 async function moveFile(this: ServiceContext, bucket: string, fromPath: string, toPath: string) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.storage.from(bucket).move(fromPath, toPath);
 }
 
@@ -39,7 +39,7 @@ async function moveFile(this: ServiceContext, bucket: string, fromPath: string, 
  * @returns Public URL string
  */
 function getPublicUrl(this: ServiceContext, bucket: string, path: string): string {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   const {
     data: { publicUrl },
   } = supabase.storage.from(bucket).getPublicUrl(path);
@@ -52,7 +52,7 @@ function getPublicUrl(this: ServiceContext, bucket: string, path: string): strin
  * @param paths - Array of file paths to remove
  */
 async function removeFiles(this: ServiceContext, bucket: string, paths: string[]) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.storage.from(bucket).remove(paths);
 }
 
@@ -75,7 +75,7 @@ async function uploadFile(
     duplex?: string;
   }
 ) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.storage.from(bucket).upload(path, file, options);
 }
 
@@ -96,7 +96,7 @@ async function listFiles(
     search?: string;
   }
 ) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.storage.from(bucket).list(path, options);
 }
 
@@ -106,7 +106,7 @@ async function listFiles(
  * @param path - Path to the file
  */
 async function downloadFile(this: ServiceContext, bucket: string, path: string) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.storage.from(bucket).download(path);
 }
 
@@ -115,7 +115,7 @@ async function downloadFile(this: ServiceContext, bucket: string, path: string) 
  * @param postId - ID of the post
  */
 async function getPostMedia(this: ServiceContext, postId: string) {
-  const supabase = createServerSupabaseClient(this?.accessToken);
+  const supabase = createServerSupabaseClient(this.accessToken);
   return await supabase.from("post_media").select("*").eq("post_id", postId);
 }
 
