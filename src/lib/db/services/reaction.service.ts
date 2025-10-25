@@ -30,3 +30,5 @@ async function toggleReaction(postId: string, reactionType: Tables<"reactions">[
 export const reactionService = {
   toggleReaction,
 };
+
+export type ReactionService = typeof reactionService;

@@ -128,3 +128,5 @@ export const userService = {
   getTrendingUsers,
   getRandomUnfollowedUsers,
 };
+
+export type UserService = typeof userService;

@@ -26,11 +26,11 @@ async function deleteUser(userId: string) {
 /**
  * Admin service for operations requiring elevated permissions
  * Used for webhook handlers and system-level operations
- * 
+ *
  * @example
  * ```typescript
  * import { adminService } from "@/lib/db/services/admin.service";
- * 
+ *
  * // In webhook handler
  * await adminService.user.upsert({ id, username, display_name });
  * await adminService.user.delete(userId);
@@ -42,3 +42,5 @@ export const adminService = {
     delete: deleteUser,
   },
 };
+
+export type AdminService = typeof adminService;

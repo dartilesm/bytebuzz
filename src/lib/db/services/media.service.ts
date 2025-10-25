@@ -70,7 +70,7 @@ async function uploadFile(
     contentType?: string;
     upsert?: boolean;
     duplex?: string;
-  },
+  }
 ) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).upload(path, file, options);
@@ -90,7 +90,7 @@ async function listFiles(
     offset?: number;
     sortBy?: { column: string; order: string };
     search?: string;
-  },
+  }
 ) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).list(path, options);
@@ -136,3 +136,5 @@ export const mediaService = {
   downloadFile,
   getPostMedia,
 };
+
+export type MediaService = typeof mediaService;

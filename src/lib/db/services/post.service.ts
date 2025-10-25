@@ -1,5 +1,7 @@
 import { createServerSupabaseClient } from "@/db/supabase";
+import { createServiceWithContext } from "@/lib/create-service-with-context";
 import type { NestedPost } from "@/types/nested-posts";
+import { ServiceContext } from "@/types/services";
 import type { Tables } from "database.types";
 
 /**
@@ -7,10 +9,8 @@ import type { Tables } from "database.types";
  * @param supabase - Supabase client (injected when using withCache)
  * @param cursor - Optional timestamp to fetch posts before this point
  */
-async function getUserFeed(
-  cursor?: string,
-) {
-  const supabase = this.supabase || createServerSupabaseClient();
+async function getUserFeed(this: ServiceContext, cursor?: string) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   let query = supabase.rpc("get_user_feed").order("created_at", { ascending: false }).limit(10);
 
   if (cursor) {
@@ -25,14 +25,11 @@ async function getUserFeed(
  * @param username - The username to fetch posts for
  * @param cursor - Optional timestamp to fetch posts before this point
  */
-async function getUserPosts({
-  username,
-  cursor,
-}: {
-  username: string;
-  cursor?: string;
-}) {
-  const supabase = createServerSupabaseClient();
+async function getUserPosts(
+  this: ServiceContext,
+  { username, cursor }: { username: string; cursor?: string }
+) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   let query = supabase
     .rpc("get_user_posts_by_username", { input_username: username })
     .order("created_at", { ascending: false })
@@ -50,14 +47,17 @@ async function getUserPosts({
  * @param limitCount - Maximum number of posts to return (default: 10)
  * @param offsetCount - Number of posts to skip (default: 0)
  */
-async function getTrendingPosts({
-  limitCount = 10,
-  offsetCount = 0,
-}: {
-  limitCount?: number;
-  offsetCount?: number;
-} = {}) {
-  const supabase = createServerSupabaseClient();
+async function getTrendingPosts(
+  this: ServiceContext,
+  {
+    limitCount = 10,
+    offsetCount = 0,
+  }: {
+    limitCount?: number;
+    offsetCount?: number;
+  } = {}
+) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.rpc("get_trending_posts", {
     limit_count: limitCount,
     offset_count: offsetCount,
@@ -70,16 +70,19 @@ async function getTrendingPosts({
  * @param limitCount - Maximum number of posts to return (default: 10)
  * @param offsetCount - Number of posts to skip (default: 0)
  */
-async function searchPosts({
-  searchTerm,
-  limitCount = 10,
-  offsetCount = 0,
-}: {
-  searchTerm: string;
-  limitCount?: number;
-  offsetCount?: number;
-}) {
-  const supabase = createServerSupabaseClient();
+async function searchPosts(
+  this: ServiceContext,
+  {
+    searchTerm,
+    limitCount = 10,
+    offsetCount = 0,
+  }: {
+    searchTerm: string;
+    limitCount?: number;
+    offsetCount?: number;
+  }
+) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.rpc("search_posts", {
     search_term: searchTerm,
     limit_count: limitCount,
@@ -92,10 +95,11 @@ async function searchPosts({
  * @param data - Post data to insert
  */
 async function createPost(
+  this: ServiceContext,
   data: Pick<Tables<"posts">, "content" | "user_id"> &
-    Partial<Pick<Tables<"posts">, "parent_post_id" | "repost_post_id">>,
+    Partial<Pick<Tables<"posts">, "parent_post_id" | "repost_post_id">>
 ) {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.from("posts").insert(data).select().single();
 }
 
@@ -103,8 +107,8 @@ async function createPost(
  * Delete a post (no caching for mutations)
  * @param postId - ID of the post to delete
  */
-async function deletePost(postId: string) {
-  const supabase = createServerSupabaseClient();
+async function deletePost(this: ServiceContext, postId: string) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase.from("posts").delete().eq("id", postId);
 }
 
@@ -112,8 +116,8 @@ async function deletePost(postId: string) {
  * Get a single post by ID
  * @param postId - ID of the post to retrieve
  */
-async function getPostById(postId: string) {
-  const supabase = createServerSupabaseClient();
+async function getPostById(this: ServiceContext, postId: string) {
+  const supabase = createServerSupabaseClient(this?.accessToken);
   return await supabase
     .from("posts")
     .select("*")
@@ -133,7 +137,7 @@ async function getPostById(postId: string) {
  * await postService.createPost({ content, user_id });
  * ```
  */
-export const postService = {
+export const postService = createServiceWithContext({
   getUserFeed,
   getUserPosts,
   getTrendingPosts,
@@ -141,4 +145,6 @@ export const postService = {
   createPost,
   deletePost,
   getPostById,
-};
+});
+
+export type PostService = typeof postService;
