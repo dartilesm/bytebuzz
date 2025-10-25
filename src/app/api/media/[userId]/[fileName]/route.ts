@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/db/supabase";
+import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -21,13 +21,11 @@ export async function GET(
     const { searchParams } = new URL(_request.url);
     const postId = searchParams.get("postId");
 
-    const supabase = createServerSupabaseClient();
-
     // Define the path and search based on postId presence
     const path = postId ? `${userId}/posts/${postId}` : `${userId}/temp`;
 
     // Search for the file with caching
-    const { data: files } = await supabase.storage.from("post-images").list(path, {
+    const { data: files } = await mediaService.listFiles("post-images", path, {
       search: fileName,
       limit: 1,
     });
@@ -40,9 +38,10 @@ export async function GET(
     }
 
     // Download the file with caching
-    const { data, error } = await supabase.storage
-      .from("post-images")
-      .download(`${path}/${matchingFile.name}`);
+    const { data, error } = await mediaService.downloadFile(
+      "post-images",
+      `${path}/${matchingFile.name}`
+    );
 
     if (error || !data) {
       log.error("Error downloading file", { error });

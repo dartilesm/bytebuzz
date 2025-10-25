@@ -108,6 +108,65 @@ const getFollowStatus = cached(
 );
 
 /**
+ * Search users with automatic caching
+ * @param searchTerm - The search term to filter users
+ * @param limitCount - Maximum number of users to return (default: 10)
+ * @param offsetCount - Number of users to skip (default: 0)
+ */
+const searchUsers = cached(
+  async ({
+    searchTerm,
+    limitCount = 10,
+    offsetCount = 0,
+  }: {
+    searchTerm: string;
+    limitCount?: number;
+    offsetCount?: number;
+  }): Promise<PostgrestSingleResponse<any>> => {
+    const supabase = createServerSupabaseClient();
+    return await supabase.rpc("search_users", {
+      search_term: searchTerm,
+      limit_count: limitCount,
+      offset_count: offsetCount,
+    });
+  }
+);
+
+/**
+ * Get trending users with automatic caching
+ * @param limitCount - Maximum number of users to return (default: 10)
+ * @param offsetCount - Number of users to skip (default: 0)
+ */
+const getTrendingUsers = cached(
+  async ({
+    limitCount = 10,
+    offsetCount = 0,
+  }: {
+    limitCount?: number;
+    offsetCount?: number;
+  } = {}): Promise<PostgrestSingleResponse<any>> => {
+    const supabase = createServerSupabaseClient();
+    return await supabase.rpc("get_trending_users", {
+      limit_count: limitCount,
+      offset_count: offsetCount,
+    });
+  }
+);
+
+/**
+ * Get random unfollowed users with automatic caching
+ * @param count - Number of users to return
+ */
+const getRandomUnfollowedUsers = cached(
+  async (count: number = 3): Promise<PostgrestSingleResponse<any>> => {
+    const supabase = createServerSupabaseClient();
+    return await supabase.rpc("get_random_unfollowed_users", {
+      count,
+    });
+  }
+);
+
+/**
  * User service for all user-related database operations
  * 
  * @example
@@ -126,4 +185,7 @@ export const userService = {
   deleteUser,
   toggleFollow,
   getFollowStatus,
+  searchUsers,
+  getTrendingUsers,
+  getRandomUnfollowedUsers,
 };

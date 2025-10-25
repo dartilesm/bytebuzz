@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/db/supabase";
+import { userService } from "@/lib/db/services/user.service";
 import type { Database } from "database.types";
 import { cache } from "react";
 
@@ -13,13 +13,5 @@ type GetUsersParams = {
 export const getCachedUsers = cache(getUsers);
 
 async function getUsers({ searchTerm, limitCount = 10, offsetCount = 0 }: GetUsersParams) {
-  const supabaseClient = createServerSupabaseClient();
-
-  const randomeUnfollwedUsers = await supabaseClient.rpc("search_users", {
-    search_term: searchTerm,
-    limit_count: limitCount,
-    offset_count: offsetCount,
-  });
-
-  return randomeUnfollwedUsers;
+  return await userService.searchUsers({ searchTerm, limitCount, offsetCount });
 }

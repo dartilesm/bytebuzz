@@ -74,10 +74,45 @@ async function uploadFile(
   bucket: string,
   path: string,
   file: File | Blob,
-  options?: { contentType?: string; upsert?: boolean }
+  options?: {
+    cacheControl?: string;
+    contentType?: string;
+    upsert?: boolean;
+    duplex?: string;
+  }
 ) {
   const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).upload(path, file, options);
+}
+
+/**
+ * List files in storage bucket
+ * @param bucket - The storage bucket name
+ * @param path - Path to list files from
+ * @param options - List options
+ */
+async function listFiles(
+  bucket: string,
+  path: string,
+  options?: {
+    limit?: number;
+    offset?: number;
+    sortBy?: { column: string; order: string };
+    search?: string;
+  }
+) {
+  const supabase = createServerSupabaseClient();
+  return await supabase.storage.from(bucket).list(path, options);
+}
+
+/**
+ * Download file from storage bucket
+ * @param bucket - The storage bucket name
+ * @param path - Path to the file
+ */
+async function downloadFile(bucket: string, path: string) {
+  const supabase = createServerSupabaseClient();
+  return await supabase.storage.from(bucket).download(path);
 }
 
 /**
@@ -111,5 +146,7 @@ export const mediaService = {
   getPublicUrl,
   removeFiles,
   uploadFile,
+  listFiles,
+  downloadFile,
   getPostMedia,
 };

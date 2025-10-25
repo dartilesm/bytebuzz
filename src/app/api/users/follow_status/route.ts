@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/db/supabase";
+import { userService } from "@/lib/db/services/user.service";
 import { currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 
@@ -20,13 +20,7 @@ export async function GET(req: NextRequest) {
     return new Response(JSON.stringify({ error: "Missing targetUserId" }), { status: 400 });
   }
 
-  const supabase = createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("user_followers")
-    .select("*")
-    .eq("follower_id", user.id)
-    .eq("user_id", targetUserId)
-    .single();
+  const { data, error } = await userService.getFollowStatus(user.id, targetUserId);
 
   if (error && error.code !== "PGRST116") {
     // PGRST116 = No rows found, which is not an error for us
