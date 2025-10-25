@@ -1,9 +1,10 @@
-import { ServiceContext } from "@/types/services";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { ServiceContext } from "@/types/services";
 
 /**
  * Ensures a function has `this: ServiceContext` as its context parameter
  */
-type ServiceMethodWithContext = (this: ServiceContext, ...args: any[]) => any;
+export type ServiceMethodWithContext = (this: ServiceContext, ...args: any[]) => any;
 
 /**
  * Extract the 'this' parameter type from a function, or never if it doesn't have one

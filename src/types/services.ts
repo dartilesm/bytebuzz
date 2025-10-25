@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PostService } from "@/lib/db/services/post.service";
 import type { UserService } from "@/lib/db/services/user.service";
 import type { MediaService } from "@/lib/db/services/media.service";
