@@ -22,14 +22,16 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
 
 /**
  * Creates a server-side Supabase client
+ * @param clerkToken - Optional Clerk token for authentication, useful in cached environment
  * @returns Supabase client
  */
-export function createServerSupabaseClient() {
+export function createServerSupabaseClient(clerkToken?: string | null) {
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       async accessToken() {
+        if (clerkToken) return clerkToken;
         return (await auth()).getToken();
       },
       global: {
@@ -49,44 +51,4 @@ export function createAdminSupabaseClient() {
       fetch: supabaseFetch,
     },
   });
-}
-
-/**
- * Gets the authentication token from Clerk
- * Call this OUTSIDE of any "use cache" functions and pass the result to createCachedSupabaseClient
- * @returns Authentication token or null
- */
-export async function getSupabaseAuth() {
-  return (await auth()).getToken();
-}
-
-/**
- * Creates a Supabase client suitable for use inside "use cache" functions
- * Does NOT call headers() or auth() internally, making it safe for cached functions
- * 
- * @param accessToken - The authentication token obtained from getSupabaseAuth()
- * @returns Supabase client configured with the provided token
- * 
- * @example
- * // Outside the cached function
- * const token = await getSupabaseAuth();
- * 
- * // Inside the cached function
- * async function getCachedData(token: string | null) {
- *   "use cache";
- *   const supabase = createCachedSupabaseClient(token);
- *   return supabase.from('table').select();
- * }
- */
-export function createCachedSupabaseClient(accessToken: string | null) {
-  return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      global: {
-        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
-        fetch: supabaseFetch,
-      },
-    },
-  );
 }

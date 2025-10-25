@@ -1,8 +1,9 @@
-import { createCachedSupabaseClient, getSupabaseAuth } from "@/db/supabase";
+import { createServerSupabaseClient } from "@/db/supabase";
 import { mediaService } from "@/lib/db/services/media.service";
 import { postService } from "@/lib/db/services/post.service";
 import { reactionService } from "@/lib/db/services/reaction.service";
 import { userService } from "@/lib/db/services/user.service";
+import { auth } from "@clerk/nextjs/server";
 
 const services = {
     postService,
@@ -23,7 +24,7 @@ export function withCacheService<T extends ServiceName, M extends ServiceMethods
 
         async function cachedService(accessToken: string | null, ...params: ServiceMethodParams<T, M>) {
                 "use cache";
-                const supabase = createCachedSupabaseClient(accessToken);
+                const supabase = createServerSupabaseClient(accessToken);
                 const serviceFunction = services[service][method] as Function;
 
                 return serviceFunction.call({ supabase }, ...params);
@@ -32,9 +33,8 @@ export function withCacheService<T extends ServiceName, M extends ServiceMethods
         return async function serviceCall(
                 ...params: ServiceMethodParams<T, M>
         ) {
-                const accessToken = await getSupabaseAuth();
+                const session = await auth();
+                const accessToken = await session.getToken();
                 return cachedService(accessToken, ...params);
         }
 }
-
-type getUserFeedParams = Parameters<(typeof services)["postService"]["getUserFeed"]>;
