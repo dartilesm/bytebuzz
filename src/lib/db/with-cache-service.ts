@@ -1,8 +1,9 @@
+import type { ServiceMethodWithContext } from "@/lib/create-service-with-context";
 import { mediaService } from "@/lib/db/services/media.service";
 import { postService } from "@/lib/db/services/post.service";
 import { reactionService } from "@/lib/db/services/reaction.service";
 import { userService } from "@/lib/db/services/user.service";
-import { ServiceMethodParams, ServiceMethods, ServiceName } from "@/types/services";
+import type { ServiceMethodParams, ServiceMethods, ServiceName } from "@/types/services";
 import { auth } from "@clerk/nextjs/server";
 
 const services = {
@@ -10,16 +11,19 @@ const services = {
   userService,
   mediaService,
   reactionService,
-} as const;
+};
 
 export function withCacheService<T extends ServiceName, M extends ServiceMethods<T>>(
   service: T,
-  method: M
+  method: M,
+  cacheContext: () => void = () => {}
 ) {
   async function cachedService(accessToken: string | null, ...params: ServiceMethodParams<T, M>) {
     "use cache";
+    cacheContext();
 
-    const serviceFunction = services[service][method] as Function;
+    const serviceFunction = services[service][method] as ServiceMethodWithContext;
+
     return serviceFunction.call({ accessToken }, ...params);
   }
 
