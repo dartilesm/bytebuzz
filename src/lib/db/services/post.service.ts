@@ -1,13 +1,18 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import type { NestedPost } from "@/types/nested-posts";
-import type { Tables } from "database.types";
+import type { Tables, Database } from "database.types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { withCache } from "@/lib/db/with-cache";
 
 /**
  * Get user feed
+ * @param supabase - Supabase client (injected when using withCache)
  * @param cursor - Optional timestamp to fetch posts before this point
  */
-async function getUserFeed(cursor?: string) {
-  const supabase = createServerSupabaseClient();
+async function getUserFeed(
+  cursor?: string,
+) {
+  const supabase = this.supabase || createServerSupabaseClient();
   let query = supabase.rpc("get_user_feed").order("created_at", { ascending: false }).limit(10);
 
   if (cursor) {

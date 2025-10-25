@@ -4,6 +4,7 @@ import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
 import { createCachedSupabaseClient, getSupabaseAuth } from "@/db/supabase";
 import { postService } from "@/lib/db/services/post.service";
+import { withCacheService } from "@/lib/db/with-cache";
 import { NestedPost } from "@/types/nested-posts";
 import type { Database } from "database.types";
 
@@ -22,8 +23,9 @@ async function getCachedUserFeed(accessToken: string | null, cursor?: string) {
 }
 
 export async function UserFeed() {
-  const accessToken = await getSupabaseAuth();
-  const { data: initialPosts, error } = await getCachedUserFeed(accessToken);
+  /*   const accessToken = await getSupabaseAuth();
+  const { data: initialPosts, error } = await getCachedUserFeed(accessToken); */
+  const { data: initialPosts, error } = await withCacheService("postService", "getUserFeed")();
 
   if (error) return <span>Ops! Error loading posts</span>;
 
