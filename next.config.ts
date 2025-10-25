@@ -10,9 +10,6 @@ const nextConfig: NextConfig = {
     "pino-file",
     "pino-pretty",
   ],
-  experimental: {
-    devtoolSegmentExplorer: true,
-  },
   images: {
     remotePatterns: [
       {
