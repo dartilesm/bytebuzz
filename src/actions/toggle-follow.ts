@@ -1,6 +1,6 @@
 "use server";
 
-import { userRepository } from "@/lib/db/repositories/user.repository";
+import { userService } from "@/lib/db/services/user.service";
 
 export interface ToggleFollowData {
   target_user_id: string;
@@ -9,5 +9,5 @@ export interface ToggleFollowData {
 export async function toggleFollow({
   target_user_id,
 }: ToggleFollowData) {
-  return await userRepository.toggleFollow(target_user_id);
+  return await userService.toggleFollow(target_user_id);
 }

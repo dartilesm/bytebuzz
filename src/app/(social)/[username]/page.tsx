@@ -1,5 +1,5 @@
 import { UserProfile } from "@/components/user-profile/user-profile";
-import { userRepository } from "@/lib/db/repositories/user.repository";
+import { userService } from "@/lib/db/services/user.service";
 import { generateUserProfileMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
 import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
   const formattedUsername = decodeURIComponent(username).replace("@", "");
 
   try {
-    const { data: userProfile, error } = await userRepository.getUserByUsername(formattedUsername);
+    const { data: userProfile, error } = await userService.getUserByUsername(formattedUsername);
 
     if (!userProfile || error) {
       return generateFallbackMetadata("user");
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
 async function UserPage({ params }: UserPageProps) {
   const { username } = await params;
   const formattedUsername = decodeURIComponent(username);
-  const { data: userProfile, error } = await userRepository.getUserByUsername(
+  const { data: userProfile, error } = await userService.getUserByUsername(
     formattedUsername.replace("@", "")
   );
 

@@ -1,7 +1,7 @@
 "use server";
 
-import { postRepository } from "@/lib/db/repositories/post.repository";
-import { mediaRepository } from "@/lib/db/repositories/media.repository";
+import { postService } from "@/lib/db/services/post.service";
+import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
 import { currentUser } from "@clerk/nextjs/server";
 import type { Tables } from "database.types";
@@ -39,8 +39,8 @@ export async function createPostAction({
       throw new Error("User not authenticated");
     }
 
-    // Create post using repository
-    const { data: post, error: postError } = await postRepository.createPost({
+    // Create post using service
+    const { data: post, error: postError } = await postService.createPost({
       content: content ?? null,
       user_id: user.id,
       parent_post_id,
@@ -57,8 +57,8 @@ export async function createPostAction({
         const fileName = media.path.split("/").pop() || "";
         const permanentPath = `${user.id}/posts/${post.id}/${fileName}`;
 
-        // Move file from temp to permanent location using repository
-        const { error: moveError } = await mediaRepository.moveFile(
+        // Move file from temp to permanent location using service
+        const { error: moveError } = await mediaService.moveFile(
           "post-images",
           media.path,
           permanentPath
@@ -68,8 +68,8 @@ export async function createPostAction({
           throw new Error(`Failed to move media file: ${moveError.message}`);
         }
 
-        // Generate the proxy URL for the permanent location using repository
-        const publicUrl = mediaRepository.getPublicUrl(
+        // Generate the proxy URL for the permanent location using service
+        const publicUrl = mediaService.getPublicUrl(
           "post-images",
           permanentPath
         );
@@ -85,9 +85,9 @@ export async function createPostAction({
       try {
         const mediaRecords = await Promise.all(mediaPromises);
 
-        // Create media records using repository
+        // Create media records using service
         const { error: mediaError } =
-          await mediaRepository.createMediaRecords(mediaRecords);
+          await mediaService.createMediaRecords(mediaRecords);
 
         if (mediaError) {
           throw new Error(
@@ -96,12 +96,12 @@ export async function createPostAction({
         }
       } catch (error) {
         // If any media operation fails, clean up post and all moved files
-        await postRepository.deletePost(post.id);
+        await postService.deletePost(post.id);
         const permanentPaths = mediaData.map((media) => {
           const fileName = media.path.split("/").pop() || "";
           return `${user.id}/posts/${post.id}/${fileName}`;
         });
-        await mediaRepository.removeFiles("post-images", permanentPaths);
+        await mediaService.removeFiles("post-images", permanentPaths);
         throw error;
       }
     }
