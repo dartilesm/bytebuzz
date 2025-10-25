@@ -3,13 +3,14 @@
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import type { DbResult } from "@/lib/db/repositories";
 import type { NestedPost } from "@/types/nested-posts";
 import { Button } from "@heroui/react";
 import { PaperclipIcon } from "lucide-react";
+import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+import type { Tables } from "database.types";
 
 interface ExplorerViewPostsProps {
-  posts?: DbResult<any>;
+  posts?: PostgrestSingleResponse<Tables<"posts">[]>;
   postsSearchTerm?: string;
   onExploreAll?: () => void;
 }
@@ -45,7 +46,7 @@ export function ExplorerViewPosts({
   return (
     <PostsProvider initialPosts={posts as unknown as NestedPost[]}>
       <div className='flex flex-col gap-2'>
-        {posts?.data.map((post: any) => (
+        {posts?.data.map((post) => (
           <PostWrapper key={post.id}>
             <UserPost post={post as unknown as NestedPost} />
           </PostWrapper>

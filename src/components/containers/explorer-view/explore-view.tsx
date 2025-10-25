@@ -7,12 +7,13 @@ import { ExplorerViewPosts } from "@/components/containers/explorer-view/explore
 import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
-import type { DbResult } from "@/lib/db/repositories";
 import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
 import { Tab, Tabs } from "@heroui/react";
 import { parseAsInteger, parseAsString, type Parser, useQueryStates } from "nuqs";
 import { useRef } from "react";
+import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+import type { Tables } from "database.types";
 
 type SearchType = "all" | "users" | "posts";
 
@@ -20,7 +21,7 @@ interface ExploreViewProps {
   users?:
     | Awaited<ReturnType<typeof getCachedUsers>>
     | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
-  posts?: DbResult<any>;
+  posts?: PostgrestSingleResponse<Tables<"posts">[]>;
 }
 
 function getInitialSearchType(searchOptions: ExplorerPageSearchParams): SearchType {

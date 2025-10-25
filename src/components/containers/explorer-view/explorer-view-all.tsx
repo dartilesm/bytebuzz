@@ -4,19 +4,19 @@ import { UserCard2 } from "@/components/explore/user-card-2";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import type { DbResult } from "@/lib/db/repositories";
 import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
 import type { NestedPost } from "@/types/nested-posts";
 import { ScrollShadow } from "@heroui/react";
 import type { Tables } from "database.types";
 import { FilesIcon } from "lucide-react";
+import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 interface ExplorerViewAllProps {
   users?:
     | Awaited<ReturnType<typeof getCachedUsers>>
     | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
-  posts?: DbResult<any>;
+  posts?: PostgrestSingleResponse<Tables<"posts">[]>;
   allSearchTerm?: string;
 }
 
@@ -70,7 +70,7 @@ export function ExplorerViewAll({ users, posts, allSearchTerm }: ExplorerViewAll
           <h2 className='text-lg font-medium'>Posts</h2>
           <PostsProvider initialPosts={posts as unknown as NestedPost[]}>
             <div className='grid gap-2'>
-              {posts.data.map((post: any) => (
+              {posts.data.map((post) => (
                 <PostWrapper key={post.id}>
                   <UserPost post={post as unknown as NestedPost} />
                 </PostWrapper>

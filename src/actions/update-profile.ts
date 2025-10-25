@@ -2,14 +2,11 @@
 
 import { userRepository } from "@/lib/db/repositories";
 import type { Tables } from "database.types";
-import type { DbResult } from "@/lib/db/repositories";
 import { revalidatePath } from "next/cache";
 
 export type UpdateProfileData = Partial<Tables<"users">>;
 
-export async function updateProfile(
-  data: UpdateProfileData,
-): Promise<DbResult<Tables<"users">>> {
+export async function updateProfile(data: UpdateProfileData) {
   if (!data.username) {
     throw new Error("Username is required");
   }
