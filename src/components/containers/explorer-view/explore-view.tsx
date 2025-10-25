@@ -1,16 +1,16 @@
 "use client";
 
 import type { ExplorerPageSearchParams } from "@/app/(social)/explore/page";
-import { ExplorerViewAll } from "@/components/containers/explorer-view/explorer-view-all";
 import { ExplorerMixedView } from "@/components/containers/explorer-view/explorer-mixed-view";
+import { ExplorerViewAll } from "@/components/containers/explorer-view/explorer-view-all";
 import { ExplorerViewPosts } from "@/components/containers/explorer-view/explorer-view-posts";
 import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
-import { userService } from "@/lib/db/services/user.service";
-import { postService } from "@/lib/db/services/post.service";
+import type { postService } from "@/lib/db/services/post.service";
+import type { userService } from "@/lib/db/services/user.service";
 import { Tab, Tabs } from "@heroui/react";
-import { parseAsInteger, parseAsString, type Parser, useQueryStates } from "nuqs";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { useRef } from "react";
 
 type SearchType = "all" | "users" | "posts";
@@ -41,7 +41,7 @@ export function ExploreView({ users, posts }: ExploreViewProps) {
       posts: parseAsString.withDefault(""),
       page: parseAsInteger.withDefault(0),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } satisfies Record<keyof ExplorerPageSearchParams, Parser<any>>,
+    } satisfies Record<keyof ExplorerPageSearchParams, any>,
     {
       shallow: false,
       clearOnDefault: true,
