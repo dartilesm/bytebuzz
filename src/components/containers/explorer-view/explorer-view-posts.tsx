@@ -3,16 +3,13 @@
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import type { getCachedPosts } from "@/lib/db/calls/get-posts";
-import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
+import type { DbResult } from "@/lib/db/repositories";
 import type { NestedPost } from "@/types/nested-posts";
 import { Button } from "@heroui/react";
 import { PaperclipIcon } from "lucide-react";
 
 interface ExplorerViewPostsProps {
-  posts?:
-    | Awaited<ReturnType<typeof getCachedPosts>>
-    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
+  posts?: DbResult<any>;
   postsSearchTerm?: string;
   onExploreAll?: () => void;
 }
@@ -48,7 +45,7 @@ export function ExplorerViewPosts({
   return (
     <PostsProvider initialPosts={posts as unknown as NestedPost[]}>
       <div className='flex flex-col gap-2'>
-        {posts?.data.map((post) => (
+        {posts?.data.map((post: any) => (
           <PostWrapper key={post.id}>
             <UserPost post={post as unknown as NestedPost} />
           </PostWrapper>

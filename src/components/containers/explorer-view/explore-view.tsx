@@ -7,8 +7,7 @@ import { ExplorerViewPosts } from "@/components/containers/explorer-view/explore
 import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
-import type { getCachedPosts } from "@/lib/db/calls/get-posts";
-import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
+import type { DbResult } from "@/lib/db/repositories";
 import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
 import { Tab, Tabs } from "@heroui/react";
@@ -21,9 +20,7 @@ interface ExploreViewProps {
   users?:
     | Awaited<ReturnType<typeof getCachedUsers>>
     | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
-  posts?:
-    | Awaited<ReturnType<typeof getCachedPosts>>
-    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
+  posts?: DbResult<any>;
 }
 
 function getInitialSearchType(searchOptions: ExplorerPageSearchParams): SearchType {

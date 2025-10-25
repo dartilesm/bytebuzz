@@ -4,8 +4,7 @@ import { UserCard2 } from "@/components/explore/user-card-2";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import type { getCachedPosts } from "@/lib/db/calls/get-posts";
-import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
+import type { DbResult } from "@/lib/db/repositories";
 import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
 import type { NestedPost } from "@/types/nested-posts";
@@ -16,9 +15,7 @@ interface ExplorerMixedViewProps {
   users?:
     | Awaited<ReturnType<typeof getCachedUsers>>
     | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
-  posts?:
-    | Awaited<ReturnType<typeof getCachedPosts>>
-    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
+  posts?: DbResult<any>;
 }
 
 /**
@@ -57,7 +54,7 @@ export function ExplorerMixedView({ users, posts }: ExplorerMixedViewProps) {
             </div>
             <PostsProvider initialPosts={posts as unknown as NestedPost[]}>
               <div className='grid gap-3'>
-                {posts.data.slice(0, 6).map((post) => (
+                {posts.data.slice(0, 6).map((post: any) => (
                   <PostWrapper key={post.id}>
                     <UserPost post={post as unknown as NestedPost} />
                   </PostWrapper>

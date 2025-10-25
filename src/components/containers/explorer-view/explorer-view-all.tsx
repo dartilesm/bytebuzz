@@ -4,8 +4,7 @@ import { UserCard2 } from "@/components/explore/user-card-2";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import type { getCachedPosts } from "@/lib/db/calls/get-posts";
-import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
+import type { DbResult } from "@/lib/db/repositories";
 import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
 import type { getCachedUsers } from "@/lib/db/calls/get-users";
 import type { NestedPost } from "@/types/nested-posts";
@@ -17,9 +16,7 @@ interface ExplorerViewAllProps {
   users?:
     | Awaited<ReturnType<typeof getCachedUsers>>
     | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
-  posts?:
-    | Awaited<ReturnType<typeof getCachedPosts>>
-    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
+  posts?: DbResult<any>;
   allSearchTerm?: string;
 }
 
@@ -34,7 +31,7 @@ export function ExplorerViewAll({ users, posts, allSearchTerm }: ExplorerViewAll
 
   if (!hasAnyContent) {
     return (
-      <div className='w-full max-w-[1024px] mx-auto px-4 py-8 flex flex-col justify-center'>
+      <div className='w-full max-w-5xl mx-auto px-4 py-8 flex flex-col justify-center'>
         <div className='text-center py-12'>
           <div className='flex justify-center mb-6'>
             <FilesIcon className='w-16 h-16 text-content3' />
@@ -51,7 +48,7 @@ export function ExplorerViewAll({ users, posts, allSearchTerm }: ExplorerViewAll
   }
 
   return (
-    <div className='w-full max-w-[1024px] mx-auto px-4 py-6 flex flex-col gap-8'>
+    <div className='w-full max-w-5xl mx-auto px-4 py-6 flex flex-col gap-8'>
       {/* Users Section */}
       {hasUsers && (
         <section className='space-y-4'>
@@ -73,7 +70,7 @@ export function ExplorerViewAll({ users, posts, allSearchTerm }: ExplorerViewAll
           <h2 className='text-lg font-medium'>Posts</h2>
           <PostsProvider initialPosts={posts as unknown as NestedPost[]}>
             <div className='grid gap-2'>
-              {posts.data.map((post) => (
+              {posts.data.map((post: any) => (
                 <PostWrapper key={post.id}>
                   <UserPost post={post as unknown as NestedPost} />
                 </PostWrapper>

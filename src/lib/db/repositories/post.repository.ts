@@ -1,6 +1,7 @@
-import { BaseRepository, type DbResult } from "./base.repository";
 import type { NestedPost } from "@/types/nested-posts";
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import type { Tables } from "database.types";
+import { BaseRepository } from "./base.repository";
 
 /**
  * Repository for post-related database operations
@@ -12,7 +13,7 @@ class PostRepository extends BaseRepository {
    * @param cursor - Optional timestamp to fetch posts before this point
    */
   getUserFeed = this.cached(
-    async (cursor?: string): Promise<DbResult<NestedPost[]>> => {
+    async (cursor?: string): Promise<PostgrestSingleResponse<NestedPost[]>> => {
       let query = this.supabase
         .rpc("get_user_feed")
         .order("created_at", { ascending: false })
@@ -38,7 +39,7 @@ class PostRepository extends BaseRepository {
     }: {
       username: string;
       cursor?: string;
-    }): Promise<DbResult<NestedPost[]>> => {
+    }): Promise<PostgrestSingleResponse<NestedPost[]>> => {
       let query = this.supabase
         .rpc("get_user_posts_by_username", { input_username: username })
         .order("created_at", { ascending: false })
@@ -64,7 +65,7 @@ class PostRepository extends BaseRepository {
     }: {
       limitCount?: number;
       offsetCount?: number;
-    } = {}): Promise<DbResult<any>> => {
+    } = {}): Promise<PostgrestSingleResponse<any>> => {
       return await this.supabase.rpc("get_trending_posts", {
         limit_count: limitCount,
         offset_count: offsetCount,
@@ -87,7 +88,7 @@ class PostRepository extends BaseRepository {
       searchTerm: string;
       limitCount?: number;
       offsetCount?: number;
-    }): Promise<DbResult<any>> => {
+    }): Promise<PostgrestSingleResponse<any>> => {
       return await this.supabase.rpc("search_posts", {
         search_term: searchTerm,
         limit_count: limitCount,
@@ -103,7 +104,7 @@ class PostRepository extends BaseRepository {
   async createPost(
     data: Pick<Tables<"posts">, "content" | "user_id"> &
       Partial<Pick<Tables<"posts">, "parent_post_id" | "repost_post_id">>
-  ): Promise<DbResult<Tables<"posts">>> {
+  ): Promise<PostgrestSingleResponse<Tables<"posts">>> {
     return await this.supabase.from("posts").insert(data).select().single();
   }
 
@@ -111,7 +112,7 @@ class PostRepository extends BaseRepository {
    * Delete a post (no caching for mutations)
    * @param postId - ID of the post to delete
    */
-  async deletePost(postId: string): Promise<DbResult<null>> {
+  async deletePost(postId: string): Promise<PostgrestSingleResponse<null>> {
     return await this.supabase.from("posts").delete().eq("id", postId);
   }
 
@@ -120,7 +121,7 @@ class PostRepository extends BaseRepository {
    * @param postId - ID of the post to retrieve
    */
   getPostById = this.cached(
-    async (postId: string): Promise<DbResult<NestedPost>> => {
+    async (postId: string): Promise<PostgrestSingleResponse<NestedPost>> => {
       return await this.supabase
         .from("posts")
         .select("*")

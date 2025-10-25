@@ -17,10 +17,10 @@ export async function UserProfile({ profile }: UserProfileProps) {
   return (
     <ProfileProvider profile={profile}>
       <PageHeader title={profile.display_name} subtitle={`@${profile.username}`} />
-      <div className="flex flex-col gap-4 w-full max-w-[1024px] mx-auto px-4">
+      <div className='flex flex-col gap-4 w-full max-w-[1024px] mx-auto px-4'>
         <UserProfileCoverAvatar />
         <UserProfileTopActions />
-        <div className="flex flex-col gap-2">
+        <div className='flex flex-col gap-2'>
           <UserProfileDescription />
           <UserProfileContent posts={posts.data ?? []} />
         </div>

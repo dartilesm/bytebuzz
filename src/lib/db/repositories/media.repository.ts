@@ -1,4 +1,5 @@
-import { BaseRepository, type DbResult, type StorageResult } from "./base.repository";
+import { PostgrestResponse, PostgrestSingleResponse } from "@supabase/supabase-js";
+import { BaseRepository, type StorageResult } from "./base.repository";
 import type { Tables } from "database.types";
 
 /**
@@ -21,7 +22,7 @@ class MediaRepository extends BaseRepository {
    */
   async createMediaRecords(
     records: MediaRecord[]
-  ): Promise<DbResult<Tables<"post_media">[]>> {
+  ): Promise<PostgrestResponse<Tables<"post_media">[]>> {
     return await this.supabase.from("post_media").insert(records).select();
   }
 
@@ -82,7 +83,7 @@ class MediaRepository extends BaseRepository {
    * @param postId - ID of the post
    */
   getPostMedia = this.cached(
-    async (postId: string): Promise<DbResult<Tables<"post_media">[]>> => {
+    async (postId: string): Promise<PostgrestSingleResponse<Tables<"post_media">[]>> => {
       return await this.supabase
         .from("post_media")
         .select("*")

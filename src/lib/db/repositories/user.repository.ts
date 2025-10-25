@@ -1,4 +1,5 @@
-import { BaseRepository, type DbResult } from "./base.repository";
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
+import { BaseRepository } from "./base.repository";
 import type { Tables } from "database.types";
 
 /**
@@ -10,7 +11,7 @@ class UserRepository extends BaseRepository {
    * @param username - Username to look up
    */
   getUserByUsername = this.cached(
-    async (username: string): Promise<DbResult<Tables<"users">>> => {
+    async (username: string): Promise<PostgrestSingleResponse<Tables<"users">>> => {
       return await this.supabase
         .from("users")
         .select("*")
@@ -24,7 +25,7 @@ class UserRepository extends BaseRepository {
    * @param userId - User ID to look up
    */
   getUserById = this.cached(
-    async (userId: string): Promise<DbResult<Tables<"users">>> => {
+    async (userId: string): Promise<PostgrestSingleResponse<Tables<"users">>> => {
       return await this.supabase
         .from("users")
         .select("*")
@@ -41,7 +42,7 @@ class UserRepository extends BaseRepository {
   async updateProfile(
     username: string,
     data: Partial<Tables<"users">>
-  ): Promise<DbResult<Tables<"users">>> {
+  ): Promise<PostgrestSingleResponse<Tables<"users">>> {
     return await this.supabase
       .from("users")
       .update(data)
@@ -54,7 +55,7 @@ class UserRepository extends BaseRepository {
    * Upsert user profile (used for webhook sync)
    * @param data - User data to upsert
    */
-  async upsertUser(data: any): Promise<DbResult<Tables<"users">>> {
+  async upsertUser(data: any): Promise<PostgrestSingleResponse<Tables<"users">>> {
     return await this.supabase
       .from("users")
       .upsert(data)
@@ -66,7 +67,7 @@ class UserRepository extends BaseRepository {
    * Delete user (no caching for mutations)
    * @param userId - ID of the user to delete
    */
-  async deleteUser(userId: string): Promise<DbResult<null>> {
+  async deleteUser(userId: string): Promise<PostgrestSingleResponse<null>> {
     return await this.supabase.from("users").delete().eq("id", userId);
   }
 
@@ -76,7 +77,7 @@ class UserRepository extends BaseRepository {
    */
   async toggleFollow(
     targetUserId: string
-  ): Promise<DbResult<Tables<"user_followers">>> {
+  ): Promise<PostgrestSingleResponse<Tables<"user_followers">>> {
     return await this.supabase
       .rpc("toggle_follow", { target_user_id: targetUserId })
       .select()
@@ -92,7 +93,7 @@ class UserRepository extends BaseRepository {
     async (
       currentUserId: string,
       targetUserId: string
-    ): Promise<DbResult<Tables<"user_followers">>> => {
+    ): Promise<PostgrestSingleResponse<Tables<"user_followers">>> => {
       return await this.supabase
         .from("user_followers")
         .select("*")
