@@ -1,6 +1,7 @@
+import { createServerSupabaseClient } from "@/db/supabase";
 import { PostgrestResponse, PostgrestSingleResponse } from "@supabase/supabase-js";
-import { getSupabaseClient, cached, type StorageResult } from "./base.service";
 import type { Tables } from "database.types";
+import { cached, type StorageResult } from "./base.service";
 
 /**
  * Media record structure for creating post media
@@ -19,7 +20,7 @@ export interface MediaRecord {
 async function createMediaRecords(
   records: MediaRecord[]
 ): Promise<PostgrestResponse<Tables<"post_media">[]>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase.from("post_media").insert(records).select();
 }
 
@@ -34,7 +35,7 @@ async function moveFile(
   fromPath: string,
   toPath: string
 ): Promise<StorageResult> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).move(fromPath, toPath);
 }
 
@@ -45,7 +46,7 @@ async function moveFile(
  * @returns Public URL string
  */
 function getPublicUrl(bucket: string, path: string): string {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   const {
     data: { publicUrl },
   } = supabase.storage.from(bucket).getPublicUrl(path);
@@ -58,7 +59,7 @@ function getPublicUrl(bucket: string, path: string): string {
  * @param paths - Array of file paths to remove
  */
 async function removeFiles(bucket: string, paths: string[]): Promise<StorageResult> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).remove(paths);
 }
 
@@ -75,7 +76,7 @@ async function uploadFile(
   file: File | Blob,
   options?: { contentType?: string; upsert?: boolean }
 ) {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase.storage.from(bucket).upload(path, file, options);
 }
 
@@ -85,7 +86,7 @@ async function uploadFile(
  */
 const getPostMedia = cached(
   async (postId: string): Promise<PostgrestSingleResponse<Tables<"post_media">[]>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     return await supabase
       .from("post_media")
       .select("*")

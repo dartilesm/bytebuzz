@@ -35,7 +35,7 @@ export function getSupabaseClient() {
  * @example
  * ```typescript
  * const getUserById = cached(async (id: string) => {
- *   const supabase = getSupabaseClient();
+ *   const supabase = createServerSupabaseClient();
  *   return await supabase.from("users").select("*").eq("id", id).single();
  * });
  * ```

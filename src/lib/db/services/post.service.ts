@@ -1,7 +1,8 @@
+import { createServerSupabaseClient } from "@/db/supabase";
 import type { NestedPost } from "@/types/nested-posts";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import type { Tables } from "database.types";
-import { getSupabaseClient, cached } from "./base.service";
+import { cached } from "./base.service";
 
 /**
  * Get user feed with automatic caching
@@ -9,7 +10,7 @@ import { getSupabaseClient, cached } from "./base.service";
  */
 const getUserFeed = cached(
   async (cursor?: string): Promise<PostgrestSingleResponse<NestedPost[]>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     let query = supabase
       .rpc("get_user_feed")
       .order("created_at", { ascending: false })
@@ -36,7 +37,7 @@ const getUserPosts = cached(
     username: string;
     cursor?: string;
   }): Promise<PostgrestSingleResponse<NestedPost[]>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     let query = supabase
       .rpc("get_user_posts_by_username", { input_username: username })
       .order("created_at", { ascending: false })
@@ -63,7 +64,7 @@ const getTrendingPosts = cached(
     limitCount?: number;
     offsetCount?: number;
   } = {}): Promise<PostgrestSingleResponse<any>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     return await supabase.rpc("get_trending_posts", {
       limit_count: limitCount,
       offset_count: offsetCount,
@@ -87,7 +88,7 @@ const searchPosts = cached(
     limitCount?: number;
     offsetCount?: number;
   }): Promise<PostgrestSingleResponse<any>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     return await supabase.rpc("search_posts", {
       search_term: searchTerm,
       limit_count: limitCount,
@@ -104,7 +105,7 @@ async function createPost(
   data: Pick<Tables<"posts">, "content" | "user_id"> &
     Partial<Pick<Tables<"posts">, "parent_post_id" | "repost_post_id">>
 ): Promise<PostgrestSingleResponse<Tables<"posts">>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase.from("posts").insert(data).select().single();
 }
 
@@ -113,7 +114,7 @@ async function createPost(
  * @param postId - ID of the post to delete
  */
 async function deletePost(postId: string): Promise<PostgrestSingleResponse<null>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase.from("posts").delete().eq("id", postId);
 }
 
@@ -123,7 +124,7 @@ async function deletePost(postId: string): Promise<PostgrestSingleResponse<null>
  */
 const getPostById = cached(
   async (postId: string): Promise<PostgrestSingleResponse<NestedPost>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     return await supabase
       .from("posts")
       .select("*")

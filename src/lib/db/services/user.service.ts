@@ -1,6 +1,7 @@
+import { createServerSupabaseClient } from "@/db/supabase";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { getSupabaseClient, cached } from "./base.service";
 import type { Tables } from "database.types";
+import { cached } from "./base.service";
 
 /**
  * Get user profile by username with automatic caching
@@ -8,7 +9,7 @@ import type { Tables } from "database.types";
  */
 const getUserByUsername = cached(
   async (username: string): Promise<PostgrestSingleResponse<Tables<"users">>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     return await supabase
       .from("users")
       .select("*")
@@ -23,7 +24,7 @@ const getUserByUsername = cached(
  */
 const getUserById = cached(
   async (userId: string): Promise<PostgrestSingleResponse<Tables<"users">>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     return await supabase
       .from("users")
       .select("*")
@@ -41,7 +42,7 @@ async function updateProfile(
   username: string,
   data: Partial<Tables<"users">>
 ): Promise<PostgrestSingleResponse<Tables<"users">>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase
     .from("users")
     .update(data)
@@ -55,7 +56,7 @@ async function updateProfile(
  * @param data - User data to upsert
  */
 async function upsertUser(data: any): Promise<PostgrestSingleResponse<Tables<"users">>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase
     .from("users")
     .upsert(data)
@@ -68,7 +69,7 @@ async function upsertUser(data: any): Promise<PostgrestSingleResponse<Tables<"us
  * @param userId - ID of the user to delete
  */
 async function deleteUser(userId: string): Promise<PostgrestSingleResponse<null>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase.from("users").delete().eq("id", userId);
 }
 
@@ -79,7 +80,7 @@ async function deleteUser(userId: string): Promise<PostgrestSingleResponse<null>
 async function toggleFollow(
   targetUserId: string
 ): Promise<PostgrestSingleResponse<Tables<"user_followers">>> {
-  const supabase = getSupabaseClient();
+  const supabase = createServerSupabaseClient();
   return await supabase
     .rpc("toggle_follow", { target_user_id: targetUserId })
     .select()
@@ -96,7 +97,7 @@ const getFollowStatus = cached(
     currentUserId: string,
     targetUserId: string
   ): Promise<PostgrestSingleResponse<Tables<"user_followers">>> => {
-    const supabase = getSupabaseClient();
+    const supabase = createServerSupabaseClient();
     return await supabase
       .from("user_followers")
       .select("*")
