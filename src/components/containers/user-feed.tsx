@@ -2,16 +2,16 @@ import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostList } from "@/components/post/post-list";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
-import { feedService } from "@/services/feed.service";
+import { postRepository } from "@/lib/db/repositories/post.repository";
 
 export async function UserFeed() {
-  const { data: initialPosts, error } = await feedService.getUserFeed();
+  const { data: initialPosts, error } = await postRepository.getUserFeed();
 
   if (error) return <span>Ops! Error loading posts</span>;
 
   return (
     <PostsProvider initialPosts={initialPosts || []}>
-      <div className="w-full p-4 flex flex-col gap-4">
+      <div className='w-full p-4 flex flex-col gap-4'>
         <PostComposer />
         <PostList postQueryType={POST_QUERY_TYPE.USER_FEED} />
       </div>

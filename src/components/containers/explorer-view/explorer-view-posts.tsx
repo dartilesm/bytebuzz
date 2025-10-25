@@ -3,16 +3,14 @@
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import type { getCachedPosts } from "@/lib/db/calls/get-posts";
-import type { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
 import type { NestedPost } from "@/types/nested-posts";
 import { Button } from "@heroui/react";
 import { PaperclipIcon } from "lucide-react";
+import type { PostgrestSingleResponse } from "@supabase/supabase-js";
+import type { Tables } from "database.types";
 
 interface ExplorerViewPostsProps {
-  posts?:
-    | Awaited<ReturnType<typeof getCachedPosts>>
-    | Awaited<ReturnType<typeof getCachedTrendingPosts>>;
+  posts?: PostgrestSingleResponse<Tables<"posts">[]>;
   postsSearchTerm?: string;
   onExploreAll?: () => void;
 }
