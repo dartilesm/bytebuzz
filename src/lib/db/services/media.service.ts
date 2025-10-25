@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import { createServiceWithContext } from "@/lib/create-service-with-context";
-import { ServiceContext } from "@/types/services";
+import type { ServiceContext } from "@/types/services";
 
 /**
  * Media record structure for creating post media

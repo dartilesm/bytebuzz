@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from "@/db/supabase";
 import { createServiceWithContext } from "@/lib/create-service-with-context";
 import type { NestedPost } from "@/types/nested-posts";
-import { ServiceContext } from "@/types/services";
+import type { ServiceContext } from "@/types/services";
 import type { Tables } from "database.types";
 
 /**
