@@ -6,7 +6,7 @@ import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tab, Tabs } from "@heroui/react";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import { ReactNode, useRef } from "react";
+import { type ReactNode, useRef } from "react";
 
 type SearchType = "all" | "users" | "posts";
 

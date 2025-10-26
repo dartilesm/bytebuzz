@@ -4,7 +4,7 @@ import { ExplorerViewEmpty } from "@/components/containers/explorer-view/explore
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
-import { postService } from "@/lib/db/services/post.service";
+import type { postService } from "@/lib/db/services/post.service";
 import type { NestedPost } from "@/types/nested-posts";
 import { use } from "react";
 
