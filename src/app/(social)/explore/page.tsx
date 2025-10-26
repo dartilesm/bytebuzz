@@ -1,6 +1,7 @@
 import { ExploreView } from "@/components/containers/explorer-view/explore-view";
 import { ExplorerViewPosts } from "@/components/containers/explorer-view/explorer-view-posts";
 import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
+import { ExplorerViewPostsLoading } from "@/components/containers/explorer-view/loading/explore-view-posts.loading";
 import { postService } from "@/lib/db/services/post.service";
 import { userService } from "@/lib/db/services/user.service";
 import { withAnalytics } from "@/lib/with-analytics";
@@ -15,26 +16,30 @@ export type ExplorerPageSearchParams = {
 
 async function TrendingPosts({
   postsPromise,
+  title,
 }: {
   postsPromise?:
     | ReturnType<typeof postService.getTrendingPosts>
     | ReturnType<typeof postService.searchPosts>;
+  title?: string;
 }) {
   const trendingPosts = await postsPromise;
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   await sleep(8000);
-  return <ExplorerViewPosts posts={trendingPosts} />;
+  return <ExplorerViewPosts posts={trendingPosts} title={title} />;
 }
 
 async function TrendingUsers({
   usersPromise,
+  title,
 }: {
   usersPromise?:
     | ReturnType<typeof userService.getTrendingUsers>
     | ReturnType<typeof userService.searchUsers>;
+  title?: string;
 }) {
   const trendingUsers = await usersPromise;
-  return <ExplorerViewUsers users={trendingUsers} />;
+  return <ExplorerViewUsers users={trendingUsers} title={title} />;
 }
 
 async function ExplorePage({ searchParams }: PageProps<"/explore">) {
@@ -57,12 +62,12 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
       <ExploreView
         postsResult={
           <Suspense fallback={<div>Loading posts...</div>}>
-            <TrendingPosts postsPromise={postsPromise} />
+            <TrendingPosts postsPromise={postsPromise} title='Trending Posts' />
           </Suspense>
         }
         usersResult={
           <Suspense fallback={<div>Loading users...</div>}>
-            <TrendingUsers usersPromise={usersPromise} />
+            <TrendingUsers usersPromise={usersPromise} title='Trending Users' />
           </Suspense>
         }
       />
@@ -107,13 +112,13 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   return (
     <ExploreView
       postsResult={
-        <Suspense fallback={<div>Loading posts...</div>}>
-          <TrendingPosts postsPromise={postsPromise} />
+        <Suspense fallback={<ExplorerViewPostsLoading />}>
+          <TrendingPosts postsPromise={postsPromise} title='Trending Posts' />
         </Suspense>
       }
       usersResult={
         <Suspense fallback={<div>Loading users...</div>}>
-          <TrendingUsers usersPromise={usersPromise} />
+          <TrendingUsers usersPromise={usersPromise} title='Trending Users' />
         </Suspense>
       }
     />
