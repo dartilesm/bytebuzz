@@ -42,16 +42,10 @@ export function ExploreViewUsers({
           {users?.data?.map((user) => (
             <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
           ))}
-          {users?.data?.map((user) => (
-            <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
-          ))}
         </ScrollShadow>
       )}
       {variant === "grid" && hasResults && (
         <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-3'>
-          {users?.data?.map((user) => (
-            <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
-          ))}
           {users?.data?.map((user) => (
             <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
           ))}

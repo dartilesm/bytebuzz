@@ -26,13 +26,17 @@ interface ExploreViewProps {
   usersPromise?: ExplorerViewUsersProps["usersPromise"];
 }
 
+/**
+ * Returns the initial search type ("all", "users", "posts") based on valid entries in URLSearchParams.
+ * By default, excludes "page". Returns "all" if nothing is found.
+ * @param {URLSearchParams} searchParams
+ * @returns {SearchType}
+ */
 function getInitialSearchType(searchParams: URLSearchParams): SearchType {
-  const searchOptionEntries = searchParams.entries();
-  const searchOptionEntry = searchOptionEntries.find(
-    ([key]) => key !== "page" && !!searchParams.get(key)
-  );
-  const [searchType] = searchOptionEntry ?? [];
-  return searchType as SearchType;
+  if (searchParams.has("users") && searchParams.get("users")) return "users";
+  if (searchParams.has("posts") && searchParams.get("posts")) return "posts";
+  if (searchParams.has("all") && searchParams.get("all")) return "all";
+  return "all";
 }
 
 export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
