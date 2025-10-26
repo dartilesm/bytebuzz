@@ -2,10 +2,10 @@ import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostList } from "@/components/post/post-list";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
-import { withCacheService } from "@/lib/db/with-cache-service";
+import { postService } from "@/lib/db/services/post.service";
 
 export async function UserFeed() {
-  const { data: initialPosts, error } = await withCacheService("postService", "getUserFeed")();
+  const { data: initialPosts, error } = await postService.getUserFeed();
 
   if (error) return <span>Ops! Error loading posts</span>;
 
