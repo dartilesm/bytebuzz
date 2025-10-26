@@ -81,27 +81,25 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
           initialSearchTerm={searchOptions[activeSearchTypeRef.current]}
         />
       </PageHeader>
-      {activeSearchTypeRef.current && (
-        <Tabs
-          aria-label='Explore sections'
-          variant='underlined'
-          color='primary'
-          className='sticky top-16 z-30 backdrop-blur-xl bg-background/70'
-          classNames={{
-            tabList: "w-full",
-          }}
-          selectedKey={activeSearchTypeRef.current}
-          onSelectionChange={(key) => handleSearchTypeChange(key as SearchType)}
-        >
-          <Tab key='all' title='All'>
-            <div className='space-y-4'>
-              <ExploreViewProvider
-                usersPromise={usersPromise}
-                postsPromise={postsPromise}
-                searchType='all'
-                searchTerm={activeSearchTypeRef.current}
-                showExploreAllButton={false}
-              >
+      <ExploreViewProvider
+        searchType={activeSearchTypeRef.current}
+        searchTerm={activeSearchTypeRef.current ? searchOptions[activeSearchTypeRef.current] : ""}
+        showExploreAllButton={activeSearchTypeRef.current === "all" ? false : true}
+      >
+        {activeSearchTypeRef.current && (
+          <Tabs
+            aria-label='Explore sections'
+            variant='underlined'
+            color='primary'
+            className='sticky top-16 z-30 backdrop-blur-xl bg-background/70'
+            classNames={{
+              tabList: "w-full",
+            }}
+            selectedKey={activeSearchTypeRef.current}
+            onSelectionChange={(key) => handleSearchTypeChange(key as SearchType)}
+          >
+            <Tab key='all' title='All'>
+              <div className='space-y-4'>
                 {usersPromise && (
                   <Suspense fallback={<ExplorerViewUsersLoading />}>
                     <ExploreViewUsers
@@ -116,64 +114,43 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
                     <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
                   </Suspense>
                 )}
-              </ExploreViewProvider>
-            </div>
-          </Tab>
-          <Tab key='users' title='Users'>
-            <ExploreViewProvider
-              usersPromise={usersPromise}
-              postsPromise={postsPromise}
-              searchType='users'
-              searchTerm={searchOptions.users}
-              showExploreAllButton={false}
-            >
+              </div>
+            </Tab>
+            <Tab key='users' title='Users'>
               {usersPromise && (
                 <Suspense fallback={<ExplorerViewUsersLoading />}>
                   <ExploreViewUsers usersPromise={usersPromise} />
                 </Suspense>
               )}
-            </ExploreViewProvider>
-          </Tab>
-          <Tab key='posts' title='Posts'>
-            <ExploreViewProvider
-              usersPromise={usersPromise}
-              postsPromise={postsPromise}
-              searchType='posts'
-              searchTerm={searchOptions.posts}
-              showExploreAllButton={false}
-            >
+            </Tab>
+            <Tab key='posts' title='Posts'>
               {postsPromise && (
                 <Suspense fallback={<ExplorerViewPostsLoading />}>
                   <ExploreViewPosts postsPromise={postsPromise} />
                 </Suspense>
               )}
-            </ExploreViewProvider>
-          </Tab>
-        </Tabs>
-      )}
-      {!activeSearchTypeRef.current && (
-        <ExploreViewProvider
-          usersPromise={usersPromise}
-          postsPromise={postsPromise}
-          searchType='all'
-          showExploreAllButton={false}
-        >
-          {usersPromise && (
-            <Suspense fallback={<ExplorerViewUsersLoading />}>
-              <ExploreViewUsers
-                usersPromise={usersPromise}
-                title='Trending Users'
-                variant='scroll'
-              />
-            </Suspense>
-          )}
-          {postsPromise && (
-            <Suspense fallback={<ExplorerViewPostsLoading />}>
-              <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
-            </Suspense>
-          )}
-        </ExploreViewProvider>
-      )}
+            </Tab>
+          </Tabs>
+        )}
+        {!activeSearchTypeRef.current && (
+          <div className='space-y-4'>
+            {usersPromise && (
+              <Suspense fallback={<ExplorerViewUsersLoading />}>
+                <ExploreViewUsers
+                  usersPromise={usersPromise}
+                  title='Trending Users'
+                  variant='scroll'
+                />
+              </Suspense>
+            )}
+            {postsPromise && (
+              <Suspense fallback={<ExplorerViewPostsLoading />}>
+                <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
+              </Suspense>
+            )}
+          </div>
+        )}
+      </ExploreViewProvider>
     </>
   );
 }
