@@ -82,8 +82,10 @@ export function ExploreView({ usersResult, postsResult }: ExploreViewProps) {
           onSelectionChange={(key) => handleSearchTypeChange(key as SearchType)}
         >
           <Tab key='all' title='All'>
-            {usersResult}
-            {postsResult}
+            <div className='space-y-4'>
+              {usersResult}
+              {postsResult}
+            </div>
           </Tab>
           <Tab key='users' title='Users'>
             {!usersResult && (
@@ -100,10 +102,10 @@ export function ExploreView({ usersResult, postsResult }: ExploreViewProps) {
         </Tabs>
       )}
       {!activeSearchTypeRef.current && (
-        <>
+        <div className='space-y-4'>
           {usersResult}
           {postsResult}
-        </>
+        </div>
       )}
     </>
   );

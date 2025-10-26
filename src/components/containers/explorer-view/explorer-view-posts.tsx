@@ -6,21 +6,28 @@ import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
 import { postService } from "@/lib/db/services/post.service";
 import type { NestedPost } from "@/types/nested-posts";
+import { use } from "react";
 
 interface ExplorerViewPostsProps {
-  posts?:
-    | Awaited<ReturnType<typeof postService.searchPosts>>
-    | Awaited<ReturnType<typeof postService.getTrendingPosts>>;
+  postsPromise:
+    | ReturnType<typeof postService.searchPosts>
+    | ReturnType<typeof postService.getTrendingPosts>;
   title?: string;
+  showEmptyState?: boolean;
 }
 
 /**
  * A beautiful list of posts component for the explorer view
  * Displays posts in a vertical list layout with proper context providers
  */
-export function ExplorerViewPosts({ posts, title }: ExplorerViewPostsProps) {
+export function ExplorerViewPosts({
+  postsPromise,
+  title,
+  showEmptyState = true,
+}: ExplorerViewPostsProps) {
+  const posts = use(postsPromise);
   if (!posts || posts?.data?.length === 0) {
-    return <ExplorerViewEmpty searchedBy='posts' />;
+    return showEmptyState ? <ExplorerViewEmpty searchedBy='posts' /> : null;
   }
 
   return (

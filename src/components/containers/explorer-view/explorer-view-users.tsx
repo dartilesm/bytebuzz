@@ -5,22 +5,31 @@ import { UserCard2 } from "@/components/explore/user-card-2";
 import { userService } from "@/lib/db/services/user.service";
 import { ScrollShadow } from "@heroui/react";
 import type { Tables } from "database.types";
+import { use } from "react";
 
 interface ExplorerViewUsersProps {
-  users?:
-    | Awaited<ReturnType<typeof userService.searchUsers>>
-    | Awaited<ReturnType<typeof userService.getTrendingUsers>>;
+  usersPromise?:
+    | ReturnType<typeof userService.searchUsers>
+    | ReturnType<typeof userService.getTrendingUsers>;
   variant?: "grid" | "scroll";
   title?: string;
+  showEmptyState?: boolean;
 }
 
 /**
  * A beautiful list of users component for the explorer view
  * Displays users in a responsive grid layout with horizontal scrolling
  */
-export function ExplorerViewUsers({ users, variant = "grid", title }: ExplorerViewUsersProps) {
+export function ExplorerViewUsers({
+  usersPromise,
+  variant = "grid",
+  title,
+  showEmptyState = true,
+}: ExplorerViewUsersProps) {
+  const users = use(usersPromise);
+  console.log({ users });
   if (!users || users?.data?.length === 0) {
-    return <ExplorerViewEmpty searchedBy='users' />;
+    return showEmptyState ? <ExplorerViewEmpty searchedBy='users' /> : null;
   }
   return (
     <section className='space-y-4'>
