@@ -1,13 +1,22 @@
 import { UserProfile } from "@/components/user-profile/user-profile";
-import { userService } from "@/lib/db/services/user.service";
 import { generateUserProfileMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
 import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { log } from "@/lib/logger/logger";
+import { withCacheService } from "@/lib/db/with-cache-service";
 
 interface UserPageProps {
   params: Promise<{ username: string }>;
+}
+
+async function getUserProfile(username: string) {
+  const formattedUsername = decodeURIComponent(username).replace("@", "");
+  const serviceResponse = await withCacheService("userService", "getUserByUsername", {
+    cacheLife: "days",
+    cacheTags: ["user-profile", username],
+  })(formattedUsername);
+  return serviceResponse;
 }
 
 /**
@@ -16,10 +25,9 @@ interface UserPageProps {
  */
 export async function generateMetadata({ params }: UserPageProps): Promise<Metadata> {
   const { username } = await params;
-  const formattedUsername = decodeURIComponent(username).replace("@", "");
 
   try {
-    const { data: userProfile, error } = await userService.getUserByUsername(formattedUsername);
+    const { data: userProfile, error } = await getUserProfile(username);
 
     if (!userProfile || error) {
       return generateFallbackMetadata("user");
@@ -34,10 +42,7 @@ export async function generateMetadata({ params }: UserPageProps): Promise<Metad
 
 async function UserPage({ params }: UserPageProps) {
   const { username } = await params;
-  const formattedUsername = decodeURIComponent(username);
-  const { data: userProfile, error } = await userService.getUserByUsername(
-    formattedUsername.replace("@", "")
-  );
+  const { data: userProfile, error } = await getUserProfile(username);
 
   if (!userProfile || error) {
     notFound();
