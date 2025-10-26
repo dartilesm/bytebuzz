@@ -1,7 +1,10 @@
 import { ExploreView } from "@/components/containers/explorer-view/explore-view";
+import { ExplorerViewPosts } from "@/components/containers/explorer-view/explorer-view-posts";
+import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
 import { postService } from "@/lib/db/services/post.service";
 import { userService } from "@/lib/db/services/user.service";
 import { withAnalytics } from "@/lib/with-analytics";
+import { Suspense } from "react";
 
 export type ExplorerPageSearchParams = {
   all?: string;
@@ -9,6 +12,30 @@ export type ExplorerPageSearchParams = {
   posts?: string;
   page?: number;
 };
+
+async function TrendingPosts({
+  postsPromise,
+}: {
+  postsPromise?:
+    | ReturnType<typeof postService.getTrendingPosts>
+    | ReturnType<typeof postService.searchPosts>;
+}) {
+  const trendingPosts = await postsPromise;
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  await sleep(8000);
+  return <ExplorerViewPosts posts={trendingPosts} />;
+}
+
+async function TrendingUsers({
+  usersPromise,
+}: {
+  usersPromise?:
+    | ReturnType<typeof userService.getTrendingUsers>
+    | ReturnType<typeof userService.searchUsers>;
+}) {
+  const trendingUsers = await usersPromise;
+  return <ExplorerViewUsers users={trendingUsers} />;
+}
 
 async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   const {
@@ -19,36 +46,78 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   } = (await searchParams) as ExplorerPageSearchParams;
 
   if (all) {
-    const users = await userService.searchUsers({
+    const usersPromise = userService.searchUsers({
       searchTerm: all as string,
     });
-    const posts = await postService.searchPosts({
+    const postsPromise = postService.searchPosts({
       searchTerm: all as string,
     });
 
-    return <ExploreView users={users} posts={posts} />;
+    return (
+      <ExploreView
+        postsResult={
+          <Suspense fallback={<div>Loading posts...</div>}>
+            <TrendingPosts postsPromise={postsPromise} />
+          </Suspense>
+        }
+        usersResult={
+          <Suspense fallback={<div>Loading users...</div>}>
+            <TrendingUsers usersPromise={usersPromise} />
+          </Suspense>
+        }
+      />
+    );
   }
 
   if (usersSearchTerm) {
-    const users = await userService.searchUsers({
+    const usersPromise = userService.searchUsers({
       searchTerm: usersSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
-    return <ExploreView users={users} />;
+    return (
+      <ExploreView
+        usersResult={
+          <Suspense fallback={<div>Loading users...</div>}>
+            <TrendingUsers usersPromise={usersPromise} />
+          </Suspense>
+        }
+      />
+    );
   }
 
   if (postsSearchTerm) {
-    const posts = await postService.searchPosts({
+    const postsPromise = postService.searchPosts({
       searchTerm: postsSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
-    return <ExploreView posts={posts} />;
+    return (
+      <ExploreView
+        postsResult={
+          <Suspense fallback={<div>Loading posts...</div>}>
+            <TrendingPosts postsPromise={postsPromise} />
+          </Suspense>
+        }
+      />
+    );
   }
 
-  const trendingPosts = await postService.getTrendingPosts();
-  const trendingUsers = await userService.getTrendingUsers();
+  const postsPromise = postService.getTrendingPosts();
+  const usersPromise = userService.getTrendingUsers();
 
-  return <ExploreView posts={trendingPosts} users={trendingUsers} />;
+  return (
+    <ExploreView
+      postsResult={
+        <Suspense fallback={<div>Loading posts...</div>}>
+          <TrendingPosts postsPromise={postsPromise} />
+        </Suspense>
+      }
+      usersResult={
+        <Suspense fallback={<div>Loading users...</div>}>
+          <TrendingUsers usersPromise={usersPromise} />
+        </Suspense>
+      }
+    />
+  );
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });
