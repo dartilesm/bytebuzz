@@ -1,21 +1,21 @@
-import { useUser } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@clerk/nextjs";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
  * Fetches whether the current user is following the target user.
  * @param targetUserId - The user ID to check if followed by the current user
  * @returns {Promise<{ isFollowing: boolean }>} The follow status
  */
-function fetchIsFollowing(targetUserId: string): Promise<{ isFollowing: boolean }> {
-  return fetch(`/api/users/follow_status?targetUserId=${encodeURIComponent(targetUserId)}`).then(
-    async (res) => {
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to fetch follow status");
-      }
-      return res.json();
-    },
-  );
+async function fetchIsFollowing(targetUserId: string): Promise<{ isFollowing: boolean }> {
+  const res = await fetch(`/api/users/follow-status?targetUserId=${targetUserId}`);
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to fetch follow status");
+  }
+
+  return data;
 }
 
 /**
@@ -25,14 +25,16 @@ function fetchIsFollowing(targetUserId: string): Promise<{ isFollowing: boolean 
  * @returns React Query result with isFollowing boolean
  */
 export function useIsFollowing(targetUserId: string | undefined) {
-  const { user: currentUser } = useUser();
+  const { userId } = useAuth();
+
   return useQuery({
-    queryKey: ["isFollowing", currentUser?.id, targetUserId],
+    queryKey: ["is-following", userId, targetUserId],
     queryFn: () => {
       if (!targetUserId) throw new Error("targetUserId is required");
       return fetchIsFollowing(targetUserId);
     },
-    enabled: Boolean(currentUser?.id && targetUserId),
+    enabled: Boolean(targetUserId),
     select: (data) => data.isFollowing,
+    placeholderData: (data) => data,
   });
 }

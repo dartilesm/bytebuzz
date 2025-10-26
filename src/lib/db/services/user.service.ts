@@ -55,7 +55,7 @@ async function getFollowStatus(this: ServiceContext, currentUserId: string, targ
     .from("user_followers")
     .select("*")
     .eq("follower_id", currentUserId)
-    .eq("followed_id", targetUserId)
+    .eq("user_id", targetUserId)
     .single();
 }
 
