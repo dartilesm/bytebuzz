@@ -1,30 +1,41 @@
 "use client";
 
 import type { ExplorerPageSearchParams } from "@/app/(social)/explore/page";
-import { ExplorerViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
+import {
+  type ExploreViewPostsProps,
+  ExploreViewPosts,
+} from "@/components/containers/explore-view/explore-view-posts";
+import {
+  type ExplorerViewUsersProps,
+  ExploreViewUsers,
+} from "@/components/containers/explore-view/explore-view-users";
+import { ExplorerViewPostsLoading } from "@/components/containers/explore-view/loading/explore-view-posts.loading";
+import { ExplorerViewUsersLoading } from "@/components/containers/explore-view/loading/explore-view-users.loading";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tab, Tabs } from "@heroui/react";
+import { useSearchParams } from "next/navigation";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import { type ReactNode, useRef } from "react";
+import { Suspense, useRef } from "react";
 
 type SearchType = "all" | "users" | "posts";
 
 interface ExploreViewProps {
-  usersResult?: ReactNode;
-  postsResult?: ReactNode;
+  postsPromise?: ExploreViewPostsProps["postsPromise"];
+  usersPromise?: ExplorerViewUsersProps["usersPromise"];
 }
 
-function getInitialSearchType(searchOptions: ExplorerPageSearchParams): SearchType {
-  const searchOptionEntries = Object.entries(searchOptions);
+function getInitialSearchType(searchParams: URLSearchParams): SearchType {
+  const searchOptionEntries = searchParams.entries();
   const searchOptionEntry = searchOptionEntries.find(
-    ([key]) => key !== "page" && !!searchOptions[key as keyof ExplorerPageSearchParams]
+    ([key]) => key !== "page" && !!searchParams.get(key)
   );
   const [searchType] = searchOptionEntry ?? [];
   return searchType as SearchType;
 }
 
-export function ExploreView({ usersResult, postsResult }: ExploreViewProps) {
+export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
+  const searchParams = useSearchParams();
   const [searchOptions, setSearchOptions] = useQueryStates(
     {
       all: parseAsString.withDefault(""),
@@ -39,7 +50,7 @@ export function ExploreView({ usersResult, postsResult }: ExploreViewProps) {
     }
   );
 
-  const activeSearchTypeRef = useRef<SearchType>(getInitialSearchType(searchOptions));
+  const activeSearchTypeRef = useRef<SearchType>(getInitialSearchType(searchParams));
 
   function handleSearch(term: string) {
     const activeSearchType = activeSearchTypeRef.current || "all";
@@ -83,28 +94,59 @@ export function ExploreView({ usersResult, postsResult }: ExploreViewProps) {
         >
           <Tab key='all' title='All'>
             <div className='space-y-4'>
-              {usersResult}
-              {postsResult}
+              {usersPromise && (
+                <Suspense fallback={<ExplorerViewUsersLoading />}>
+                  <ExploreViewUsers
+                    usersPromise={usersPromise}
+                    title='Trending Users'
+                    variant='scroll'
+                  />
+                </Suspense>
+              )}
+              {postsPromise && (
+                <Suspense fallback={<ExplorerViewPostsLoading />}>
+                  <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
+                </Suspense>
+              )}
             </div>
           </Tab>
           <Tab key='users' title='Users'>
-            {!usersResult && (
-              <ExplorerViewEmpty searchedBy='users' searchTerm={searchOptions.users} />
+            {usersPromise && (
+              <Suspense fallback={<ExplorerViewUsersLoading />}>
+                <ExploreViewUsers usersPromise={usersPromise} />
+              </Suspense>
             )}
-            {usersResult}
           </Tab>
           <Tab key='posts' title='Posts'>
-            {!postsResult && (
-              <ExplorerViewEmpty searchedBy='posts' searchTerm={searchOptions.posts} />
+            {postsPromise && (
+              <Suspense fallback={<ExplorerViewPostsLoading />}>
+                <ExploreViewPosts postsPromise={postsPromise} />
+              </Suspense>
             )}
-            {postsResult}
           </Tab>
         </Tabs>
       )}
       {!activeSearchTypeRef.current && (
         <div className='space-y-4'>
-          {usersResult}
-          {postsResult}
+          {usersPromise && (
+            <Suspense fallback={<ExplorerViewUsersLoading />}>
+              <ExploreViewUsers
+                usersPromise={usersPromise}
+                title='Trending Users'
+                variant='scroll'
+                showEmptyState={false}
+              />
+            </Suspense>
+          )}
+          {postsPromise && (
+            <Suspense fallback={<ExplorerViewPostsLoading />}>
+              <ExploreViewPosts
+                postsPromise={postsPromise}
+                title='Trending Posts'
+                showEmptyState={false}
+              />
+            </Suspense>
+          )}
         </div>
       )}
     </>

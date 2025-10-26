@@ -13,19 +13,21 @@ function getIconBySearchType(searchType: keyof typeof SEARCH_BY_MAP) {
     return FilesIcon;
   }
   if (searchType === "users") {
-    return PaperclipIcon;
+    return User2Icon;
   }
   if (searchType === "posts") {
-    return User2Icon;
+    return PaperclipIcon;
   }
 }
 
-export function ExplorerViewEmpty({
+export function ExploreViewEmpty({
   searchedBy,
   searchTerm,
+  showExplorerAllButton = true,
 }: {
   searchedBy: keyof typeof SEARCH_BY_MAP;
   searchTerm?: string;
+  showExplorerAllButton?: boolean;
 }) {
   const Icon = getIconBySearchType(searchedBy);
   return (
@@ -38,9 +40,11 @@ export function ExplorerViewEmpty({
           {searchTerm ? `No content found for "${searchTerm}"` : "No content found"}
         </h3>
         <p className='text-default-400'>Try adjusting your search terms or explore other content</p>
-        <Button as={Link} variant='flat' color='primary' className='mt-6' href='/explore'>
-          Explore all content
-        </Button>
+        {showExplorerAllButton && (
+          <Button as={Link} variant='flat' color='primary' className='mt-6' href='/explore'>
+            Explore all content
+          </Button>
+        )}
       </div>
     </div>
   );

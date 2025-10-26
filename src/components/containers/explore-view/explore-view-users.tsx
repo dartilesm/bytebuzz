@@ -1,14 +1,14 @@
 "use client";
 
-import { ExplorerViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
+import { ExploreViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
 import { UserCard2 } from "@/components/explore/user-card-2";
 import type { userService } from "@/lib/db/services/user.service";
 import { ScrollShadow } from "@heroui/react";
 import type { Tables } from "database.types";
 import { use } from "react";
 
-interface ExplorerViewUsersProps {
-  usersPromise?:
+export interface ExplorerViewUsersProps {
+  usersPromise:
     | ReturnType<typeof userService.searchUsers>
     | ReturnType<typeof userService.getTrendingUsers>;
   variant?: "grid" | "scroll";
@@ -20,7 +20,7 @@ interface ExplorerViewUsersProps {
  * A beautiful list of users component for the explorer view
  * Displays users in a responsive grid layout with horizontal scrolling
  */
-export function ExplorerViewUsers({
+export function ExploreViewUsers({
   usersPromise,
   variant = "grid",
   title,
@@ -33,7 +33,7 @@ export function ExplorerViewUsers({
   >;
 
   if (!users || users?.data?.length === 0) {
-    return showEmptyState ? <ExplorerViewEmpty searchedBy='users' /> : null;
+    return showEmptyState ? <ExploreViewEmpty searchedBy='users' /> : null;
   }
   return (
     <section className='space-y-4'>
@@ -43,10 +43,16 @@ export function ExplorerViewUsers({
           {users?.data?.map((user) => (
             <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
           ))}
+          {users?.data?.map((user) => (
+            <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
+          ))}
         </ScrollShadow>
       )}
       {variant === "grid" && (
         <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-3'>
+          {users?.data?.map((user) => (
+            <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
+          ))}
           {users?.data?.map((user) => (
             <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
           ))}
