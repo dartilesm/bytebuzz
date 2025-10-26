@@ -1,5 +1,5 @@
-import { useAuth, useUser } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@clerk/nextjs";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
  * Fetches whether the current user is following the target user.
@@ -26,6 +26,7 @@ async function fetchIsFollowing(targetUserId: string): Promise<{ isFollowing: bo
  */
 export function useIsFollowing(targetUserId: string | undefined) {
   const { userId } = useAuth();
+
   return useQuery({
     queryKey: ["is-following", userId, targetUserId],
     queryFn: () => {
@@ -34,5 +35,6 @@ export function useIsFollowing(targetUserId: string | undefined) {
     },
     enabled: Boolean(targetUserId),
     select: (data) => data.isFollowing,
+    placeholderData: (data) => data,
   });
 }
