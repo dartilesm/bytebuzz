@@ -31,7 +31,11 @@ export function ExploreViewPosts({
     ExploreViewPostsProps["postsPromise"]
   >;
   if (!posts || posts?.data?.length === 0) {
-    return showEmptyState ? <ExploreViewEmpty searchedBy='posts' /> : null;
+    return showEmptyState ? (
+      <section className='space-y-4'>
+        {title && <h2 className='text-lg font-medium'>{title}</h2>} <ExploreViewEmpty />{" "}
+      </section>
+    ) : null;
   }
 
   return (

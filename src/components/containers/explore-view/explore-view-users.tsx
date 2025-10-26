@@ -24,7 +24,6 @@ export function ExploreViewUsers({
   usersPromise,
   variant = "grid",
   title,
-  showEmptyState = true,
 }: ExplorerViewUsersProps) {
   // Adding Promise<unknown> to avoid type errors
   // apparently, apparuse doesn't like type unions
@@ -32,13 +31,13 @@ export function ExploreViewUsers({
     ExplorerViewUsersProps["usersPromise"]
   >;
 
-  if (!users || users?.data?.length === 0) {
-    return showEmptyState ? <ExploreViewEmpty searchedBy='users' /> : null;
-  }
+  const hasResults = users?.data && users?.data?.length > 0;
+
   return (
     <section className='space-y-4'>
       {title && <h2 className='text-lg font-medium'>{title}</h2>}
-      {variant === "scroll" && (
+      {!hasResults && <ExploreViewEmpty />}
+      {variant === "scroll" && hasResults && (
         <ScrollShadow className='flex gap-4 flex-row scrollbar-auto pb-4' orientation='horizontal'>
           {users?.data?.map((user) => (
             <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
@@ -48,7 +47,7 @@ export function ExploreViewUsers({
           ))}
         </ScrollShadow>
       )}
-      {variant === "grid" && (
+      {variant === "grid" && hasResults && (
         <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-3'>
           {users?.data?.map((user) => (
             <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
