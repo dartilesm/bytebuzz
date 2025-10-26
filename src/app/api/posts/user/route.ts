@@ -1,4 +1,4 @@
-import { postRepository } from "@/lib/db/repositories/post.repository";
+import { postService } from "@/lib/db/services/post.service";
 import { currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { log } from "@/lib/logger/logger";
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const result = await postRepository.getUserPosts({ username, cursor });
+    const result = await postService.getUserPosts({ username, cursor });
 
     if (result.error) {
       return NextResponse.json({ error: result.error.message }, { status: 500 });

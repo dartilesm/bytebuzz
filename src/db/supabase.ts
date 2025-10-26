@@ -22,14 +22,16 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
 
 /**
  * Creates a server-side Supabase client
+ * @param clerkToken - Optional Clerk token for authentication, useful in cached environment
  * @returns Supabase client
  */
-export function createServerSupabaseClient() {
+export function createServerSupabaseClient(clerkToken?: string | null) {
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       async accessToken() {
+        if (clerkToken) return clerkToken;
         return (await auth()).getToken();
       },
       global: {

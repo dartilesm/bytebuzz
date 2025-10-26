@@ -1,27 +1,27 @@
 "use client";
 
 import type { ExplorerPageSearchParams } from "@/app/(social)/explore/page";
-import { ExplorerViewAll } from "@/components/containers/explorer-view/explorer-view-all";
 import { ExplorerMixedView } from "@/components/containers/explorer-view/explorer-mixed-view";
+import { ExplorerViewAll } from "@/components/containers/explorer-view/explorer-view-all";
 import { ExplorerViewPosts } from "@/components/containers/explorer-view/explorer-view-posts";
 import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
-import type { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
-import type { getCachedUsers } from "@/lib/db/calls/get-users";
+import type { postService } from "@/lib/db/services/post.service";
+import type { userService } from "@/lib/db/services/user.service";
 import { Tab, Tabs } from "@heroui/react";
-import { parseAsInteger, parseAsString, type Parser, useQueryStates } from "nuqs";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { useRef } from "react";
-import type { PostgrestSingleResponse } from "@supabase/supabase-js";
-import type { Tables } from "database.types";
 
 type SearchType = "all" | "users" | "posts";
 
 interface ExploreViewProps {
   users?:
-    | Awaited<ReturnType<typeof getCachedUsers>>
-    | Awaited<ReturnType<typeof getCachedTrendingUsers>>;
-  posts?: PostgrestSingleResponse<Tables<"posts">[]>;
+    | Awaited<ReturnType<typeof userService.searchUsers>>
+    | Awaited<ReturnType<typeof userService.getTrendingUsers>>;
+  posts?:
+    | Awaited<ReturnType<typeof postService.searchPosts>>
+    | Awaited<ReturnType<typeof postService.getTrendingPosts>>;
 }
 
 function getInitialSearchType(searchOptions: ExplorerPageSearchParams): SearchType {
@@ -41,7 +41,7 @@ export function ExploreView({ users, posts }: ExploreViewProps) {
       posts: parseAsString.withDefault(""),
       page: parseAsInteger.withDefault(0),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } satisfies Record<keyof ExplorerPageSearchParams, Parser<any>>,
+    } satisfies Record<keyof ExplorerPageSearchParams, any>,
     {
       shallow: false,
       clearOnDefault: true,

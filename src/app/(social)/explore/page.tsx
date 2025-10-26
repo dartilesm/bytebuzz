@@ -1,7 +1,6 @@
 import { ExploreView } from "@/components/containers/explorer-view/explore-view";
-import { postRepository } from "@/lib/db/repositories/post.repository";
-import { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
-import { getCachedUsers } from "@/lib/db/calls/get-users";
+import { postService } from "@/lib/db/services/post.service";
+import { userService } from "@/lib/db/services/user.service";
 import { withAnalytics } from "@/lib/with-analytics";
 
 export type ExplorerPageSearchParams = {
@@ -20,10 +19,10 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   } = (await searchParams) as ExplorerPageSearchParams;
 
   if (all) {
-    const users = await getCachedUsers({
+    const users = await userService.searchUsers({
       searchTerm: all as string,
     });
-    const posts = await postRepository.searchPosts({
+    const posts = await postService.searchPosts({
       searchTerm: all as string,
     });
 
@@ -31,7 +30,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   }
 
   if (usersSearchTerm) {
-    const users = await getCachedUsers({
+    const users = await userService.searchUsers({
       searchTerm: usersSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
@@ -39,15 +38,15 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   }
 
   if (postsSearchTerm) {
-    const posts = await postRepository.searchPosts({
+    const posts = await postService.searchPosts({
       searchTerm: postsSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
     return <ExploreView posts={posts} />;
   }
 
-  const trendingPosts = await postRepository.getTrendingPosts();
-  const trendingUsers = await getCachedTrendingUsers();
+  const trendingPosts = await postService.getTrendingPosts();
+  const trendingUsers = await userService.getTrendingUsers();
 
   return <ExploreView posts={trendingPosts} users={trendingUsers} />;
 }

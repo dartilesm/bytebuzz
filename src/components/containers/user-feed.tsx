@@ -2,10 +2,10 @@ import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostList } from "@/components/post/post-list";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
-import { postRepository } from "@/lib/db/repositories/post.repository";
+import { postService } from "@/lib/db/services/post.service";
 
 export async function UserFeed() {
-  const { data: initialPosts, error } = await postRepository.getUserFeed();
+  const { data: initialPosts, error } = await postService.getUserFeed();
 
   if (error) return <span>Ops! Error loading posts</span>;
 

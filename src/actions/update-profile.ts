@@ -1,6 +1,6 @@
 "use server";
 
-import { userRepository } from "@/lib/db/repositories/user.repository";
+import { userService } from "@/lib/db/services/user.service";
 import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
 
@@ -11,7 +11,7 @@ export async function updateProfile(data: UpdateProfileData) {
     throw new Error("Username is required");
   }
 
-  const result = await userRepository.updateProfile(data.username, data);
+  const result = await userService.updateProfile(data.username, data);
 
   if (!result.error) revalidatePath(`/@${data.username}`);
 

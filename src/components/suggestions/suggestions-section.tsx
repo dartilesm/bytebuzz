@@ -1,15 +1,9 @@
 import { PromotedAd } from "@/components/promoted-ad";
 import { UserToFollowList } from "@/components/user-to-follow-list";
-import { createServerSupabaseClient } from "@/db/supabase";
+import { userService } from "@/lib/db/services/user.service";
 
 async function getRandomUnfollowedUsers() {
-  const supabaseClient = createServerSupabaseClient();
-
-  const randomeUnfollwedUsers = await supabaseClient.rpc("get_random_unfollowed_users", {
-    count: 3,
-  });
-
-  return randomeUnfollwedUsers;
+  return await userService.getRandomUnfollowedUsers(3);
 }
 
 /**
