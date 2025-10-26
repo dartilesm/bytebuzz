@@ -3,12 +3,12 @@
 import { PostList } from "@/components/post/post-list";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
-import type { NestedPost } from "@/types/nested-posts";
+import type { postService } from "@/lib/db/services/post.service";
 import { Tab, Tabs } from "@heroui/react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { use, useState } from "react";
 
-enum UserProfileTabs {
+const enum UserProfileTabs {
   POSTS = "posts",
   MEDIA = "media",
   LIKES = "likes",
@@ -17,10 +17,15 @@ enum UserProfileTabs {
 const tabOrder = [UserProfileTabs.POSTS, UserProfileTabs.MEDIA, UserProfileTabs.LIKES];
 
 interface UserProfileContentProps {
-  posts: NestedPost[];
+  postsPromise: ReturnType<typeof postService.getUserPosts>;
 }
 
-export function UserProfileContent({ posts }: UserProfileContentProps) {
+export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
+  const postsResponse = use(postsPromise as Promise<unknown>) as Awaited<
+    ReturnType<typeof postService.getUserPosts>
+  >;
+  const posts = postsResponse.data ?? [];
+
   const [activeTab, setActiveTab] = useState<UserProfileTabs>(UserProfileTabs.POSTS);
   const [previousTab, setPreviousTab] = useState<UserProfileTabs>(UserProfileTabs.POSTS);
 
@@ -60,33 +65,33 @@ export function UserProfileContent({ posts }: UserProfileContentProps) {
   const direction = getSlideDirection(activeTab, previousTab);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className='flex flex-col gap-2'>
       <Tabs
-        aria-label="Profile sections"
-        variant="underlined"
-        color="primary"
-        className="sticky top-16 z-30 backdrop-blur-xl bg-background/70"
+        aria-label='Profile sections'
+        variant='underlined'
+        color='primary'
+        className='sticky top-16 z-30 backdrop-blur-xl bg-background/70'
         classNames={{
           tabList: "w-full",
         }}
         selectedKey={activeTab}
         onSelectionChange={handleTabChange}
       >
-        <Tab key={UserProfileTabs.POSTS} title="Posts" />
-        <Tab key={UserProfileTabs.MEDIA} title="Media" />
-        <Tab key={UserProfileTabs.LIKES} title="Likes" />
+        <Tab key={UserProfileTabs.POSTS} title='Posts' />
+        <Tab key={UserProfileTabs.MEDIA} title='Media' />
+        <Tab key={UserProfileTabs.LIKES} title='Likes' />
       </Tabs>
-      <div className="py-4 overflow-hidden">
-        <AnimatePresence mode="wait" custom={direction}>
+      <div className='py-4 overflow-hidden'>
+        <AnimatePresence mode='wait' custom={direction}>
           <motion.div
             key={activeTab}
             custom={direction}
             variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
+            initial='enter'
+            animate='center'
+            exit='exit'
             transition={{ duration: 0.1 }}
-            className="w-full"
+            className='w-full'
           >
             {activeTab === UserProfileTabs.POSTS && (
               <PostsProvider initialPosts={posts}>
@@ -94,10 +99,10 @@ export function UserProfileContent({ posts }: UserProfileContentProps) {
               </PostsProvider>
             )}
             {activeTab === UserProfileTabs.MEDIA && (
-              <p className="text-default-500">No media posts yet.</p>
+              <p className='text-default-500'>No media posts yet.</p>
             )}
             {activeTab === UserProfileTabs.LIKES && (
-              <p className="text-default-500">No liked posts yet.</p>
+              <p className='text-default-500'>No liked posts yet.</p>
             )}
           </motion.div>
         </AnimatePresence>
