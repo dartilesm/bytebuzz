@@ -2,7 +2,7 @@
 
 import { ExplorerViewEmpty } from "@/components/containers/explorer-view/explorer-view-empty";
 import { UserCard2 } from "@/components/explore/user-card-2";
-import { userService } from "@/lib/db/services/user.service";
+import type { userService } from "@/lib/db/services/user.service";
 import { ScrollShadow } from "@heroui/react";
 import type { Tables } from "database.types";
 import { use } from "react";
@@ -26,8 +26,12 @@ export function ExplorerViewUsers({
   title,
   showEmptyState = true,
 }: ExplorerViewUsersProps) {
-  const users = use(usersPromise);
-  console.log({ users });
+  // Adding Promise<unknown> to avoid type errors
+  // apparently, apparuse doesn't like type unions
+  const users = use(usersPromise as Promise<unknown>) as Awaited<
+    ExplorerViewUsersProps["usersPromise"]
+  >;
+
   if (!users || users?.data?.length === 0) {
     return showEmptyState ? <ExplorerViewEmpty searchedBy='users' /> : null;
   }

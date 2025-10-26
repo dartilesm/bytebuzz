@@ -25,7 +25,11 @@ export function ExplorerViewPosts({
   title,
   showEmptyState = true,
 }: ExplorerViewPostsProps) {
-  const posts = use(postsPromise);
+  // Adding Promise<unknown> to avoid type errors
+  // apparently, apparuse doesn't like type unions
+  const posts = use(postsPromise as Promise<unknown>) as Awaited<
+    ExplorerViewPostsProps["postsPromise"]
+  >;
   if (!posts || posts?.data?.length === 0) {
     return showEmptyState ? <ExplorerViewEmpty searchedBy='posts' /> : null;
   }
