@@ -3,7 +3,6 @@
 import { FollowButton } from "@/components/ui/follow-button";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
-import { useProfileContext } from "@/hooks/use-profile-context";
 import { useUser } from "@clerk/nextjs";
 import {
   addToast,
@@ -17,16 +16,21 @@ import {
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { Link2Icon, MoreHorizontalIcon, PencilIcon, Share2Icon } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { use, useState } from "react";
+import type { Tables } from "database.types";
 
 const UserProfileEditModal = dynamic(
   () => import("./user-profile-edit-modal").then((mod) => mod.UserProfileEditModal),
-  { ssr: false },
+  { ssr: false }
 );
 
-export function UserProfileTopActions() {
+export interface UserProfileTopActionsProps {
+  profilePromise: Promise<Tables<"users">>;
+}
+
+export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsProps) {
+  const profile = use(profilePromise);
   const { user } = useUser();
-  const profile = useProfileContext();
   const [isEditing, setIsEditing] = useState(false);
   const { withAuth } = useAuthGuard();
   const isCurrentUser = user?.username === profile.username;
@@ -64,17 +68,17 @@ export function UserProfileTopActions() {
   }
 
   return (
-    <div className="flex justify-between">
+    <div className='flex justify-between'>
       <div>
         {profile.github_url && (
-          <Tooltip content="View GitHub profile" closeDelay={0}>
+          <Tooltip content='View GitHub profile' closeDelay={0}>
             <Button
-              as="a"
+              as='a'
               href={profile.github_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="light"
-              aria-label="View GitHub profile"
+              target='_blank'
+              rel='noopener noreferrer'
+              variant='light'
+              aria-label='View GitHub profile'
               isIconOnly
             >
               <SiGithub size={16} />
@@ -82,46 +86,46 @@ export function UserProfileTopActions() {
           </Tooltip>
         )}
         {profile.linkedin_url && (
-          <Tooltip content="View LinkedIn profile" closeDelay={0}>
+          <Tooltip content='View LinkedIn profile' closeDelay={0}>
             <Button
-              as="a"
+              as='a'
               href={profile.linkedin_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="light"
-              aria-label="View LinkedIn profile"
+              target='_blank'
+              rel='noopener noreferrer'
+              variant='light'
+              aria-label='View LinkedIn profile'
               isIconOnly
             >
-              <LinkedInIcon size={16} fill="currentColor" />
+              <LinkedInIcon size={16} fill='currentColor' />
             </Button>
           </Tooltip>
         )}
       </div>
-      <div className="flex flex-row gap-1.5 items-center">
-        <Dropdown placement="left-start">
+      <div className='flex flex-row gap-1.5 items-center'>
+        <Dropdown placement='left-start'>
           <DropdownTrigger>
-            <Button variant="light" aria-label="More options" isIconOnly>
+            <Button variant='light' aria-label='More options' isIconOnly>
               <MoreHorizontalIcon size={16} />
             </Button>
           </DropdownTrigger>
-          <DropdownMenu aria-label="Profile actions">
+          <DropdownMenu aria-label='Profile actions'>
             <DropdownItem
-              key="copy-link"
+              key='copy-link'
               onPress={handleCopyLink}
               startContent={<Link2Icon size={16} />}
             >
               Copy profile link
             </DropdownItem>
-            <DropdownItem key="share" onPress={handleShare} startContent={<Share2Icon size={16} />}>
+            <DropdownItem key='share' onPress={handleShare} startContent={<Share2Icon size={16} />}>
               Share profile
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
-        {!isCurrentUser && <FollowButton targetUserId={profile.id} size="md" />}
+        {!isCurrentUser && <FollowButton targetUserId={profile.id} size='md' />}
         {isCurrentUser && (
           <Button
-            variant="flat"
-            color="primary"
+            variant='flat'
+            color='primary'
             onPress={withAuth(toggleEditProfileModal)}
             startContent={<PencilIcon size={16} />}
           >

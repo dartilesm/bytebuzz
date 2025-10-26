@@ -48,7 +48,12 @@ async function UserPage({ params }: UserPageProps) {
     notFound();
   }
 
-  return <UserProfile profile={userProfile} />;
+  const postsPromise = withCacheService("postService", "getUserPosts", {
+    cacheLife: "days",
+    cacheTags: ["user-posts", userProfile.username],
+  })({ username: userProfile.username });
+
+  return <UserProfile profile={userProfile} postsPromise={postsPromise} />;
 }
 
 export default withAnalytics(UserPage, { event: "page-view" });
