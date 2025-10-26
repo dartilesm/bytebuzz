@@ -1,8 +1,10 @@
 import { ExploreView } from "@/components/containers/explore-view/explore-view";
+import { postService } from "@/lib/db/services/post.service";
+import { userService } from "@/lib/db/services/user.service";
 import { withCacheService } from "@/lib/db/with-cache-service";
 import { withAnalytics } from "@/lib/with-analytics";
 import { currentUser } from "@clerk/nextjs/server";
-export type ExplorerPageSearchParams = {
+export type ExplorePageSearchParams = {
   all?: string;
   users?: string;
   posts?: string;
@@ -15,18 +17,14 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
     users: usersSearchTerm,
     posts: postsSearchTerm,
     page = 0,
-  } = (await searchParams) as ExplorerPageSearchParams;
+  } = (await searchParams) as ExplorePageSearchParams;
   const user = await currentUser();
 
   if (all) {
-    const usersPromise = withCacheService("userService", "searchUsers", {
-      cacheTags: ["explore-page", "search-users", user?.id ?? "", searchParams?.toString() ?? ""],
-    })({
+    const usersPromise = userService.searchUsers({
       searchTerm: all as string,
     });
-    const postsPromise = withCacheService("postService", "searchPosts", {
-      cacheTags: ["explore-page", "search-posts", user?.id ?? "", searchParams?.toString() ?? ""],
-    })({
+    const postsPromise = postService.searchPosts({
       searchTerm: all as string,
     });
 
@@ -34,9 +32,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   }
 
   if (usersSearchTerm) {
-    const usersPromise = withCacheService("userService", "searchUsers", {
-      cacheTags: ["explore-page", "search-users", user?.id ?? "", searchParams?.toString() ?? ""],
-    })({
+    const usersPromise = userService.searchUsers({
       searchTerm: usersSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
@@ -44,9 +40,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
   }
 
   if (postsSearchTerm) {
-    const postsPromise = withCacheService("postService", "searchPosts", {
-      cacheTags: ["explore-page", "search-posts", user?.id ?? "", searchParams?.toString() ?? ""],
-    })({
+    const postsPromise = postService.searchPosts({
       searchTerm: postsSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });

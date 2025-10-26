@@ -1,6 +1,6 @@
 "use client";
 
-import type { ExplorerPageSearchParams } from "@/app/(social)/explore/page";
+import type { ExplorePageSearchParams } from "@/app/(social)/explore/page";
 import { ExploreViewProvider } from "@/components/containers/explore-view/explore-view-context";
 import {
   type ExploreViewPostsProps,
@@ -48,7 +48,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
       posts: parseAsString.withDefault(""),
       page: parseAsInteger.withDefault(0),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } satisfies Record<keyof ExplorerPageSearchParams, any>,
+    } satisfies Record<keyof ExplorePageSearchParams, any>,
     {
       shallow: false,
       clearOnDefault: true,
