@@ -1,6 +1,6 @@
 "use client";
 
-import { ExplorerViewEmpty } from "@/components/containers/explorer-view/explorer-view-empty";
+import { ExploreViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
@@ -8,7 +8,7 @@ import type { postService } from "@/lib/db/services/post.service";
 import type { NestedPost } from "@/types/nested-posts";
 import { use } from "react";
 
-interface ExplorerViewPostsProps {
+export interface ExploreViewPostsProps {
   postsPromise:
     | ReturnType<typeof postService.searchPosts>
     | ReturnType<typeof postService.getTrendingPosts>;
@@ -20,18 +20,22 @@ interface ExplorerViewPostsProps {
  * A beautiful list of posts component for the explorer view
  * Displays posts in a vertical list layout with proper context providers
  */
-export function ExplorerViewPosts({
+export function ExploreViewPosts({
   postsPromise,
   title,
   showEmptyState = true,
-}: ExplorerViewPostsProps) {
+}: ExploreViewPostsProps) {
   // Adding Promise<unknown> to avoid type errors
   // apparently, apparuse doesn't like type unions
   const posts = use(postsPromise as Promise<unknown>) as Awaited<
-    ExplorerViewPostsProps["postsPromise"]
+    ExploreViewPostsProps["postsPromise"]
   >;
   if (!posts || posts?.data?.length === 0) {
-    return showEmptyState ? <ExplorerViewEmpty searchedBy='posts' /> : null;
+    return showEmptyState ? (
+      <section className='space-y-4'>
+        {title && <h2 className='text-lg font-medium'>{title}</h2>} <ExploreViewEmpty />{" "}
+      </section>
+    ) : null;
   }
 
   return (

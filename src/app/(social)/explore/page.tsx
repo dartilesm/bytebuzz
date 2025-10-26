@@ -1,14 +1,10 @@
-import { ExploreView } from "@/components/containers/explorer-view/explore-view";
-import { ExplorerViewPosts } from "@/components/containers/explorer-view/explorer-view-posts";
-import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
-import { ExplorerViewPostsLoading } from "@/components/containers/explorer-view/loading/explore-view-posts.loading";
-import { ExplorerViewUsersLoading } from "@/components/containers/explorer-view/loading/explore-view-users.loading";
+import { ExploreView } from "@/components/containers/explore-view/explore-view";
 import { postService } from "@/lib/db/services/post.service";
 import { userService } from "@/lib/db/services/user.service";
+import { withCacheService } from "@/lib/db/with-cache-service";
 import { withAnalytics } from "@/lib/with-analytics";
-import { Suspense } from "react";
-
-export type ExplorerPageSearchParams = {
+import { currentUser } from "@clerk/nextjs/server";
+export type ExplorePageSearchParams = {
   all?: string;
   users?: string;
   posts?: string;
@@ -21,7 +17,8 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
     users: usersSearchTerm,
     posts: postsSearchTerm,
     page = 0,
-  } = (await searchParams) as ExplorerPageSearchParams;
+  } = (await searchParams) as ExplorePageSearchParams;
+  const user = await currentUser();
 
   if (all) {
     const usersPromise = userService.searchUsers({
@@ -31,29 +28,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
       searchTerm: all as string,
     });
 
-    return (
-      <ExploreView
-        key='all-search'
-        postsResult={
-          <Suspense fallback={<ExplorerViewPostsLoading />}>
-            <ExplorerViewPosts
-              postsPromise={postsPromise}
-              title='Trending Posts'
-              showEmptyState={false}
-            />
-          </Suspense>
-        }
-        usersResult={
-          <Suspense fallback={<ExplorerViewUsersLoading />}>
-            <ExplorerViewUsers
-              usersPromise={usersPromise}
-              title='Trending Users'
-              showEmptyState={false}
-            />
-          </Suspense>
-        }
-      />
-    );
+    return <ExploreView postsPromise={postsPromise} usersPromise={usersPromise} />;
   }
 
   if (usersSearchTerm) {
@@ -61,16 +36,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
       searchTerm: usersSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
-    return (
-      <ExploreView
-        key='users-search'
-        usersResult={
-          <Suspense fallback={<ExplorerViewUsersLoading />}>
-            <ExplorerViewUsers usersPromise={usersPromise} />
-          </Suspense>
-        }
-      />
-    );
+    return <ExploreView usersPromise={usersPromise} postsPromise={undefined} />;
   }
 
   if (postsSearchTerm) {
@@ -78,43 +44,17 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
       searchTerm: postsSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
-    return (
-      <ExploreView
-        key='posts-search'
-        postsResult={
-          <Suspense fallback={<ExplorerViewPostsLoading />}>
-            <ExplorerViewPosts postsPromise={postsPromise} />
-          </Suspense>
-        }
-      />
-    );
+    return <ExploreView postsPromise={postsPromise} />;
   }
 
-  const postsPromise = postService.getTrendingPosts();
-  const usersPromise = userService.getTrendingUsers();
+  const postsPromise = withCacheService("postService", "getTrendingPosts", {
+    cacheTags: ["explore-page", "trending-posts", user?.id ?? "", searchParams?.toString() ?? ""],
+  })();
+  const usersPromise = withCacheService("userService", "getTrendingUsers", {
+    cacheTags: ["explore-page", "trending-users", user?.id ?? "", searchParams?.toString() ?? ""],
+  })();
 
-  return (
-    <ExploreView
-      postsResult={
-        <Suspense fallback={<ExplorerViewPostsLoading />}>
-          <ExplorerViewPosts
-            postsPromise={postsPromise}
-            title='Trending Posts'
-            showEmptyState={false}
-          />
-        </Suspense>
-      }
-      usersResult={
-        <Suspense fallback={<ExplorerViewUsersLoading />}>
-          <ExplorerViewUsers
-            usersPromise={usersPromise}
-            title='Trending Users'
-            showEmptyState={false}
-          />
-        </Suspense>
-      }
-    />
-  );
+  return <ExploreView key='explore-page' postsPromise={postsPromise} usersPromise={usersPromise} />;
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });
