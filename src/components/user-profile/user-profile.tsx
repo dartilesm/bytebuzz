@@ -4,7 +4,7 @@ import { UserProfileCoverAvatar } from "@/components/user-profile/user-profile-c
 import { UserProfileDescription } from "@/components/user-profile/user-profile-description";
 import { UserProfileTopActions } from "@/components/user-profile/user-profile-top-actions";
 import { ProfileProvider } from "@/context/profile-provider";
-import { postService } from "@/lib/db/services/post.service";
+import { withCacheService } from "@/lib/db/with-cache-service";
 import type { Tables } from "database.types";
 
 type UserProfileProps = {
@@ -12,7 +12,10 @@ type UserProfileProps = {
 };
 
 export async function UserProfile({ profile }: UserProfileProps) {
-  const posts = await postService.getUserPosts({ username: profile.username });
+  const posts = await withCacheService("postService", "getUserPosts", {
+    cacheLife: "days",
+    cacheTags: ["user-posts", profile.username],
+  })({ username: profile.username });
 
   return (
     <ProfileProvider profile={profile}>
