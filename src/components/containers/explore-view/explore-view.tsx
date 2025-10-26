@@ -1,7 +1,7 @@
 "use client";
 
 import type { ExplorerPageSearchParams } from "@/app/(social)/explore/page";
-import { ExplorerViewEmpty } from "@/components/containers/explorer-view/explorer-view-empty";
+import { ExplorerViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tab, Tabs } from "@heroui/react";

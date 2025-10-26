@@ -1,6 +1,6 @@
 "use client";
 
-import { ExplorerViewEmpty } from "@/components/containers/explorer-view/explorer-view-empty";
+import { ExplorerViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";

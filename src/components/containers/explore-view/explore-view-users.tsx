@@ -1,6 +1,6 @@
 "use client";
 
-import { ExplorerViewEmpty } from "@/components/containers/explorer-view/explorer-view-empty";
+import { ExplorerViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
 import { UserCard2 } from "@/components/explore/user-card-2";
 import type { userService } from "@/lib/db/services/user.service";
 import { ScrollShadow } from "@heroui/react";

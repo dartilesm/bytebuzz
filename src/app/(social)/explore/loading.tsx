@@ -1,5 +1,5 @@
-import { ExplorerViewPostsLoading } from "@/components/containers/explorer-view/loading/explore-view-posts.loading";
-import { ExplorerViewUsersLoading } from "@/components/containers/explorer-view/loading/explore-view-users.loading";
+import { ExplorerViewPostsLoading } from "@/components/containers/explore-view/loading/explore-view-posts.loading";
+import { ExplorerViewUsersLoading } from "@/components/containers/explore-view/loading/explore-view-users.loading";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
 

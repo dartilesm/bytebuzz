@@ -1,8 +1,8 @@
-import { ExploreView } from "@/components/containers/explorer-view/explore-view";
-import { ExplorerViewPosts } from "@/components/containers/explorer-view/explorer-view-posts";
-import { ExplorerViewUsers } from "@/components/containers/explorer-view/explorer-view-users";
-import { ExplorerViewPostsLoading } from "@/components/containers/explorer-view/loading/explore-view-posts.loading";
-import { ExplorerViewUsersLoading } from "@/components/containers/explorer-view/loading/explore-view-users.loading";
+import { ExploreView } from "@/components/containers/explore-view/explore-view";
+import { ExplorerViewPosts } from "@/components/containers/explore-view/explore-view-posts";
+import { ExplorerViewUsers } from "@/components/containers/explore-view/explore-view-users";
+import { ExplorerViewPostsLoading } from "@/components/containers/explore-view/loading/explore-view-posts.loading";
+import { ExplorerViewUsersLoading } from "@/components/containers/explore-view/loading/explore-view-users.loading";
 import { postService } from "@/lib/db/services/post.service";
 import { userService } from "@/lib/db/services/user.service";
 import { withAnalytics } from "@/lib/with-analytics";
