@@ -8,10 +8,18 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
     const response = await fetch(input, init);
     // You might want to log successful responses or specific status codes here as well
     if (!response.ok) {
-      const errorMessage = await response.text();
-      log.error(`Supabase error: ${response.status} ${response.statusText}`, {
-        ...JSON.parse(errorMessage),
-      });
+      // Clone the response to read the body for logging without consuming it
+      const clonedResponse = response.clone();
+      const errorMessage = await clonedResponse.text();
+      try {
+        log.error(`Supabase error: ${response.status} ${response.statusText}`, {
+          ...JSON.parse(errorMessage),
+        });
+      } catch {
+        log.error(`Supabase error: ${response.status} ${response.statusText}`, {
+          message: errorMessage,
+        });
+      }
     }
     return response;
   } catch (error) {
@@ -37,7 +45,7 @@ export function createServerSupabaseClient(clerkToken?: string | null) {
       global: {
         fetch: supabaseFetch,
       },
-    },
+    }
   );
 }
 
