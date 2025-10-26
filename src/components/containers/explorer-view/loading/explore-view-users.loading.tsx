@@ -1,7 +1,7 @@
 import { UserCard2Loading } from "@/components/loading/user-card-2.loading";
 import { Skeleton } from "@heroui/skeleton";
 
-export function ExploreViewUsersLoading() {
+export function ExplorerViewUsersLoading() {
   return (
     <div className='space-y-4'>
       <Skeleton className='w-56 h-6 rounded-lg' />

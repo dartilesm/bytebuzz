@@ -10,8 +10,8 @@ import {
   type ExplorerViewUsersProps,
   ExploreViewUsers,
 } from "@/components/containers/explore-view/explore-view-users";
-import { ExplorerViewPostsLoading } from "@/components/containers/explore-view/loading/explore-view-posts.loading";
-import { ExplorerViewUsersLoading } from "@/components/containers/explore-view/loading/explore-view-users.loading";
+import { ExploreViewPostsLoading } from "@/components/containers/explore-view/loading/explore-view-posts.loading";
+import { ExploreViewUsersLoading } from "@/components/containers/explore-view/loading/explore-view-users.loading";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tab, Tabs } from "@heroui/react";
@@ -101,7 +101,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
             <Tab key='all' title='All'>
               <div className='space-y-4'>
                 {usersPromise && (
-                  <Suspense fallback={<ExplorerViewUsersLoading />}>
+                  <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers
                       usersPromise={usersPromise}
                       title='Trending Users'
@@ -110,7 +110,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
                   </Suspense>
                 )}
                 {postsPromise && (
-                  <Suspense fallback={<ExplorerViewPostsLoading />}>
+                  <Suspense fallback={<ExploreViewPostsLoading />}>
                     <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
                   </Suspense>
                 )}
@@ -118,14 +118,14 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
             </Tab>
             <Tab key='users' title='Users'>
               {usersPromise && (
-                <Suspense fallback={<ExplorerViewUsersLoading />}>
+                <Suspense fallback={<ExploreViewUsersLoading />}>
                   <ExploreViewUsers usersPromise={usersPromise} />
                 </Suspense>
               )}
             </Tab>
             <Tab key='posts' title='Posts'>
               {postsPromise && (
-                <Suspense fallback={<ExplorerViewPostsLoading />}>
+                <Suspense fallback={<ExploreViewPostsLoading />}>
                   <ExploreViewPosts postsPromise={postsPromise} />
                 </Suspense>
               )}
@@ -135,7 +135,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
         {!activeSearchTypeRef.current && (
           <div className='space-y-4'>
             {usersPromise && (
-              <Suspense fallback={<ExplorerViewUsersLoading />}>
+              <Suspense fallback={<ExploreViewUsersLoading />}>
                 <ExploreViewUsers
                   usersPromise={usersPromise}
                   title='Trending Users'
@@ -144,7 +144,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
               </Suspense>
             )}
             {postsPromise && (
-              <Suspense fallback={<ExplorerViewPostsLoading />}>
+              <Suspense fallback={<ExploreViewPostsLoading />}>
                 <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
               </Suspense>
             )}
