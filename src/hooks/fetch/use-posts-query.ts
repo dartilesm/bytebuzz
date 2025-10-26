@@ -10,10 +10,12 @@ export function usePostsQuery(queryType?: POST_QUERY_TYPE) {
   const isFirstRenderRef = useRef(true);
   const { posts } = usePostsContext();
 
+  const username = posts?.[0]?.user?.username;
+
   const isEnabled = !!queryType && !isFirstRenderRef.current;
 
   const infiniteQuery = useInfiniteQuery({
-    queryKey: ["posts", queryType],
+    queryKey: ["posts", queryType, username],
     queryFn: ({ pageParam }: { pageParam: string | undefined }) => fetchMorePosts(pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage: { data: NestedPost[] | null; error: unknown }) => {
