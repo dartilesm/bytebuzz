@@ -6,9 +6,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { log } from "@/lib/logger/logger";
 
-// Cache user profiles for 1 hour
-export const revalidate = 3600;
-
 interface UserPageProps {
   params: Promise<{ username: string }>;
 }

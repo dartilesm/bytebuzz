@@ -2,7 +2,6 @@ import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
 import { type NextRequest, NextResponse } from "next/server";
 
-
 /**
  * GET handler for media files
  * Proxies requests to Supabase storage and returns the file content
@@ -10,11 +9,9 @@ import { type NextRequest, NextResponse } from "next/server";
  * Query params:
  * - postId: If provided, searches in posts directory, otherwise searches in temp
  */
-export const revalidate = 31536000; // Cache for 1 year (60 * 60 * 24 * 365)
-
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ userId: string; fileName: string }> },
+  { params }: { params: Promise<{ userId: string; fileName: string }> }
 ) {
   try {
     const { userId, fileName } = await params;
