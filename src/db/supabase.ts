@@ -30,18 +30,28 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
 
 /**
  * Creates a server-side Supabase client
- * @param clerkToken - Optional Clerk token for authentication, useful in cached environment
+ * @param options - Configuration options
+ * @param options.accessToken - Optional Clerk token for authentication, useful in cached environment
+ * @param options.needsAuth - Whether authentication is required (default: true)
  * @returns Supabase client
  */
-export function createServerSupabaseClient(clerkToken?: string | null) {
+export function createServerSupabaseClient({
+  accessToken: clerkToken,
+  needsAuth = true,
+}: {
+  accessToken?: string | null;
+  needsAuth?: boolean;
+} = {}) {
+  async function accessToken() {
+    if (clerkToken) return clerkToken;
+    return (await auth()).getToken();
+  }
+
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
-      async accessToken() {
-        if (clerkToken) return clerkToken;
-        return (await auth()).getToken();
-      },
+      accessToken: needsAuth ? accessToken : undefined,
       global: {
         fetch: supabaseFetch,
       },
