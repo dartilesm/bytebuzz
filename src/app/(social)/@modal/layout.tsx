@@ -22,13 +22,17 @@ export default function ModalLayout({ children }: { children: React.ReactNode })
   return (
     <Modal
       defaultOpen
-      size="xl"
-      backdrop="blur"
-      scrollBehavior="outside"
+      size='xl'
+      backdrop='blur'
+      scrollBehavior='outside'
       hideCloseButton
       onClose={onClose}
-      className="flex justify-center items-center w-min"
-      placement="center"
+      className='flex justify-center items-center w-min'
+      placement='center'
+      classNames={{
+        base: "max-w-[95vw] md:max-w-xl",
+        wrapper: "p-2 md:p-4",
+      }}
     >
       <ModalContent>{children}</ModalContent>
     </Modal>

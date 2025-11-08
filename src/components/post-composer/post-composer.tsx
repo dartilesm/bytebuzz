@@ -163,23 +163,23 @@ export function PostComposer({
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
-        <div className='flex flex-row gap-4 p-4'>
-          <div className='flex flex-row gap-2 z-10'>
-            <Avatar isBordered src={user?.imageUrl} />
+        <div className='flex flex-row gap-2 md:gap-4 p-2 md:p-4'>
+          <div className='flex flex-row gap-2 z-10 flex-shrink-0'>
+            <Avatar isBordered src={user?.imageUrl} size="sm" className="md:w-10 md:h-10" />
           </div>
-          <div className='flex-1'>
-            <MarkdownEditor placeholder={placeholder} contentClassName='min-h-12 p-0' autoFocus />
-            <div className='py-4'>{children}</div>
-            <MarkdownToolbar className='bg-transparent border-none p-0'>
+          <div className='flex-1 min-w-0'>
+            <MarkdownEditor placeholder={placeholder} contentClassName='min-h-12 p-0 text-sm md:text-base' autoFocus />
+            <div className='py-2 md:py-4'>{children}</div>
+            <MarkdownToolbar className='bg-transparent border-none p-0 flex-wrap gap-1 md:gap-2'>
               <MarkdownToolbarDefaultActions
-                buttonClassName='bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary'
+                buttonClassName='bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary text-xs md:text-sm'
                 onMediaUpload={handleMediaUpload}
               />
               <Button
                 type='submit'
                 color='primary'
                 size='sm'
-                className='ml-auto'
+                className='ml-auto text-xs md:text-sm'
                 isDisabled={!form.formState.isValid || isPending}
               >
                 Post

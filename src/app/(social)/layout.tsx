@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/sidebar/sidebar";
+import { MobileBottomNav } from "@/components/sidebar/mobile-bottom-nav";
 import { SuggestionsSection } from "@/components/suggestions/suggestions-section";
 
 /**
@@ -8,17 +9,20 @@ import { SuggestionsSection } from "@/components/suggestions/suggestions-section
  */
 export default function AuthenticatedLayout({ children, modal }: LayoutProps<"/">) {
   return (
-    <main className="grid grid-cols-[max-content_600px_max-content] gap-4 mx-auto justify-center w-full container">
-      <div className="flex flex-col gap-4 sticky top-0 max-h-dvh">
-        <Sidebar />
-      </div>
-      <div className="flex flex-col min-h-dvh">
-        {modal}
-        {children}
-      </div>
-      <div className="flex flex-col gap-4 sticky top-4 h-fit">
-        <SuggestionsSection />
-      </div>
-    </main>
+    <>
+      <main className='grid grid-cols-1 md:grid-cols-[max-content_600px] lg:grid-cols-[max-content_600px_max-content] gap-4 mx-auto justify-center w-full container px-2 md:px-4 pb-16 md:pb-0'>
+        <div className='hidden md:flex flex-col gap-4 sticky top-0 max-h-dvh'>
+          <Sidebar />
+        </div>
+        <div className='flex flex-col min-h-dvh w-full max-w-full md:max-w-[600px]'>
+          {modal}
+          {children}
+        </div>
+        <div className='hidden lg:flex flex-col gap-4 sticky top-4 h-fit'>
+          <SuggestionsSection />
+        </div>
+      </main>
+      <MobileBottomNav />
+    </>
   );
 }
