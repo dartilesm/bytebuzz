@@ -42,7 +42,7 @@ export function UserPostThread({ posts }: UserPostThreadProps) {
           isFirstInThread={isFirstAndLastPost || index === 0}
           isLastInThread={isFirstAndLastPost || index === posts.length - 1}
           post={post}
-          minContentLength={1500}
+          minVisibleContentLength={1500}
           className={cn(
             "dark:border-content2 border border-content3 bg-default-200/20 dark:bg-content1",
             {

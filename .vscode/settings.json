@@ -1,9 +1,9 @@
 {
   "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -23,4 +23,23 @@
   ],
   // Use Deno language server for Edge Functions
   "deno.config": "./supabase/**/deno.json",
+  "typescript.referencesCodeLens.enabled": true,
+  "chat.mcp.serverSampling": {
+    "devhub/.vscode/mcp.json: supabase": {
+      "allowedModels": [
+        "copilot/gpt-4.1",
+        "copilot/auto",
+        "copilot/claude-haiku-4.5",
+        "copilot/claude-3.5-sonnet",
+        "copilot/claude-sonnet-4",
+        "copilot/claude-sonnet-4.5",
+        "copilot/gemini-2.5-pro",
+        "copilot/gpt-4o",
+        "copilot/gpt-5",
+        "copilot/gpt-5-mini",
+        "copilot/gpt-5-codex",
+        "copilot/grok-code-fast-1"
+      ]
+    }
+  },
 }
