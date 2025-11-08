@@ -36,14 +36,14 @@ export function PostCard({ children, className, classNames, ref }: PostCardProps
           {
             "cursor-pointer": !isNavigationDisabled,
           },
-          className,
+          className
         )}
         classNames={classNames}
         tabIndex={0}
-        as="article"
+        as='article'
       >
         {!isThreadPagePost && <PostAvatarAndThreadLine />}
-        <div className="w-full overflow-hidden">{children}</div>
+        <div className='w-full overflow-hidden'>{children}</div>
       </Card>
     </div>
   );

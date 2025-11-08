@@ -33,17 +33,17 @@ export function PostInteraction({
   const isRepost = action === "clone";
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className='flex flex-col gap-2'>
       {isReply && (
-        <div className="relative">
+        <div className='relative'>
           <PostThreadLine isFirstInThread />
           <UserPost post={post} isNavigationDisabled>
-            {post.repost && <CondensedUserPost post={post.repost} />}
+            {post.repost && <CondensedUserPost post={post.repost} isNavigationDisabled />}
           </UserPost>
         </div>
       )}
       <PostComposer
-        placeholder="What are your thoughts?"
+        placeholder='What are your thoughts?'
         onSubmit={onSubmit}
         {...(isRepost && { repostPostId: post.id })}
         {...(isReply && { replyPostId: post.id })}
@@ -52,11 +52,11 @@ export function PostInteraction({
         })}
       >
         {isRepost && (
-          <div className="mb-4 flex flex-col gap-1">
-            <span className="text-sm text-content4-foreground/60 italic flex items-center gap-1">
+          <div className='mb-4 flex flex-col gap-1'>
+            <span className='text-sm text-content4-foreground/60 italic flex items-center gap-1'>
               <span>Original post</span>
             </span>
-            <CondensedUserPost post={post} />
+            <CondensedUserPost post={post} isNavigationDisabled />
           </div>
         )}
       </PostComposer>
