@@ -1,20 +1,12 @@
 "use client";
 
-import { SidebarThemeSwitcher } from "@/components/sidebar/sidebar-theme-switcher";
 import { useNavigationContext } from "@/context/navigation-context";
 import { useAuth } from "@clerk/nextjs";
-import {
-  Avatar,
-  Button,
-  Divider,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  cn,
-} from "@heroui/react";
-import { LogInIcon, LogOutIcon, SettingsIcon, SunMoonIcon, UserIcon } from "lucide-react";
+import { Avatar, Button, Popover, PopoverContent, PopoverTrigger, cn } from "@heroui/react";
+import { LogInIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { AccountDropdownContent } from "./account-dropdown-content";
 import type { SidebarItemProps } from "./sidebar-item";
 
 type SidebarAccountDropdownProps = Pick<SidebarItemProps, "isActive" | "label">;
@@ -41,6 +33,14 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
         <LogInIcon size={18} />
       </Button>
     );
+
+  function handleSignOut() {
+    signOut();
+  }
+
+  function handleClose() {
+    setIsPopoverOpen(false);
+  }
 
   return (
     <Popover isOpen={isPopoverOpen} onOpenChange={setIsPopoverOpen} placement='right-start'>
@@ -73,40 +73,7 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <div className='px-1 py-2 w-full max-w-56'>
-          <Button
-            as={Link}
-            href='/account-settings'
-            className='w-full justify-start'
-            variant='light'
-            startContent={<SettingsIcon size={18} />}
-          >
-            Account settings
-          </Button>
-
-          <Button
-            as={"div"}
-            className='w-full justify-start mt-1'
-            variant='light'
-            startContent={<SunMoonIcon size={18} />}
-          >
-            <span className='flex flex-row justify-between items-center w-full'>
-              Theme <SidebarThemeSwitcher />
-            </span>
-          </Button>
-
-          <Divider className='my-2' />
-
-          <Button
-            className='w-full justify-start mt-2'
-            color='danger'
-            variant='flat'
-            startContent={<LogOutIcon size={18} />}
-            onPress={() => signOut()}
-          >
-            Sign out
-          </Button>
-        </div>
+        <AccountDropdownContent onSignOut={handleSignOut} onClose={handleClose} />
       </PopoverContent>
     </Popover>
   );

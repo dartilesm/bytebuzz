@@ -4,6 +4,7 @@ import type { ElementType, ReactNode } from "react";
 import { createElement } from "react";
 import Link from "next/link";
 import { SidebarAccountDropdown } from "./sidebar-account-dropdown";
+import { MobileProfileButton } from "./mobile-profile-button";
 
 /**
  * Context object passed to navigation item functions
@@ -128,6 +129,17 @@ export const baseNavigationItems: NavigationItem[] = [
     isActive: (context: NavigationContext) => {
       if (!context.username) return false;
       return context.pathname === `/@${context.username}`;
+    },
+    children: (item, context) => {
+      // Render MobileProfileButton for mobile, null for desktop (uses default rendering)
+      if (context.isMobile) {
+        return createElement(MobileProfileButton, {
+          href: item.href ?? undefined,
+          isActive: item.isActive,
+          label: item.label,
+        });
+      }
+      return null;
     },
   },
   {
