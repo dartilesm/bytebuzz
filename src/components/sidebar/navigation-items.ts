@@ -1,7 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 import { HomeIcon, LogInIcon, MessageSquareIcon, TelescopeIcon, UserIcon } from "lucide-react";
-import type { ElementType } from "react";
+import type { ElementType, ReactNode } from "react";
+import { createElement } from "react";
 import Link from "next/link";
+import { SidebarAccountDropdown } from "./sidebar-account-dropdown";
 
 /**
  * Context object passed to navigation item functions
@@ -14,6 +16,12 @@ export interface NavigationContext {
 }
 
 export interface NavigationItem {
+  /**
+   * Category of the navigation item. Main items appear in both mobile bottom nav and center of desktop sidebar.
+   * Secondary items appear at the bottom of the desktop sidebar only.
+   * Defaults to "main" for backward compatibility.
+   */
+  category?: "main" | "secondary";
   /**
    * Component type to render as (e.g., Link). Can be a function that takes context and returns the component type.
    * When provided, the Button will render as this component type.
@@ -29,9 +37,12 @@ export interface NavigationItem {
    */
   onClick?: (context: NavigationContext) => void;
   /**
-   * The icon component for the navigation item
+   * The icon component for the navigation item.
+   * Can be a static LucideIcon or a function that takes context and returns ReactNode.
+   * Useful for conditional icons like showing user avatar when authenticated.
+   * Example: `icon: (context) => context.isAuthenticated ? <Avatar src={user.imageUrl} /> : <UserIcon />`
    */
-  icon: LucideIcon;
+  icon: LucideIcon | ((context: NavigationContext) => ReactNode);
   /**
    * The label text for the navigation item
    */
@@ -50,6 +61,25 @@ export interface NavigationItem {
    * The pathname is available in the context object.
    */
   isActive?: (context: NavigationContext) => boolean;
+  /**
+   * Custom component render function. When provided, this will be rendered instead of the default SidebarItem.
+   * The function receives the computed navigation item and context.
+   * Returns ReactNode to override default rendering, or null to use default SidebarItem rendering.
+   * Useful for items that need custom rendering logic, like SidebarAccountDropdown.
+   * Example: `children: (item, context) => context.isAuthenticated ? <CustomComponent /> : null`
+   */
+  children?: (
+    item: {
+      as?: ElementType | null;
+      href?: string;
+      onClick?: () => void;
+      icon: ReactNode;
+      label: string;
+      isActive: boolean;
+      category?: "main" | "secondary";
+    },
+    context: NavigationContext
+  ) => ReactNode | null;
 }
 
 /**
@@ -58,6 +88,7 @@ export interface NavigationItem {
  */
 export const baseNavigationItems: NavigationItem[] = [
   {
+    category: "main",
     as: Link,
     href: "/root",
     icon: HomeIcon,
@@ -65,6 +96,7 @@ export const baseNavigationItems: NavigationItem[] = [
     isActive: (context) => context.pathname === "/root",
   },
   {
+    category: "main",
     as: Link,
     href: "/explore",
     icon: TelescopeIcon,
@@ -72,6 +104,7 @@ export const baseNavigationItems: NavigationItem[] = [
     isActive: (context) => context.pathname === "/explore",
   },
   {
+    category: "main",
     as: Link,
     href: "/messages",
     icon: MessageSquareIcon,
@@ -80,6 +113,7 @@ export const baseNavigationItems: NavigationItem[] = [
     isActive: (context) => context.pathname === "/messages",
   },
   {
+    category: "main",
     as: (context: NavigationContext) => (context.username ? Link : null),
     href: (context: NavigationContext) => (context.username ? `/@${context.username}` : ""),
     icon: UserIcon,
@@ -91,11 +125,22 @@ export const baseNavigationItems: NavigationItem[] = [
     },
   },
   {
+    category: "main",
     as: Link,
     href: "/sign-in",
     icon: LogInIcon,
     label: "Sign In",
     isVisible: (context) => context.isAuthenticated === false,
     isActive: (context) => context.pathname === "/sign-in",
+  },
+  {
+    category: "secondary",
+    icon: UserIcon,
+    label: "", // Label is computed dynamically from user data in the hook
+    children: (item, _context) =>
+      createElement(SidebarAccountDropdown, {
+        isActive: item.isActive,
+        label: item.label,
+      }),
   },
 ];

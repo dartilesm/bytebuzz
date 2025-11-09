@@ -1,15 +1,23 @@
 "use client";
 
-import { SidebarAccountDropdown } from "@/components/sidebar/sidebar-account-dropdown";
-import { useUser } from "@clerk/nextjs";
 import { BugIcon, ExternalLinkIcon, TriangleIcon } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
 import { SidebarItem } from "./sidebar-item";
 import { SidebarSection } from "./sidebar-section";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
+import type { NavigationContext } from "@/components/sidebar/navigation-items";
 
 export function Sidebar() {
+  const { main, secondary } = useNavigationItems();
+  const pathname = usePathname();
   const { user } = useUser();
-  const navigationItems = useNavigationItems();
+
+  const context: NavigationContext = {
+    username: user?.username ?? undefined,
+    isAuthenticated: !!user,
+    pathname,
+  };
 
   // Collapsed if below xl (using Tailwind only)
   // max-xl = below 1280px, xl = 1280px and up
@@ -27,15 +35,21 @@ export function Sidebar() {
 
       <div className='flex-1 overflow-y-auto justify-center flex flex-col'>
         <SidebarSection title=''>
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
+          {main.map((item) => {
+            if (item.children) {
+              const customRender = item.children(item, context);
+              if (customRender !== null) {
+                return <div key={item.href || item.label}>{customRender}</div>;
+              }
+              // If children returns null, fall through to default rendering
+            }
             return (
               <SidebarItem
                 key={item.href || item.label}
                 as={item.as ?? undefined}
                 href={item.href}
                 onClick={item.onClick}
-                icon={<Icon />}
+                icon={item.icon}
                 label={item.label}
                 isActive={item.isActive}
               />
@@ -75,7 +89,26 @@ export function Sidebar() {
           }
           isExternal
         />
-        <SidebarAccountDropdown isActive={false} label={user?.fullName ?? ""} />
+        {secondary.map((item) => {
+          if (item.children) {
+            const customRender = item.children(item, context);
+            if (customRender !== null) {
+              return <div key={item.href || item.label || "secondary-item"}>{customRender}</div>;
+            }
+            // If children returns null, fall through to default rendering
+          }
+          return (
+            <SidebarItem
+              key={item.href || item.label}
+              as={item.as ?? undefined}
+              href={item.href}
+              onClick={item.onClick}
+              icon={item.icon}
+              label={item.label}
+              isActive={item.isActive}
+            />
+          );
+        })}
       </div>
     </div>
   );

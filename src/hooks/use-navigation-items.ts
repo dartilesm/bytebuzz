@@ -2,15 +2,18 @@ import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import type { NavigationItem, NavigationContext } from "@/components/sidebar/navigation-items";
 import { baseNavigationItems } from "@/components/sidebar/navigation-items";
-import type { ElementType } from "react";
+import type { ElementType, ReactNode } from "react";
+import { createElement } from "react";
 
 export interface ComputedNavigationItem {
   as?: ElementType | null;
   href?: string;
   onClick?: () => void;
-  icon: NavigationItem["icon"];
+  icon: ReactNode;
   label: string;
   isActive: boolean;
+  category?: "main" | "secondary";
+  children?: (item: ComputedNavigationItem, context: NavigationContext) => ReactNode | null;
 }
 
 /**
@@ -47,6 +50,18 @@ function computeIsVisible(
 }
 
 /**
+ * Computes the icon for a navigation item
+ */
+function computeIcon(
+  icon: NavigationItem["icon"],
+  context: NavigationContext
+): ReactNode {
+  if (typeof icon === "function") return icon(context);
+  const IconComponent = icon;
+  return createElement(IconComponent);
+}
+
+/**
  * Computes the component type (as prop) for a navigation item
  */
 function computeAs(
@@ -61,10 +76,7 @@ function computeAs(
 /**
  * Computes the href for a navigation item
  */
-function computeHref(
-  href: NavigationItem["href"],
-  context: NavigationContext
-): string | undefined {
+function computeHref(href: NavigationItem["href"], context: NavigationContext): string | undefined {
   if (typeof href === "function") return href(context);
   return href;
 }
@@ -110,9 +122,14 @@ function shouldIncludeItem(
 
 /**
  * Hook to get navigation items with computed values (context)
- * Returns navigation items with resolved paths and active states
+ * Returns navigation items separated by category (main and secondary)
+ * Main items appear in both mobile bottom nav and center of desktop sidebar
+ * Secondary items appear at the bottom of the desktop sidebar only
  */
-export function useNavigationItems(): ComputedNavigationItem[] {
+export function useNavigationItems(): {
+  main: ComputedNavigationItem[];
+  secondary: ComputedNavigationItem[];
+} {
   const pathname = usePathname();
   const { user } = useUser();
 
@@ -122,7 +139,8 @@ export function useNavigationItems(): ComputedNavigationItem[] {
     pathname,
   };
 
-  const items: ComputedNavigationItem[] = [];
+  const mainItems: ComputedNavigationItem[] = [];
+  const secondaryItems: ComputedNavigationItem[] = [];
 
   for (const item of baseNavigationItems) {
     const isVisible = computeIsVisible(item.isVisible, context);
@@ -130,21 +148,52 @@ export function useNavigationItems(): ComputedNavigationItem[] {
 
     const as = computeAs(item.as, context);
     const href = computeHref(item.href, context);
+    const category = item.category ?? "main";
+
+    const computedIcon = computeIcon(item.icon, context);
+
+    // For secondary items with custom children, skip the shouldIncludeItem check
+    // since they might not have as/href/onClick but still need to be rendered
+    if (category === "secondary" && item.children) {
+      const isActive = item.isActive ? item.isActive(context) : false;
+      // Compute label dynamically for items that need user data (like SidebarAccountDropdown)
+      const computedLabel = item.label || (user?.fullName ?? "");
+      const computedItem: ComputedNavigationItem = {
+        as,
+        href,
+        onClick: createOnClickHandler(item.onClick, context),
+        icon: computedIcon,
+        label: computedLabel,
+        isActive,
+        category,
+        children: item.children,
+      };
+      secondaryItems.push(computedItem);
+      continue;
+    }
 
     if (!shouldIncludeItem(as, href, item.onClick)) continue;
 
     const onClick = createOnClickHandler(item.onClick, context);
     const isActive = computeIsActive(item, href, context);
 
-    items.push({
+    const computedItem: ComputedNavigationItem = {
       as,
       href,
       onClick,
-      icon: item.icon,
+      icon: computedIcon,
       label: item.label,
       isActive,
-    });
+      category,
+      children: item.children,
+    };
+
+    if (category === "secondary") return secondaryItems.push(computedItem);
+    mainItems.push(computedItem);
   }
 
-  return items;
+  return {
+    main: mainItems,
+    secondary: secondaryItems,
+  };
 }
