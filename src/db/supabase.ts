@@ -37,13 +37,11 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
  */
 export function createServerSupabaseClient({
   accessToken: clerkToken,
-  needsAuth = true,
 }: {
   accessToken?: string | null;
-  needsAuth?: boolean;
 } = {}) {
   async function accessToken() {
-    if (clerkToken) return clerkToken;
+    if (clerkToken !== undefined) return clerkToken;
     return (await auth()).getToken();
   }
 
@@ -51,7 +49,7 @@ export function createServerSupabaseClient({
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
-      accessToken: needsAuth ? accessToken : undefined,
+      accessToken,
       global: {
         fetch: supabaseFetch,
       },
