@@ -68,7 +68,7 @@ export function withCacheService<T extends ServiceName, M extends ServiceMethods
 
   return async function serviceCall(...params: ServiceMethodParams<T, M>) {
     const session = await auth();
-    const accessToken = await session.getToken();
+    const accessToken = (await session.getToken()) ?? null;
     return cachedService(accessToken, ...params);
   };
 }
