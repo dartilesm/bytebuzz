@@ -1,7 +1,7 @@
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { MobileBottomNav } from "@/components/sidebar/mobile-bottom-nav";
 import { SuggestionsSection } from "@/components/suggestions/suggestions-section";
-import { AuthContextProvider } from "@/context/auth-context";
+import { NavigationContextProvider } from "@/context/navigation-context";
 import { currentUser } from "@clerk/nextjs/server";
 import { serializeUser } from "@/lib/auth/serialize-user";
 import { detectMobileFromHeaders } from "@/lib/device/detect-mobile";
@@ -17,7 +17,7 @@ export default async function AuthenticatedLayout({ children, modal }: LayoutPro
   const isMobile = await detectMobileFromHeaders();
 
   return (
-    <AuthContextProvider initialUser={serializedUser} initialIsMobile={isMobile}>
+    <NavigationContextProvider initialUser={serializedUser} initialIsMobile={isMobile}>
       <main className='grid grid-cols-1 md:grid-cols-[max-content_600px] lg:grid-cols-[max-content_600px_max-content] gap-4 mx-auto justify-center w-full md:container px-0 md:px-4 pb-16 md:pb-0'>
         <div className='hidden md:flex flex-col gap-4 sticky top-0 max-h-dvh'>
           <Sidebar />
@@ -31,6 +31,6 @@ export default async function AuthenticatedLayout({ children, modal }: LayoutPro
         </div>
       </main>
       <MobileBottomNav />
-    </AuthContextProvider>
+    </NavigationContextProvider>
   );
 }

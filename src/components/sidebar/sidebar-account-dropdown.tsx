@@ -1,7 +1,7 @@
 "use client";
 
 import { SidebarThemeSwitcher } from "@/components/sidebar/sidebar-theme-switcher";
-import { useAuth as useAuthContext } from "@/context/auth-context";
+import { useNavigationContext } from "@/context/navigation-context";
 import { useAuth } from "@clerk/nextjs";
 import {
   Avatar,
@@ -21,7 +21,7 @@ type SidebarAccountDropdownProps = Pick<SidebarItemProps, "isActive" | "label">;
 
 export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdownProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const { user } = useAuthContext();
+  const { user } = useNavigationContext();
   const { signOut } = useAuth();
 
   if (!user)

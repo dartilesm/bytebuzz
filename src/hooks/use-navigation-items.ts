@@ -3,7 +3,7 @@ import type { NavigationItem, NavigationContext } from "@/components/sidebar/nav
 import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import type { ElementType, ReactNode } from "react";
 import { createElement } from "react";
-import { useAuth } from "@/context/auth-context";
+import { useNavigationContext } from "@/context/navigation-context";
 
 export interface ComputedNavigationItem {
   as?: ElementType | null;
@@ -140,7 +140,7 @@ export function useNavigationItems(): {
   secondary: ComputedNavigationItem[];
 } {
   const pathname = usePathname();
-  const { user, isAuthenticated, username, isMobile } = useAuth();
+  const { user, isAuthenticated, username, isMobile } = useNavigationContext();
 
   const context: NavigationContext = {
     username,

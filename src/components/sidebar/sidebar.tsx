@@ -5,13 +5,13 @@ import { usePathname } from "next/navigation";
 import { SidebarItem } from "./sidebar-item";
 import { SidebarSection } from "./sidebar-section";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
-import { useAuth } from "@/context/auth-context";
+import { useNavigationContext } from "@/context/navigation-context";
 import type { NavigationContext } from "@/components/sidebar/navigation-items";
 
 export function Sidebar() {
   const { main, secondary } = useNavigationItems();
   const pathname = usePathname();
-  const { username, isAuthenticated, isMobile } = useAuth();
+  const { username, isAuthenticated, isMobile } = useNavigationContext();
 
   const context: NavigationContext = {
     username,

@@ -9,37 +9,37 @@ import type { SerializedUser } from "@/lib/auth/serialize-user";
 // Both have username, fullName, etc. We use a union type to handle both
 type AuthUser = SerializedUser | ReturnType<typeof useUser>["user"] | null;
 
-interface AuthContextValue {
+interface NavigationStateValue {
   user: AuthUser;
   isAuthenticated: boolean;
   username?: string;
   isMobile: boolean;
 }
 
-const AuthContext = createContext<AuthContextValue>({
+const NavigationStateContext = createContext<NavigationStateValue>({
   user: null,
   isAuthenticated: false,
   username: undefined,
   isMobile: false,
 });
 
-interface AuthContextProviderProps {
+interface NavigationContextProviderProps {
   initialUser: SerializedUser | null;
   initialIsMobile: boolean;
   children: ReactNode;
 }
 
 /**
- * AuthContextProvider provides authentication state to the application.
- * It accepts an initial user from SSR and syncs with Clerk's reactive useUser() hook
- * to ensure the auth state stays up-to-date on the client.
+ * NavigationContextProvider provides navigation-related state to the application.
+ * It accepts initial user and mobile detection from SSR and syncs with Clerk's reactive useUser() hook
+ * to ensure the state stays up-to-date on the client.
  * It also handles mobile detection with server-side initial value and client-side enhancement.
  */
-export function AuthContextProvider({
+export function NavigationContextProvider({
   initialUser,
   initialIsMobile,
   children,
-}: AuthContextProviderProps) {
+}: NavigationContextProviderProps) {
   const { user: clerkUser, isLoaded } = useUser();
   const clientIsMobile = useMediaQuery("(max-width: 767px)");
   const [isMounted, setIsMounted] = useState(false);
@@ -57,20 +57,22 @@ export function AuthContextProvider({
   // This prevents hydration mismatches while maintaining reactivity
   const isMobile = isMounted ? clientIsMobile : initialIsMobile;
 
-  const value: AuthContextValue = {
+  const value: NavigationStateValue = {
     user: loadedUser,
     isAuthenticated,
     username,
     isMobile,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <NavigationStateContext.Provider value={value}>{children}</NavigationStateContext.Provider>
+  );
 }
 
 /**
- * Hook to access authentication context
- * Returns the current user, authentication status, and username
+ * Hook to access navigation context state
+ * Returns the current user, authentication status, username, and mobile detection
  */
-export function useAuth() {
-  return useContext(AuthContext);
+export function useNavigationContext() {
+  return useContext(NavigationStateContext);
 }
