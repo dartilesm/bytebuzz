@@ -1,7 +1,5 @@
-import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { Button, Chip, cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { useUser } from "@clerk/nextjs";
 import type { ElementType, ReactNode } from "react";
 
 export interface SidebarItemProps {
@@ -13,7 +11,6 @@ export interface SidebarItemProps {
   isActive?: boolean;
   isExternal?: boolean;
   hasAddButton?: boolean;
-  needsAuth?: boolean;
   badge?: string;
 }
 
@@ -30,27 +27,16 @@ export function SidebarItem({
   isExternal = false,
   hasAddButton = false,
   badge,
-  needsAuth = false,
 }: SidebarItemProps) {
-  const { withAuth } = useAuthGuard();
-  const { user } = useUser();
-  const isAuthenticated = !!user;
-
-  // Handle onClick with auth guard if needed
-  function handleClick() {
-    if (needsAuth && onClick) return withAuth(onClick)();
-    if (onClick) onClick();
-  }
-
   // Determine if navigation should be allowed
-  const canNavigate = as && href && (!needsAuth || isAuthenticated);
+  const canNavigate = as && href;
   const Component = canNavigate ? as : undefined;
 
   return (
     <Button
       as={Component}
       href={canNavigate ? href : undefined}
-      onPress={onClick ? handleClick : undefined}
+      onPress={onClick}
       className={cn("flex items-center justify-between w-full", {
         "bg-content3 dark:bg-content3/50": isActive,
         "justify-center px-2 max-xl:px-0": true,

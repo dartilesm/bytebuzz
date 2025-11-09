@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import type { NavigationItem } from "@/components/sidebar/navigation-items";
+import type { NavigationItem, NavigationContext } from "@/components/sidebar/navigation-items";
 import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import type { ElementType } from "react";
 
@@ -11,20 +11,20 @@ export interface ComputedNavigationItem {
   icon: NavigationItem["icon"];
   label: string;
   isActive: boolean;
-  needsAuth?: boolean;
 }
 
 /**
  * Type guard to check if a function is a navigation item function
- * (takes username and returns ElementType | null) vs a component constructor
+ * (takes context and returns ElementType | null) vs a component constructor
  */
 function isNavigationFunction(
-  fn: ElementType | ((username?: string) => ElementType | null)
-): fn is (username?: string) => ElementType | null {
+  fn: ElementType | ((context: NavigationContext) => ElementType | null)
+): fn is (context: NavigationContext) => ElementType | null {
   if (typeof fn !== "function") return false;
 
   try {
-    const result = (fn as (username?: string) => ElementType | null)(undefined);
+    const emptyContext: NavigationContext = { pathname: "" };
+    const result = (fn as (context: NavigationContext) => ElementType | null)(emptyContext);
     if (result === null) return true;
     if (typeof result === "function") return true;
     if (typeof result === "string") return true;
@@ -37,8 +37,11 @@ function isNavigationFunction(
 /**
  * Computes the visibility of a navigation item
  */
-function computeIsVisible(isVisible: NavigationItem["isVisible"], username?: string): boolean {
-  if (typeof isVisible === "function") return isVisible(username);
+function computeIsVisible(
+  isVisible: NavigationItem["isVisible"],
+  context: NavigationContext
+): boolean {
+  if (typeof isVisible === "function") return isVisible(context);
   if (typeof isVisible === "boolean") return isVisible;
   return true;
 }
@@ -46,17 +49,23 @@ function computeIsVisible(isVisible: NavigationItem["isVisible"], username?: str
 /**
  * Computes the component type (as prop) for a navigation item
  */
-function computeAs(as: NavigationItem["as"], username?: string): ElementType | null | undefined {
+function computeAs(
+  as: NavigationItem["as"],
+  context: NavigationContext
+): ElementType | null | undefined {
   if (typeof as !== "function") return as;
-  if (isNavigationFunction(as)) return as(username);
+  if (isNavigationFunction(as)) return as(context);
   return as as ElementType;
 }
 
 /**
  * Computes the href for a navigation item
  */
-function computeHref(href: NavigationItem["href"], username?: string): string | undefined {
-  if (typeof href === "function") return href(username);
+function computeHref(
+  href: NavigationItem["href"],
+  context: NavigationContext
+): string | undefined {
+  if (typeof href === "function") return href(context);
   return href;
 }
 
@@ -65,11 +74,11 @@ function computeHref(href: NavigationItem["href"], username?: string): string | 
  */
 function createOnClickHandler(
   onClick: NavigationItem["onClick"],
-  username?: string
+  context: NavigationContext
 ): (() => void) | undefined {
   if (!onClick) return undefined;
   return () => {
-    onClick(username);
+    onClick(context);
   };
 }
 
@@ -78,13 +87,12 @@ function createOnClickHandler(
  */
 function computeIsActive(
   item: NavigationItem,
-  pathname: string,
   href: string | undefined,
-  username?: string
+  context: NavigationContext
 ): boolean {
-  if (item.isActive) return item.isActive(pathname, username);
+  if (item.isActive) return item.isActive(context);
   if (!href) return false;
-  return pathname === href;
+  return context.pathname === href;
 }
 
 /**
@@ -101,27 +109,32 @@ function shouldIncludeItem(
 }
 
 /**
- * Hook to get navigation items with computed values (pathname, username)
+ * Hook to get navigation items with computed values (context)
  * Returns navigation items with resolved paths and active states
  */
 export function useNavigationItems(): ComputedNavigationItem[] {
   const pathname = usePathname();
   const { user } = useUser();
-  const username = user?.username ?? undefined;
+
+  const context: NavigationContext = {
+    username: user?.username ?? undefined,
+    isAuthenticated: !!user,
+    pathname,
+  };
 
   const items: ComputedNavigationItem[] = [];
 
   for (const item of baseNavigationItems) {
-    const isVisible = computeIsVisible(item.isVisible, username);
+    const isVisible = computeIsVisible(item.isVisible, context);
     if (!isVisible) continue;
 
-    const as = computeAs(item.as, username);
-    const href = computeHref(item.href, username);
+    const as = computeAs(item.as, context);
+    const href = computeHref(item.href, context);
 
     if (!shouldIncludeItem(as, href, item.onClick)) continue;
 
-    const onClick = createOnClickHandler(item.onClick, username);
-    const isActive = computeIsActive(item, pathname, href, username);
+    const onClick = createOnClickHandler(item.onClick, context);
+    const isActive = computeIsActive(item, href, context);
 
     items.push({
       as,
@@ -130,7 +143,6 @@ export function useNavigationItems(): ComputedNavigationItem[] {
       icon: item.icon,
       label: item.label,
       isActive,
-      needsAuth: item.needsAuth,
     });
   }
 

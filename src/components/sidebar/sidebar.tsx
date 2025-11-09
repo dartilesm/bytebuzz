@@ -38,7 +38,6 @@ export function Sidebar() {
                 icon={<Icon />}
                 label={item.label}
                 isActive={item.isActive}
-                needsAuth={item.needsAuth}
               />
             );
           })}
