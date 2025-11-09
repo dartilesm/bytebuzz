@@ -2,11 +2,11 @@
 
 import { useUser } from "@clerk/nextjs";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { User } from "@clerk/nextjs/server";
+import type { SerializedUser } from "@/lib/auth/serialize-user";
 
-// User from server (currentUser) and client (useUser) have compatible structures
+// User from server (SerializedUser) and client (useUser) have compatible structures
 // Both have username, fullName, etc. We use a union type to handle both
-type AuthUser = User | ReturnType<typeof useUser>["user"] | null;
+type AuthUser = SerializedUser | ReturnType<typeof useUser>["user"] | null;
 
 interface AuthContextValue {
   user: AuthUser;
@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 interface AuthContextProviderProps {
-  initialUser: User | null;
+  initialUser: SerializedUser | null;
   children: ReactNode;
 }
 
@@ -31,22 +31,16 @@ interface AuthContextProviderProps {
  * to ensure the auth state stays up-to-date on the client.
  */
 export function AuthContextProvider({ initialUser, children }: AuthContextProviderProps) {
-  const { user: clerkUser } = useUser();
-  const [user, setUser] = useState<AuthUser>(initialUser);
+  const { user: clerkUser, isLoaded } = useUser();
 
-  // Sync with Clerk's reactive user state
-  useEffect(() => {
-    if (clerkUser) {
-      setUser(clerkUser);
-    } else {
-      setUser(null);
-    }
-  }, [clerkUser]);
+  const loadedUser = isLoaded ? clerkUser : initialUser;
+  const isAuthenticated = !!loadedUser;
+  const username = loadedUser?.username ?? initialUser?.username;
 
   const value: AuthContextValue = {
-    user,
-    isAuthenticated: !!user,
-    username: user?.username ?? undefined,
+    user: loadedUser,
+    isAuthenticated,
+    username,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
