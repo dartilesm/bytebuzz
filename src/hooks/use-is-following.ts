@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * Fetches whether the current user is following the target user.
@@ -12,6 +12,9 @@ async function fetchIsFollowing(targetUserId: string): Promise<{ isFollowing: bo
   const data = await res.json();
 
   if (!res.ok) {
+    if (res.status === 401) {
+      return { isFollowing: false };
+    }
     throw new Error(data.error || "Failed to fetch follow status");
   }
 
