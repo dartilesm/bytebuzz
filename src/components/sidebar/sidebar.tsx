@@ -1,23 +1,23 @@
 "use client";
 
 import { BugIcon, ExternalLinkIcon, TriangleIcon } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
 import { SidebarItem } from "./sidebar-item";
 import { SidebarSection } from "./sidebar-section";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
+import { useAuth } from "@/context/auth-context";
 import type { NavigationContext } from "@/components/sidebar/navigation-items";
 
 export function Sidebar() {
   const { main, secondary } = useNavigationItems();
   const pathname = usePathname();
-  const { user } = useUser();
+  const { username, isAuthenticated } = useAuth();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   const context: NavigationContext = {
-    username: user?.username ?? undefined,
-    isAuthenticated: !!user,
+    username,
+    isAuthenticated,
     pathname,
     isMobile,
   };

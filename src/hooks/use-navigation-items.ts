@@ -1,10 +1,10 @@
-import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import type { NavigationItem, NavigationContext } from "@/components/sidebar/navigation-items";
 import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import type { ElementType, ReactNode } from "react";
 import { createElement } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { useAuth } from "@/context/auth-context";
 
 export interface ComputedNavigationItem {
   as?: ElementType | null;
@@ -141,12 +141,12 @@ export function useNavigationItems(): {
   secondary: ComputedNavigationItem[];
 } {
   const pathname = usePathname();
-  const { user } = useUser();
+  const { user, isAuthenticated, username } = useAuth();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   const context: NavigationContext = {
-    username: user?.username ?? undefined,
-    isAuthenticated: !!user,
+    username,
+    isAuthenticated,
     pathname,
     isMobile,
   };
