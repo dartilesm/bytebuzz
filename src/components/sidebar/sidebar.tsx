@@ -51,12 +51,14 @@ export function Sidebar() {
             icon={<MessageSquareIcon />}
             label='Messages'
             isActive={pathname === "/messages"}
+            needsAuth
           />
           <SidebarItem
             to={`/@${user?.username}`}
             icon={<UserIcon />}
             label='Profile'
             isActive={pathname === `/@${user?.username}`}
+            needsAuth
           />
         </SidebarSection>
 

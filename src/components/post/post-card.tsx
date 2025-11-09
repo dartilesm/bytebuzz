@@ -32,7 +32,7 @@ export function PostCard({ children, className, classNames, ref }: PostCardProps
     <div onClick={handleClick} ref={ref}>
       <Card
         className={cn(
-          "relative flex flex-row dark:bg-content1 bg-[transparent] [box-shadow:none]",
+          "relative flex flex-row dark:bg-content1 bg-transparent [box-shadow:none] overflow-hidden",
           {
             "cursor-pointer": !isNavigationDisabled,
           },
@@ -43,7 +43,7 @@ export function PostCard({ children, className, classNames, ref }: PostCardProps
         as='article'
       >
         {!isThreadPagePost && <PostAvatarAndThreadLine />}
-        <div className='w-full overflow-hidden'>{children}</div>
+        <div className='w-full'>{children}</div>
       </Card>
     </div>
   );
