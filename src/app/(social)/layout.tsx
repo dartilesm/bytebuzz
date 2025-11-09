@@ -10,7 +10,7 @@ import { SuggestionsSection } from "@/components/suggestions/suggestions-section
 export default function AuthenticatedLayout({ children, modal }: LayoutProps<"/">) {
   return (
     <>
-      <main className='grid grid-cols-1 md:grid-cols-[max-content_600px] lg:grid-cols-[max-content_600px_max-content] gap-4 mx-auto justify-center w-full container px-0 md:px-4 pb-16 md:pb-0'>
+      <main className='grid grid-cols-1 md:grid-cols-[max-content_600px] lg:grid-cols-[max-content_600px_max-content] gap-4 mx-auto justify-center w-full md:container px-0 md:px-4 pb-16 md:pb-0'>
         <div className='hidden md:flex flex-col gap-4 sticky top-0 max-h-dvh'>
           <Sidebar />
         </div>
