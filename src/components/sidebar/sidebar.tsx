@@ -31,8 +31,10 @@ export function Sidebar() {
             const Icon = item.icon;
             return (
               <SidebarItem
-                key={item.to}
-                to={item.to}
+                key={item.href || item.label}
+                as={item.as ?? undefined}
+                href={item.href}
+                onClick={item.onClick}
                 icon={<Icon />}
                 label={item.label}
                 isActive={item.isActive}
@@ -64,7 +66,8 @@ export function Sidebar() {
 
       <div className='mt-auto py-4'>
         <SidebarItem
-          to='https://github.com/dartilesm/bytebuzz/issues'
+          as='a'
+          href='https://github.com/dartilesm/bytebuzz/issues'
           icon={<BugIcon size={24} className='text-default-500' />}
           label={
             <span className='text-default-500 flex items-center justify-between w-full'>
