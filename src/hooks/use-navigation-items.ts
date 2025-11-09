@@ -3,7 +3,6 @@ import type { NavigationItem, NavigationContext } from "@/components/sidebar/nav
 import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import type { ElementType, ReactNode } from "react";
 import { createElement } from "react";
-import { useMediaQuery } from "usehooks-ts";
 import { useAuth } from "@/context/auth-context";
 
 export interface ComputedNavigationItem {
@@ -141,8 +140,7 @@ export function useNavigationItems(): {
   secondary: ComputedNavigationItem[];
 } {
   const pathname = usePathname();
-  const { user, isAuthenticated, username } = useAuth();
-  const isMobile = useMediaQuery("(max-width: 767px)");
+  const { user, isAuthenticated, username, isMobile } = useAuth();
 
   const context: NavigationContext = {
     username,
