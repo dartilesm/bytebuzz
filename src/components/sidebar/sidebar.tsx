@@ -2,22 +2,15 @@
 
 import { SidebarAccountDropdown } from "@/components/sidebar/sidebar-account-dropdown";
 import { useUser } from "@clerk/nextjs";
-import {
-  BugIcon,
-  ExternalLinkIcon,
-  HomeIcon,
-  MessageSquareIcon,
-  TelescopeIcon,
-  TriangleIcon,
-  UserIcon,
-} from "lucide-react";
-import { usePathname } from "next/navigation";
+import { BugIcon, ExternalLinkIcon, TriangleIcon } from "lucide-react";
 import { SidebarItem } from "./sidebar-item";
 import { SidebarSection } from "./sidebar-section";
+import { useNavigationItems } from "@/hooks/use-navigation-items";
 
 export function Sidebar() {
-  const pathname = usePathname();
   const { user } = useUser();
+  const navigationItems = useNavigationItems();
+
   // Collapsed if below xl (using Tailwind only)
   // max-xl = below 1280px, xl = 1280px and up
   return (
@@ -34,32 +27,19 @@ export function Sidebar() {
 
       <div className='flex-1 overflow-y-auto justify-center flex flex-col'>
         <SidebarSection title=''>
-          <SidebarItem
-            to='/root'
-            icon={<HomeIcon />}
-            label='Root'
-            isActive={pathname === "/root"}
-          />
-          <SidebarItem
-            to='/explore'
-            icon={<TelescopeIcon />}
-            label='Explore'
-            isActive={pathname === "/explore"}
-          />
-          <SidebarItem
-            to='/messages'
-            icon={<MessageSquareIcon />}
-            label='Messages'
-            isActive={pathname === "/messages"}
-            needsAuth
-          />
-          <SidebarItem
-            to={`/@${user?.username}`}
-            icon={<UserIcon />}
-            label='Profile'
-            isActive={pathname === `/@${user?.username}`}
-            needsAuth
-          />
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <SidebarItem
+                key={item.to}
+                to={item.to}
+                icon={<Icon />}
+                label={item.label}
+                isActive={item.isActive}
+                needsAuth={item.needsAuth}
+              />
+            );
+          })}
         </SidebarSection>
 
         {/* <SidebarSection title='Organization'>

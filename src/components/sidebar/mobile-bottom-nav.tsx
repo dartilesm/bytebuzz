@@ -1,56 +1,21 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import {
-  HomeIcon,
-  MessageSquareIcon,
-  TelescopeIcon,
-  UserIcon,
-} from "lucide-react";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@heroui/button";
 import { cn } from "@/lib/utils";
+import { useNavigationItems } from "@/hooks/use-navigation-items";
 
 /**
  * Mobile bottom navigation bar for small screens
  * Displays main navigation items in a horizontal layout at the bottom of the screen
  */
 export function MobileBottomNav() {
-  const pathname = usePathname();
-  const { user } = useUser();
-
-  const navItems = [
-    {
-      to: "/root",
-      icon: HomeIcon,
-      label: "Root",
-      isActive: pathname === "/root",
-    },
-    {
-      to: "/explore",
-      icon: TelescopeIcon,
-      label: "Explore",
-      isActive: pathname === "/explore",
-    },
-    {
-      to: "/messages",
-      icon: MessageSquareIcon,
-      label: "Messages",
-      isActive: pathname === "/messages",
-    },
-    {
-      to: `/@${user?.username}`,
-      icon: UserIcon,
-      label: "Profile",
-      isActive: pathname === `/@${user?.username}`,
-    },
-  ];
+  const navigationItems = useNavigationItems();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-divider">
-      <div className="flex items-center justify-around h-16 px-2">
-        {navItems.map((item) => {
+    <nav className='md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-divider'>
+      <div className='flex items-center justify-around h-16 px-2'>
+        {navigationItems.map((item) => {
           const Icon = item.icon;
           return (
             <Button
@@ -64,12 +29,12 @@ export function MobileBottomNav() {
                   "text-default-500": !item.isActive,
                 }
               )}
-              variant="light"
+              variant='light'
               isIconOnly={false}
               aria-label={item.label}
             >
               <Icon size={20} />
-              <span className="text-xs">{item.label}</span>
+              <span className='text-xs'>{item.label}</span>
             </Button>
           );
         })}
@@ -77,4 +42,3 @@ export function MobileBottomNav() {
     </nav>
   );
 }
-
