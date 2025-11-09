@@ -10,7 +10,7 @@ import type { Tables } from "database.types";
  * @param cursor - Optional timestamp to fetch posts before this point
  */
 async function getUserFeed(this: ServiceContext, cursor?: string) {
-  const supabase = createServerSupabaseClient(this.accessToken);
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   let query = supabase.rpc("get_user_feed").order("created_at", { ascending: false }).limit(10);
 
   if (cursor) {
@@ -29,7 +29,7 @@ async function getUserPosts(
   this: ServiceContext,
   { username, cursor }: { username: string; cursor?: string }
 ) {
-  const supabase = createServerSupabaseClient(this.accessToken);
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   let query = supabase
     .rpc("get_user_posts_by_username", { input_username: username })
     .order("created_at", { ascending: false })
@@ -57,7 +57,7 @@ async function getTrendingPosts(
     offsetCount?: number;
   } = {}
 ) {
-  const supabase = createServerSupabaseClient(this.accessToken);
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken, needsAuth: false });
   return await supabase.rpc("get_trending_posts", {
     limit_count: limitCount,
     offset_count: offsetCount,
@@ -82,7 +82,7 @@ async function searchPosts(
     offsetCount?: number;
   }
 ) {
-  const supabase = createServerSupabaseClient(this.accessToken);
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.rpc("search_posts", {
     search_term: searchTerm,
     limit_count: limitCount,
@@ -99,7 +99,7 @@ async function createPost(
   data: Pick<Tables<"posts">, "content" | "user_id"> &
     Partial<Pick<Tables<"posts">, "parent_post_id" | "repost_post_id">>
 ) {
-  const supabase = createServerSupabaseClient(this.accessToken);
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.from("posts").insert(data).select().single();
 }
 
@@ -108,7 +108,7 @@ async function createPost(
  * @param postId - ID of the post to delete
  */
 async function deletePost(this: ServiceContext, postId: string) {
-  const supabase = createServerSupabaseClient(this.accessToken);
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.from("posts").delete().eq("id", postId);
 }
 
@@ -117,7 +117,7 @@ async function deletePost(this: ServiceContext, postId: string) {
  * @param postId - ID of the post to retrieve
  */
 async function getPostById(this: ServiceContext, postId: string) {
-  const supabase = createServerSupabaseClient(this.accessToken);
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase
     .from("posts")
     .select("*")
