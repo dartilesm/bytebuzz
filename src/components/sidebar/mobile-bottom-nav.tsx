@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import { useNavigationContext } from "@/context/navigation-context";
 import { usePathname } from "next/navigation";
+import { NavigationItemRenderer } from "./navigation-item-renderer";
 import type { NavigationContext } from "./navigation-items";
 
 /**
@@ -29,38 +30,34 @@ export function MobileBottomNav() {
     <nav className='md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-divider'>
       <div className='flex items-center justify-around h-16 px-2'>
         {main.map((item) => {
-          // Check if item has custom children render function
-          if (item.children) {
-            const customRender = item.children(item, navigationContext);
-            if (customRender !== null) {
-              return <div key={item.href || item.label}>{customRender}</div>;
-            }
-            // If children returns null, fall through to default rendering
-          }
-
-          // Render items with default Button
           const canNavigate = item.as && item.href;
 
           return (
-            <Button
+            <NavigationItemRenderer
               key={item.href || item.label}
-              as={canNavigate && item.as ? item.as : undefined}
-              href={canNavigate ? item.href : undefined}
-              onPress={item.onClick}
-              className={cn(
-                "flex flex-col items-center justify-center gap-1 min-w-0 flex-1 h-full",
-                {
-                  "text-primary": item.isActive,
-                  "text-default-500": !item.isActive,
-                }
+              item={item}
+              context={navigationContext}
+              defaultRender={(defaultItem) => (
+                <Button
+                  as={canNavigate && defaultItem.as ? defaultItem.as : undefined}
+                  href={canNavigate ? defaultItem.href : undefined}
+                  onPress={defaultItem.onClick}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 min-w-0 flex-1 h-full",
+                    {
+                      "text-primary": defaultItem.isActive,
+                      "text-default-500": !defaultItem.isActive,
+                    }
+                  )}
+                  variant='light'
+                  isIconOnly={false}
+                  aria-label={defaultItem.label}
+                >
+                  <div className='flex items-center justify-center'>{defaultItem.icon}</div>
+                  <span className='text-xs'>{defaultItem.label}</span>
+                </Button>
               )}
-              variant='light'
-              isIconOnly={false}
-              aria-label={item.label}
-            >
-              <div className='flex items-center justify-center'>{item.icon}</div>
-              <span className='text-xs'>{item.label}</span>
-            </Button>
+            />
           );
         })}
       </div>

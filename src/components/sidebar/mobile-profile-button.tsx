@@ -81,7 +81,7 @@ export function MobileProfileButton({ href, isActive, label }: MobileProfileButt
               src={user.imageUrl}
               radius='full'
               size='sm'
-              className={cn({
+              className={cn("size-6", {
                 "ring-2 ring-primary": isActive,
               })}
             />

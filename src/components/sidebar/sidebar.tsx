@@ -6,6 +6,7 @@ import { SidebarItem } from "./sidebar-item";
 import { SidebarSection } from "./sidebar-section";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import { useNavigationContext } from "@/context/navigation-context";
+import { NavigationItemRenderer } from "./navigation-item-renderer";
 import type { NavigationContext } from "@/components/sidebar/navigation-items";
 
 export function Sidebar() {
@@ -36,26 +37,23 @@ export function Sidebar() {
 
       <div className='flex-1 overflow-y-auto justify-center flex flex-col'>
         <SidebarSection title=''>
-          {main.map((item) => {
-            if (item.children) {
-              const customRender = item.children(item, context);
-              if (customRender !== null) {
-                return <div key={item.href || item.label}>{customRender}</div>;
-              }
-              // If children returns null, fall through to default rendering
-            }
-            return (
-              <SidebarItem
-                key={item.href || item.label}
-                as={item.as ?? undefined}
-                href={item.href}
-                onClick={item.onClick}
-                icon={item.icon}
-                label={item.label}
-                isActive={item.isActive}
-              />
-            );
-          })}
+          {main.map((item) => (
+            <NavigationItemRenderer
+              key={item.href || item.label}
+              item={item}
+              context={context}
+              defaultRender={(defaultItem) => (
+                <SidebarItem
+                  as={defaultItem.as ?? undefined}
+                  href={defaultItem.href}
+                  onClick={defaultItem.onClick}
+                  icon={defaultItem.icon}
+                  label={defaultItem.label}
+                  isActive={defaultItem.isActive}
+                />
+              )}
+            />
+          ))}
         </SidebarSection>
 
         {/* <SidebarSection title='Organization'>
@@ -90,26 +88,23 @@ export function Sidebar() {
           }
           isExternal
         />
-        {secondary.map((item) => {
-          if (item.children) {
-            const customRender = item.children(item, context);
-            if (customRender !== null) {
-              return <div key={item.href || item.label || "secondary-item"}>{customRender}</div>;
-            }
-            // If children returns null, fall through to default rendering
-          }
-          return (
-            <SidebarItem
-              key={item.href || item.label}
-              as={item.as ?? undefined}
-              href={item.href}
-              onClick={item.onClick}
-              icon={item.icon}
-              label={item.label}
-              isActive={item.isActive}
-            />
-          );
-        })}
+        {secondary.map((item) => (
+          <NavigationItemRenderer
+            key={item.href || item.label || "secondary-item"}
+            item={item}
+            context={context}
+            defaultRender={(defaultItem) => (
+              <SidebarItem
+                as={defaultItem.as ?? undefined}
+                href={defaultItem.href}
+                onClick={defaultItem.onClick}
+                icon={defaultItem.icon}
+                label={defaultItem.label}
+                isActive={defaultItem.isActive}
+              />
+            )}
+          />
+        ))}
       </div>
     </div>
   );
