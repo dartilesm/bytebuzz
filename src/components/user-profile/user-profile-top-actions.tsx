@@ -18,6 +18,7 @@ import { Link2Icon, MoreHorizontalIcon, PencilIcon, Share2Icon } from "lucide-re
 import dynamic from "next/dynamic";
 import { use, useState } from "react";
 import type { Tables } from "database.types";
+import { useNavigationContext } from "@/context/navigation-context";
 
 const UserProfileEditModal = dynamic(
   () => import("./user-profile-edit-modal").then((mod) => mod.UserProfileEditModal),
@@ -33,6 +34,7 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
   const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const { withAuth } = useAuthGuard();
+  const { isMobile } = useNavigationContext();
   const isCurrentUser = user?.username === profile.username;
 
   function handleCopyLink() {
@@ -124,12 +126,13 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
         {!isCurrentUser && <FollowButton targetUserId={profile.id} size='md' />}
         {isCurrentUser && (
           <Button
-            variant='flat'
-            color='primary'
+            variant={isMobile ? "light" : "flat"}
+            color={isMobile ? "default" : "primary"}
             onPress={withAuth(toggleEditProfileModal)}
+            isIconOnly={isMobile}
             startContent={<PencilIcon size={16} />}
           >
-            Edit profile
+            {!isMobile && "Edit profile"}
           </Button>
         )}
       </div>

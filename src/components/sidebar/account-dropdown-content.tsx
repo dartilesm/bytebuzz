@@ -2,8 +2,9 @@
 
 import { SidebarThemeSwitcher } from "@/components/sidebar/sidebar-theme-switcher";
 import { Button, Divider } from "@heroui/react";
-import { LogOutIcon, SettingsIcon, SunMoonIcon } from "lucide-react";
+import { LogOutIcon, SettingsIcon, SunMoonIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
+import { useNavigationContext } from "@/context/navigation-context";
 
 interface AccountDropdownContentProps {
   /**
@@ -19,23 +20,41 @@ interface AccountDropdownContentProps {
 
 /**
  * Reusable account dropdown content component
- * Contains account settings, theme switcher, and sign out actions
+ * Contains profile link, account settings, theme switcher, and sign out actions
  * Used in both desktop sidebar (Popover) and mobile bottom nav (Modal)
  */
 export function AccountDropdownContent({ onSignOut, onClose }: AccountDropdownContentProps) {
-  function handleAccountSettingsClick() {
+  const { username } = useNavigationContext();
+
+  function handleNavigationClick() {
     onClose?.();
   }
 
   return (
-    <div className='px-1 py-2 w-full max-w-56'>
+    <div className='px-1 py-2 w-full md:max-w-56'>
+      {username && (
+        <>
+          <Button
+            as={Link}
+            href={`/@${username}`}
+            className='w-full justify-start'
+            variant='light'
+            startContent={<UserIcon size={18} />}
+            onPress={handleNavigationClick}
+          >
+            Profile
+          </Button>
+          <Divider className='my-2' />
+        </>
+      )}
+
       <Button
         as={Link}
         href='/account-settings'
         className='w-full justify-start'
         variant='light'
         startContent={<SettingsIcon size={18} />}
-        onPress={handleAccountSettingsClick}
+        onPress={handleNavigationClick}
       >
         Account settings
       </Button>

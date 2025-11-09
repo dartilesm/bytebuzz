@@ -2,7 +2,7 @@
 
 import type { ComputedNavigationItem } from "@/hooks/use-navigation-items";
 import type { NavigationContext } from "./navigation-items";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
 interface NavigationItemRendererProps {
   item: ComputedNavigationItem;
@@ -23,11 +23,10 @@ export function NavigationItemRenderer({
   if (item.children) {
     const customRender = item.children(item, context);
     if (customRender !== null) {
-      return <div key={item.href || item.label || "navigation-item"}>{customRender}</div>;
+      return <Fragment key={item.href || item.label || "navigation-item"}>{customRender}</Fragment>;
     }
     // If children returns null, fall through to default rendering
   }
 
   return <>{defaultRender(item)}</>;
 }
-

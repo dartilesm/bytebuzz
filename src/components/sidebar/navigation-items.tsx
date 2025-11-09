@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { HomeIcon, LogInIcon, MessageSquareIcon, TelescopeIcon, UserIcon } from "lucide-react";
 import type { ElementType, ReactNode } from "react";
-import { createElement } from "react";
 import Link from "next/link";
 import { SidebarAccountDropdown } from "./sidebar-account-dropdown";
 import { MobileProfileButton } from "./mobile-profile-button";
@@ -132,13 +131,13 @@ export const baseNavigationItems: NavigationItem[] = [
     },
     children: (item, context) => {
       // Render MobileProfileButton for mobile, null for desktop (uses default rendering)
-      if (context.isMobile) {
-        return createElement(MobileProfileButton, {
-          href: item.href ?? undefined,
-          isActive: item.isActive,
-          label: item.label,
-        });
-      }
+      if (context.isMobile)
+        return (
+          <MobileProfileButton
+            isActive={item.isActive}
+            label={item.label}
+          />
+        );
       return null;
     },
   },
@@ -156,10 +155,8 @@ export const baseNavigationItems: NavigationItem[] = [
     icon: UserIcon,
     label: "", // Label is computed dynamically from user data in the hook
     isVisible: (context) => context.isAuthenticated === true,
-    children: (item, _context) =>
-      createElement(SidebarAccountDropdown, {
-        isActive: item.isActive,
-        label: item.label,
-      }),
+    children: (item, _context) => (
+      <SidebarAccountDropdown isActive={item.isActive} label={item.label} />
+    ),
   },
 ];

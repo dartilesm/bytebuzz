@@ -53,7 +53,9 @@ export function MobileBottomNav() {
                   isIconOnly={false}
                   aria-label={defaultItem.label}
                 >
-                  <div className='flex items-center justify-center'>{defaultItem.icon}</div>
+                  <div className='flex items-center justify-center [&>svg]:size-5'>
+                    {defaultItem.icon}
+                  </div>
                   <span className='text-xs'>{defaultItem.label}</span>
                 </Button>
               )}
