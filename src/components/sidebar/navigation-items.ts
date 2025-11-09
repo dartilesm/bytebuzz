@@ -76,7 +76,6 @@ export const baseNavigationItems: NavigationItem[] = [
     href: (username?: string) => (username ? `/@${username}` : ""),
     icon: UserIcon,
     label: "Profile",
-    needsAuth: true,
     isActive: (pathname, username) => {
       if (!username) return false;
       return pathname === `/@${username}`;

@@ -22,17 +22,82 @@ function isNavigationFunction(
   fn: ElementType | ((username?: string) => ElementType | null)
 ): fn is (username?: string) => ElementType | null {
   if (typeof fn !== "function") return false;
-  // Navigation functions are explicitly typed in our interface
-  // We'll check by seeing if calling with undefined returns ElementType | null
-  // Component constructors would require props object, not username string
+
   try {
     const result = (fn as (username?: string) => ElementType | null)(undefined);
-    // If it returns null or a function/component type, it's likely a navigation function
-    return result === null || typeof result === "function" || typeof result === "string";
+    if (result === null) return true;
+    if (typeof result === "function") return true;
+    if (typeof result === "string") return true;
+    return false;
   } catch {
-    // If it throws, it's likely a component constructor expecting props
     return false;
   }
+}
+
+/**
+ * Computes the visibility of a navigation item
+ */
+function computeIsVisible(isVisible: NavigationItem["isVisible"], username?: string): boolean {
+  if (typeof isVisible === "function") return isVisible(username);
+  if (typeof isVisible === "boolean") return isVisible;
+  return true;
+}
+
+/**
+ * Computes the component type (as prop) for a navigation item
+ */
+function computeAs(as: NavigationItem["as"], username?: string): ElementType | null | undefined {
+  if (typeof as !== "function") return as;
+  if (isNavigationFunction(as)) return as(username);
+  return as as ElementType;
+}
+
+/**
+ * Computes the href for a navigation item
+ */
+function computeHref(href: NavigationItem["href"], username?: string): string | undefined {
+  if (typeof href === "function") return href(username);
+  return href;
+}
+
+/**
+ * Creates a pre-bound onClick handler for a navigation item
+ */
+function createOnClickHandler(
+  onClick: NavigationItem["onClick"],
+  username?: string
+): (() => void) | undefined {
+  if (!onClick) return undefined;
+  return () => {
+    onClick(username);
+  };
+}
+
+/**
+ * Computes the active state of a navigation item
+ */
+function computeIsActive(
+  item: NavigationItem,
+  pathname: string,
+  href: string | undefined,
+  username?: string
+): boolean {
+  if (item.isActive) return item.isActive(pathname, username);
+  if (!href) return false;
+  return pathname === href;
+}
+
+/**
+ * Checks if a navigation item should be included in the result
+ */
+function shouldIncludeItem(
+  as: ElementType | null | undefined,
+  href: string | undefined,
+  onClick: NavigationItem["onClick"]
+): boolean {
+  const hasValidNavigation = !!as || !!href || !!onClick;
+  if (hasValidNavigation) return true;
+  return false;
 }
 
 /**
@@ -47,49 +112,16 @@ export function useNavigationItems(): ComputedNavigationItem[] {
   const items: ComputedNavigationItem[] = [];
 
   for (const item of baseNavigationItems) {
-    // Compute isVisible
-    const isVisible =
-      typeof item.isVisible === "function" ? item.isVisible(username) : item.isVisible ?? true;
-    if (!isVisible) {
-      continue;
-    }
+    const isVisible = computeIsVisible(item.isVisible, username);
+    if (!isVisible) continue;
 
-    // Compute as (component type)
-    // Check if as is a function that takes username, otherwise use it directly
-    let as: ElementType | null | undefined;
-    if (typeof item.as === "function") {
-      if (isNavigationFunction(item.as)) {
-        // It's a navigation function - call it with username
-        as = item.as(username);
-      } else {
-        // It's a component constructor - use it directly
-        as = item.as as ElementType;
-      }
-    } else {
-      as = item.as;
-    }
+    const as = computeAs(item.as, username);
+    const href = computeHref(item.href, username);
 
-    // Compute href
-    const href = typeof item.href === "function" ? item.href(username) : item.href;
+    if (!shouldIncludeItem(as, href, item.onClick)) continue;
 
-    // If both as and href are missing and no onClick, skip this item
-    if (!as && !href && !item.onClick) {
-      continue;
-    }
-
-    // Pre-bind onClick handler
-    const onClick = item.onClick
-      ? () => {
-          item.onClick?.(username);
-        }
-      : undefined;
-
-    // Compute isActive
-    const isActive = item.isActive
-      ? item.isActive(pathname, username)
-      : href
-      ? pathname === href
-      : false;
+    const onClick = createOnClickHandler(item.onClick, username);
+    const isActive = computeIsActive(item, pathname, href, username);
 
     items.push({
       as,
