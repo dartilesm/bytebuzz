@@ -28,7 +28,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className='md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-divider'>
-      <div className='flex items-center justify-around h-16 px-2'>
+      <div className='flex items-center justify-around h-12 px-2'>
         {main.map((item) => {
           const canNavigate = item.as && item.href;
 
