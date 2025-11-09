@@ -7,12 +7,13 @@ import { SidebarAccountDropdown } from "./sidebar-account-dropdown";
 
 /**
  * Context object passed to navigation item functions
- * Contains user information, authentication state, and current pathname
+ * Contains user information, authentication state, current pathname, and device type
  */
 export interface NavigationContext {
   username?: string;
   isAuthenticated?: boolean;
   pathname: string;
+  isMobile: boolean;
 }
 
 export interface NavigationItem {
@@ -20,8 +21,10 @@ export interface NavigationItem {
    * Category of the navigation item. Main items appear in both mobile bottom nav and center of desktop sidebar.
    * Secondary items appear at the bottom of the desktop sidebar only.
    * Defaults to "main" for backward compatibility.
+   * Can be a static value or a function that takes context and returns the category.
+   * Example: `category: (context) => context.isMobile ? "main" : "secondary"`
    */
-  category?: "main" | "secondary";
+  category?: "main" | "secondary" | ((context: NavigationContext) => "main" | "secondary");
   /**
    * Component type to render as (e.g., Link). Can be a function that takes context and returns the component type.
    * When provided, the Button will render as this component type.
@@ -39,8 +42,9 @@ export interface NavigationItem {
   /**
    * The icon component for the navigation item.
    * Can be a static LucideIcon or a function that takes context and returns ReactNode.
-   * Useful for conditional icons like showing user avatar when authenticated.
+   * Useful for conditional icons like showing user avatar when authenticated or different icons for mobile/desktop.
    * Example: `icon: (context) => context.isAuthenticated ? <Avatar src={user.imageUrl} /> : <UserIcon />`
+   * Example: `icon: (context) => context.isMobile ? <MobileIcon /> : <DesktopIcon />`
    */
   icon: LucideIcon | ((context: NavigationContext) => ReactNode);
   /**
@@ -50,10 +54,11 @@ export interface NavigationItem {
   /**
    * Conditional visibility. Can be a boolean or function that takes context and returns boolean.
    * Items with `isVisible: false` will be filtered out.
-   * The context object contains `username`, `isAuthenticated`, and `pathname` properties.
+   * The context object contains `username`, `isAuthenticated`, `pathname`, and `isMobile` properties.
    * Use this to control both visibility and authentication requirements.
    * Example: Show only when authenticated: `isVisible: (context) => context.isAuthenticated === true`
    * Example: Show only when unauthenticated: `isVisible: (context) => context.isAuthenticated === false`
+   * Example: Show only on mobile: `isVisible: (context) => context.isMobile === true`
    */
   isVisible?: boolean | ((context: NavigationContext) => boolean);
   /**
@@ -67,6 +72,7 @@ export interface NavigationItem {
    * Returns ReactNode to override default rendering, or null to use default SidebarItem rendering.
    * Useful for items that need custom rendering logic, like SidebarAccountDropdown.
    * Example: `children: (item, context) => context.isAuthenticated ? <CustomComponent /> : null`
+   * Example: `children: (item, context) => context.isMobile ? <MobileComponent /> : <DesktopComponent />`
    */
   children?: (
     item: {
@@ -125,7 +131,7 @@ export const baseNavigationItems: NavigationItem[] = [
     },
   },
   {
-    category: "main",
+    category: (context: NavigationContext) => (context.isMobile === false ? "secondary" : "main"),
     as: Link,
     href: "/sign-in",
     icon: LogInIcon,
@@ -137,6 +143,7 @@ export const baseNavigationItems: NavigationItem[] = [
     category: "secondary",
     icon: UserIcon,
     label: "", // Label is computed dynamically from user data in the hook
+    isVisible: (context) => context.isAuthenticated === true,
     children: (item, _context) =>
       createElement(SidebarAccountDropdown, {
         isActive: item.isActive,

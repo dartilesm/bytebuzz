@@ -4,6 +4,7 @@ import type { NavigationItem, NavigationContext } from "@/components/sidebar/nav
 import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import type { ElementType, ReactNode } from "react";
 import { createElement } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
 export interface ComputedNavigationItem {
   as?: ElementType | null;
@@ -26,7 +27,7 @@ function isNavigationFunction(
   if (typeof fn !== "function") return false;
 
   try {
-    const emptyContext: NavigationContext = { pathname: "" };
+    const emptyContext: NavigationContext = { pathname: "", isMobile: false };
     const result = (fn as (context: NavigationContext) => ElementType | null)(emptyContext);
     if (result === null) return true;
     if (typeof result === "function") return true;
@@ -52,10 +53,7 @@ function computeIsVisible(
 /**
  * Computes the icon for a navigation item
  */
-function computeIcon(
-  icon: NavigationItem["icon"],
-  context: NavigationContext
-): ReactNode {
+function computeIcon(icon: NavigationItem["icon"], context: NavigationContext): ReactNode {
   if (typeof icon === "function") return icon(context);
   const IconComponent = icon;
   return createElement(IconComponent);
@@ -108,6 +106,18 @@ function computeIsActive(
 }
 
 /**
+ * Computes the category of a navigation item
+ */
+function computeCategory(
+  category: NavigationItem["category"],
+  context: NavigationContext
+): "main" | "secondary" {
+  if (typeof category === "function") return category(context);
+  if (category === "secondary") return "secondary";
+  return "main";
+}
+
+/**
  * Checks if a navigation item should be included in the result
  */
 function shouldIncludeItem(
@@ -132,11 +142,13 @@ export function useNavigationItems(): {
 } {
   const pathname = usePathname();
   const { user } = useUser();
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const context: NavigationContext = {
     username: user?.username ?? undefined,
     isAuthenticated: !!user,
     pathname,
+    isMobile,
   };
 
   const mainItems: ComputedNavigationItem[] = [];
@@ -148,7 +160,7 @@ export function useNavigationItems(): {
 
     const as = computeAs(item.as, context);
     const href = computeHref(item.href, context);
-    const category = item.category ?? "main";
+    const category = computeCategory(item.category, context);
 
     const computedIcon = computeIcon(item.icon, context);
 
@@ -188,7 +200,10 @@ export function useNavigationItems(): {
       children: item.children,
     };
 
-    if (category === "secondary") return secondaryItems.push(computedItem);
+    if (category === "secondary") {
+      secondaryItems.push(computedItem);
+      continue;
+    }
     mainItems.push(computedItem);
   }
 
