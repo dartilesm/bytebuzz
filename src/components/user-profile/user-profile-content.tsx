@@ -70,7 +70,7 @@ export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
         aria-label='Profile sections'
         variant='underlined'
         color='primary'
-        className='sticky top-16 z-30 backdrop-blur-xl bg-background/70'
+        className='sticky md:top-16 top-14 z-40 dark:bg-background bg-content1'
         classNames={{
           tabList: "w-full",
         }}
@@ -81,7 +81,7 @@ export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
         <Tab key={UserProfileTabs.MEDIA} title='Media' />
         <Tab key={UserProfileTabs.LIKES} title='Likes' />
       </Tabs>
-      <div className='py-4 overflow-hidden'>
+      <div className='py-4 overflow-hidden px-2 md:px-0'>
         <AnimatePresence mode='wait' custom={direction}>
           <motion.div
             key={activeTab}

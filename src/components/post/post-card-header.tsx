@@ -15,29 +15,33 @@ export function PostHeader() {
 
   return (
     <CardHeader
-      className={cn("flex items-center gap-4 pb-2 flex-1", {
-        "py-0 pr-8.5": isThreadPagePost,
+      className={cn("flex items-center gap-2 md:gap-4 pb-2 flex-1 px-2 md:px-4", {
+        "py-0 pr-2 md:pr-8.5": isThreadPagePost,
       })}
     >
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-1.5">
+      <div className='flex items-center justify-between w-full'>
+        <div className='flex items-center gap-1 md:gap-1.5 min-w-0'>
           {isThreadPagePost && <PostAvatarAndThreadLine />}
           <Tooltip content={<UserProfilePopoverCard user={user} />} delay={1000}>
             <Link
               href={`/@${user?.username}`}
-              className={cn("flex flex-row gap-2 items-center", {
+              className={cn("flex flex-row gap-1 md:gap-2 items-center min-w-0", {
                 "flex-col gap-0 items-start": isThreadPagePost,
               })}
             >
-              <span className="font-semibold">{user?.display_name}</span>
-              <span className="text-sm text-content4-foreground/50">@{user?.username}</span>
+              <span className='font-semibold text-sm md:text-base truncate'>
+                {user?.display_name}
+              </span>
+              <span className='text-xs md:text-sm text-content4-foreground/50 truncate'>
+                @{user?.username}
+              </span>
             </Link>
           </Tooltip>
           {!isThreadPagePost && (
             <>
-              <span className="text-sm text-content4-foreground/50">·</span>
+              <span className='text-xs md:text-sm text-content4-foreground/50'>·</span>
               <time
-                className="text-sm text-content4-foreground/50"
+                className='text-xs md:text-sm text-content4-foreground/50'
                 title={formatDateTime(created_at as unknown as Date)}
               >
                 {getRelativeTime(new Date(created_at as unknown as Date))}

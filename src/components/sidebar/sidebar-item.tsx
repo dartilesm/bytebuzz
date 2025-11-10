@@ -1,18 +1,16 @@
-import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { Button, Chip, cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
 
 export interface SidebarItemProps {
-  to?: string;
+  as?: ElementType;
+  href?: string;
+  onClick?: () => void;
   icon: ReactNode;
   label: string | ReactNode;
   isActive?: boolean;
   isExternal?: boolean;
   hasAddButton?: boolean;
-  needsAuth?: boolean;
   badge?: string;
 }
 
@@ -20,29 +18,25 @@ export interface SidebarItemProps {
  * SidebarItem renders a navigation link with an icon and label. Collapsed/expanded state is handled by Tailwind responsive classes.
  */
 export function SidebarItem({
-  to,
+  as,
+  href,
+  onClick,
   icon,
   label,
   isActive,
   isExternal = false,
   hasAddButton = false,
   badge,
-  needsAuth = false,
 }: SidebarItemProps) {
-  const { withAuth } = useAuthGuard();
-
-  function handleRedirection() {
-    // Fixes RouteImpl type error
-    if (to) redirect(to as any);
-  }
-
-  const isUnauthenticatedLink = to && !needsAuth;
+  // Determine if navigation should be allowed
+  const canNavigate = as && href;
+  const Component = canNavigate ? as : undefined;
 
   return (
     <Button
-      as={isUnauthenticatedLink ? Link : undefined}
-      href={isUnauthenticatedLink ? to : undefined}
-      onPress={isUnauthenticatedLink ? undefined : withAuth(handleRedirection)}
+      as={Component}
+      href={canNavigate ? href : undefined}
+      onPress={onClick}
       className={cn("flex items-center justify-between w-full", {
         "bg-content3 dark:bg-content3/50": isActive,
         "justify-center px-2 max-xl:px-0": true,
