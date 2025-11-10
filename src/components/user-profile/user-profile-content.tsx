@@ -81,7 +81,7 @@ export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
         <Tab key={UserProfileTabs.MEDIA} title='Media' />
         <Tab key={UserProfileTabs.LIKES} title='Likes' />
       </Tabs>
-      <div className='py-4 overflow-hidden'>
+      <div className='py-4 overflow-hidden px-2 md:px-0'>
         <AnimatePresence mode='wait' custom={direction}>
           <motion.div
             key={activeTab}
