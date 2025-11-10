@@ -8,10 +8,18 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
     const response = await fetch(input, init);
     // You might want to log successful responses or specific status codes here as well
     if (!response.ok) {
-      const errorMessage = await response.text();
-      log.error(`Supabase error: ${response.status} ${response.statusText}`, {
-        ...JSON.parse(errorMessage),
-      });
+      // Clone the response to read the body for logging without consuming it
+      const clonedResponse = response.clone();
+      const errorMessage = await clonedResponse.text();
+      try {
+        log.error(`Supabase error: ${response.status} ${response.statusText}`, {
+          ...JSON.parse(errorMessage),
+        });
+      } catch {
+        log.error(`Supabase error: ${response.status} ${response.statusText}`, {
+          message: errorMessage,
+        });
+      }
     }
     return response;
   } catch (error) {
@@ -22,20 +30,30 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
 
 /**
  * Creates a server-side Supabase client
+ * @param options - Configuration options
+ * @param options.accessToken - Optional Clerk token for authentication, useful in cached environment
+ * @param options.needsAuth - Whether authentication is required (default: true)
  * @returns Supabase client
  */
-export function createServerSupabaseClient() {
+export function createServerSupabaseClient({
+  accessToken: clerkToken,
+}: {
+  accessToken?: string | null;
+} = {}) {
+  async function accessToken() {
+    if (clerkToken !== undefined) return clerkToken;
+    return (await auth()).getToken();
+  }
+
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
-      async accessToken() {
-        return (await auth()).getToken();
-      },
+      accessToken,
       global: {
         fetch: supabaseFetch,
       },
-    },
+    }
   );
 }
 

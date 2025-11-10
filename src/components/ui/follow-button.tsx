@@ -2,7 +2,12 @@ import { useToggleFollowMutation } from "@/hooks/mutation/use-toggle-follow-muta
 import { useIsFollowing } from "@/hooks/use-is-following";
 import { useUser } from "@clerk/nextjs";
 import { Button, Spinner } from "@heroui/react";
-import { UserRoundMinusIcon, UserRoundPlusIcon } from "lucide-react";
+import {
+  CheckCheckIcon,
+  UserRoundCheckIcon,
+  UserRoundMinusIcon,
+  UserRoundPlusIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 
@@ -38,7 +43,7 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
             updateFollowStatus(!!response.data);
           }
         },
-      },
+      }
     );
   }
 
@@ -48,15 +53,15 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
     <Button
       color={isFollowed ? "default" : "primary"}
       size={size}
-      variant="flat"
+      variant='flat'
       onPress={withAuth(handleFollowToggle)}
-      aria-label={isLoading ? "Loading follow status" : isFollowed ? "Unfollow" : "Follow"}
+      aria-label={isLoading ? "Loading follow status" : isFollowed ? "Following" : "Follow"}
       disabled={isLoading}
       className={className}
     >
-      {!isLoading && isFollowed && <UserRoundMinusIcon size={14} />}
+      {!isLoading && isFollowed && <UserRoundCheckIcon size={14} />}
       {!isLoading && !isFollowed && <UserRoundPlusIcon size={14} />}
-      {isLoading ? <Spinner size="sm" variant="dots" /> : isFollowed ? "Unfollow" : "Follow"}
+      {isLoading ? <Spinner size='sm' variant='dots' /> : isFollowed ? "Following" : "Follow"}
     </Button>
   );
 }

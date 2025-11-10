@@ -13,9 +13,6 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { log } from "@/lib/logger/logger";
 
-// Cache post threads for 30 minutes
-export const revalidate = 1800;
-
 function nestReplies(posts: NestedPost[] | null) {
   const map = new Map();
   const roots: NestedPost[] = [];

@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerSupabaseClient } from "@/db/supabase";
+import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
 import { auth } from "@clerk/nextjs/server";
 
@@ -30,8 +30,6 @@ export async function uploadProfileImage(file: File, type: ProfileImageType): Pr
     throw new Error("File size must be less than 5MB");
   }
 
-  const supabaseClient = createServerSupabaseClient();
-
   // Get file extension
   const fileExtension = file.name.split(".").pop() || "jpg";
 
@@ -46,7 +44,7 @@ export async function uploadProfileImage(file: File, type: ProfileImageType): Pr
 
   try {
     // Upload file to Supabase storage
-    const { error } = await supabaseClient.storage.from("post-images").upload(filePath, file, {
+    const { error } = await mediaService.uploadFile("post-images", filePath, file, {
       cacheControl: "3600",
       upsert: true, // Overwrite existing file with same name
     });
@@ -57,13 +55,13 @@ export async function uploadProfileImage(file: File, type: ProfileImageType): Pr
     }
 
     // Get public URL
-    const { data: urlData } = supabaseClient.storage.from("post-images").getPublicUrl(filePath);
+    const publicUrl = mediaService.getPublicUrl("post-images", filePath);
 
-    if (!urlData.publicUrl) {
+    if (!publicUrl) {
       throw new Error("Failed to get public URL for uploaded image");
     }
 
-    return urlData.publicUrl;
+    return publicUrl;
   } catch (error) {
     log.error("Profile image upload failed", { error });
     throw new Error(error instanceof Error ? error.message : "Failed to upload profile image");
@@ -81,8 +79,6 @@ export async function deleteProfileImage(imageUrl: string): Promise<void> {
     throw new Error("User not authenticated");
   }
 
-  const supabaseClient = createServerSupabaseClient();
-
   try {
     // Extract file path from URL
     const url = new URL(imageUrl);
@@ -95,7 +91,7 @@ export async function deleteProfileImage(imageUrl: string): Promise<void> {
     const filePath = decodeURIComponent(pathMatch[1]);
 
     // Delete file from storage
-    const { error } = await supabaseClient.storage.from("post-images").remove([filePath]);
+    const { error } = await mediaService.removeFiles("post-images", [filePath]);
 
     if (error) {
       log.error("Delete error", { error });

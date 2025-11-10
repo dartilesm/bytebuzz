@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware as clerkProxy, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextMiddlewareRequestParam } from "node_modules/@clerk/nextjs/dist/types/server/types";
 
@@ -11,7 +11,7 @@ const _isProtectedRoute = createRouteMatcher(["/((?!sign-in|sign-up).*)"]);
  * Clerk middleware to handle authentication and authorization
  * @see https://clerk.com/docs/references/nextjs/clerk-middleware
  */
-export default clerkMiddleware(async function middleware(_auth, req: NextMiddlewareRequestParam) {
+export default clerkProxy(async function proxy(_auth, req: NextMiddlewareRequestParam) {
   if (req.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/root", req.url));
   }

@@ -73,13 +73,13 @@
     "lexical": "0.31.2",
     "lucide-react": "0.509.0",
     "motion": "12.12.1",
-    "next": "15.5.4",
+    "next": "16.0.0",
     "next-themes": "0.4.6",
     "nuqs": "^2.6.0",
     "pino": "9.14.0",
     "pino-pretty": "13.1.2",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-hook-form": "7.56.3",
     "react-markdown": "10.1.0",
     "react-syntax-highlighter": "15.6.1",
@@ -96,11 +96,11 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "4",
     "@types/node": "20",
-    "@types/react": "19.1.15",
-    "@types/react-dom": "19.1.9",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "@types/react-syntax-highlighter": "15.5.13",
     "eslint": "^9",
-    "eslint-config-next": "15.5.4",
+    "eslint-config-next": "16.0.0",
     "pino-webpack-plugin": "^2.0.0",
     "server-only": "0.0.1",
     "supabase": "2.51.0",
@@ -109,7 +109,7 @@
     "vitest": "^3.2.4"
   },
   "overrides": {
-    "@types/react": "19.1.15",
-    "@types/react-dom": "19.1.9"
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2"
   }
 }

@@ -6,6 +6,7 @@ import { ClientProviders } from "@/app/client-providers";
 import { ThemeProvider } from "next-themes";
 import "@/app/globals.css";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,13 +31,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh`}
         suppressHydrationWarning
       >
-        <ClerkProvider>
-          <NuqsAdapter>
-            <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-              <ClientProviders>{children}</ClientProviders>
-            </ThemeProvider>
-          </NuqsAdapter>
-        </ClerkProvider>
+        <Suspense>
+          <ClerkProvider>
+            <NuqsAdapter>
+              <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+                <ClientProviders>{children}</ClientProviders>
+              </ThemeProvider>
+            </NuqsAdapter>
+          </ClerkProvider>
+        </Suspense>
       </body>
     </html>
   );

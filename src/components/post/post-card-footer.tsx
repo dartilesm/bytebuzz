@@ -118,9 +118,12 @@ export function PostFooter() {
             {/* Legend: All reactions ordered + total counter */}
             {sortedReactions.length > 0 && (
               <div
-                className={cn("flex flex-row items-center ml-2 w-full gap-2 py-1", {
-                  "px-3.5": isThreadPagePost,
-                })}
+                className={cn(
+                  "flex flex-row items-center ml-1 md:ml-2 w-full gap-1 md:gap-2 py-1",
+                  {
+                    "px-2 md:px-3.5": isThreadPagePost,
+                  }
+                )}
                 aria-label='Reactions legend'
               >
                 <div className='flex flex-row items-center'>
@@ -156,9 +159,12 @@ export function PostFooter() {
               })}
             />
             <div
-              className={cn("z-30 flex flex-row gap-2 justify-between w-full", {
-                "px-3.5": isThreadPagePost,
-              })}
+              className={cn(
+                "z-30 flex flex-row gap-1 md:gap-2 justify-between w-full px-2 md:px-4",
+                {
+                  "md:px-3.5": isThreadPagePost,
+                }
+              )}
             >
               {/* Reaction Button with Tooltip (original) */}
               <Tooltip
@@ -196,9 +202,12 @@ export function PostFooter() {
                   color={!selectedReaction ? "default" : "primary"}
                   size='sm'
                   isIconOnly={!selectedReaction}
-                  className={cn("group flex items-center gap-2", {
-                    "text-gray-400": !selectedReaction,
-                  })}
+                  className={cn(
+                    "group flex items-center gap-1 md:gap-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0",
+                    {
+                      "text-gray-400": !selectedReaction,
+                    }
+                  )}
                 >
                   {selectedReaction ? (
                     <span className='text-lg'>
@@ -220,7 +229,7 @@ export function PostFooter() {
                 <Button
                   variant='light'
                   size='sm'
-                  className='flex flex-row gap-2 text-gray-400'
+                  className='flex flex-row gap-1 md:gap-2 text-gray-400 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0'
                   onPress={withAuth(() => togglePostModal(true, "reply"))}
                   aria-label='Comment'
                   tabIndex={0}
@@ -236,7 +245,7 @@ export function PostFooter() {
                 <Button
                   variant='light'
                   size='sm'
-                  className='text-gray-400'
+                  className='text-gray-400 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0'
                   onPress={withAuth(() => togglePostModal(true, "clone"))}
                   aria-label='Repost'
                   tabIndex={0}
@@ -250,7 +259,7 @@ export function PostFooter() {
                     <Button
                       variant='light'
                       size='sm'
-                      className='text-gray-400 max-w-32'
+                      className='text-gray-400 max-w-32 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0'
                       aria-label='Share'
                       tabIndex={0}
                     >

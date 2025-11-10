@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/nextjs";
 
 function SignInPage() {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+    <div className='flex min-h-[calc(100vh-4rem)] items-center justify-center'>
       <SignIn />
     </div>
   );

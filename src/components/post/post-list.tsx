@@ -32,7 +32,7 @@ export function PostList({ postQueryType }: PostListProps) {
   }, [entry?.isIntersecting]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className='flex flex-col gap-2'>
       {data.pages.map((page) => {
         return page.data?.map((post) => (
           <PostWrapper key={post.id}>
@@ -45,7 +45,7 @@ export function PostList({ postQueryType }: PostListProps) {
       {/* Tracker ref for the last post */}
       <div ref={ref} />
       {data.pages.flatMap((page) => page.data).length === 0 && (
-        <span className="text-center text-sm text-muted-foreground">No posts found</span>
+        <span className='text-center text-sm text-muted-foreground'>No posts found</span>
       )}
       {isFetchingNextPage && <UserPostLoading />}
     </div>

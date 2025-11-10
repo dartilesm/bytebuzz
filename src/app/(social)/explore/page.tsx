@@ -1,11 +1,10 @@
-import { ExploreView } from "@/components/containers/explorer-view/explore-view";
-import { getCachedPosts } from "@/lib/db/calls/get-posts";
-import { getCachedTrendingPosts } from "@/lib/db/calls/get-trending-posts";
-import { getCachedTrendingUsers } from "@/lib/db/calls/get-trending-users";
-import { getCachedUsers } from "@/lib/db/calls/get-users";
+import { ExploreView } from "@/components/containers/explore-view/explore-view";
+import { postService } from "@/lib/db/services/post.service";
+import { userService } from "@/lib/db/services/user.service";
+import { withCacheService } from "@/lib/db/with-cache-service";
 import { withAnalytics } from "@/lib/with-analytics";
-
-export type ExplorerPageSearchParams = {
+import { currentUser } from "@clerk/nextjs/server";
+export type ExplorePageSearchParams = {
   all?: string;
   users?: string;
   posts?: string;
@@ -18,39 +17,44 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
     users: usersSearchTerm,
     posts: postsSearchTerm,
     page = 0,
-  } = (await searchParams) as ExplorerPageSearchParams;
+  } = (await searchParams) as ExplorePageSearchParams;
+  const user = await currentUser();
 
   if (all) {
-    const users = await getCachedUsers({
+    const usersPromise = userService.searchUsers({
       searchTerm: all as string,
     });
-    const posts = await getCachedPosts({
+    const postsPromise = postService.searchPosts({
       searchTerm: all as string,
     });
 
-    return <ExploreView users={users} posts={posts} />;
+    return <ExploreView postsPromise={postsPromise} usersPromise={usersPromise} />;
   }
 
   if (usersSearchTerm) {
-    const users = await getCachedUsers({
+    const usersPromise = userService.searchUsers({
       searchTerm: usersSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
-    return <ExploreView users={users} />;
+    return <ExploreView usersPromise={usersPromise} postsPromise={undefined} />;
   }
 
   if (postsSearchTerm) {
-    const posts = await getCachedPosts({
+    const postsPromise = postService.searchPosts({
       searchTerm: postsSearchTerm as string,
       offsetCount: isNaN(+page) ? 10 : 10 * +page,
     });
-    return <ExploreView posts={posts} />;
+    return <ExploreView postsPromise={postsPromise} />;
   }
 
-  const trendingPosts = await getCachedTrendingPosts();
-  const trendingUsers = await getCachedTrendingUsers();
+  const postsPromise = withCacheService("postService", "getTrendingPosts", {
+    cacheTags: ["explore-page", "trending-posts", user?.id ?? "", searchParams?.toString() ?? ""],
+  })();
+  const usersPromise = withCacheService("userService", "getTrendingUsers", {
+    cacheTags: ["explore-page", "trending-users", user?.id ?? "", searchParams?.toString() ?? ""],
+  })();
 
-  return <ExploreView posts={trendingPosts} users={trendingUsers} />;
+  return <ExploreView key='explore-page' postsPromise={postsPromise} usersPromise={usersPromise} />;
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });

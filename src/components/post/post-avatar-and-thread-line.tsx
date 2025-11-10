@@ -13,18 +13,18 @@ export function PostAvatarAndThreadLine() {
 
   return (
     <div
-      className={cn("flex py-4 pl-4 pr-2 justify-center relative", {
-        "pl-4.5": isThreadPagePost,
+      className={cn("flex py-2 md:py-4 pl-2 md:pl-4 pr-1 md:pr-2 justify-center relative", {
+        "pl-2 md:pl-4.5": isThreadPagePost,
       })}
     >
-      <Link href={`/@${user?.username}`} className="h-fit">
+      <Link href={`/@${user?.username}`} className='h-fit'>
         <Tooltip content={<UserProfilePopoverCard user={user} />} delay={1000}>
           <Avatar
             isBordered
             src={user?.image_url ?? ""}
             alt={user?.display_name ?? ""}
             className={cn("flex-shrink-0 z-20", {
-              "size-9": !isThreadPagePost,
+              "size-8 md:size-9": !isThreadPagePost,
             })}
           />
         </Tooltip>
