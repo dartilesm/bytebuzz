@@ -57,7 +57,7 @@
     "@lexical/react": "0.31.2",
     "@lexical/rich-text": "0.31.2",
     "@lexical/utils": "0.31.2",
-    "@logtail/pino": "^0.5.6",
+    "@logtail/node": "^0.5.6",
     "@monaco-editor/react": "4.7.0",
     "@opentelemetry/exporter-logs-otlp-http": "^0.207.0",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.207.0",

@@ -1,6 +1,6 @@
 import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
 import pino, { type Level, type LogFn, type Logger } from "pino";
-import { pinoTransports } from "@/lib/logger/pino-transports";
+import { getPinoStreams } from "@/lib/logger/pino-streams";
 
 let loggerInstance: Logger | null = null;
 
@@ -13,9 +13,14 @@ function createLoggerInstance(): Logger {
     return loggerInstance;
   }
 
-  loggerInstance = pino({
-    transport: pinoTransports,
-  });
+  const streams = getPinoStreams();
+
+  loggerInstance = pino(
+    {
+      level: process.env.VERCEL_ENV === "production" ? "warn" : "debug",
+    },
+    pino.multistream(streams)
+  );
 
   return loggerInstance;
 }
@@ -48,7 +53,7 @@ function logWithCaller(
   level: Level,
   msg: string,
   meta?: LogMetadata,
-  caller?: CallerInfo | null,
+  caller?: CallerInfo | null
 ): void {
   const callerInfo = caller === undefined ? getCallerInfo() : caller;
   const prefix = formatCallerPrefix(callerInfo);
