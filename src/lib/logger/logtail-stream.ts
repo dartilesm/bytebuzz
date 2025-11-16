@@ -58,6 +58,7 @@ function pinoLevelToLogtailMethod(level: number): string {
 
 /**
  * Flushes logs on process exit (for serverless environments)
+ * Only sets up exit handlers in Node.js runtime (not Edge Runtime)
  */
 function setupExitFlush(): void {
   if (exitHandlersSetup || typeof process === "undefined") {
@@ -73,9 +74,11 @@ function setupExitFlush(): void {
     }
   };
 
-  process.on("beforeExit", flushOnExit);
-  process.on("SIGINT", flushOnExit);
-  process.on("SIGTERM", flushOnExit);
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    process.on("beforeExit", flushOnExit);
+    process.on("SIGINT", flushOnExit);
+    process.on("SIGTERM", flushOnExit);
+  }
 }
 
 /**
