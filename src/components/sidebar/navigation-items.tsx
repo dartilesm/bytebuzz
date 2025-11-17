@@ -124,7 +124,7 @@ export const baseNavigationItems: NavigationItem[] = [
     href: (context: NavigationContext) => (context.username ? `/@${context.username}` : ""),
     icon: UserIcon,
     label: "Profile",
-    isVisible: (context: NavigationContext) => context.isAuthenticated === true,
+    isVisible: (context: NavigationContext) => !!context.isAuthenticated && context.isMobile,
     isActive: (context: NavigationContext) => {
       if (!context.username) return false;
       return context.pathname === `/@${context.username}`;
@@ -132,12 +132,7 @@ export const baseNavigationItems: NavigationItem[] = [
     children: (item, context) => {
       // Render MobileProfileButton for mobile, null for desktop (uses default rendering)
       if (context.isMobile)
-        return (
-          <MobileProfileButton
-            isActive={item.isActive}
-            label={item.label}
-          />
-        );
+        return <MobileProfileButton isActive={item.isActive} label={item.label} />;
       return null;
     },
   },
