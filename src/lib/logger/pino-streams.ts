@@ -1,11 +1,7 @@
 import type { StreamEntry } from "pino";
 import { createConsoleStream } from "@/lib/logger/console-stream";
 import { createLogtailStream } from "@/lib/logger/logtail-stream";
-
-/**
- * Log level based on environment
- */
-const logLevel = process.env.VERCEL_ENV === "production" ? "warn" : "debug";
+import { getLogLevel } from "@/lib/logger/functions/get-log-level";
 
 /**
  * Pino streams configuration
@@ -13,7 +9,10 @@ const logLevel = process.env.VERCEL_ENV === "production" ? "warn" : "debug";
  * @returns {StreamEntry[]} Array of Pino stream configurations
  */
 export function getPinoStreams(): StreamEntry[] {
-  const isProduction = process.env.VERCEL_ENV === "production";
+  const logLevel = getLogLevel();
+  const isProduction =
+    typeof process !== "undefined" &&
+    process.env.VERCEL_ENV === "production";
 
   if (isProduction) {
     return [

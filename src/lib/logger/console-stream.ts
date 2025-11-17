@@ -1,28 +1,6 @@
 import type { DestinationStream } from "pino";
-
-/**
- * Converts Pino log level number to console method name
- * @param {number} level - Pino log level number
- * @returns {string} Console method name
- */
-function getConsoleMethod(level: number): "log" | "warn" | "error" | "info" | "debug" {
-  if (level >= 60) {
-    return "error";
-  }
-  if (level >= 50) {
-    return "error";
-  }
-  if (level >= 40) {
-    return "warn";
-  }
-  if (level >= 30) {
-    return "info";
-  }
-  if (level >= 20) {
-    return "debug";
-  }
-  return "log"; // trace
-}
+import { getConsoleMethod } from "./functions/get-console-method";
+import { writeToConsole } from "./functions/write-to-console";
 
 /**
  * Formats a log entry for console output
@@ -60,15 +38,11 @@ export function createConsoleStream(): DestinationStream {
     write(logLine: string): void {
       try {
         const logData = JSON.parse(logLine) as Record<string, unknown>;
-        const level = (logData.level as number) || 30;
-        const consoleMethod = getConsoleMethod(level);
         const formattedMessage = formatLogForConsole(logData);
-
-        console[consoleMethod](formattedMessage);
+        writeToConsole(logData, formattedMessage);
       } catch (error) {
         console.error("Error parsing log line for console:", error, logLine);
       }
     },
   };
 }
-

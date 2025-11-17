@@ -1,24 +1,10 @@
 import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
 import pino, { type Level, type LogFn, type Logger } from "pino";
 import { getPinoStreams } from "@/lib/logger/pino-streams";
+import { writeToConsole } from "@/lib/logger/functions/write-to-console";
+import { getLogLevel } from "@/lib/logger/functions/get-log-level";
 
 let loggerInstance: Logger | null = null;
-
-/**
- * Checks if running in browser environment
- * @returns {boolean} True if running in browser
- */
-function isBrowser(): boolean {
-  return typeof window !== "undefined";
-}
-
-/**
- * Checks if multistream is available (Node.js only)
- * @returns {boolean} True if multistream is available
- */
-function hasMultistream(): boolean {
-  return typeof pino.multistream === "function";
-}
 
 /**
  * Creates a logger instance
@@ -32,10 +18,11 @@ function createLoggerInstance(): Logger {
     return loggerInstance;
   }
 
-  const isProduction = typeof process !== "undefined" && process.env.VERCEL_ENV === "production";
-  const logLevel = isProduction ? "warn" : "debug";
+  const logLevel = getLogLevel();
+  const hasMultistream = typeof pino.multistream === "function";
+  const isBrowser = typeof window !== "undefined";
 
-  if (isBrowser() || !hasMultistream()) {
+  if (isBrowser || !hasMultistream) {
     // Browser environment: Use Pino browser API
     loggerInstance = pino({
       level: logLevel,
@@ -43,39 +30,17 @@ function createLoggerInstance(): Logger {
         asObject: true,
         serialize: true,
         write: (o: object) => {
-          // Use console methods based on log level
           const logObj = o as Record<string, unknown>;
-          const level = (logObj.level as number) || 30;
-          const msg = (logObj.msg as string) || "";
-          const { level: _level, msg: _msg, time: _time, ...rest } = logObj;
-
-          if (level >= 60) {
-            console.error(msg, rest);
-          } else if (level >= 50) {
-            console.error(msg, rest);
-          } else if (level >= 40) {
-            console.warn(msg, rest);
-          } else if (level >= 30) {
-            console.info(msg, rest);
-          } else if (level >= 20) {
-            console.debug(msg, rest);
-          } else {
-            console.debug(msg, rest);
-          }
+          writeToConsole(logObj);
         },
       },
     });
-  } else {
-    // Node.js environment: Use multistream with Logtail and console
-    const streams = getPinoStreams();
-    loggerInstance = pino(
-      {
-        level: logLevel,
-      },
-      pino.multistream(streams)
-    );
+    return loggerInstance;
   }
 
+  // Node.js environment: Use multistream with Logtail and console
+  const streams = getPinoStreams();
+  loggerInstance = pino({ level: logLevel }, pino.multistream(streams));
   return loggerInstance;
 }
 
