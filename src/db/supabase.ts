@@ -3,6 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "database.types";
 
+const SUPABASE_BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+
 async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
   try {
     const response = await fetch(input, init);
@@ -11,12 +13,13 @@ async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
       // Clone the response to read the body for logging without consuming it
       const clonedResponse = response.clone();
       const errorMessage = await clonedResponse.text();
+      const path = response.url.replace(`${SUPABASE_BASE_URL}/rest/v1/`, "");
       try {
-        log.error(`Supabase error: ${response.status} ${response.statusText}`, {
+        log.error(`Supabase error at ${path}: ${response.status} ${response.statusText} `, {
           ...JSON.parse(errorMessage),
         });
       } catch {
-        log.error(`Supabase error: ${response.status} ${response.statusText}`, {
+        log.error(`Supabase error at ${path}: ${response.status} ${response.statusText} `, {
           message: errorMessage,
         });
       }
