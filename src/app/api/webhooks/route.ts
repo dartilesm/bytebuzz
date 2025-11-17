@@ -19,10 +19,12 @@ export async function POST(req: Request) {
         image_url: image_url,
       });
 
-      if (error)
+      if (error) {
+        log.error("Error upserting user in webhook", { error });
         return new Response(JSON.stringify({ error: error.message }), {
           status: 400,
         });
+      }
 
       return new Response(JSON.stringify({ data, success: true }), {
         status: 200,
@@ -34,10 +36,12 @@ export async function POST(req: Request) {
 
       const { data, error: deleteError } = await adminService.user.delete(id as string);
 
-      if (deleteError)
+      if (deleteError) {
+        log.error("Error deleting user in webhook", { error: deleteError });
         return new Response(JSON.stringify({ error: deleteError.message }), {
           status: 400,
         });
+      }
 
       return new Response(JSON.stringify({ data, success: true }), {
         status: 200,
