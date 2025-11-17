@@ -51,6 +51,7 @@ type LogMetadata = Record<string, unknown>;
 
 /**
  * Formats caller information into a readable string prefix
+ * Format: functionName @ filePath:line →
  * @param {CallerInfo | null} caller - The caller information to format
  * @returns {string} Formatted caller prefix or empty string
  */
@@ -59,7 +60,7 @@ function formatCallerPrefix(caller: CallerInfo | null): string {
     return "";
   }
 
-  return `<${caller.functionName} (${caller.filePath}:${caller.line}:${caller.col})>`;
+  return `${caller.functionName} @ ${caller.filePath}:${caller.line} →`;
 }
 
 /**
@@ -85,7 +86,7 @@ function logWithCaller(
 
   const logFn = (pinoLogger[level as keyof typeof pinoLogger] as LogFn).bind(pinoLogger);
 
-  const logMessage = prefix ? `${prefix}: ${msg}` : msg;
+  const logMessage = prefix ? `${prefix} ${msg}` : msg;
 
   // Pino best practice: metadata as first arg, message as 'msg' property
   // Only include metadata if provided, don't add caller to metadata as it's already in the prefix
