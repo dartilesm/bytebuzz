@@ -8,6 +8,10 @@ const SUPABASE_BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
   try {
     const response = await fetch(input, init);
+    log.info("Supabase fetch info", {
+      input,
+      init,
+    });
     // You might want to log successful responses or specific status codes here as well
     if (!response.ok) {
       // Clone the response to read the body for logging without consuming it
@@ -65,10 +69,6 @@ export function createServerSupabaseClient({
  * @returns Admin Supabase client
  */
 export function createAdminSupabaseClient() {
-  log.info("Creating admin Supabase client", {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    secretKey: process.env.SUPABASE_SECRET_KEY,
-  });
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
     global: {
       fetch: supabaseFetch,
