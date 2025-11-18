@@ -8,7 +8,7 @@ const SUPABASE_BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 async function supabaseFetch(input: RequestInfo | URL, init?: RequestInit) {
   try {
     const response = await fetch(input, init);
-    log.info("Supabase fetch info", {
+    log.warn("Supabase fetch info", {
       input,
       init,
     });
