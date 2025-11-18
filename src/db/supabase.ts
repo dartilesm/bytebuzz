@@ -44,8 +44,10 @@ export function createServerSupabaseClient({
   accessToken?: string | null;
 } = {}) {
   async function accessToken() {
-    if (clerkToken !== undefined) return clerkToken;
-    return (await auth()).getToken();
+    if (clerkToken) return clerkToken;
+
+    const session = await auth();
+    return session.getToken();
   }
 
   return createClient<Database>(
