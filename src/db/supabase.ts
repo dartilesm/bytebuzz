@@ -65,10 +65,6 @@ export function createServerSupabaseClient({
  * @returns Admin Supabase client
  */
 export function createAdminSupabaseClient() {
-  log.warn("Creating admin Supabase client", {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    secretKey: process.env.SUPABASE_SECRET_KEY,
-  });
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
     global: {
       fetch: supabaseFetch,
