@@ -28,11 +28,10 @@ async function getUserById(this: ServiceContext, userId: string) {
  */
 async function updateProfile(
   this: ServiceContext,
-  username: string,
-  data: Partial<Tables<"users">>
+  data: Partial<Tables<"users">> & { id: string }
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
-  return await supabase.from("users").update(data).eq("username", username).select().single();
+  return await supabase.from("users").update(data).eq("id", data.id).select();
 }
 
 /**
