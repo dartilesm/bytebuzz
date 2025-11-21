@@ -754,10 +754,6 @@ CREATE POLICY "Any user can see posts" ON "public"."posts" FOR SELECT USING (tru
 
 
 
-CREATE POLICY "Any user can see users" ON "public"."users" FOR SELECT USING (true);
-
-
-
 CREATE POLICY "Any user can see reactions" ON "public"."reactions" FOR SELECT USING (true);
 
 
@@ -776,7 +772,7 @@ CREATE POLICY "Users can unfollow" ON "public"."user_followers" FOR DELETE TO "a
 
 CREATE POLICY "Users must delete their own posts" ON "public"."posts" FOR DELETE TO "authenticated" USING ((( SELECT ("auth"."jwt"() ->> 'sub'::"text")) = "user_id"));
 
-CREATE POLICY "Users must delete their own profile" ON "public"."users" FOR DELETE TO "authenticated" USING ((( SELECT (auth.jwt() ->> 'sub'::text)) = id));
+
 
 CREATE POLICY "Users must delete their own reactions" ON "public"."reactions" FOR DELETE TO "authenticated" USING ((( SELECT ("auth"."jwt"() ->> 'sub'::"text")) = "user_id"));
 
@@ -784,7 +780,7 @@ CREATE POLICY "Users must delete their own reactions" ON "public"."reactions" FO
 
 CREATE POLICY "Users must insert their own posts" ON "public"."posts" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT ("auth"."jwt"() ->> 'sub'::"text")) = "user_id"));
 
-CREATE POLICY "Users must insert their own profile" ON "public"."users" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT (auth.jwt() ->> 'sub'::text)) = id));
+
 
 CREATE POLICY "Users must insert their own reactions" ON "public"."reactions" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT ("auth"."jwt"() ->> 'sub'::"text")) = "user_id"));
 
@@ -793,12 +789,9 @@ CREATE POLICY "Users must insert their own reactions" ON "public"."reactions" FO
 CREATE POLICY "Users must update their own posts" ON "public"."posts" FOR UPDATE TO "authenticated" WITH CHECK ((( SELECT ("auth"."jwt"() ->> 'sub'::"text")) = "user_id"));
 
 
-CREATE POLICY "Users must update their own profile" ON "public"."users" FOR UPDATE TO "authenticated" WITH CHECK ((( SELECT (auth.jwt() ->> 'sub'::text)) = id));
 
 CREATE POLICY "Users must update their own reactions" ON "public"."reactions" FOR UPDATE TO "authenticated" WITH CHECK ((( SELECT ("auth"."jwt"() ->> 'sub'::"text")) = "user_id"));
 
-
-ALTER TABLE "public"."users" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
