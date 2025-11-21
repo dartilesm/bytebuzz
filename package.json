@@ -13,7 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "db:diff": "supabase db diff --linked",
     "db:dump-remote": "timestamp=$(date +%Y-%m-%d-%H:%M:%S) && mkdir -p supabase/dump/$timestamp && supabase db dump --linked --keep-comments -f supabase/dump/$timestamp/schemas.sql && supabase db dump --linked --data-only -f supabase/dump/$timestamp/data.sql && supabase db dump --linked --role-only -f supabase/dump/$timestamp/roles.sql",
-    "db:link": "npx supabase@beta link",
+    "db:link": "supabase link",
     "db:lint": "supabase db lint",
     "db:list": "supabase projects list",
     "db:pull-remote": "supabase db pull --linked",
