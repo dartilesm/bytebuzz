@@ -33,7 +33,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.60.3
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
