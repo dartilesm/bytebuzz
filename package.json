@@ -103,7 +103,7 @@
     "eslint-config-next": "16.0.1",
     "pino-webpack-plugin": "^2.0.0",
     "server-only": "0.0.1",
-    "supabase": "2.51.0",
+    "supabase": "2.60.3",
     "tailwindcss": "4",
     "typescript": "5",
     "vitest": "^3.2.4"
