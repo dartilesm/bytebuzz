@@ -51,13 +51,13 @@ jobs:
 
       - name: See schemas differences between local and remote
         # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
-        run: rm -rf supabase/.temp/storage-migration && bun run db:diff
+        run: rm -rf supabase/.temp/storage-migration && bun run db:diff --debug
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:diff --debug
 
       - name: Run lint
         # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
-        run: rm -rf supabase/.temp/storage-migration && bun run db:lint
+        run: rm -rf supabase/.temp/storage-migration && bun run db:lint --fail-on error
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:lint --fail-on error
 
