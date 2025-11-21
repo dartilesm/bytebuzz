@@ -51,7 +51,7 @@ jobs:
 
       - name: See schemas differences between local and remote
         # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
-        run: rm -rf supabase/.temp/storage-migration && bun run db:diff --debug
+        run: rm -rf supabase/.temp/storage-migration && supabase db reset && bun run db:diff
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:diff --debug
 
