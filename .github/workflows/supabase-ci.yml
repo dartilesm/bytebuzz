@@ -38,40 +38,8 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Get Supabase CLI version
-        id: supabase-version
-        run: echo "version=$(supabase --version | head -n 1 | awk '{print $NF}')" >> $GITHUB_OUTPUT
-
-      - name: Restore Supabase Docker images cache
-        id: cache-docker-images
-        uses: actions/cache@v4
-        with:
-          path: /tmp/supabase-docker-cache
-          key: supabase-docker-${{ runner.os }}-${{ hashFiles('supabase/config.toml') }}-${{ steps.supabase-version.outputs.version }}
-          restore-keys: |
-            supabase-docker-${{ runner.os }}-
-
-      - name: Load cached Docker images
-        if: steps.cache-docker-images.outputs.cache-hit == 'true'
-        run: |
-          if [ -f /tmp/supabase-docker-cache/images.tar ]; then
-            docker load -i /tmp/supabase-docker-cache/images.tar
-            echo "Loaded Docker images from cache"
-          fi
-
       - name: Start Supabase local development setup
         run: bun run db:start
-
-      - name: Save Docker images to cache
-        run: |
-          mkdir -p /tmp/supabase-docker-cache
-          IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "^supabase/" || true)
-          if [ -n "$IMAGES" ]; then
-            echo "$IMAGES" | xargs docker save -o /tmp/supabase-docker-cache/images.tar
-            echo "Saved Docker images to cache"
-          else
-            echo "No Supabase Docker images found to cache"
-          fi
 
       - name: Link to staging project
         run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
