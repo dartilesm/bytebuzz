@@ -47,7 +47,7 @@ jobs:
         run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
 
       - name: See schemas differences between local and remote
-        run: bun run db:diff
+        run: bun run db:diff --debug
 
       - name: Run lint
         run: bun run db:lint --fail-on error
