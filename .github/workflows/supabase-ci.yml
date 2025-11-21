@@ -44,39 +44,48 @@ jobs:
         # run: bun run db:start
 
       - name: Link to staging project
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
         run: rm -rf supabase/.temp/storage-migration && bun run db:link --project-ref $SUPABASE_PROJECT_ID
-        # run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
 
       - name: See schemas differences between local and remote
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
         run: rm -rf supabase/.temp/storage-migration && bun run db:diff
-        # run: bun run db:diff --debug
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:diff --debug
 
       - name: Run lint
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
         run: rm -rf supabase/.temp/storage-migration && bun run db:lint
-        # run: bun run db:lint --fail-on error
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:lint --fail-on error
 
       - name: Run tests
-        run: rm -rf supabase/.temp/storage-migration
-        # run: bun run db:test
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:test
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:test
 
       - name: Verify generated types are checked in
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
         run: |
-          supabase gen types typescript --local > types.gen.ts
+          rm -rf supabase/.temp/storage-migration && supabase gen types typescript --local > types.gen.ts
           if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff
             exit 1
           fi
+        # run: |
+        #   supabase gen types typescript --local > types.gen.ts
+        #   if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
+        #     echo "Detected uncommitted changes after build. See status below:"
+        #     git diff
+        #     exit 1
+        #   fi
 
       - name: Generate backup
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
         run: rm -rf supabase/.temp/storage-migration && bun run db:dump-remote
         # run: bun run db:dump-remote
         # TODO: Remove temporary fix once the issue is fixed
