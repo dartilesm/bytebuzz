@@ -31,7 +31,7 @@ async function updateProfile(
   data: Partial<Tables<"users">> & { id: string }
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
-  return await supabase.from("users").update(data).eq("id", data.id).select();
+  return await supabase.from("users").update(data).eq("id", data.id).select().single();
 }
 
 /**
