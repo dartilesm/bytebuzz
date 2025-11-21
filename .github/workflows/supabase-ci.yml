@@ -38,7 +38,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Start Supabase local development setup
-        run: bun run db:start
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:start && rm -rf supabase/.temp/storage-migration && supabase db reset
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:start
 
       - name: Link to staging project
         run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
