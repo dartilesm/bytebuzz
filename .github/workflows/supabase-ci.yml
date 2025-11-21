@@ -41,7 +41,7 @@ jobs:
         run: bun run db:start
 
       - name: Link to staging project
-        run: bun run db:link --project-ref $SUPABASE_PROJECT_ID --debug
+        run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
 
       - name: See schemas differences between local and remote
         run: bun run db:diff
