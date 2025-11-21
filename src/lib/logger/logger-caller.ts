@@ -1,3 +1,5 @@
+import { normalizeFilePath } from "./functions/normalize-file-path";
+
 /**
  * Type representing caller information extracted from stack trace
  */
@@ -14,6 +16,7 @@ export type CallerInfo = {
  * @type {string[]}
  */
 const LOGGER_INTERNAL_FILES = [
+  "write-to-console.ts",
   "logger.ts",
   "logger-caller.ts",
   "getCallerInfo",
@@ -59,7 +62,7 @@ function parseFrameWithFunction(frame: string): CallerInfo | null {
 
   return {
     functionName,
-    filePath,
+    filePath: normalizeFilePath(filePath),
     line,
     col,
   };
@@ -81,8 +84,8 @@ function parseFrameWithoutFunction(frame: string): CallerInfo | null {
   const [, filePath, line, col] = match;
 
   return {
-    functionName: "<anonymous>",
-    filePath,
+    functionName: "<unknown>",
+    filePath: normalizeFilePath(filePath),
     line,
     col,
   };
