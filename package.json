@@ -18,7 +18,7 @@
     "db:list": "supabase projects list",
     "db:pull-remote": "supabase db pull --linked",
     "db:push-remote": "supabase db push --linked",
-    "db:start": "supabase start",
+    "db:start": "supabase db start",
     "db:test": "supabase test db",
     "lint": "biome check .",
     "lint:fix": "biome check --apply .",
@@ -103,7 +103,7 @@
     "eslint-config-next": "16.0.1",
     "pino-webpack-plugin": "2.0.0",
     "server-only": "0.0.1",
-    "supabase": "2.54.11",
+    "supabase": "2.55.5",
     "tailwindcss": "4",
     "typescript": "5",
     "vitest": "3.2.4"
