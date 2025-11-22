@@ -22,10 +22,10 @@ export function UserCard2({ user }: UserCardProps) {
   const isSameUser = currentUser?.id === user.id;
 
   return (
-    <Card className='relative rounded-2xl overflow-hidden max-w-[220px] shrink-0 border border-default-200 dark:border-default-100 shadow-xs hover:shadow-sm transition-shadow duration-300 bg-secondary-500/10 dark:bg-secondary-400/10'>
+    <Card className='relative rounded-2xl overflow-hidden max-w-[220px] shrink-0 border border-border dark:border-border shadow-xs hover:shadow-sm transition-shadow duration-300 bg-secondary-500/10 dark:bg-secondary-400/10'>
       {/* Gradient Background Accent */}
       <div
-        className={cn("absolute top-0 left-0 right-0 h-20 border-b border-default-200", {
+        className={cn("absolute top-0 left-0 right-0 h-20 border-b border-border", {
           "bg-gradient-to-br from-primary-400/20 via-secondary-400/10 to-transparent":
             !user.cover_image_url,
         })}
@@ -62,7 +62,7 @@ export function UserCard2({ user }: UserCardProps) {
             {/* Stats */}
             <div
               className={cn(
-                "flex gap-6 text-sm w-full justify-center py-2 border-y border-default-200",
+                "flex gap-6 text-sm w-full justify-center py-2 border-y border-border",
                 {
                   "border-b-0 pb-0": isSameUser,
                 }
@@ -72,7 +72,7 @@ export function UserCard2({ user }: UserCardProps) {
                 <p className='font-bold text-foreground text-base'>{user.follower_count}</p>
                 <p className='text-xs text-muted-foreground'>Followers</p>
               </div>
-              <div className='h-auto w-px bg-default-200' />
+              <div className='h-auto w-px bg-border' />
               <div className='text-center'>
                 <p className='font-bold text-foreground text-base'>{user.following_count}</p>
                 <p className='text-xs text-muted-foreground'>Following</p>

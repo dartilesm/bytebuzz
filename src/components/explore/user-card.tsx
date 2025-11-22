@@ -14,7 +14,7 @@ interface UserCardProps {
 export function UserCard({ user }: UserCardProps) {
   return (
     <PostWrapper>
-      <Card className="p-4 flex flex-col justify-between gap-4 relative dark:bg-content1 bg-[transparent] shadow-none cursor-pointer border-0">
+      <Card className="p-4 flex flex-col justify-between gap-4 relative dark:bg-card bg-card shadow-sm cursor-pointer border border-border">
         <div className="flex flex-row items-start gap-4">
           <Link href={`/@${user.username}`} className="flex-shrink-0">
             <Avatar className="size-12 border">
