@@ -1,6 +1,6 @@
 import { useSession } from "@clerk/nextjs";
 import { addToast } from "@heroui/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
 
 interface PendingAction {
@@ -12,6 +12,7 @@ interface PendingAction {
 export function useAuthGuard() {
   const { isSignedIn } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
 
   useEffect(resumePendingAction, [isSignedIn, pendingAction]);
@@ -42,7 +43,8 @@ export function useAuthGuard() {
           scrollY: window.scrollY,
         });
         startTransition(() => {
-          router.push("/sign-in", { scroll: false });
+          const redirectUrl = encodeURIComponent(pathname);
+          router.push(`/sign-in?redirectUrl=${redirectUrl}`, { scroll: false });
         });
         return;
       }
