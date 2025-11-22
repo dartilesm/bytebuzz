@@ -7,11 +7,14 @@ import { revalidatePath } from "next/cache";
 export type UpdateProfileData = Partial<Tables<"users">>;
 
 export async function updateProfile(data: UpdateProfileData) {
-  if (!data.username) {
-    throw new Error("Username is required");
+  if (!data.id) {
+    throw new Error("User ID is required");
   }
 
-  const result = await userService.updateProfile(data.username, data);
+  // Exclude username from profile data
+  const { id, username, ...profileData } = data;
+
+  const result = await userService.updateProfile({ id, ...profileData });
 
   if (!result.error) revalidatePath(`/@${data.username}`);
 
