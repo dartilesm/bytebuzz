@@ -78,10 +78,10 @@ export function SearchBox({
         />
         {isLoading && <Loader2 className="h-4 w-4 animate-spin opacity-50" />}
         {searchTerm && (
-            <button onClick={handleClear} className="ml-2 text-muted-foreground hover:text-foreground">
-                <span className="sr-only">Clear</span>
-                <span aria-hidden="true">&times;</span>
-            </button>
+          <button onClick={handleClear} className="ml-2 text-muted-foreground hover:text-foreground">
+            <span className="sr-only">Clear</span>
+            <span aria-hidden="true">&times;</span>
+          </button>
         )}
       </div>
       {open && (searchTerm || combinedItems.length > 0) && (
@@ -91,22 +91,22 @@ export function SearchBox({
             {!isLoading && combinedItems.length === 0 && <CommandEmpty><SearchBoxEmpty searchTerm={debouncedSearchTerm} /></CommandEmpty>}
             <CommandGroup>
               {combinedItems.map((item) => {
-                 const textValue = "display_name" in item ? item.display_name : item.term;
-                 const key = "id" in item ? item.id : item.term;
-                 return (
-                    <CommandItem
-                      key={key}
-                      value={textValue ?? ""}
-                      onSelect={() => {
-                        if ("type" in item && item.type === "search") {
-                            handleExactSearch();
-                        }
-                        setOpen(false);
-                      }}
-                    >
-                      <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
-                    </CommandItem>
-                 );
+                const textValue = "display_name" in item ? item.display_name : (item as SearchItem).term;
+                const key = "id" in item ? item.id : (item as SearchItem).term;
+                return (
+                  <CommandItem
+                    key={key}
+                    value={textValue ?? ""}
+                    onSelect={() => {
+                      if ("type" in item && item.type === "search") {
+                        handleExactSearch();
+                      }
+                      setOpen(false);
+                    }}
+                  >
+                    <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
+                  </CommandItem>
+                );
               })}
             </CommandGroup>
           </CommandList>

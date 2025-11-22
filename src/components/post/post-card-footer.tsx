@@ -4,7 +4,6 @@ import { useToggleReactionMutation } from "@/hooks/mutation/use-toggle-reaction-
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostContext } from "@/hooks/use-post-context";
 import type { NestedPost } from "@/types/nested-posts";
-import {
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -275,7 +274,7 @@ export function PostFooter() {
                         key='x'
                         asChild
                       >
-                        <Link href={getXPostPreview(post)} target='_blank' className="flex items-center">
+                        <Link href={getXPostPreview(post) as any} target='_blank' className="flex items-center">
                           <SiX className='text-inherit mr-2' size={16} />
                           Share on X
                         </Link>
