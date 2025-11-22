@@ -1,5 +1,5 @@
 import { UserCard2Loading } from "@/components/loading/user-card-2.loading";
-import { Skeleton } from "@heroui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ExploreViewUsersLoading() {
   return (

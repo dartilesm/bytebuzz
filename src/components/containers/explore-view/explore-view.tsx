@@ -14,7 +14,7 @@ import { ExploreViewPostsLoading } from "@/components/containers/explore-view/lo
 import { ExploreViewUsersLoading } from "@/components/containers/explore-view/loading/explore-view-users.loading";
 import { SearchBox } from "@/components/explore/search-box";
 import { PageHeader } from "@/components/ui/page-header";
-import { Tab, Tabs } from "@heroui/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "next/navigation";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import { Suspense, useRef } from "react";
@@ -92,18 +92,33 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
       >
         {activeSearchTypeRef.current && (
           <Tabs
-            aria-label='Explore sections'
-            variant='underlined'
-            color='primary'
-            className='sticky top-14 md:top-16 z-40 dark:bg-background bg-content1 border-b-1 border-b-content2'
-            classNames={{
-              tabList: "w-full pb-0",
-            }}
-            selectedKey={activeSearchTypeRef.current}
-            onSelectionChange={(key) => handleSearchTypeChange(key as SearchType)}
+            value={activeSearchTypeRef.current}
+            onValueChange={(key) => handleSearchTypeChange(key as SearchType)}
+            className="w-full"
           >
-            <Tab key='all' title='All'>
-              <div className='space-y-4 px-2'>
+            <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0 sticky top-14 md:top-16 z-40 dark:bg-background bg-background">
+              <TabsTrigger
+                value="all"
+                className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                All
+              </TabsTrigger>
+              <TabsTrigger
+                value="users"
+                className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Users
+              </TabsTrigger>
+              <TabsTrigger
+                value="posts"
+                className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Posts
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value='all' className="mt-0">
+              <div className='space-y-4 px-2 pt-4'>
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers
@@ -119,25 +134,25 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
                   </Suspense>
                 )}
               </div>
-            </Tab>
-            <Tab key='users' title='Users'>
-              <div className='space-y-4 px-2'>
+            </TabsContent>
+            <TabsContent value='users' className="mt-0">
+              <div className='space-y-4 px-2 pt-4'>
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers usersPromise={usersPromise} />
                   </Suspense>
                 )}
               </div>
-            </Tab>
-            <Tab key='posts' title='Posts'>
-              <div className='space-y-4 px-2'>
+            </TabsContent>
+            <TabsContent value='posts' className="mt-0">
+              <div className='space-y-4 px-2 pt-4'>
                 {postsPromise && (
                   <Suspense fallback={<ExploreViewPostsLoading />}>
                     <ExploreViewPosts postsPromise={postsPromise} />
                   </Suspense>
                 )}
               </div>
-            </Tab>
+            </TabsContent>
           </Tabs>
         )}
         {!activeSearchTypeRef.current && (

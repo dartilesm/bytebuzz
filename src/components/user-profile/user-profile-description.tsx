@@ -1,6 +1,8 @@
 "use client";
 
-import { Link, Chip } from "@heroui/react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { getTechnologyById } from "@/lib/technologies";
 import { Link2Icon, MapPinIcon } from "lucide-react";
 import { use } from "react";
@@ -41,9 +43,9 @@ export function UserProfileDescription({ profilePromise }: UserProfileDescriptio
         <div className='flex flex-col gap-2'>
           <div className='flex flex-wrap gap-2'>
             {selectedTechnologies.map((tech) => (
-              <Chip key={tech.id} variant='flat' size='sm' className='text-xs font-medium'>
+              <Badge key={tech.id} variant='secondary' className='text-xs font-medium'>
                 {tech.name}
-              </Chip>
+              </Badge>
             ))}
           </div>
         </div>
@@ -60,43 +62,45 @@ export function UserProfileDescription({ profilePromise }: UserProfileDescriptio
             </div>
           )}
           {profile.website && (
-            <Link
-              href={
-                profile.website.startsWith("http") ? profile.website : `https://${profile.website}`
-              }
-              isExternal
-              showAnchorIcon
-              className='text-sm'
-              size='sm'
+            <Button
+              asChild
+              variant='link'
+              className='text-sm h-auto p-0 text-primary'
             >
-              <span className='flex items-center gap-1.5'>
-                <Link2Icon size={14} className='text-default-400 shrink-0' />
-                <span className='truncate max-w-[200px]'>
-                  {profile.website.replace(/^https?:\/\//, "")}
+              <Link
+                href={
+                  (profile.website.startsWith("http") ? profile.website : `https://${profile.website}`) as any
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className='flex items-center gap-1.5'>
+                  <Link2Icon size={14} className='text-muted-foreground shrink-0' />
+                  <span className='truncate max-w-[200px]'>
+                    {profile.website.replace(/^https?:\/\//, "")}
+                  </span>
                 </span>
-              </span>
-            </Link>
+              </Link>
+            </Button>
           )}
         </div>
 
         <div className='flex items-center gap-3 text-sm'>
-          <Link
-            as='button'
-            color='foreground'
-            className='group flex items-center gap-1.5 hover:opacity-80 text-sm'
+          <Button
+            variant='ghost'
+            className='group flex items-center gap-1.5 hover:opacity-80 text-sm h-auto p-0 hover:bg-transparent'
           >
             <span className='font-medium'>{profile.follower_count}</span>
-            <span className='text-default-400'>followers</span>
-          </Link>
-          <div className='h-3 w-px bg-default-200' />
-          <Link
-            as='button'
-            color='foreground'
-            className='group flex items-center gap-1.5 hover:opacity-80 text-sm'
+            <span className='text-muted-foreground'>followers</span>
+          </Button>
+          <div className='h-3 w-px bg-border' />
+          <Button
+            variant='ghost'
+            className='group flex items-center gap-1.5 hover:opacity-80 text-sm h-auto p-0 hover:bg-transparent'
           >
             <span className='font-medium'>{profile.following_count}</span>
-            <span className='text-default-400'>following</span>
-          </Link>
+            <span className='text-muted-foreground'>following</span>
+          </Button>
         </div>
       </div>
     </div>

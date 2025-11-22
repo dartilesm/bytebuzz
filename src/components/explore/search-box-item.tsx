@@ -1,7 +1,7 @@
 "use client";
 
 import { FollowButton } from "@/components/ui/follow-button";
-import { Avatar, Card, CardBody } from "@heroui/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Database } from "database.types";
 import { SearchIcon } from "lucide-react";
 import Link from "next/link";
@@ -20,61 +20,51 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
   // Handle search item
   if ("type" in item && item.type === "search") {
     return (
-      <Card className='w-full border-none shadow-none bg-transparent'>
-        <CardBody className='p-0'>
+      <div className='w-full p-2'>
           <div className='flex items-center gap-3' onClick={onExactSearch}>
-            <div className='flex items-center justify-center w-10 h-10 rounded-full bg-transparent dark:bg-default-200'>
-              <SearchIcon className='w-5 h-5 text-default-600 dark:text-default-400' />
+            <div className='flex items-center justify-center w-10 h-10 rounded-full bg-transparent dark:bg-muted'>
+              <SearchIcon className='w-5 h-5 text-muted-foreground' />
             </div>
             <div className='flex flex-col gap-1 flex-1 min-w-0'>
-              <h4 className='text-small font-semibold text-foreground'>
+              <h4 className='text-sm font-semibold text-foreground'>
                 Search for &ldquo;{item.term}&rdquo;
               </h4>
             </div>
           </div>
-        </CardBody>
-      </Card>
+      </div>
     );
   }
 
   // Handle user item
   const user = item as User;
   return (
-    <Card
-      className='w-full border-none shadow-none bg-transparent'
-      as={Link}
+    <Link
+      className='w-full block p-2 hover:bg-muted/50 rounded-lg transition-colors'
       href={`/@${user.username}` as unknown as UrlObject}
     >
-      <CardBody className='p-0'>
         <div className='flex justify-between items-center gap-3'>
           <div className='flex gap-3 items-center flex-1 min-w-0'>
-            <Avatar
-              alt={user.display_name}
-              className='shrink-0 ring-2 ring-default-100 dark:ring-default-50'
-              size='md'
-              src={user.image_url ?? undefined}
-              fallback={
-                <div className='flex items-center justify-center w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-800 dark:to-primary-900 text-primary-600 dark:text-primary-300 font-semibold'>
-                  {user.display_name?.charAt(0)?.toUpperCase() || "U"}
-                </div>
-              }
-            />
+            <Avatar className="h-10 w-10 border-2 border-background">
+              <AvatarImage src={user.image_url ?? undefined} alt={user.display_name} />
+              <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                {user.display_name?.charAt(0)?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
             <div className='flex flex-col gap-1 flex-1 min-w-0'>
-              <h4 className='text-small font-semibold text-foreground truncate'>
+              <h4 className='text-sm font-semibold text-foreground truncate'>
                 {user.display_name}
               </h4>
               <div className='flex items-center gap-2'>
-                <span className='text-tiny text-default-500 font-medium'>@{user.username}</span>
-                <span className='text-tiny text-default-300'>•</span>
-                <span className='text-tiny text-default-400'>{user.follower_count} followers</span>
+                <span className='text-xs text-muted-foreground font-medium'>@{user.username}</span>
+                <span className='text-xs text-muted-foreground'>•</span>
+                <span className='text-xs text-muted-foreground'>{user.follower_count} followers</span>
               </div>
             </div>
           </div>
           <div className='shrink-0'>
-            <FollowButton targetUserId={user.id} size='sm' className='shadow-small' />
+            <FollowButton targetUserId={user.id} size='sm' className='shadow-sm' />
           </div>
         </div>
-      </CardBody>
-    </Card>
+    </Link>
   );
 }

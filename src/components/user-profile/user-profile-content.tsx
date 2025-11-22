@@ -4,7 +4,7 @@ import { PostList } from "@/components/post/post-list";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
 import type { postService } from "@/lib/db/services/post.service";
-import { Tab, Tabs } from "@heroui/react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatePresence, motion } from "motion/react";
 import { use, useState } from "react";
 
@@ -67,19 +67,30 @@ export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
   return (
     <div className='flex flex-col gap-2'>
       <Tabs
-        aria-label='Profile sections'
-        variant='underlined'
-        color='primary'
-        className='sticky md:top-16 top-14 z-40 dark:bg-background bg-content1'
-        classNames={{
-          tabList: "w-full",
-        }}
-        selectedKey={activeTab}
-        onSelectionChange={handleTabChange}
+        value={activeTab}
+        onValueChange={(value) => handleTabChange(value)}
+        className="w-full sticky md:top-16 top-14 z-40 bg-background"
       >
-        <Tab key={UserProfileTabs.POSTS} title='Posts' />
-        <Tab key={UserProfileTabs.MEDIA} title='Media' />
-        <Tab key={UserProfileTabs.LIKES} title='Likes' />
+        <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
+          <TabsTrigger
+            value={UserProfileTabs.POSTS}
+            className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+          >
+            Posts
+          </TabsTrigger>
+          <TabsTrigger
+            value={UserProfileTabs.MEDIA}
+            className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+          >
+            Media
+          </TabsTrigger>
+          <TabsTrigger
+            value={UserProfileTabs.LIKES}
+            className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+          >
+            Likes
+          </TabsTrigger>
+        </TabsList>
       </Tabs>
       <div className='py-4 overflow-hidden px-2 md:px-0'>
         <AnimatePresence mode='wait' custom={direction}>

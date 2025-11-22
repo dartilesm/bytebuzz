@@ -6,7 +6,10 @@ import {
   getExpansionData,
 } from "@/components/post/functions/expandable-content-utils";
 import { usePostContext } from "@/hooks/use-post-context";
-import { Button, CardBody, ScrollShadow, cn } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { CardContent } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -54,7 +57,7 @@ export function PostContent({ children }: PostContentProps) {
     setExpansionLevel((prev) => prev + 1);
   }
   return (
-    <CardBody
+    <CardContent
       className={cn("flex-1 py-0 text-sm px-2 md:px-4", {
         "md:px-8.5": isThreadPagePost,
         "flex flex-col gap-2": !expansionData.shouldShowControls,
@@ -69,25 +72,22 @@ export function PostContent({ children }: PostContentProps) {
             className='transition-all duration-300 ease-out overflow-hidden'
             style={{ height: contentHeight || "auto" }}
           >
-            <ScrollShadow
-              size={50}
-              style={{ overflow: "hidden" }}
-              hideScrollBar
-              className='transition-all duration-300 flex flex-col gap-2'
-              visibility={!isFullyExpanded ? "bottom" : undefined}
+            <ScrollArea
+              className='h-full transition-all duration-300 flex flex-col gap-2'
               ref={contentRef}
             >
               <MarkdownViewer markdown={displayContent} postId={post.id ?? ""} />
-            </ScrollShadow>
+              <ScrollBar orientation="vertical" className="hidden" />
+            </ScrollArea>
           </div>
           {canExpand && (
             <Button
-              variant='light'
+              variant='ghost'
               size='sm'
-              onPress={handleExpand}
+              onClick={handleExpand}
               className='self-start text-primary hover:text-primary-600 transition-colors'
-              startContent={<ChevronDownIcon size={16} />}
             >
+              <ChevronDownIcon size={16} className="mr-2" />
               View more
             </Button>
           )}
@@ -95,6 +95,6 @@ export function PostContent({ children }: PostContentProps) {
       )}
 
       {children}
-    </CardBody>
+    </CardContent>
   );
 }

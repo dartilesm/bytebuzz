@@ -3,7 +3,7 @@ import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostThreadLine } from "@/components/post/post-thread-line";
 import { UserPost } from "@/components/post/user-post";
 import type { NestedPost } from "@/types/nested-posts";
-import { cn } from "@heroui/react";
+import { cn } from "@/lib/utils";
 
 interface PostInteractionProps {
   /**

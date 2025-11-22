@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, CardBody, CardFooter, Skeleton } from "@heroui/react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * A loading state component for UserCard2 that shows skeleton placeholders
@@ -11,7 +12,7 @@ export function UserCard2Loading() {
       {/* Gradient Background Accent */}
       <Skeleton className='absolute top-0 left-0 right-0 h-20 rounded-none' />
 
-      <CardBody className='p-0'>
+      <CardContent className='p-0'>
         <div className='relative px-5 py-6 flex flex-col items-center gap-4'>
           {/* Avatar skeleton */}
           <Skeleton className='size-24 rounded-full ring-4 ring-background' />
@@ -35,7 +36,7 @@ export function UserCard2Loading() {
             </div>
           </div>
         </div>
-      </CardBody>
+      </CardContent>
       <CardFooter className='pt-0'>
         {/* Follow button skeleton */}
         <Skeleton className='w-full h-10 rounded-lg' />

@@ -1,5 +1,5 @@
 import { UserPostLoading } from "@/components/loading/user-post.loading";
-import { Skeleton } from "@heroui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ExploreViewPostsLoading() {
   return (

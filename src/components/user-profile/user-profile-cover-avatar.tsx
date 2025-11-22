@@ -1,8 +1,7 @@
 "use client";
 
-import { Avatar } from "@heroui/react";
-
-import { Image } from "@heroui/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 import type { Tables } from "database.types";
 import { use } from "react";
 
@@ -14,23 +13,20 @@ export function UserProfileCoverAvatar({ profilePromise }: UserProfileCoverAvata
   const profile = use(profilePromise);
   return (
     <div>
-      <Image
-        alt='Profile Cover'
-        classNames={{
-          wrapper: "w-full max-w-full max-w-full! aspect-[12/4] m-0",
-          img: "w-full h-full object-cover object-center m-0 aspect-[11/4] h-auto rounded-t-none",
-          blurredImg: "opacity-20",
-        }}
-        isBlurred
-        src={profile.cover_image_url ?? undefined}
-      />
+      <div className="relative w-full aspect-[12/4] overflow-hidden">
+        <Image
+          alt='Profile Cover'
+          src={profile.cover_image_url || ""}
+          fill
+          className="object-cover"
+        />
+      </div>
       <div className='relative'>
         <div className='absolute -bottom-16 left-1/2 -translate-x-1/2 z-10 flex flex-col'>
-          <Avatar
-            className='w-32 h-32 text-large'
-            src={profile.image_url ?? undefined}
-            isBordered
-          />
+          <Avatar className='w-32 h-32 border-4 border-background'>
+            <AvatarImage src={profile.image_url ?? undefined} className="object-cover" />
+            <AvatarFallback className="text-4xl">{profile.display_name?.[0]}</AvatarFallback>
+          </Avatar>
         </div>
       </div>
     </div>

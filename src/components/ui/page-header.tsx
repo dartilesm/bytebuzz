@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button, Link } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -66,14 +67,15 @@ export function PageHeader({
           <div className='flex items-center gap-1 md:gap-2'>
             {showBackButton && (
               <Button
-                as={Link}
-                href={backLink}
-                isIconOnly
-                variant='light'
+                asChild
+                variant='ghost'
+                size='icon'
                 aria-label='Go back'
                 className='min-w-[44px] min-h-[44px]'
               >
-                <ArrowLeftIcon className='w-4 h-4 md:w-5 md:h-5' />
+                <Link href={backLink as any}>
+                  <ArrowLeftIcon className='w-4 h-4 md:w-5 md:h-5' />
+                </Link>
               </Button>
             )}
           </div>

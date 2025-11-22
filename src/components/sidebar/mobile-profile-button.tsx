@@ -1,6 +1,8 @@
 "use client";
 
-import { Avatar, Button, Modal, ModalContent } from "@heroui/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { useNavigationContext } from "@/context/navigation-context";
 import { useAuth } from "@clerk/nextjs";
@@ -35,50 +37,35 @@ export function MobileProfileButton({ isActive, label }: MobileProfileButtonProp
   }
 
   return (
-    <>
-      <Button
-        onPress={handlePress}
-        className={cn("flex flex-col items-center justify-center gap-1 min-w-0 flex-1 h-full", {
-          "text-primary": isActive,
-          "text-default-500": !isActive,
-        })}
-        variant='light'
-        isIconOnly={false}
-        aria-label={label}
-      >
-        <div className='flex items-center justify-center [&>svg]:size-5'>
-          {user?.imageUrl ? (
-            <Avatar
-              src={user.imageUrl}
-              radius='full'
-              size='sm'
-              className={cn("size-5", {
-                "ring-2 ring-primary": isActive,
-              })}
-            />
-          ) : (
-            <UserIcon size={20} className={cn({ "text-primary": isActive })} />
-          )}
-        </div>
-        <span className='text-xs'>{label}</span>
-      </Button>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        placement='bottom-center'
-        scrollBehavior='inside'
-        backdrop='opaque'
-        hideCloseButton
-        classNames={{
-          base: "mb-14 rounded-t-2xl",
-          wrapper: "items-end px-2",
-        }}
-      >
-        <ModalContent>
+    <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <DrawerTrigger asChild>
+        <Button
+          onClick={handlePress}
+          className={cn("flex flex-col items-center justify-center gap-1 min-w-0 flex-1 h-full rounded-none", {
+            "text-primary": isActive,
+            "text-muted-foreground": !isActive,
+          })}
+          variant='ghost'
+          aria-label={label}
+        >
+          <div className='flex items-center justify-center [&>svg]:size-5'>
+            {user?.imageUrl ? (
+              <Avatar className={cn("size-5", { "ring-2 ring-primary": isActive })}>
+                <AvatarImage src={user.imageUrl} />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+            ) : (
+              <UserIcon size={20} className={cn({ "text-primary": isActive })} />
+            )}
+          </div>
+          <span className='text-xs'>{label}</span>
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="pb-6">
           <AccountDropdownContent onSignOut={handleSignOut} onClose={handleCloseModal} />
-        </ModalContent>
-      </Modal>
-    </>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

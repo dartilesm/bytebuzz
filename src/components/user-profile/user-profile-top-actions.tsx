@@ -4,15 +4,10 @@ import { FollowButton } from "@/components/ui/follow-button";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { useUser } from "@clerk/nextjs";
-import {
-  addToast,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Tooltip,
-} from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { Link2Icon, MoreHorizontalIcon, PencilIcon, Share2Icon } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -39,10 +34,8 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
 
   function handleCopyLink() {
     navigator.clipboard.writeText(window.location.href);
-    addToast({
-      title: "Profile link copied to clipboard",
-      color: "success",
-    });
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Profile link copied to clipboard");
   }
 
   function handleShare() {
@@ -71,68 +64,88 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
 
   return (
     <div className='flex justify-between'>
-      <div>
+      <div className="flex gap-2">
         {profile.github_url && (
-          <Tooltip content='View GitHub profile' closeDelay={0}>
-            <Button
-              as='a'
-              href={profile.github_url}
-              target='_blank'
-              rel='noopener noreferrer'
-              variant='light'
-              aria-label='View GitHub profile'
-              isIconOnly
-            >
-              <SiGithub size={16} />
-            </Button>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  asChild
+                  variant='ghost'
+                  size='icon'
+                  aria-label='View GitHub profile'
+                >
+                  <a
+                    href={profile.github_url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <SiGithub size={16} />
+                  </a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View GitHub profile</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
         {profile.linkedin_url && (
-          <Tooltip content='View LinkedIn profile' closeDelay={0}>
-            <Button
-              as='a'
-              href={profile.linkedin_url}
-              target='_blank'
-              rel='noopener noreferrer'
-              variant='light'
-              aria-label='View LinkedIn profile'
-              isIconOnly
-            >
-              <LinkedInIcon size={16} fill='currentColor' />
-            </Button>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  asChild
+                  variant='ghost'
+                  size='icon'
+                  aria-label='View LinkedIn profile'
+                >
+                  <a
+                    href={profile.linkedin_url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <LinkedInIcon size={16} fill='currentColor' />
+                  </a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View LinkedIn profile</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
       <div className='flex flex-row gap-1.5 items-center'>
-        <Dropdown placement='left-start'>
-          <DropdownTrigger>
-            <Button variant='light' aria-label='More options' isIconOnly>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' size='icon' aria-label='More options'>
               <MoreHorizontalIcon size={16} />
             </Button>
-          </DropdownTrigger>
-          <DropdownMenu aria-label='Profile actions'>
-            <DropdownItem
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem
               key='copy-link'
-              onPress={handleCopyLink}
-              startContent={<Link2Icon size={16} />}
+              onClick={handleCopyLink}
             >
+              <Link2Icon size={16} className="mr-2" />
               Copy profile link
-            </DropdownItem>
-            <DropdownItem key='share' onPress={handleShare} startContent={<Share2Icon size={16} />}>
+            </DropdownMenuItem>
+            <DropdownMenuItem key='share' onClick={handleShare}>
+              <Share2Icon size={16} className="mr-2" />
               Share profile
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         {!isCurrentUser && <FollowButton targetUserId={profile.id} size='md' />}
         {isCurrentUser && (
           <Button
-            variant={isMobile ? "light" : "flat"}
-            color={isMobile ? "default" : "primary"}
-            onPress={withAuth(toggleEditProfileModal)}
-            isIconOnly={isMobile}
-            startContent={<PencilIcon size={16} />}
+            variant={isMobile ? "ghost" : "secondary"}
+            onClick={withAuth(toggleEditProfileModal)}
+            size={isMobile ? "icon" : "default"}
           >
-            {!isMobile && "Edit profile"}
+            {isMobile ? <PencilIcon size={16} /> : "Edit profile"}
+            {!isMobile && <PencilIcon size={16} className="ml-2" />}
           </Button>
         )}
       </div>

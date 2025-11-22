@@ -2,8 +2,8 @@
 
 import { UserPostLoading } from "@/components/loading/user-post.loading";
 import { PageHeader } from "@/components/ui/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileProvider } from "@/context/profile-provider";
-import { Image, Skeleton } from "@heroui/react";
 import type { Tables } from "database.types";
 
 export function UserProfileLoading() {
@@ -12,15 +12,7 @@ export function UserProfileLoading() {
       <PageHeader title="" subtitle="" />
       <div className="flex flex-col gap-4 w-full max-w-[1024px] mx-auto px-4">
         <div>
-          <Image
-            alt="Profile Cover"
-            classNames={{
-              wrapper: "w-full max-w-full max-w-full! aspect-[12/4] m-0",
-              img: "w-full h-full object-cover object-center m-0 aspect-[11/4] h-auto rounded-t-none",
-              blurredImg: "opacity-20",
-            }}
-            isLoading
-          />
+          <Skeleton className="w-full aspect-[12/4] rounded-t-none" />
           <div className="relative">
             <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-10 flex flex-col">
               <Skeleton className="w-32 h-32 rounded-full" />

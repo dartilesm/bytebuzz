@@ -7,7 +7,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
-import { Code } from "@heroui/react";
+
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
@@ -35,7 +35,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           code: ({ node, ...props }) => {
             const { children, className } = props;
             const language = className?.replace("language-", "");
-            if (!className) return <Code className='text-xs'>{children}</Code>;
+            if (!className) return <code className='text-xs bg-muted px-1 py-0.5 rounded-sm font-mono'>{children}</code>;
             return <CodeBlock code={children as string} language={language} />;
           },
           ul: ({ ...props }) => {

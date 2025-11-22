@@ -1,4 +1,6 @@
-import { Button, Chip, cn } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
 import type { ElementType, ReactNode } from "react";
 
@@ -30,53 +32,69 @@ export function SidebarItem({
 }: SidebarItemProps) {
   // Determine if navigation should be allowed
   const canNavigate = as && href;
-  const Component = canNavigate ? as : undefined;
+  const Component = as || "div";
 
   return (
     <Button
-      as={Component}
-      href={canNavigate ? href : undefined}
-      onPress={onClick}
-      className={cn("flex items-center justify-between w-full", {
-        "bg-content3 dark:bg-content3/50": isActive,
+      variant='ghost'
+      asChild={!!canNavigate}
+      onClick={onClick}
+      className={cn("flex items-center justify-between w-full h-auto py-2", {
+        "bg-muted": isActive,
         "justify-center px-2 max-xl:px-0": true,
       })}
-      variant='light'
-      target={isExternal ? "_blank" : undefined}
-      rel={isExternal ? "noopener noreferrer" : undefined}
-      // Icon only below xl
-      isIconOnly={true}
-      tabIndex={0}
-      aria-label={typeof label === "string" ? label : undefined}
     >
-      <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
-        {icon}
-        {/* Hide label below xl */}
-        <span
-          className={cn("text-content2-foreground flex-1 max-xl:hidden xl:inline text-left", {
-            "text-content1-foreground": isActive,
-          })}
-        >
-          {label}
-        </span>
-      </div>
+      {canNavigate ? (
+        <Component href={href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined}>
+            <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
+                {icon}
+                {/* Hide label below xl */}
+                <span
+                className={cn("text-muted-foreground flex-1 max-xl:hidden xl:inline text-left", {
+                    "text-foreground": isActive,
+                })}
+                >
+                {label}
+                </span>
+            </div>
 
-      {hasAddButton && (
-        <button
-          className='text-content2-foreground hover:text-content1-foreground transition-colors opacity-0 group-hover:opacity-100 max-xl:hidden xl:inline'
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <Icon icon='lucide:plus' width={16} height={16} />
-        </button>
-      )}
+            {hasAddButton && (
+                <button
+                className='text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 max-xl:hidden xl:inline'
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                >
+                <Icon icon='lucide:plus' width={16} height={16} />
+                </button>
+            )}
 
-      {badge && (
-        <Chip color='primary' size='sm' className='max-xl:hidden xl:inline'>
-          {badge}
-        </Chip>
+            {badge && (
+                <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
+                {badge}
+                </Badge>
+            )}
+        </Component>
+      ) : (
+        <div className="flex items-center w-full justify-between">
+             <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
+                {icon}
+                {/* Hide label below xl */}
+                <span
+                className={cn("text-muted-foreground flex-1 max-xl:hidden xl:inline text-left", {
+                    "text-foreground": isActive,
+                })}
+                >
+                {label}
+                </span>
+            </div>
+             {badge && (
+                <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
+                {badge}
+                </Badge>
+            )}
+        </div>
       )}
     </Button>
   );

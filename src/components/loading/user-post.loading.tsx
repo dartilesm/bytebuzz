@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@heroui/react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * A loading state component that shows a simplified post structure with avatar and two lines

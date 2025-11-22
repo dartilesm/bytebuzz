@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton } from "@heroui/react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function UserProfileTopActionsLoading() {
   return (

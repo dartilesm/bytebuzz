@@ -4,19 +4,21 @@ import {
   useUpdateProfileMutation,
   type UpdateProfileWithFilesData,
 } from "@/hooks/mutation/use-update-profile-mutation";
+
 import {
-  Alert,
-  Button,
-  Card,
-  Image,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Textarea,
-} from "@heroui/react";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import Image from "next/image";
 import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { ImageUploader } from "@/components/ui/image-uploader";
@@ -114,29 +116,27 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   };
 
   return (
-    <Modal onClose={onClose} size='xl' scrollBehavior='inside' defaultOpen backdrop='blur'>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <ModalContent>
-          {(onModalClose) => (
-            <>
-              <ModalHeader className='flex flex-col gap-1'>Edit Profile</ModalHeader>
-              <ModalBody>
-                <div className='space-y-6'>
-                  <Alert
-                    color='primary'
-                    description={
-                      <span>
-                        To edit avatar and username, go to{" "}
-                        <Link
-                          href='/account-settings'
-                          className='[font-size:inherit] text-inherit underline'
-                        >
-                          Account Settings
-                        </Link>
-                      </span>
-                    }
-                  />
-                  <Card isDisabled className='rounded-none space-y-6 shadow-none'>
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className='space-y-6'>
+                  <Alert variant="default" className="bg-primary/10 text-primary border-primary/20">
+                    <AlertDescription>
+                      To edit avatar and username, go to{" "}
+                      <Link
+                        href='/account-settings'
+                        className='font-medium underline underline-offset-4'
+                      >
+                        Account Settings
+                      </Link>
+                    </AlertDescription>
+                  </Alert>
+                  <Card className='rounded-none space-y-6 shadow-none border-0'>
+                    <CardContent className="p-0 space-y-6">
                     {/* Avatar */}
                     <div className='space-y-2'>
                       <p className='text-small font-medium'>Profile Picture</p>
@@ -165,7 +165,6 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                       src={field.value}
                                       alt='Avatar'
                                       className='w-full h-full object-cover'
-                                      removeWrapper
                                     />
                                   </ImageUploader>
                                 ) : (
@@ -201,7 +200,6 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     <Controller
                       name='display_name'
                       control={control}
-                      disabled
                       rules={{
                         required: "Display name is required",
                         maxLength: {
@@ -210,22 +208,21 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                         },
                       }}
                       render={({ field }) => (
-                        <Input
-                          label='Display Name'
-                          placeholder='Enter your name'
-                          isRequired
-                          isInvalid={!!errors.display_name}
-                          errorMessage={errors.display_name?.message}
-                          description='This is how your name will appear across the platform'
-                          isDisabled
-                          classNames={{
-                            label: "top-0 pt-[inherit]",
-                          }}
-                          {...field}
-                          value={field.value || ""}
-                        />
+                        <div className="space-y-2">
+                          <Label htmlFor="display_name">Display Name</Label>
+                          <Input
+                            id="display_name"
+                            placeholder='Enter your name'
+                            disabled
+                            {...field}
+                            value={field.value || ""}
+                          />
+                          <p className="text-xs text-muted-foreground">This is how your name will appear across the platform</p>
+                          {errors.display_name && <p className="text-xs text-destructive">{errors.display_name.message}</p>}
+                        </div>
                       )}
                     />
+                    </CardContent>
                   </Card>
                   {/* Cover Image */}
                   <div className='space-y-2'>
@@ -255,7 +252,6 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                     src={field.value}
                                     alt='Cover'
                                     className='w-full h-full object-cover'
-                                    removeWrapper
                                   />
                                 </ImageUploader>
                               ) : (
@@ -295,16 +291,20 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       },
                     }}
                     render={({ field }) => (
-                      <Textarea
-                        label='Biography'
-                        placeholder='Tell us about yourself...'
-                        maxRows={5}
-                        isInvalid={!!errors.bio}
-                        errorMessage={errors.bio?.message}
-                        description={`${bioCharCount} characters remaining`}
-                        {...field}
-                        value={field.value || ""}
-                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="bio">Biography</Label>
+                        <Textarea
+                          id="bio"
+                          placeholder='Tell us about yourself...'
+                          rows={5}
+                          {...field}
+                          value={field.value || ""}
+                        />
+                        <div className="flex justify-between">
+                          <p className="text-xs text-muted-foreground">{bioCharCount} characters remaining</p>
+                          {errors.bio && <p className="text-xs text-destructive">{errors.bio.message}</p>}
+                        </div>
+                      </div>
                     )}
                   />
                   {/* Location */}
@@ -312,15 +312,15 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     name='location'
                     control={control}
                     render={({ field }) => (
-                      <Input
-                        label='Location'
-                        placeholder='e.g., San Francisco, CA'
-                        {...field}
-                        value={field.value || ""}
-                        classNames={{
-                          label: "top-0 pt-[inherit]",
-                        }}
-                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="location">Location</Label>
+                        <Input
+                          id="location"
+                          placeholder='e.g., San Francisco, CA'
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </div>
                     )}
                   />
                   {/* Website */}
@@ -335,18 +335,20 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       },
                     }}
                     render={({ field }) => (
-                      <Input
-                        label='Website'
-                        placeholder='https://yourwebsite.com'
-                        isInvalid={!!errors.website}
-                        errorMessage={errors.website?.message}
-                        startContent={<GlobeIcon className='text-default-400' size={16} />}
-                        classNames={{
-                          label: "top-0 pt-[inherit]",
-                        }}
-                        {...field}
-                        value={field.value || ""}
-                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="website">Website</Label>
+                        <div className="relative">
+                          <GlobeIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="website"
+                            placeholder='https://yourwebsite.com'
+                            className="pl-9"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </div>
+                        {errors.website && <p className="text-xs text-destructive">{errors.website.message}</p>}
+                      </div>
                     )}
                   />
                   {/* Social Media Links */}
@@ -361,18 +363,22 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       },
                     }}
                     render={({ field }) => (
-                      <Input
-                        label='GitHub Profile'
-                        placeholder={`https://github.com/${profile.username}`}
-                        isInvalid={!!errors.github_url}
-                        errorMessage={errors.github_url?.message}
-                        startContent={<SiGithub className='text-default-400' size={16} />}
-                        classNames={{
-                          label: "top-0 pt-[inherit]",
-                        }}
-                        {...field}
-                        value={field.value || ""}
-                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="github_url">GitHub Profile</Label>
+                        <div className="relative">
+                          <div className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground">
+                             <SiGithub size={16} />
+                          </div>
+                          <Input
+                            id="github_url"
+                            placeholder={`https://github.com/${profile.username}`}
+                            className="pl-9"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </div>
+                        {errors.github_url && <p className="text-xs text-destructive">{errors.github_url.message}</p>}
+                      </div>
                     )}
                   />
                   {/* LinkedIn */}
@@ -387,24 +393,22 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       },
                     }}
                     render={({ field }) => (
-                      <Input
-                        label='LinkedIn Profile'
-                        placeholder={`https://linkedin.com/in/${profile.username}`}
-                        isInvalid={!!errors.linkedin_url}
-                        errorMessage={errors.linkedin_url?.message}
-                        startContent={
-                          <LinkedInIcon
-                            className='text-default-400'
-                            size={16}
-                            fill='currentColor'
+                      <div className="space-y-2">
+                        <Label htmlFor="linkedin_url">LinkedIn Profile</Label>
+                        <div className="relative">
+                          <div className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground">
+                            <LinkedInIcon size={16} fill="currentColor" />
+                          </div>
+                          <Input
+                            id="linkedin_url"
+                            placeholder={`https://linkedin.com/in/${profile.username}`}
+                            className="pl-9"
+                            {...field}
+                            value={field.value || ""}
                           />
-                        }
-                        classNames={{
-                          label: "top-0 pt-[inherit]",
-                        }}
-                        {...field}
-                        value={field.value || ""}
-                      />
+                        </div>
+                        {errors.linkedin_url && <p className="text-xs text-destructive">{errors.linkedin_url.message}</p>}
+                      </div>
                     )}
                   />
                   {/* Top Technologies */}
@@ -419,32 +423,21 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     )}
                   />
                 </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button color='default' variant='flat' onPress={onModalClose}>
+              </div>
+              <DialogFooter>
+                <Button variant='ghost' onClick={onClose}>
                   Cancel
                 </Button>
                 <Button
                   type='submit'
-                  color='primary'
-                  isLoading={updateProfileMutation.isPending}
-                  isDisabled={updateProfileMutation.isPending || !form.formState.isValid}
+                  variant='default'
+                  disabled={updateProfileMutation.isPending || !form.formState.isValid}
                 >
                   {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
-              </ModalFooter>
-              {/* <UserProfile
-              appearance={{
-                elements: {
-                  rootBox: "max-w-full",
-                  cardBox: "max-w-full",
-                  },
-                  }}
-                  /> */}
-            </>
-          )}
-        </ModalContent>
-      </form>
-    </Modal>
+              </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
