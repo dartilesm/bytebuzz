@@ -303,6 +303,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       id="bio"
                       placeholder='Tell us about yourself...'
                       rows={5}
+                      variant="flat"
                       {...field}
                       value={field.value || ""}
                     />
