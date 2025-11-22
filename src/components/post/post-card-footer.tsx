@@ -104,7 +104,7 @@ export function PostFooter() {
 
   return (
     <>
-      <CardFooter className={cn("z-30 flex flex-col gap-1 w-full")}>
+      <CardFooter className={cn("z-30 flex flex-col gap-1 w-full px-2 md:px-4 pt-2 md:pt-4 pb-2 md:pb-4")}>
         {!isNavigationDisabled && (
           <>
             {/* Legend: All reactions ordered + total counter */}

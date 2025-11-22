@@ -157,7 +157,7 @@ export function PostComposer({
   return (
     <form
       className={cn(
-        "dark:bg-muted bg-muted dark:hover:bg-muted/80 hover:bg-muted/80 rounded-xl overflow-hidden min-h-24 group/post-composer",
+        "dark:bg-muted bg-muted dark:hover:bg-muted/80 hover:bg-muted/80 rounded-xl overflow-hidden min-h-24 group/post-composer border border-border shadow-sm",
         className
       )}
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}

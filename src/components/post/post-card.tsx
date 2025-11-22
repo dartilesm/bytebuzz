@@ -31,7 +31,7 @@ export function PostCard({ children, className, ref }: PostCardProps) {
     <div onClick={handleClick} ref={ref}>
       <Card
         className={cn(
-          "relative flex flex-row dark:bg-content1 bg-transparent shadow-none overflow-hidden border-0",
+          "relative flex flex-row dark:bg-card bg-card border border-border shadow-sm overflow-hidden py-0 gap-0",
           {
             "cursor-pointer": !isNavigationDisabled,
           },
