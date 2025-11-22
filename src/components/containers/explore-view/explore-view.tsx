@@ -95,24 +95,16 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
             value={activeSearchTypeRef.current}
             onValueChange={(key) => handleSearchTypeChange(key as SearchType)}
             className="w-full"
+            variant="underline"
           >
             <TabsList className="w-full justify-around rounded-none border-b border-border bg-transparent p-0 gap-0 sticky top-14 md:top-16 z-40">
-              <TabsTrigger
-                value="all"
-                className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-2.5 pt-2 font-semibold text-muted-foreground shadow-none transition-colors data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none hover:text-foreground"
-              >
+              <TabsTrigger value="all">
                 All
               </TabsTrigger>
-              <TabsTrigger
-                value="users"
-                className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-2.5 pt-2 font-semibold text-muted-foreground shadow-none transition-colors data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none hover:text-foreground"
-              >
+              <TabsTrigger value="users">
                 Users
               </TabsTrigger>
-              <TabsTrigger
-                value="posts"
-                className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-2.5 pt-2 font-semibold text-muted-foreground shadow-none transition-colors data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none hover:text-foreground"
-              >
+              <TabsTrigger value="posts">
                 Posts
               </TabsTrigger>
             </TabsList>

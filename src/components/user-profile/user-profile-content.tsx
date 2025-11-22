@@ -69,27 +69,13 @@ export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
       <Tabs
         value={activeTab}
         onValueChange={(value) => handleTabChange(value)}
-        className="w-full sticky md:top-16 top-14 z-40 bg-background"
+        className='w-full sticky md:top-16 top-14 z-40 bg-background'
+        variant="underline"
       >
-        <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
-          <TabsTrigger
-            value={UserProfileTabs.POSTS}
-            className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-          >
-            Posts
-          </TabsTrigger>
-          <TabsTrigger
-            value={UserProfileTabs.MEDIA}
-            className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-          >
-            Media
-          </TabsTrigger>
-          <TabsTrigger
-            value={UserProfileTabs.LIKES}
-            className="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-          >
-            Likes
-          </TabsTrigger>
+        <TabsList className='w-full justify-around rounded-none border-b border-border bg-transparent p-0 gap-0 sticky top-14 md:top-16 z-40'>
+          <TabsTrigger value={UserProfileTabs.POSTS}>Posts</TabsTrigger>
+          <TabsTrigger value={UserProfileTabs.MEDIA}>Media</TabsTrigger>
+          <TabsTrigger value={UserProfileTabs.LIKES}>Likes</TabsTrigger>
         </TabsList>
       </Tabs>
       <div className='py-4 overflow-hidden px-2 md:px-0'>

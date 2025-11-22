@@ -5,6 +5,8 @@ import {
   type UpdateProfileWithFilesData,
 } from "@/hooks/mutation/use-update-profile-mutation";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,24 +14,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import Image from "next/image";
-import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
-import { SiGithub } from "@icons-pack/react-simple-icons";
-import { ImageUploader } from "@/components/ui/image-uploader";
+import { log } from "@/lib/logger/logger";
 import type { TechnologyId } from "@/lib/technologies";
-import { TechnologySelector } from "./technology-selector";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { Tables } from "database.types";
+import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
-import { log } from "@/lib/logger/logger";
+import { TechnologySelector } from "./technology-selector";
 
 interface UserProfileEditModalProps {
   onClose: () => void;
@@ -124,7 +123,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
           </DialogHeader>
           <div className="py-4">
             <div className='space-y-6'>
-              <Alert variant="default" className="bg-primary/10 text-primary border-primary/20">
+              <Alert variant="default">
                 <AlertDescription>
                   To edit avatar and username, go to{" "}
                   <Link
@@ -135,8 +134,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   </Link>
                 </AlertDescription>
               </Alert>
-              <Card className='rounded-none space-y-6 shadow-none border-0'>
-                <CardContent className="p-0 space-y-6">
+              <div className='rounded-none space-y-6 shadow-none border-0 text-muted-foreground/60'>
+                <div className="p-0 space-y-6">
                   {/* Avatar */}
                   <div className='space-y-2'>
                     <p className='text-small font-medium'>Profile Picture</p>
@@ -147,7 +146,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                           control={control}
                           render={({ field }) => (
                             <>
-                              {field.value ? (
+                              {field.value && (
                                 <ImageUploader
                                   onImageChange={(file) =>
                                     handleImageUpload(file, field.onChange, "avatar")
@@ -164,11 +163,13 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                                   <Image
                                     src={field.value}
                                     alt='Avatar'
-                                    fill
+                                    width={200}
+                                    height={200}
                                     className='w-full h-full object-cover'
                                   />
                                 </ImageUploader>
-                              ) : (
+                              )}
+                              {!field.value && (
                                 <ImageUploader
                                   onImageChange={(file) =>
                                     handleImageUpload(file, field.onChange, "avatar")
@@ -223,8 +224,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                       </div>
                     )}
                   />
-                </CardContent>
-              </Card>
+                </div>
+              </div>
               {/* Cover Image */}
               <div className='space-y-2'>
                 <p className='text-small font-medium'>Cover Image</p>
@@ -252,6 +253,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                               <Image
                                 src={field.value}
                                 alt='Cover'
+                                fill
                                 className='w-full h-full object-cover'
                               />
                             </ImageUploader>
