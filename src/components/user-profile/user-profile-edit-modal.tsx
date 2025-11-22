@@ -123,112 +123,115 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
           </DialogHeader>
           <div className="py-4">
             <div className='space-y-6'>
-              <Alert variant="default">
-                <AlertDescription>
-                  To edit avatar and username, go to{" "}
-                  <Link
-                    href='/account-settings'
-                    className='font-medium underline underline-offset-4'
-                  >
-                    Account Settings
-                  </Link>
-                </AlertDescription>
-              </Alert>
-              <div className='rounded-none space-y-6 shadow-none border-0 text-muted-foreground/60'>
-                <div className="p-0 space-y-6">
-                  {/* Avatar */}
-                  <div className='space-y-2'>
-                    <p className='text-small font-medium'>Profile Picture</p>
-                    <div className='flex items-center space-x-4'>
-                      <div className='w-20 h-20 rounded-full overflow-hidden'>
-                        <Controller
-                          name='image_url'
-                          control={control}
-                          render={({ field }) => (
-                            <>
-                              {field.value && (
-                                <ImageUploader
-                                  onImageChange={(file) =>
-                                    handleImageUpload(file, field.onChange, "avatar")
-                                  }
-                                  aspectRatio='1:1'
-                                  className='relative w-full h-full group'
-                                  hoverOverlayContent={{
-                                    icon: CameraIcon,
-                                    iconSize: 16,
-                                    text: "Change",
-                                  }}
-                                  disabled
-                                >
-                                  <Image
-                                    src={field.value}
-                                    alt='Avatar'
-                                    width={200}
-                                    height={200}
-                                    className='w-full h-full object-cover'
+              <div className="space-y-6 bg-accent/50 rounded-lg p-4">
+                <Alert color="info" variant="flat">
+                  <AlertDescription className="inline-flex">
+                    To edit avatar and username, go to{" "}
+                    <Link
+                      href='/account-settings'
+                      className='font-medium underline underline-offset-4'
+                    >
+                      Account Settings
+                    </Link>
+                  </AlertDescription>
+                </Alert>
+                <div className='rounded-none space-y-6 shadow-none border-0 text-muted-foreground/60'>
+                  <div className="p-0 space-y-6">
+                    {/* Avatar */}
+                    <div className='space-y-2'>
+                      <Label htmlFor="image_url" className="text-muted-foreground/70">Avatar</Label>
+                      <div className='flex items-center space-x-4'>
+                        <div className='w-20 h-20 rounded-full overflow-hidden'>
+                          <Controller
+                            name='image_url'
+                            control={control}
+                            render={({ field }) => (
+                              <>
+                                {field.value && (
+                                  <ImageUploader
+                                    onImageChange={(file) =>
+                                      handleImageUpload(file, field.onChange, "avatar")
+                                    }
+                                    aspectRatio='1:1'
+                                    className='relative w-full h-full group'
+                                    hoverOverlayContent={{
+                                      icon: CameraIcon,
+                                      iconSize: 16,
+                                      text: "Change",
+                                    }}
+                                    disabled
+                                  >
+                                    <Image
+                                      src={field.value}
+                                      alt='Avatar'
+                                      width={200}
+                                      height={200}
+                                      className='w-full h-full object-cover'
+                                    />
+                                  </ImageUploader>
+                                )}
+                                {!field.value && (
+                                  <ImageUploader
+                                    onImageChange={(file) =>
+                                      handleImageUpload(file, field.onChange, "avatar")
+                                    }
+                                    aspectRatio='1:1'
+                                    className='w-full h-full'
+                                    uploadContent={{
+                                      icon: UserIcon,
+                                      iconSize: 16,
+                                      title: undefined,
+                                      description: undefined,
+                                    }}
                                   />
-                                </ImageUploader>
-                              )}
-                              {!field.value && (
-                                <ImageUploader
-                                  onImageChange={(file) =>
-                                    handleImageUpload(file, field.onChange, "avatar")
-                                  }
-                                  aspectRatio='1:1'
-                                  className='w-full h-full'
-                                  uploadContent={{
-                                    icon: UserIcon,
-                                    iconSize: 16,
-                                    title: undefined,
-                                    description: undefined,
-                                  }}
-                                />
-                              )}
-                            </>
-                          )}
-                        />
-                      </div>
-                      <div className='flex-1'>
-                        <p className='text-tiny text-default-500'>
-                          Upload a profile picture to make your profile more personalized.
-                        </p>
-                        <p className='text-tiny text-default-500 mt-1'>
-                          Recommended size: 400x400 pixels.
-                        </p>
+                                )}
+                              </>
+                            )}
+                          />
+                        </div>
+                        <div className='flex-1'>
+                          <p className='text-tiny'>
+                            Upload a profile picture to make your profile more personalized.
+                          </p>
+                          <p className='text-tiny mt-1'>
+                            Recommended size: 400x400 pixels.
+                          </p>
+                        </div>
                       </div>
                     </div>
+                    {/* Display Name */}
+                    <Controller
+                      name='display_name'
+                      control={control}
+                      rules={{
+                        required: "Display name is required",
+                        maxLength: {
+                          value: 50,
+                          message: "Display name cannot exceed 50 characters",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <div className="space-y-2">
+                          <Label htmlFor="display_name" className="text-muted-foreground/70">Display Name</Label>
+                          <Input
+                            id="display_name"
+                            placeholder='Enter your name'
+                            disabled
+                            variant="flat"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                          <p className="text-xs">This is how your name will appear across the platform</p>
+                          {errors.display_name && <p className="text-xs text-destructive">{errors.display_name.message}</p>}
+                        </div>
+                      )}
+                    />
                   </div>
-                  {/* Display Name */}
-                  <Controller
-                    name='display_name'
-                    control={control}
-                    rules={{
-                      required: "Display name is required",
-                      maxLength: {
-                        value: 50,
-                        message: "Display name cannot exceed 50 characters",
-                      },
-                    }}
-                    render={({ field }) => (
-                      <div className="space-y-2">
-                        <Label htmlFor="display_name">Display Name</Label>
-                        <Input
-                          id="display_name"
-                          placeholder='Enter your name'
-                          disabled
-                          {...field}
-                          value={field.value || ""}
-                        />
-                        <p className="text-xs text-muted-foreground">This is how your name will appear across the platform</p>
-                        {errors.display_name && <p className="text-xs text-destructive">{errors.display_name.message}</p>}
-                      </div>
-                    )}
-                  />
                 </div>
               </div>
               {/* Cover Image */}
               <div className='space-y-2'>
-                <p className='text-small font-medium'>Cover Image</p>
+                <Label htmlFor="cover_image_url">Cover Image</Label>
                 <div className='space-y-4'>
                   <div className='w-full rounded-lg overflow-hidden'>
                     <Controller
@@ -277,7 +280,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     />
                   </div>
                   <div>
-                    <p className='text-tiny text-default-500'>
+                    <p className='text-xs text-muted-foreground/80'>
                       Upload a cover image to personalize your profile header.
                     </p>
                   </div>
@@ -320,6 +323,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     <Input
                       id="location"
                       placeholder='e.g., San Francisco, CA'
+                      variant="flat"
                       {...field}
                       value={field.value || ""}
                     />
@@ -346,6 +350,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                         id="website"
                         placeholder='https://yourwebsite.com'
                         className="pl-9"
+                        variant="flat"
                         {...field}
                         value={field.value || ""}
                       />
@@ -376,6 +381,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                         id="github_url"
                         placeholder={`https://github.com/${profile.username}`}
                         className="pl-9"
+                        variant="flat"
                         {...field}
                         value={field.value || ""}
                       />
@@ -406,6 +412,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                         id="linkedin_url"
                         placeholder={`https://linkedin.com/in/${profile.username}`}
                         className="pl-9"
+                        variant="flat"
                         {...field}
                         value={field.value || ""}
                       />
