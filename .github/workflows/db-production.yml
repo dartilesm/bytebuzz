@@ -88,5 +88,8 @@ jobs:
           destination: "db-backup-prod"
           read-write-token: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
 
-      - name: Push migrations to staging
-        run: bun run db:push-remote
+      - name: Push migrations to production
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:push-remote
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:push-remote
