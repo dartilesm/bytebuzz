@@ -1,20 +1,20 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { CardFooter } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToggleReactionMutation } from "@/hooks/mutation/use-toggle-reaction-mutation";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostContext } from "@/hooks/use-post-context";
-import type { NestedPost } from "@/types/nested-posts";
-import { Button } from "@/components/ui/button";
-import { CardFooter } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import type { NestedPost } from "@/types/nested-posts";
 import { SiX } from "@icons-pack/react-simple-icons";
-import { CopyIcon, MessageSquareIcon, Repeat2Icon, Share2Icon, StarIcon } from "lucide-react";
+import { CopyIcon, MessageSquareIcon, RepeatIcon, Share2Icon, StarIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   type Reaction,
   getReactionsWithCounts,
@@ -126,10 +126,10 @@ export function PostFooter() {
                         "px-1 opacity-70 size-6 text-xs rounded-full dark:bg-content2 bg-content4 flex items-center justify-center",
                         {
                           "-ml-2": reactionIndex > 0,
-                          "z-[4]": reactionIndex === 0,
-                          "z-[3]": reactionIndex === 1,
-                          "z-[2]": reactionIndex === 2,
-                          "z-[1]": reactionIndex === 3,
+                          "z-4": reactionIndex === 0,
+                          "z-3": reactionIndex === 1,
+                          "z-2": reactionIndex === 2,
+                          "z-1": reactionIndex === 3,
                         }
                       )}
                       aria-label={reaction.label}
@@ -139,7 +139,7 @@ export function PostFooter() {
                   ))}
                 </div>
                 {totalReactions > 0 && (
-                  <span className='text-gray-400 text-xs' aria-label='Total reactions'>
+                  <span className='text-muted-foreground text-xs' aria-label='Total reactions'>
                     {totalReactions}
                   </span>
                 )}
@@ -152,7 +152,7 @@ export function PostFooter() {
             />
             <div
               className={cn(
-                "z-30 flex flex-row gap-1 md:gap-2 justify-between w-full px-2 md:px-4",
+                "z-30 flex flex-row gap-1 md:gap-2 justify-between w-full",
                 {
                   "md:px-3.5": isThreadPagePost,
                 }
@@ -164,12 +164,12 @@ export function PostFooter() {
                   <TooltipTrigger asChild>
                     <Button
                       variant={!selectedReaction ? "ghost" : "secondary"}
-                      size='sm'
+                      size={!selectedReaction ? "icon" : "sm"}
                       onClick={() => setIsReactionsTooltipOpen(!isReactionsTooltipOpen)}
                       className={cn(
                         "group flex items-center gap-1 md:gap-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2",
                         {
-                          "text-gray-400": !selectedReaction,
+                          "text-muted-foreground": !selectedReaction,
                         }
                       )}
                     >
@@ -188,25 +188,27 @@ export function PostFooter() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" align="start" className="flex flex-row gap-2 p-1">
-                    {reactions.map((reaction) => (
-                      <Tooltip key={reaction.type}>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant='ghost'
-                            size='icon'
-                            className='p-2 group h-10 w-10'
-                            onClick={withAuth(() => handleReaction(reaction.type))}
-                          >
-                            <span className='text-xl group-hover:text-3xl transition-all duration-200'>
-                              {reaction.icon}
-                            </span>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{reaction.label}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
+                    <TooltipProvider>
+                      {reactions.map((reaction) => (
+                        <Tooltip key={reaction.type}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              className='p-2 group h-10 w-10'
+                              onClick={withAuth(() => handleReaction(reaction.type))}
+                            >
+                              <span className='text-xl group-hover:text-3xl transition-all duration-200'>
+                                {reaction.icon}
+                              </span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{reaction.label}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </TooltipProvider>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -217,8 +219,8 @@ export function PostFooter() {
                   <TooltipTrigger asChild>
                     <Button
                       variant='ghost'
-                      size='sm'
-                      className='flex flex-row gap-1 md:gap-2 text-gray-400 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2'
+                      size={Boolean(post?.reply_count) ? "sm" : "icon"}
+                      className='flex flex-row gap-1 md:gap-2 text-muted-foreground min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2'
                       onClick={withAuth(() => togglePostModal(true, "reply"))}
                       aria-label='Comment'
                     >
@@ -240,12 +242,12 @@ export function PostFooter() {
                   <TooltipTrigger asChild>
                     <Button
                       variant='ghost'
-                      size='sm'
-                      className='text-gray-400 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2'
+                      size="icon"
+                      className='text-muted-foreground min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0'
                       onClick={withAuth(() => togglePostModal(true, "clone"))}
                       aria-label='Repost'
                     >
-                      <Repeat2Icon className='text-inherit' size={22} strokeWidth={1.5} />
+                      <RepeatIcon className='text-inherit' size={26} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -261,8 +263,8 @@ export function PostFooter() {
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant='ghost'
-                          size='sm'
-                          className='text-gray-400 max-w-32 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2'
+                          size="icon"
+                          className='text-muted-foreground max-w-32 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2'
                           aria-label='Share'
                         >
                           <Share2Icon className='text-inherit' size={18} />

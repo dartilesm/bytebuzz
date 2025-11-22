@@ -1,7 +1,7 @@
 "use client";
 
 import { PostAvatarAndThreadLine } from "@/components/post/post-avatar-and-thread-line";
-import { UserProfilePopoverCard } from "@/components/user-profile/user-profile-popover-card";
+import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
 import { usePostContext } from "@/hooks/use-post-context";
 import { formatDateTime } from "@/lib/format-time";
 import { getRelativeTime } from "@/lib/relative-time";
@@ -17,7 +17,7 @@ export function PostHeader() {
   return (
     <CardHeader
       className={cn("flex items-center gap-2 md:gap-4 pt-2 md:pt-4 pb-2 flex-1 px-2 md:px-4", {
-        "py-0 pr-2 md:pr-8.5": isThreadPagePost,
+        "py-0 pt-0 md:pt-0 pr-2 md:pr-8.5": isThreadPagePost,
       })}
     >
       <div className='flex items-center justify-between w-full'>
@@ -41,7 +41,7 @@ export function PostHeader() {
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
-                <UserProfilePopoverCard user={user} />
+                <UserProfilePopoverContent user={user} />
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

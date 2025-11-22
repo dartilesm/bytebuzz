@@ -1,7 +1,7 @@
 "use client";
 
 import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
-import { UserProfilePopoverCard } from "@/components/user-profile/user-profile-popover-card";
+import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
 import { PostProvider } from "@/context/post-provider";
 import { formatDateTime } from "@/lib/format-time";
 import { getRelativeTime } from "@/lib/relative-time";
@@ -108,7 +108,7 @@ export function CondensedUserPost({
           <div className='flex justify-center relative pt-1'>
             {isInteractive ? (
               <Link href={`/@${user?.username}`} className='h-fit'>
-                <Tooltip content={<UserProfilePopoverCard user={user} />} delay={1000}>
+                <Tooltip content={<UserProfilePopoverContent user={user} />} delay={1000}>
                   <UserAvatar user={user} />
                 </Tooltip>
               </Link>
@@ -122,7 +122,7 @@ export function CondensedUserPost({
               <div className='flex items-center justify-between w-full'>
                 <div className='flex items-center gap-1.5'>
                   {isInteractive ? (
-                    <Tooltip content={<UserProfilePopoverCard user={user} />} delay={1000}>
+                    <Tooltip content={<UserProfilePopoverContent user={user} />} delay={1000}>
                       <Link href={`/@${user?.username}`}>
                         <UserInfo user={user} />
                       </Link>

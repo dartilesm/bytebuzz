@@ -1,10 +1,11 @@
 "use client";
 
 import { PostThreadLine } from "@/components/post/post-thread-line";
-import { UserProfilePopoverCard } from "@/components/user-profile/user-profile-popover-card";
+import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
 import { usePostContext } from "@/hooks/use-post-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Avatar, Tooltip } from "@heroui/react";
 import Link from "next/link";
 
 export function PostAvatarAndThreadLine() {
@@ -17,18 +18,25 @@ export function PostAvatarAndThreadLine() {
         "pl-2 md:pl-4.5": isThreadPagePost,
       })}
     >
-      <Link href={`/@${user?.username}`} className='h-fit'>
-        <Tooltip content={<UserProfilePopoverCard user={user} />} delay={1000}>
-          <Avatar
-            isBordered
-            src={user?.image_url ?? ""}
-            alt={user?.display_name ?? ""}
-            className={cn("flex-shrink-0 z-20", {
-              "size-8 md:size-9": !isThreadPagePost,
-            })}
-          />
+      <TooltipProvider delayDuration={1000}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link href={`/@${user?.username}`} className='h-fit'>
+              <Avatar
+                className={cn("shrink-0 z-20 border-2 border-border", {
+                  "size-8 md:size-9": !isThreadPagePost,
+                })}
+              >
+                <AvatarImage src={user?.image_url ?? ""} alt={user?.display_name ?? ""} />
+                <AvatarFallback>{user?.display_name?.[0] ?? ""}</AvatarFallback>
+              </Avatar>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent className="border bg-card min-w-xs">
+            <UserProfilePopoverContent user={user} />
+          </TooltipContent>
         </Tooltip>
-      </Link>
+      </TooltipProvider>
       {/* Thread Line Container */}
       {isThread && (
         <PostThreadLine
