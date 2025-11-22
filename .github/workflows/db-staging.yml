@@ -78,7 +78,6 @@ jobs:
       - name: Generate backup
         # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
         run: rm -rf supabase/.temp/storage-migration && bun run db:dump-remote
-        # run: bun run db:dump-remote
         # TODO: Remove temporary fix once the issue is fixed
         # run: bun run db:dump-remote
 
