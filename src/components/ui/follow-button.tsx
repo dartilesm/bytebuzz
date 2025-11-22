@@ -1,9 +1,10 @@
 import { useToggleFollowMutation } from "@/hooks/mutation/use-toggle-follow-mutation";
 import { useIsFollowing } from "@/hooks/use-is-following";
 import { useUser } from "@clerk/nextjs";
-import { Button, Spinner } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import {
   CheckCheckIcon,
+  Loader2,
   UserRoundCheckIcon,
   UserRoundMinusIcon,
   UserRoundPlusIcon,
@@ -51,17 +52,16 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
 
   return (
     <Button
-      color={isFollowed ? "default" : "primary"}
-      size={size}
-      variant='flat'
-      onPress={withAuth(handleFollowToggle)}
+      variant={isFollowed ? "secondary" : "default"}
+      size={size === "md" ? "default" : size}
+      onClick={withAuth(handleFollowToggle)}
       aria-label={isLoading ? "Loading follow status" : isFollowed ? "Following" : "Follow"}
       disabled={isLoading}
       className={className}
     >
       {!isLoading && isFollowed && <UserRoundCheckIcon size={14} />}
       {!isLoading && !isFollowed && <UserRoundPlusIcon size={14} />}
-      {isLoading ? <Spinner size='sm' variant='dots' /> : isFollowed ? "Following" : "Follow"}
+      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isFollowed ? "Following" : "Follow"}
     </Button>
   );
 }
