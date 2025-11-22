@@ -14,6 +14,7 @@ on:
       - "style/**"
     paths:
       - "supabase/**"
+
   workflow_dispatch:
 
 jobs:
@@ -33,37 +34,64 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.55.5
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
       - name: Start Supabase local development setup
-        run: bun run db:start
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:start && rm -rf supabase/.temp/storage-migration && supabase db reset
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:start
 
       - name: Link to staging project
-        run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:link --project-ref $SUPABASE_PROJECT_ID
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
 
       - name: See schemas differences between local and remote
-        run: bun run db:diff
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && supabase db reset && bun run db:diff
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:diff --debug
 
       - name: Run lint
-        run: bun run db:lint --fail-on error
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:lint --fail-on error
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:lint --fail-on error
 
       - name: Run tests
-        run: bun run db:test
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:test
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:test
 
       - name: Verify generated types are checked in
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
         run: |
-          supabase gen types typescript --local > types.gen.ts
+          rm -rf supabase/.temp/storage-migration && supabase gen types typescript --local > types.gen.ts
           if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff
             exit 1
           fi
+        # run: |
+        #   supabase gen types typescript --local > types.gen.ts
+        #   if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
+        #     echo "Detected uncommitted changes after build. See status below:"
+        #     git diff
+        #     exit 1
+        #   fi
 
       - name: Generate backup
-        run: bun run db:dump-remote
+        # Temporary fix to avoid migration error https://github.com/supabase/cli/issues/4466
+        run: rm -rf supabase/.temp/storage-migration && bun run db:dump-remote
+        # run: bun run db:dump-remote
+        # TODO: Remove temporary fix once the issue is fixed
+        # run: bun run db:dump-remote
 
       - name: Upload backup to Vercel Blob
         uses: dartilesm/vercel-blob-action@v2
