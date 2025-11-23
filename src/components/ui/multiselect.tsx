@@ -15,24 +15,21 @@ import { type VariantProps, cva } from "class-variance-authority";
  * Variants for the multi-select component to handle different styles.
  * Uses class-variance-authority (cva) to define styles for the "trigger" element.
  */
-const multiSelectVariants = cva(
-  "m-1",
-  {
-    variants: {
-      variant: {
-        default: "border-foreground/10 text-foreground bg-card hover:bg-card/80",
-        secondary:
-          "border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        flat: "border-transparent bg-background/50 text-foreground hover:bg-background/80",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
+const multiSelectVariants = cva("m-1", {
+  variants: {
+    variant: {
+      default: "border-foreground/10 text-foreground bg-card hover:bg-card/80",
+      secondary:
+        "border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      destructive:
+        "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+      flat: "border-transparent bg-background/50 text-foreground hover:bg-background/80",
     },
   },
-);
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 export interface Option {
   value: string;
@@ -116,10 +113,12 @@ const MultiSelect = ({
   );
 };
 
-const MultiSelectTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentPropsWithoutRef<typeof Button> & { placeholder?: string }
->(({ className, children, ...props }, ref) => {
+function MultiSelectTrigger({
+  className,
+  children,
+  ref,
+  ...props
+}: React.ComponentProps<typeof Button> & { placeholder?: string }) {
   const { selectedValues, onValueChange, variant } = useMultiSelect();
 
   const handleClear = (e: React.MouseEvent) => {
@@ -190,14 +189,14 @@ const MultiSelectTrigger = React.forwardRef<
       </Button>
     </PopoverTrigger>
   );
-});
+}
 
-MultiSelectTrigger.displayName = "MultiSelectTrigger";
-
-const MultiSelectContent = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof PopoverContent>
->(({ className, children, ...props }, ref) => {
+function MultiSelectContent({
+  className,
+  children,
+  ref,
+  ...props
+}: React.ComponentProps<typeof PopoverContent>) {
   return (
     <PopoverContent
       ref={ref}
@@ -208,14 +207,13 @@ const MultiSelectContent = React.forwardRef<
       <Command>{children}</Command>
     </PopoverContent>
   );
-});
+}
 
-MultiSelectContent.displayName = "MultiSelectContent";
-
-const MultiSelectInput = React.forwardRef<
-  React.ElementRef<typeof CommandPrimitive.Input>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, ref) => {
+function MultiSelectInput({
+  className,
+  ref,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Input>) {
   const { setOpen } = useMultiSelect();
   return (
     <CommandPrimitive.Input
@@ -228,18 +226,18 @@ const MultiSelectInput = React.forwardRef<
       {...props}
     />
   );
-});
-
-MultiSelectInput.displayName = "MultiSelectInput";
+}
 
 const MultiSelectList = CommandList;
 
 const MultiSelectGroup = CommandGroup;
 
-const MultiSelectItem = React.forwardRef<
-  React.ElementRef<typeof CommandItem>,
-  React.ComponentPropsWithoutRef<typeof CommandItem>
->(({ className, children, ...props }, ref) => {
+function MultiSelectItem({
+  className,
+  children,
+  ref,
+  ...props
+}: React.ComponentProps<typeof CommandItem>) {
   const { selectedValues, onValueChange, maxSelectable } = useMultiSelect();
   const value = props.value || "";
   const isSelected = selectedValues.includes(value);
@@ -275,11 +273,22 @@ const MultiSelectItem = React.forwardRef<
       {children}
     </CommandItem>
   );
-});
+}
 
-MultiSelectItem.displayName = "MultiSelectItem";
-
-const MultiSelectEmpty = CommandPrimitive.Empty;
+function MultiSelectEmpty({
+  className,
+  children = "No results found.",
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Empty>) {
+  return (
+    <CommandPrimitive.Empty
+      className={cn("p-2 text-sm text-muted-foreground/50", className)}
+      {...props}
+    >
+      {children}
+    </CommandPrimitive.Empty>
+  );
+}
 
 export {
   MultiSelect,
