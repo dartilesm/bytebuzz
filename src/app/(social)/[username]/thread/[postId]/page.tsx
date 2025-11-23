@@ -113,12 +113,12 @@ async function ThreadPage({ params }: ThreadPageProps) {
           <PostWrapper isAncestry>
             <UserPost ancestry={postAncestry} />
           </PostWrapper>
+          <h2 className='text-lg font-medium'>Replies</h2>
           <PostComposer
             placeholder={`Reply to @${postAncestry?.at(-1)?.user?.username}`}
             replyPostId={postId}
           />
           <div className='flex flex-col gap-4 min-h-dvh'>
-            <h2 className='text-lg font-medium'>Replies</h2>
             {!!directReplies?.length && <PostList />}
           </div>
         </PostsProvider>
