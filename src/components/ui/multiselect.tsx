@@ -151,7 +151,7 @@ const MultiSelectTrigger = React.forwardRef<
         ref={ref}
         variant={variant}
         className={cn(
-          "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit",
+          "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between",
           className,
         )}
         {...props}
