@@ -29,6 +29,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TechnologySelector } from "./technology-selector";
+import { Component234 } from "../comp-234";
 
 interface UserProfileEditModalProps {
   onClose: () => void;
@@ -431,6 +432,13 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     initialTechnologies={field.value as TechnologyId[]}
                     onTechnologiesChange={field.onChange}
                   />
+                )}
+              />
+              <Controller
+                name='top_technologies2'
+                control={control}
+                render={({ field }) => (
+                  <Component234 />
                 )}
               />
             </div>
