@@ -9,6 +9,7 @@ interface UserProfilePopoverContentProps {
 }
 
 export function UserProfilePopoverContent({ user }: UserProfilePopoverContentProps) {
+  console.log("UserProfilePopoverContent", user);
   return (
     <div className="max-w-[300px] rounded-xl flex flex-col py-0 gap-0">
       <div className="justify-between flex flex-row gap-4 px-3 py-3">

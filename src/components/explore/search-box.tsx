@@ -2,7 +2,7 @@
 
 import { SearchBoxEmpty } from "@/components/explore/search-box-empty";
 import { SearchBoxItem } from "@/components/explore/search-box-item";
-import { useUsersSearch } from "@/hooks/fetch/use-users-search";
+import { useUsersSearch } from "@/hooks/queries/use-users-search";
 import {
   Command,
   CommandEmpty,
