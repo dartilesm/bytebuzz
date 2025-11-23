@@ -33,7 +33,7 @@ export function PostInteraction({
   const isRepost = action === "clone";
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 rounded-xl bg-card'>
       {isReply && (
         <div className='relative'>
           <PostThreadLine isFirstInThread />
@@ -48,7 +48,7 @@ export function PostInteraction({
         {...(isRepost && { repostPostId: post.id })}
         {...(isReply && { replyPostId: post.id })}
         className={cn({
-          "rounded-b-xl rounded-t-none": isReply,
+          "rounded-b-xl rounded-t-none border-0": isReply,
         })}
       >
         {isRepost && (

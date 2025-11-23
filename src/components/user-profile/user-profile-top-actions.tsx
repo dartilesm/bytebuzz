@@ -140,12 +140,12 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
         {!isCurrentUser && <FollowButton targetUserId={profile.id} size='md' />}
         {isCurrentUser && (
           <Button
-            variant={isMobile ? "ghost" : "secondary"}
+            variant="default"
             onClick={withAuth(toggleEditProfileModal)}
             size={isMobile ? "icon" : "default"}
           >
-            {isMobile ? <PencilIcon size={16} /> : "Edit profile"}
             {!isMobile && <PencilIcon size={16} className="ml-2" />}
+            {isMobile ? <PencilIcon size={16} /> : "Edit profile"}
           </Button>
         )}
       </div>

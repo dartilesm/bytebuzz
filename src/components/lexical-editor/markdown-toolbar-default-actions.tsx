@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@heroui/button";
-import { Chip } from "@heroui/chip";
-import { cn, Tooltip } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { SiMarkdown } from "@icons-pack/react-simple-icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
@@ -171,41 +172,40 @@ export function MarkdownToolbarDefaultActions({
   return (
     <>
       <Button
-        variant='flat'
-        size='sm'
-        className={cn("text-default-600 hover:text-default-900 cursor-pointer", buttonClassName)}
-        onPress={() => handleInsertCodeBlock("javascript")}
-        isIconOnly
+        variant='ghost'
+        size='icon'
+        className={cn("text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8", buttonClassName)}
+        onClick={() => handleInsertCodeBlock("javascript")}
       >
         <Code size={16} />
       </Button>
 
       <Button
-        variant='flat'
-        size='sm'
-        className={cn("text-default-600 hover:text-default-900 cursor-pointer", buttonClassName)}
-        onPress={handleMediaButtonClick}
-        isIconOnly
+        variant='ghost'
+        size='icon'
+        className={cn("text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8", buttonClassName)}
+        onClick={handleMediaButtonClick}
       >
         <ImageUpIcon size={16} />
       </Button>
 
       {showMarkdownInfo && (
-        <Chip
-          variant='bordered'
-          size='sm'
-          className='text-default-500 hover:text-default-500'
-          classNames={{
-            content: "inline-flex gap-2 items-center",
-          }}
-        >
-          <Tooltip content='Certain markdown features are supported, click to learn more.'>
-            <span className='inline-flex gap-2 items-center'>
-              <SiMarkdown size={16} fill='currentColor' />
-              <span className='leading-0'>Markdown supported*</span>
-            </span>
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger>
+              <Badge
+                variant='outline'
+                className='text-muted-foreground hover:text-muted-foreground inline-flex gap-2 items-center cursor-pointer font-normal'
+              >
+                <SiMarkdown size={16} fill='currentColor' />
+                <span className='leading-0'>Markdown supported*</span>
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Certain markdown features are supported, click to learn more.</p>
+            </TooltipContent>
           </Tooltip>
-        </Chip>
+        </TooltipProvider>
       )}
 
       {/* Hidden file input for media upload */}

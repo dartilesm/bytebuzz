@@ -1,8 +1,7 @@
 "use client";
 
-import { Button } from "@heroui/button";
-import { Card, CardBody } from "@heroui/card";
-import { Image } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import type {
   DOMConversionMap,
@@ -179,19 +178,16 @@ function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: Media
 
   return (
     <Card className="w-full my-4">
-      <CardBody className="p-4">
+      <CardContent className="p-4">
         <div className="flex flex-col gap-3">
           {/* Media Content */}
           <div className="relative">
             {mediaData.type === "image" ? (
-              <Image
+              <img
                 src={mediaData.src}
                 alt={mediaData.alt || ""}
                 title={mediaData.title}
-                classNames={{
-                  wrapper: "max-w-full!",
-                  img: "w-full h-auto rounded-lg shadow-sm max-h-96 object-contain bg-default-100",
-                }}
+                className="w-full h-auto rounded-lg shadow-sm max-h-96 object-contain bg-muted"
                 loading="lazy"
               />
             ) : (
@@ -212,40 +208,39 @@ function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: Media
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
               {mediaData.title && (
-                <span className="text-sm font-medium text-default-900">{mediaData.title}</span>
+                <span className="text-sm font-medium text-foreground">{mediaData.title}</span>
               )}
-              <span className="text-xs text-default-500 capitalize">
+              <span className="text-xs text-muted-foreground capitalize">
                 {mediaData.type} • {mediaData.id}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <Button
-                size="sm"
-                variant="flat"
-                startContent={<Download size={16} />}
-                onPress={handleDownloadMedia}
+                size="icon"
+                variant="ghost"
+                onClick={handleDownloadMedia}
                 aria-label="Download media"
-                className="cursor-pointer"
-                isIconOnly
-                isDisabled={mediaData.isLoading}
-              />
+                className="cursor-pointer h-8 w-8"
+                disabled={mediaData.isLoading}
+              >
+                <Download size={16} />
+              </Button>
 
               <Button
-                size="sm"
-                variant="flat"
-                startContent={<Trash size={16} />}
-                onPress={handleRemoveMedia}
+                size="icon"
+                variant="destructive"
+                onClick={handleRemoveMedia}
                 aria-label="Delete media"
-                color="danger"
-                className="cursor-pointer"
-                isIconOnly
-                isDisabled={mediaData.isLoading}
-              />
+                className="cursor-pointer h-8 w-8"
+                disabled={mediaData.isLoading}
+              >
+                <Trash size={16} />
+              </Button>
             </div>
           </div>
         </div>
-      </CardBody>
+      </CardContent>
     </Card>
   );
 }

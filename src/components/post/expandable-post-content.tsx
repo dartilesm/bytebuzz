@@ -5,7 +5,9 @@ import {
   getDisplayContent,
   getExpansionData,
 } from "@/components/post/functions/expandable-content-utils";
-import { Button, ScrollShadow, cn } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -61,9 +63,9 @@ export function ExpandablePostContent({
 
   if (!canExpand) {
     return (
-      <ScrollShadow className={cn("max-h-none overflow-visible", className)} hideScrollBar size={0}>
+      <div className={cn("max-h-none overflow-visible", className)}>
         <MarkdownViewer markdown={content} postId={postId} />
-      </ScrollShadow>
+      </div>
     );
   }
 
@@ -73,26 +75,22 @@ export function ExpandablePostContent({
         className='transition-all duration-500 ease-out overflow-hidden'
         style={{ height: contentHeight ? `${contentHeight}px` : "auto" }}
       >
-        <ScrollShadow
-          size={100}
-          style={{ overflow: "hidden" }}
-          hideScrollBar
+        <ScrollArea
           className={cn("transition-all duration-300", className)}
-          visibility={!isFullyExpanded ? "bottom" : undefined}
           ref={contentRef}
         >
           <MarkdownViewer markdown={displayContent} postId={postId} />
-        </ScrollShadow>
+        </ScrollArea>
       </div>
 
       {canExpand && (
         <Button
-          variant='light'
+          variant='ghost'
           size='sm'
-          onPress={handleExpand}
+          onClick={handleExpand}
           className='self-start text-primary hover:text-primary-600 transition-colors'
-          startContent={<ChevronDownIcon size={16} />}
         >
+          <ChevronDownIcon size={16} className="mr-2" />
           View moree
         </Button>
       )}
