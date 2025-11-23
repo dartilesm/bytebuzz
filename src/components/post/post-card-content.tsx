@@ -73,7 +73,8 @@ export function PostContent({ children }: PostContentProps) {
             style={{ height: contentHeight || "auto" }}
           >
             <ScrollArea
-              className='h-full transition-all duration-300 [&>div]:flex [&>div]:flex-col [&>div]:gap-4'
+              className='h-full transition-all duration-300 bg-card'
+              shadowVisibility={isFullyExpanded ? "none" : "bottom"}
               ref={contentRef}
             >
               <MarkdownViewer markdown={displayContent} postId={post.id ?? ""} />
