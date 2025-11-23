@@ -5,10 +5,10 @@ import {
   getDisplayContent,
   getExpansionData,
 } from "@/components/post/functions/expandable-content-utils";
-import { usePostContext } from "@/hooks/use-post-context";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -73,11 +73,10 @@ export function PostContent({ children }: PostContentProps) {
             style={{ height: contentHeight || "auto" }}
           >
             <ScrollArea
-              className='h-full transition-all duration-300 flex flex-col gap-4'
+              className='h-full transition-all duration-300 [&>div]:flex [&>div]:flex-col [&>div]:gap-4'
               ref={contentRef}
             >
               <MarkdownViewer markdown={displayContent} postId={post.id ?? ""} />
-              <ScrollBar orientation="vertical" className="hidden" />
             </ScrollArea>
           </div>
           {canExpand && (
