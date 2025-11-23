@@ -127,6 +127,24 @@ const MultiSelectTrigger = React.forwardRef<
     onValueChange([]);
   };
 
+  const handleRemoveOption = (e: React.MouseEvent | React.KeyboardEvent, value: string) => {
+    e.stopPropagation();
+    const newValues = selectedValues.filter((v) => v !== value);
+    onValueChange(newValues);
+  };
+
+  const handlePreventEvent = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleKeyDownEnter = (e: React.KeyboardEvent, callback: () => void) => {
+    if (e.key === "Enter") {
+      e.stopPropagation();
+      callback();
+    }
+  };
+
   return (
     <PopoverTrigger asChild>
       <Button
@@ -138,7 +156,7 @@ const MultiSelectTrigger = React.forwardRef<
         )}
         {...props}
       >
-        {selectedValues.length > 0 ? (
+        {selectedValues.length > 0 && (
           <div className="flex justify-between items-center w-full">
             <div className="flex flex-wrap items-center">
               {selectedValues.slice(0, maxCount).map((value) => (
@@ -146,23 +164,9 @@ const MultiSelectTrigger = React.forwardRef<
                   {value}
                   <div
                     className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.stopPropagation();
-                        const newValues = selectedValues.filter((v) => v !== value);
-                        onValueChange(newValues);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      const newValues = selectedValues.filter((v) => v !== value);
-                      onValueChange(newValues);
-                    }}
+                    onKeyDown={(e) => handleKeyDownEnter(e, () => handleRemoveOption(e, value))}
+                    onMouseDown={handlePreventEvent}
+                    onClick={(e) => handleRemoveOption(e, value)}
                   >
                     <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
                   </div>
@@ -183,7 +187,8 @@ const MultiSelectTrigger = React.forwardRef<
               <X className="h-4 mx-2 cursor-pointer text-muted-foreground" onClick={handleClear} />
             </div>
           </div>
-        ) : (
+        )}
+        {selectedValues.length === 0 && (
           <div className="flex items-center justify-between w-full mx-auto">
             <span className="text-sm text-muted-foreground mx-3">
               {props.placeholder ?? "Select options"}
@@ -244,16 +249,19 @@ const MultiSelectItem = React.forwardRef<
   const value = props.value || "";
   const isSelected = selectedValues.includes(value);
 
+  const handleSelect = () => {
+    const newValues = isSelected
+      ? selectedValues.filter((v) => v !== value)
+      : [...selectedValues, value];
+
+    onValueChange(newValues);
+  };
+
   return (
     <CommandItem
       ref={ref}
       className={cn("cursor-pointer", className)}
-      onSelect={() => {
-        const newValues = isSelected
-          ? selectedValues.filter((v) => v !== value)
-          : [...selectedValues, value];
-        onValueChange(newValues);
-      }}
+      onSelect={handleSelect}
       {...props}
     >
       <div
