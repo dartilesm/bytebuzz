@@ -62,16 +62,6 @@ export function TechnologySelector({
     return IconComponent || null;
   }
 
-  function handleSelectionChange(keys: unknown) {
-    const selectedKeys = Array.from(keys as Iterable<string>) as TechnologyId[];
-    if (selectedKeys.length > MAX_SELECTED_TECHNOLOGIES) {
-      return;
-    }
-    setSelectedTechnologies(selectedKeys);
-    if (onTechnologiesChange) {
-      onTechnologiesChange(selectedKeys);
-    }
-  }
 
   function handleChipClose(techId: TechnologyId) {
     const newSelectedTechnologies = selectedTechnologies.filter((id) => id !== techId);
@@ -87,7 +77,7 @@ export function TechnologySelector({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant="flat"
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between h-auto min-h-12 py-2"
@@ -153,9 +143,9 @@ export function TechnologySelector({
                       />
                       <div className="flex items-center gap-2 flex-1">
                         {Icon ? (
-                            <Icon size={16} color="currentColor" />
+                          <Icon size={16} color="currentColor" />
                         ) : (
-                            <span className="size-4 block bg-muted rounded-sm" />
+                          <span className="size-4 block bg-muted rounded-sm" />
                         )}
                         <span>{tech.name}</span>
                       </div>
@@ -172,7 +162,7 @@ export function TechnologySelector({
       </Popover>
 
       <div className="flex items-center justify-between">
-        <span className="text-tiny text-default-400">
+        <span className="text-xs text-muted-foreground/80">
           {selectedTechnologies.length} technologies selected out of {MAX_SELECTED_TECHNOLOGIES}
         </span>
       </div>
