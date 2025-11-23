@@ -55,6 +55,7 @@ export function TechnologySelector({
         }}
         maxSelectable={MAX_SELECTED_TECHNOLOGIES}
         variant="flat"
+        modalPopover
       >
         <MultiSelectTrigger placeholder="Search and select technologies..." />
         <MultiSelectContent>
