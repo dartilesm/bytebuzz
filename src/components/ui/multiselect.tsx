@@ -1,7 +1,7 @@
 "use client";
 
 import { Command as CommandPrimitive } from "cmdk";
-import { X } from "lucide-react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import { type VariantProps, cva } from "class-variance-authority";
  * Uses class-variance-authority (cva) to define styles for the "trigger" element.
  */
 const multiSelectVariants = cva(
-  "m-1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300",
+  "m-1",
   {
     variants: {
       variant: {
@@ -25,7 +25,7 @@ const multiSelectVariants = cva(
           "border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        flat: "border-transparent bg-transparent text-foreground hover:bg-transparent",
+        flat: "border-transparent bg-background/50 text-foreground hover:bg-background/80",
       },
     },
     defaultVariants: {
@@ -48,7 +48,7 @@ interface MultiSelectContextProps {
   onValueChange: (value: string[]) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
-  maxCount?: number;
+  maxSelectable?: number;
   variant?: VariantProps<typeof multiSelectVariants>["variant"];
 }
 
@@ -70,7 +70,7 @@ interface MultiSelectProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   modalPopover?: boolean;
-  maxCount?: number;
+  maxSelectable?: number;
   variant?: VariantProps<typeof multiSelectVariants>["variant"];
 }
 
@@ -82,7 +82,7 @@ const MultiSelect = ({
   open: controlledOpen,
   onOpenChange,
   modalPopover = false,
-  maxCount = 3,
+  maxSelectable = 3,
   variant = "default",
 }: MultiSelectProps) => {
   const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
@@ -105,7 +105,7 @@ const MultiSelect = ({
         onValueChange: handleValueChange,
         open,
         setOpen,
-        maxCount,
+        maxSelectable,
         variant,
       }}
     >
@@ -120,7 +120,7 @@ const MultiSelectTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof Button> & { placeholder?: string }
 >(({ className, children, ...props }, ref) => {
-  const { selectedValues, onValueChange, maxCount, variant } = useMultiSelect();
+  const { selectedValues, onValueChange, variant } = useMultiSelect();
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -159,7 +159,7 @@ const MultiSelectTrigger = React.forwardRef<
         {selectedValues.length > 0 && (
           <div className="flex justify-between items-center w-full">
             <div className="flex flex-wrap items-center">
-              {selectedValues.slice(0, maxCount).map((value) => (
+              {selectedValues.map((value) => (
                 <Badge key={value} className={cn(multiSelectVariants({ variant }))}>
                   {value}
                   <div
@@ -172,19 +172,10 @@ const MultiSelectTrigger = React.forwardRef<
                   </div>
                 </Badge>
               ))}
-              {selectedValues.length > (maxCount || 0) && (
-                <Badge
-                  className={cn(
-                    "bg-transparent text-foreground border-foreground/1 hover:bg-transparent",
-                    multiSelectVariants({ variant }),
-                  )}
-                >
-                  {`+ ${selectedValues.length - (maxCount || 0)} more`}
-                </Badge>
-              )}
             </div>
             <div className="flex items-center justify-between">
               <X className="h-4 mx-2 cursor-pointer text-muted-foreground" onClick={handleClear} />
+              <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
             </div>
           </div>
         )}
@@ -193,6 +184,7 @@ const MultiSelectTrigger = React.forwardRef<
             <span className="text-sm text-muted-foreground mx-3">
               {props.placeholder ?? "Select options"}
             </span>
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </div>
         )}
       </Button>
@@ -207,7 +199,12 @@ const MultiSelectContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof PopoverContent>
 >(({ className, children, ...props }, ref) => {
   return (
-    <PopoverContent ref={ref} className={cn("w-auto p-0", className)} align="start" {...props}>
+    <PopoverContent
+      ref={ref}
+      className={cn("w-[var(--radix-popover-trigger-width)] p-0", className)}
+      align="start"
+      {...props}
+    >
       <Command>
         <CommandList>{children}</CommandList>
       </Command>
@@ -245,11 +242,14 @@ const MultiSelectItem = React.forwardRef<
   React.ElementRef<typeof CommandItem>,
   React.ComponentPropsWithoutRef<typeof CommandItem>
 >(({ className, children, ...props }, ref) => {
-  const { selectedValues, onValueChange } = useMultiSelect();
+  const { selectedValues, onValueChange, maxSelectable } = useMultiSelect();
   const value = props.value || "";
   const isSelected = selectedValues.includes(value);
 
   const handleSelect = () => {
+    if (maxSelectable && selectedValues.length >= maxSelectable && !isSelected) {
+      return;
+    }
     const newValues = isSelected
       ? selectedValues.filter((v) => v !== value)
       : [...selectedValues, value];
@@ -262,24 +262,17 @@ const MultiSelectItem = React.forwardRef<
       ref={ref}
       className={cn("cursor-pointer", className)}
       onSelect={handleSelect}
+      disabled={!!(maxSelectable && selectedValues.length >= maxSelectable && !isSelected)}
       {...props}
     >
       <div
         className={cn(
-          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-          isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible",
+          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm",
+          { "text-primary-foreground": isSelected },
+          { "opacity-50 [&_svg]:invisible": !isSelected },
         )}
       >
-        <svg
-          className={cn("h-4 w-4")}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
+        <Check className="h-4 w-4" />
       </div>
       {children}
     </CommandItem>
