@@ -11,16 +11,15 @@ interface PostActionModalProps {
   post: NestedPost;
   isOpen: boolean;
   action: "reply" | "clone";
-  onOpenChange: () => void;
+  onOpenChange: (open?: boolean) => void;
 }
 
 export function PostActionModal({ post, action, onOpenChange }: PostActionModalProps) {
   return (
-    <Dialog open={true} onOpenChange={(open) => !open && onOpenChange()}>
+    <Dialog open={true} onOpenChange={(open) => !open && onOpenChange(false)}>
       <DialogContent
-        className={cn("max-w-xl p-0 gap-0 overflow-hidden [&>button]:hidden rounded-xl", {
-          "bg-muted/40 has-[&_form:hover]:bg-muted/60": action === "clone",
-          "bg-background": action === "reply",
+        className={cn("max-w-xl p-0 gap-0 overflow-hidden [&>button]:hidden rounded-xl bg-background", {
+          "dark:bg-muted": action === "clone",
         })}
       >
         <DialogHeader className="flex flex-row justify-between p-2 pl-4 items-center space-y-0">
@@ -28,7 +27,7 @@ export function PostActionModal({ post, action, onOpenChange }: PostActionModalP
             <Repeat2Icon size={14} />
             {action === "reply" ? "Reply to" : "Repost"} @{post.user?.username}&apos;s post
           </DialogTitle>
-          <Button variant="ghost" size="icon" onClick={onOpenChange} className="h-8 w-8 rounded-full">
+          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8 rounded-full">
             <XIcon size={14} />
           </Button>
         </DialogHeader>

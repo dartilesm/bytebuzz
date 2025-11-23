@@ -157,14 +157,14 @@ export function PostComposer({
   return (
     <form
       className={cn(
-        "dark:bg-muted bg-muted dark:hover:bg-muted/80 hover:bg-muted/80 rounded-xl overflow-hidden min-h-24 group/post-composer border border-border shadow-sm",
+        "dark:bg-muted bg-muted dark:hover:bg-muted/80 hover:bg-muted/80 rounded-xl overflow-hidden min-h-24 group/post-composer border border-border shadow-none",
         className
       )}
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
         <div className='flex flex-row gap-2 md:gap-4 p-2 md:p-4'>
-          <div className='flex flex-row gap-2 z-10 flex-shrink-0'>
+          <div className='flex flex-row gap-2 z-10 shrink-0'>
             <Avatar className="h-10 w-10 border-2 border-background">
               <AvatarImage src={user?.imageUrl} />
               <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>

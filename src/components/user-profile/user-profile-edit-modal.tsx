@@ -123,7 +123,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
           </DialogHeader>
           <div className="py-4 px-6 overflow-y-auto scrollbar-auto">
             <div className='space-y-6'>
-              <div className="space-y-6 bg-accent/50 rounded-lg p-4">
+              <div className="space-y-6 dark:bg-accent/50 bg-border/70 rounded-lg p-4">
                 <Alert color="info" variant="flat">
                   <AlertDescription className="inline-flex">
                     To edit avatar and username, go to{" "}
