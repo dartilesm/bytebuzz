@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -11,7 +9,7 @@ export function UserPostLoading() {
     <div>
       <article
         className={cn(
-          "relative flex flex-row dark:bg-content1 bg-[transparent] [box-shadow:none] p-4 h-32 gap-4 rounded-lg",
+          "relative flex flex-row dark:bg-content1 bg-card [box-shadow:none] p-4 h-32 gap-4 rounded-lg",
         )}
       >
         <Skeleton className="size-11 rounded-full shrink-0" />
