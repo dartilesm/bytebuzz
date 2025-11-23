@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -24,7 +25,7 @@ const multiSelectVariants = cva(
           "border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        inverted: "inverted",
+        flat: "border-transparent bg-transparent text-foreground hover:bg-transparent",
       },
     },
     defaultVariants: {
@@ -117,7 +118,7 @@ const MultiSelect = ({
 
 const MultiSelectTrigger = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement> & { placeholder?: string }
+  React.ComponentPropsWithoutRef<typeof Button> & { placeholder?: string }
 >(({ className, children, ...props }, ref) => {
   const { selectedValues, onValueChange, maxCount, variant } = useMultiSelect();
 
@@ -128,8 +129,9 @@ const MultiSelectTrigger = React.forwardRef<
 
   return (
     <PopoverTrigger asChild>
-      <button
+      <Button
         ref={ref}
+        variant={variant}
         className={cn(
           "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit",
           className,
@@ -188,7 +190,7 @@ const MultiSelectTrigger = React.forwardRef<
             </span>
           </div>
         )}
-      </button>
+      </Button>
     </PopoverTrigger>
   );
 });
