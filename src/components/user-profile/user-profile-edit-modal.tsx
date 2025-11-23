@@ -116,12 +116,12 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-between max-h-[inherit]">
+          <DialogHeader className="p-6">
             <DialogTitle>Edit Profile</DialogTitle>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-4 px-6 overflow-y-auto scrollbar-auto">
             <div className='space-y-6'>
               <div className="space-y-6 bg-accent/50 rounded-lg p-4">
                 <Alert color="info" variant="flat">
@@ -435,7 +435,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="bg-background px-6 py-4">
             <Button variant='ghost' onClick={onClose}>
               Cancel
             </Button>

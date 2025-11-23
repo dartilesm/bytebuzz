@@ -132,7 +132,7 @@
   * {
     @apply border-border outline-ring/50;
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--heroui-content4)) transparent;
+    scrollbar-color: hsl(var(--muted)) transparent;
 
     &::-webkit-scrollbar {
       width: 1rem;
@@ -145,7 +145,7 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background-color: hsl(var(--heroui-content4));
+      background-color: hsl(var(--muted));
       border-radius: 0.25rem;
       border: 0.125rem solid transparent;
       background-clip: content-box;
