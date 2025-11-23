@@ -10,7 +10,7 @@ interface UserProfilePopoverContentProps {
 
 export function UserProfilePopoverContent({ user }: UserProfilePopoverContentProps) {
   return (
-    <div className="max-w-[300px] shadow-sm rounded-xl flex flex-col py-0 gap-0">
+    <div className="max-w-[300px] rounded-xl flex flex-col py-0 gap-0">
       <div className="justify-between flex flex-row gap-4 px-3 py-3">
         <div className="flex gap-3">
           <Avatar className="size-10 border-2 border-background rounded-full">

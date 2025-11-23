@@ -15,7 +15,7 @@ export function PostAvatarAndThreadLine() {
   return (
     <div
       className={cn("flex py-2 md:py-4 pl-2 md:pl-4 pr-1 md:pr-2 justify-center relative", {
-        "pl-2 md:pl-4.5": isThreadPagePost,
+        "pl-1 md:pl-3.5": isThreadPagePost,
       })}
     >
       <TooltipProvider delayDuration={1000}>
@@ -23,8 +23,8 @@ export function PostAvatarAndThreadLine() {
           <TooltipTrigger asChild>
             <Link href={`/@${user?.username}`} className='h-fit'>
               <Avatar
-                className={cn("shrink-0 z-20 border-2 border-border", {
-                  "size-8 md:size-9": !isThreadPagePost,
+                className={cn("shrink-0 z-20 outline-2 outline-border border-background border-2 size-10 md:size-11", {
+                  "size-9 md:size-10": !isThreadPagePost,
                 })}
               >
                 <AvatarImage src={user?.image_url ?? ""} alt={user?.display_name ?? ""} />
@@ -32,7 +32,7 @@ export function PostAvatarAndThreadLine() {
               </Avatar>
             </Link>
           </TooltipTrigger>
-          <TooltipContent className="border bg-card min-w-xs">
+          <TooltipContent className="min-w-xs">
             <UserProfilePopoverContent user={user} />
           </TooltipContent>
         </Tooltip>

@@ -29,7 +29,7 @@ export function PostHeader() {
                 <Link
                   href={`/@${user?.username}`}
                   className={cn("flex flex-row gap-1 md:gap-2 items-center min-w-0", {
-                    "flex-col gap-0 items-start": isThreadPagePost,
+                    "flex-col gap-0 items-start md:gap-0": isThreadPagePost,
                   })}
                 >
                   <span className='font-semibold text-sm md:text-base truncate'>
