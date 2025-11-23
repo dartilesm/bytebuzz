@@ -73,7 +73,7 @@ export function PostContent({ children }: PostContentProps) {
             style={{ height: contentHeight || "auto" }}
           >
             <ScrollArea
-              className='h-full transition-all duration-300 bg-card'
+              className='h-full transition-all duration-300 bg-card [&>div>div]:flex! [&>div>div]:flex-col [&>div>div]:gap-4'
               shadowVisibility={isFullyExpanded ? "none" : "bottom"}
               ref={contentRef}
             >
