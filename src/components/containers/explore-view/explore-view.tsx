@@ -97,7 +97,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
             className="w-full"
             variant="underline"
           >
-            <TabsList className="w-full justify-around rounded-none border-b border-border bg-transparent p-0 gap-0 sticky top-14 md:top-16 z-40">
+            <TabsList className="w-full justify-around rounded-none border-b border-border bg-background p-0 gap-0 sticky top-14 md:top-16 z-40">
               <TabsTrigger value="all">
                 All
               </TabsTrigger>
