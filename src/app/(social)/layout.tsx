@@ -22,7 +22,7 @@ export default async function AuthenticatedLayout({ children, modal }: LayoutPro
         <div className='hidden md:flex flex-col gap-4 sticky top-0 max-h-dvh'>
           <Sidebar />
         </div>
-        <div className='flex flex-col min-h-dvh w-full max-w-full md:max-w-[600px] md:border-x-1 border-x-content2/80'>
+        <div className='flex flex-col min-h-dvh w-full max-w-full md:max-w-[600px] md:border-x border-x-content2/80 overflow-x-hidden'>
           {modal}
           {children}
         </div>

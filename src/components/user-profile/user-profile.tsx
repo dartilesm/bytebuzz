@@ -24,7 +24,7 @@ export async function UserProfile({ profile, postsPromise }: UserProfileProps) {
   return (
     <ProfileProvider profile={profile}>
       <PageHeader title={profile.display_name} subtitle={`@${profile.username}`} />
-      <div className='flex flex-col gap-4 md:gap-4 w-full max-w-5xl mx-auto md:px-4 dark:bg-background'>
+      <div className='flex flex-col gap-4 md:gap-6 w-full max-w-5xl mx-auto md:px-4 dark:bg-background'>
         <div className='px-2 md:px-0'>
           <Suspense fallback={<UserProfileCoverAvatarLoading />}>
             <UserProfileCoverAvatar profilePromise={profilePromise} />
