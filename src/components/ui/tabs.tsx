@@ -1,11 +1,10 @@
 "use client"
 
-import type * as React from "react"
+import { type ComponentProps, createContext, useContext } from "react"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
-import { useContext } from "react"
 
 const tabsTriggerVariants = cva(
   "inline-flex items-center justify-center gap-1.5 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 flex-1",
@@ -26,13 +25,13 @@ const tabsTriggerVariants = cva(
 
 type TabsVariant = VariantProps<typeof tabsTriggerVariants>["variant"]
 
-const TabsContext = React.createContext<{ variant?: TabsVariant }>({})
+const TabsContext = createContext<{ variant?: TabsVariant }>({})
 
 function Tabs({
   className,
   variant = "default",
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root> &
+}: ComponentProps<typeof TabsPrimitive.Root> &
   VariantProps<typeof tabsTriggerVariants>) {
   return (
     <TabsContext.Provider value={{ variant }}>
