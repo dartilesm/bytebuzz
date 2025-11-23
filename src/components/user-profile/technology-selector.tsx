@@ -8,6 +8,7 @@ import {
   MultiSelectGroup,
   MultiSelectInput,
   MultiSelectItem,
+  MultiSelectList,
   MultiSelectTrigger,
 } from "@/components/ui/multiselect";
 import { TECHNOLOGIES, type TechnologyId } from "@/lib/technologies";
@@ -58,27 +59,29 @@ export function TechnologySelector({
         <MultiSelectTrigger placeholder="Search and select technologies..." />
         <MultiSelectContent>
           <MultiSelectInput placeholder="Search technologies..." />
-          <MultiSelectEmpty>No technology found.</MultiSelectEmpty>
-          <MultiSelectGroup>
-            {TECHNOLOGIES.map((tech) => {
-              const Icon = tech.icon ? getIconComponent(tech.icon) : null;
-              return (
-                <MultiSelectItem key={tech.id} value={tech.id}>
-                  <div className="flex items-center gap-2 flex-1">
-                    {Icon ? (
-                      <Icon size={16} color="currentColor" />
-                    ) : (
-                      <span className="size-4 block bg-muted rounded-sm" />
-                    )}
-                    <span>{tech.name}</span>
-                  </div>
-                  <Badge variant="outline" className="ml-auto text-xs capitalize">
-                    {tech.category}
-                  </Badge>
-                </MultiSelectItem>
-              );
-            })}
-          </MultiSelectGroup>
+          <MultiSelectList>
+            <MultiSelectEmpty>No technology found.</MultiSelectEmpty>
+            <MultiSelectGroup>
+              {TECHNOLOGIES.map((tech) => {
+                const Icon = tech.icon ? getIconComponent(tech.icon) : null;
+                return (
+                  <MultiSelectItem key={tech.id} value={tech.id}>
+                    <div className="flex items-center gap-2 flex-1">
+                      {Icon ? (
+                        <Icon size={16} color="currentColor" />
+                      ) : (
+                        <span className="size-4 block bg-muted rounded-sm" />
+                      )}
+                      <span>{tech.name}</span>
+                    </div>
+                    <Badge variant="outline" className="ml-auto text-xs capitalize">
+                      {tech.category}
+                    </Badge>
+                  </MultiSelectItem>
+                );
+              })}
+            </MultiSelectGroup>
+          </MultiSelectList>
         </MultiSelectContent>
       </MultiSelect>
 

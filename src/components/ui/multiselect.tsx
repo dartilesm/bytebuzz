@@ -201,13 +201,11 @@ const MultiSelectContent = React.forwardRef<
   return (
     <PopoverContent
       ref={ref}
-      className={cn("w-[var(--radix-popover-trigger-width)] p-0", className)}
+      className={cn("w-(--radix-popover-trigger-width) p-0", className)}
       align="start"
       {...props}
     >
-      <Command>
-        <CommandList>{children}</CommandList>
-      </Command>
+      <Command>{children}</Command>
     </PopoverContent>
   );
 });
