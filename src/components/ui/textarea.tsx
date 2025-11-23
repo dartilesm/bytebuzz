@@ -1,4 +1,4 @@
-import * as React from "react"
+import type * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -9,7 +9,7 @@ const textareaVariants = cva(
     variants: {
       variant: {
         default: "placeholder:text-muted-foreground dark:bg-input/30 border bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none",
-        flat: "shadow-none border-none bg-input/30 dark:bg-input/60 focus-visible:bg-input/50 dark:focus-visible:bg-input/80",
+        flat: "shadow-none border-none bg-input/80 dark:bg-input/60 focus-visible:bg-input dark:focus-visible:bg-input/80",
       },
     },
     defaultVariants: {
