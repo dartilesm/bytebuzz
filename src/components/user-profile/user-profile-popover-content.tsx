@@ -3,13 +3,15 @@
 import { FollowButton } from "@/components/ui/follow-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Tables } from "database.types";
+import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProfilePopoverContentProps {
   user: Partial<Tables<"users">>;
 }
 
 export function UserProfilePopoverContent({ user }: UserProfilePopoverContentProps) {
-  console.log("UserProfilePopoverContent", user);
+  const { data: userData, isLoading } = useUserDataQuery(user.id ?? "");
   return (
     <div className="max-w-[300px] rounded-xl flex flex-col py-0 gap-0">
       <div className="justify-between flex flex-row gap-4 px-3 py-3">
@@ -34,11 +36,13 @@ export function UserProfilePopoverContent({ user }: UserProfilePopoverContentPro
       )}
       <div className="flex items-center gap-3 px-3 py-3">
         <div className="flex gap-1">
-          <p className="font-semibold text-foreground text-sm">{user.following_count ?? 0}</p>
+          {!isLoading && <p className="font-semibold text-foreground text-sm">{userData?.following_count ?? 0}</p>}
+          {isLoading && <Skeleton className="w-6 h-4" />}
           <p className="text-muted-foreground text-sm">Following</p>
         </div>
         <div className="flex gap-1">
-          <p className="font-semibold text-foreground text-sm">{user.follower_count ?? 0}</p>
+          {!isLoading && <p className="font-semibold text-foreground text-sm">{userData?.follower_count ?? 0}</p>}
+          {isLoading && <Skeleton className="w-6 h-4" />}
           <p className="text-muted-foreground text-sm">Followers</p>
         </div>
       </div>
