@@ -19,6 +19,7 @@ export function PostHeader() {
       className={cn("flex items-center gap-2 md:gap-4 pt-2 md:pt-4 pb-2 flex-1 px-2 md:px-4", {
         "py-0 pt-0 md:pt-0 pr-2 md:pr-8.5": isThreadPagePost,
       })}
+      id="post-card-header"
     >
       <div className='flex items-center justify-between w-full'>
         <div className='flex items-center gap-1 md:gap-1.5 min-w-0'>

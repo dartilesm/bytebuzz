@@ -5,6 +5,9 @@ import { usePostContext } from "@/hooks/use-post-context";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
+
+const navigationDisabledElementSelectors = ["a", "button", "#post-card-footer", "#post-card-header"];
+
 interface PostCardProps {
   children: React.ReactNode;
   className?: string;
@@ -17,9 +20,9 @@ export function PostCard({ children, className, ref }: PostCardProps) {
   const pathname = usePathname();
 
   function handleClick(event: React.MouseEvent<HTMLDivElement>) {
-    // Check if the clicked element or its parents is an anchor tag
-    const isAnchorElement = (event.target as HTMLElement).closest("a");
-    if (isAnchorElement || isNavigationDisabled) return;
+    const isNavigationDisabledElement = navigationDisabledElementSelectors.some(selector => (event.target as HTMLElement).closest(selector));
+
+    if (isNavigationDisabledElement || isNavigationDisabled) return;
 
     // Casting to a more specific type to fix TypeScript errors
     const pushPath = `/@${post.user?.username}/thread/${post.id}` as `/${string}/thread/${string}`;

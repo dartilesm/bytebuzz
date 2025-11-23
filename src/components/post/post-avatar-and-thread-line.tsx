@@ -11,7 +11,6 @@ import Link from "next/link";
 export function PostAvatarAndThreadLine() {
   const { isThread, isFirstInThread, isLastInThread, isThreadPagePost, post } = usePostContext();
   const { user } = post;
-  console.log("PostAvatarAndThreadLine", user);
 
   return (
     <div
