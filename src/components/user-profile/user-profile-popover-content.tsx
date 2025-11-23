@@ -70,12 +70,12 @@ export function UserProfilePopoverContent({ user }: UserProfilePopoverContentPro
       )}
       <div className="flex items-center gap-3 px-3 py-3">
         <div className="flex gap-1">
-          <p className="font-semibold text-foreground text-sm">{userData?.following_count ?? 0}</p>
-          <p className="text-muted-foreground text-sm">Following</p>
-        </div>
-        <div className="flex gap-1">
           <p className="font-semibold text-foreground text-sm">{userData?.follower_count ?? 0}</p>
           <p className="text-muted-foreground text-sm">Followers</p>
+        </div>
+        <div className="flex gap-1">
+          <p className="font-semibold text-foreground text-sm">{userData?.following_count ?? 0}</p>
+          <p className="text-muted-foreground text-sm">Following</p>
         </div>
       </div>
     </div>
