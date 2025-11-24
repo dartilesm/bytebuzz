@@ -1,10 +1,10 @@
 'use client';
 
-import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Autocomplete as AutocompletePrimitive } from '@base-ui-components/react/autocomplete';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 import { X } from 'lucide-react';
+import * as React from 'react';
 
 // Define input size variants (without file: part)
 const inputVariants = cva(
@@ -181,8 +181,8 @@ function AutocompleteItem({ className, ...props }: React.ComponentProps<typeof A
         'text-foreground relative flex cursor-default select-none items-center gap-2 rounded-md px-4 py-2 text-sm outline-hidden transition-colors',
         'data-disabled:pointer-events-none data-disabled:opacity-50',
         '[&_svg]:pointer-events-none [&_svg:not([role=img]):not([class*=text-])]:opacity-60 [&_svg:not([class*=size-])]:size-4 [&_svg]:shrink-0',
-        'data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-foreground data-[highlighted]:before:absolute',
-        'data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-accent',
+        'data-highlighted:relative data-highlighted:z-0 data-highlighted:text-foreground data-highlighted:before:absolute',
+        'data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm dark:data-highlighted:before:bg-accent data-highlighted:before:bg-input',
         className,
       )}
       {...props}
@@ -289,26 +289,7 @@ function AutocompleteSeparator({ className, ...props }: React.ComponentProps<typ
 }
 
 export {
-  Autocomplete,
-  AutocompleteControl,
-  AutocompleteValue,
-  AutocompleteTrigger,
-  AutocompleteInput,
-  AutocompleteIcon,
-  AutocompleteStatus,
-  AutocompletePortal,
-  AutocompleteBackdrop,
-  AutocompletePositioner,
-  AutocompletePopup,
-  AutocompleteList,
-  AutocompleteCollection,
-  AutocompleteRow,
-  AutocompleteItem,
-  AutocompleteContent,
-  AutocompleteGroup,
-  AutocompleteGroupLabel,
-  AutocompleteEmpty,
-  AutocompleteClear,
-  AutocompleteArrow,
-  AutocompleteSeparator,
+  Autocomplete, AutocompleteArrow, AutocompleteBackdrop, AutocompleteClear, AutocompleteCollection, AutocompleteContent, AutocompleteControl, AutocompleteEmpty, AutocompleteGroup,
+  AutocompleteGroupLabel, AutocompleteIcon, AutocompleteInput, AutocompleteItem, AutocompleteList, AutocompletePopup, AutocompletePortal, AutocompletePositioner, AutocompleteRow, AutocompleteSeparator, AutocompleteStatus, AutocompleteTrigger, AutocompleteValue
 };
+
