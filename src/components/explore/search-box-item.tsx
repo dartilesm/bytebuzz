@@ -20,7 +20,7 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
   // Handle search item
   if ("type" in item && item.type === "search") {
     return (
-      <div className='w-full p-1'>
+      <div className='w-full cursor-pointer'>
         <div className='flex items-center gap-3' onClick={onExactSearch}>
           <div className='flex items-center justify-center size-8 rounded-full bg-transparent dark:bg-muted'>
             <SearchIcon className='size-4 text-muted-foreground' />
@@ -39,7 +39,7 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
   const user = item as User;
   return (
     <Link
-      className='w-full block p-2 hover:bg-muted/50 rounded-lg transition-colors'
+      className='w-full block hover:bg-muted/50 rounded-lg transition-colors'
       href={`/@${user.username}` as unknown as UrlObject}
     >
       <div className='flex justify-between items-center gap-3'>

@@ -29,9 +29,27 @@ const inputVariants = cva(
   },
 );
 
+type AutocompleteContextValue = {
+  variant: 'default' | 'flat';
+  size: 'sm' | 'md' | 'lg';
+};
+
+const AutocompleteContext = React.createContext<AutocompleteContextValue>({
+  variant: 'default',
+  size: 'md',
+});
+
 // Root - Groups all parts of the autocomplete
-function Autocomplete({ ...props }: React.ComponentProps<typeof AutocompletePrimitive.Root>) {
-  return <AutocompletePrimitive.Root data-slot="autocomplete" {...props} />;
+function Autocomplete({
+  variant = 'default',
+  size = 'md',
+  ...props
+}: React.ComponentProps<typeof AutocompletePrimitive.Root> & Partial<AutocompleteContextValue>) {
+  return (
+    <AutocompleteContext.Provider value={{ variant, size }}>
+      <AutocompletePrimitive.Root data-slot="autocomplete" {...props} />
+    </AutocompleteContext.Provider>
+  );
 }
 
 // Value - Displays the selected value
@@ -52,10 +70,10 @@ function AutocompleteTrigger({ ...props }: React.ComponentProps<typeof Autocompl
 // Input - The input element for typing
 function AutocompleteInput({
   className,
-  variant = 'default',
-  size = 'md',
   ...props
-}: Omit<React.ComponentProps<typeof AutocompletePrimitive.Input>, 'size'> & VariantProps<typeof inputVariants>) {
+}: Omit<React.ComponentProps<typeof AutocompletePrimitive.Input>, 'size'>) {
+  const { variant, size } = React.useContext(AutocompleteContext);
+
   return (
     <AutocompletePrimitive.Input
       data-slot="autocomplete-input"

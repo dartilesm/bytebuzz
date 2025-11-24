@@ -110,7 +110,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
             </TabsList>
 
             <TabsContent value='all' className="mt-0">
-              <div className='space-y-4 px-2 pt-4'>
+              <div className='space-y-4 p-2 md:p-4 pt-4'>
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers
@@ -128,7 +128,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
               </div>
             </TabsContent>
             <TabsContent value='users' className="mt-0">
-              <div className='space-y-4 px-2 pt-4'>
+              <div className='space-y-4 p-2 md:p-4 pt-4'>
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers usersPromise={usersPromise} />
@@ -137,7 +137,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
               </div>
             </TabsContent>
             <TabsContent value='posts' className="mt-0">
-              <div className='space-y-4 px-2 pt-4'>
+              <div className='space-y-4 p-2 md:p-4 pt-4'>
                 {postsPromise && (
                   <Suspense fallback={<ExploreViewPostsLoading />}>
                     <ExploreViewPosts postsPromise={postsPromise} />
@@ -148,7 +148,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
           </Tabs>
         )}
         {!activeSearchTypeRef.current && (
-          <div className='space-y-4 px-2'>
+          <div className='space-y-4 p-2 md:p-4'>
             {usersPromise && (
               <Suspense fallback={<ExploreViewUsersLoading />}>
                 <ExploreViewUsers
