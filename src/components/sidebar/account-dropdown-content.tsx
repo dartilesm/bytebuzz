@@ -32,7 +32,7 @@ export function AccountDropdownContent({ onSignOut, onClose }: AccountDropdownCo
   }
 
   return (
-    <div className='px-1 py-2 w-full md:max-w-56'>
+    <div className='w-full'>
       {username && (
         <>
           <Button
