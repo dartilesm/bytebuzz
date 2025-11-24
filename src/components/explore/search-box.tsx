@@ -5,11 +5,12 @@ import { SearchBoxItem } from "@/components/explore/search-box-item";
 import { useUsersSearch } from "@/hooks/queries/use-users-search";
 import {
   Autocomplete,
+  AutocompleteClear,
   AutocompleteContent,
-  AutocompleteEmpty,
   AutocompleteInput,
   AutocompleteItem,
   AutocompleteList,
+  AutocompleteStatus,
 } from "@/components/ui/autocomplete";
 import type { Database } from "database.types";
 import { Loader2, SearchIcon } from "lucide-react";
@@ -67,13 +68,19 @@ export function SearchBox({
     <Autocomplete
       open={open}
       onOpenChange={setOpen}
+      items={combinedItems}
+      openOnInputClick
+      itemToStringValue={(item) => {
+        if ("display_name" in item) return item.display_name || "";
+        return (item as SearchItem).term;
+      }}
     >
-      <div className="flex items-center border rounded-full px-3 bg-background focus-within:ring-2 focus-within:ring-ring ring-offset-background relative">
-        <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+      <label className="flex items-center border rounded-full px-3 bg-background relative w-full">
+        <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50 absolute left-2 z-10" />
         <AutocompleteInput
           ref={inputRef}
           placeholder={placeholder}
-          className="border-none focus:ring-0 shadow-none h-9 px-0"
+          className="absolute left-0 h-9 px-8"
           value={searchTerm}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={(e) => {
@@ -85,18 +92,15 @@ export function SearchBox({
         />
         {isLoading && <Loader2 className="h-4 w-4 animate-spin opacity-50" />}
         {searchTerm && (
-          <button onClick={handleClear} className="ml-2 text-muted-foreground hover:text-foreground">
-            <span className="sr-only">Clear</span>
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <AutocompleteClear onClick={handleClear} />
         )}
-      </div>
+      </label>
       <AutocompleteContent>
-        {isLoading && <AutocompleteEmpty>Loading...</AutocompleteEmpty>}
-        {!isLoading && combinedItems.length === 0 && (
-          <AutocompleteEmpty>
+        {isLoading && <AutocompleteStatus>Loading...</AutocompleteStatus>}
+        {!isLoading && combinedItems.length === 0 && debouncedSearchTerm && (
+          <AutocompleteStatus>
             <SearchBoxEmpty searchTerm={debouncedSearchTerm} />
-          </AutocompleteEmpty>
+          </AutocompleteStatus>
         )}
         <AutocompleteList>
           {combinedItems.map((item) => {
@@ -105,7 +109,7 @@ export function SearchBox({
             return (
               <AutocompleteItem
                 key={key}
-                value={textValue ?? ""}
+                value={item}
                 onSelect={() => {
                   if ("type" in item && item.type === "search") {
                     handleExactSearch();

@@ -26,6 +26,7 @@
     "format:fix": "biome format --write ."
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-beta.6",
     "@clerk/nextjs": "6.19.2",
     "@hookform/resolvers": "5.2.2",
     "@iconify/react": "6.0.0",
@@ -65,12 +66,12 @@
     "@uidotdev/usehooks": "2.4.1",
     "@vercel/otel": "2.1.0",
     "canvas": "3.2.0",
-    "class-variance-authority": "0.7.1",
-    "clsx": "2.1.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "framer-motion": "11.5.6",
     "lexical": "0.31.2",
-    "lucide-react": "0.554.0",
+    "lucide-react": "^0.554.0",
     "motion": "12.12.1",
     "next": "16.0.1",
     "next-themes": "0.4.6",
@@ -87,7 +88,7 @@
     "shiki": "3.4.2",
     "sonner": "2.0.7",
     "svix": "1.65.0",
-    "tailwind-merge": "3.4.0",
+    "tailwind-merge": "^3.4.0",
     "usehooks-ts": "3.1.1",
     "vaul": "1.1.2",
     "zod": "4.1.12"

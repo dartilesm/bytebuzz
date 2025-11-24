@@ -8,23 +8,23 @@ import { X } from 'lucide-react';
 
 // Define input size variants (without file: part)
 const inputVariants = cva(
-  `
-    flex w-full bg-background border border-input shadow-xs shadow-black/5 transition-[color,box-shadow] text-foreground placeholder:text-muted-foreground/80 
-    focus-visible:ring-ring/30 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px]     
-    disabled:cursor-not-allowed disabled:opacity-60 
-    [&[readonly]]:bg-muted/80 [&[readonly]]:cursor-not-allowed
-    aria-invalid:border-destructive/60 aria-invalid:ring-destructive/10 dark:aria-invalid:border-destructive dark:aria-invalid:ring-destructive/20
-  `,
+  'flex w-full transition-[color,box-shadow] text-foreground placeholder:text-muted-foreground/80 disabled:cursor-not-allowed disabled:opacity-60 [&[readonly]]:cursor-not-allowed',
   {
     variants: {
       variant: {
+        default:
+          'bg-background border border-input shadow-xs shadow-black/5 focus-visible:ring-ring/30 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] [&[readonly]]:bg-muted/80 aria-invalid:border-destructive/60 aria-invalid:ring-destructive/10 dark:aria-invalid:border-destructive dark:aria-invalid:ring-destructive/20',
+        flat: 'shadow-none border-none bg-input/80 dark:bg-input/60 focus-visible:bg-input dark:focus-visible:bg-input/80 focus-visible:outline-none',
+      },
+      size: {
         lg: 'h-10 px-4 text-sm rounded-md [&~[data-slot=autocomplete-clear]]:end-2.5',
         md: 'h-9 px-3 text-sm rounded-md [&~[data-slot=autocomplete-clear]]:end-2',
         sm: 'h-8 px-2.5 text-xs rounded-md [&~[data-slot=autocomplete-clear]]:end-1.75',
       },
     },
     defaultVariants: {
-      variant: 'md',
+      variant: 'default',
+      size: 'md',
     },
   },
 );
@@ -52,14 +52,16 @@ function AutocompleteTrigger({ ...props }: React.ComponentProps<typeof Autocompl
 // Input - The input element for typing
 function AutocompleteInput({
   className,
-  variant = 'md',
+  variant = 'default',
+  size = 'md',
   ...props
-}: React.ComponentProps<typeof AutocompletePrimitive.Input> & VariantProps<typeof inputVariants>) {
+}: Omit<React.ComponentProps<typeof AutocompletePrimitive.Input>, 'size'> & VariantProps<typeof inputVariants>) {
   return (
     <AutocompletePrimitive.Input
       data-slot="autocomplete-input"
       data-variant={variant}
-      className={cn(inputVariants({ variant }), className)}
+      data-size={size}
+      className={cn(inputVariants({ variant, size }), className)}
       {...props}
     />
   );
