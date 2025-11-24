@@ -4,13 +4,13 @@ import { SearchBoxEmpty } from "@/components/explore/search-box-empty";
 import { SearchBoxItem } from "@/components/explore/search-box-item";
 import { useUsersSearch } from "@/hooks/queries/use-users-search";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+  Autocomplete,
+  AutocompleteContent,
+  AutocompleteEmpty,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+} from "@/components/ui/autocomplete";
 import type { Database } from "database.types";
 import { Loader2, SearchIcon } from "lucide-react";
 import { useRef, useState } from "react";
@@ -41,7 +41,7 @@ export function SearchBox({
   } = useUsersSearch(debouncedSearchTerm);
 
   function handleInputChange(term: string) {
-    setSearchTerm(inputRef.current?.value || "");
+    setSearchTerm(term);
     setDebouncedSearchTerm(term);
   }
 
@@ -64,17 +64,24 @@ export function SearchBox({
   const [open, setOpen] = useState(false);
 
   return (
-    <Command className="relative overflow-visible bg-transparent" shouldFilter={false}>
-      <div className="flex items-center border rounded-full px-3 bg-background focus-within:ring-2 focus-within:ring-ring ring-offset-background">
+    <Autocomplete
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <div className="flex items-center border rounded-full px-3 bg-background focus-within:ring-2 focus-within:ring-ring ring-offset-background relative">
         <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-        <CommandInput
+        <AutocompleteInput
           ref={inputRef}
           placeholder={placeholder}
+          className="border-none focus:ring-0 shadow-none h-9 px-0"
           value={searchTerm}
-          onValueChange={handleInputChange}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 200)}
-          className="border-none focus:ring-0 shadow-none h-9"
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleExactSearch();
+              setOpen(false);
+            }
+          }}
         />
         {isLoading && <Loader2 className="h-4 w-4 animate-spin opacity-50" />}
         {searchTerm && (
@@ -84,34 +91,34 @@ export function SearchBox({
           </button>
         )}
       </div>
-      {open && (searchTerm || combinedItems.length > 0) && (
-        <div className="absolute top-full left-0 w-full z-50 mt-1 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in fade-in-0 zoom-in-95 overflow-hidden">
-          <CommandList>
-            {isLoading && <CommandEmpty>Loading...</CommandEmpty>}
-            {!isLoading && combinedItems.length === 0 && <CommandEmpty><SearchBoxEmpty searchTerm={debouncedSearchTerm} /></CommandEmpty>}
-            <CommandGroup>
-              {combinedItems.map((item) => {
-                const textValue = "display_name" in item ? item.display_name : (item as SearchItem).term;
-                const key = "id" in item ? item.id : (item as SearchItem).term;
-                return (
-                  <CommandItem
-                    key={key}
-                    value={textValue ?? ""}
-                    onSelect={() => {
-                      if ("type" in item && item.type === "search") {
-                        handleExactSearch();
-                      }
-                      setOpen(false);
-                    }}
-                  >
-                    <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </CommandList>
-        </div>
-      )}
-    </Command>
+      <AutocompleteContent>
+        {isLoading && <AutocompleteEmpty>Loading...</AutocompleteEmpty>}
+        {!isLoading && combinedItems.length === 0 && (
+          <AutocompleteEmpty>
+            <SearchBoxEmpty searchTerm={debouncedSearchTerm} />
+          </AutocompleteEmpty>
+        )}
+        <AutocompleteList>
+          {combinedItems.map((item) => {
+            const textValue = "display_name" in item ? item.display_name : (item as SearchItem).term;
+            const key = "id" in item ? item.id : (item as SearchItem).term;
+            return (
+              <AutocompleteItem
+                key={key}
+                value={textValue ?? ""}
+                onSelect={() => {
+                  if ("type" in item && item.type === "search") {
+                    handleExactSearch();
+                  }
+                  setOpen(false);
+                }}
+              >
+                <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
+              </AutocompleteItem>
+            );
+          })}
+        </AutocompleteList>
+      </AutocompleteContent>
+    </Autocomplete>
   );
 }
