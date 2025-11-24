@@ -50,7 +50,7 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
 
   return (
     <Button
-      variant={isFollowed ? "secondary" : "default"}
+      variant={isFollowed ? "flat" : "default"}
       size={size === "md" ? "default" : size}
       onClick={withAuth(handleFollowToggle)}
       aria-label={isLoading ? "Loading follow status" : isFollowed ? "Following" : "Follow"}
