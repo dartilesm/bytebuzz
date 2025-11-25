@@ -1,7 +1,8 @@
 "use client";
 
 import { SidebarThemeSwitcher } from "@/components/sidebar/sidebar-theme-switcher";
-import { Button, Divider } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { LogOutIcon, SettingsIcon, SunMoonIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useNavigationContext } from "@/context/navigation-context";
@@ -31,57 +32,55 @@ export function AccountDropdownContent({ onSignOut, onClose }: AccountDropdownCo
   }
 
   return (
-    <div className='px-1 py-2 w-full md:max-w-56'>
+    <div className='w-full'>
       {username && (
         <>
           <Button
-            as={Link}
-            href={`/@${username}`}
+            asChild
             className='w-full justify-start'
-            variant='light'
-            startContent={<UserIcon size={18} />}
-            onPress={handleNavigationClick}
+            variant='ghost'
+            onClick={handleNavigationClick}
           >
-            Profile
+            <Link href={`/@${username}`}>
+              <UserIcon size={18} className="mr-2" />
+              Profile
+            </Link>
           </Button>
-          <Divider className='my-2' />
+          <Separator className='my-2' />
         </>
       )}
 
       <Button
-        as={Link}
-        href='/account-settings'
+        asChild
         className='w-full justify-start'
-        variant='light'
-        startContent={<SettingsIcon size={18} />}
-        onPress={handleNavigationClick}
+        variant='ghost'
+        onClick={handleNavigationClick}
       >
-        Account settings
+        <Link href='/account-settings'>
+          <SettingsIcon size={18} className="mr-2" />
+          Account settings
+        </Link>
       </Button>
 
-      <Button
-        as={"div"}
-        className='w-full justify-start mt-1'
-        variant='light'
-        startContent={<SunMoonIcon size={18} />}
-      >
-        <span className='flex flex-row justify-between items-center w-full'>
-          Theme <SidebarThemeSwitcher />
+      <div className='w-full flex items-center justify-between px-4 py-2'>
+        <span className="text-sm font-medium flex items-center gap-2">
+          <SunMoonIcon size={18} />
+          Theme
         </span>
-      </Button>
+        <SidebarThemeSwitcher />
+      </div>
 
-      <Divider className='my-2' />
+      <Separator className='my-2' />
 
       <Button
-        className='w-full justify-start mt-2'
-        color='danger'
-        variant='flat'
-        startContent={<LogOutIcon size={18} />}
-        onPress={() => {
+        className='w-full justify-start mt-2 text-destructive hover:text-destructive hover:bg-destructive/10'
+        variant='ghost'
+        onClick={() => {
           onSignOut();
           onClose?.();
         }}
       >
+        <LogOutIcon size={18} className="mr-2" />
         Sign out
       </Button>
     </div>

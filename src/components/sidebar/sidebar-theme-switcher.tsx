@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, ButtonGroup } from "@heroui/react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LaptopIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -8,28 +8,17 @@ export function SidebarThemeSwitcher() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <ButtonGroup variant="flat" size="sm">
-      <Button
-        isIconOnly
-        color={theme === "light" ? "primary" : "default"}
-        onPress={() => setTheme("light")}
-      >
-        <SunIcon size={16} />
-      </Button>
-      <Button
-        isIconOnly
-        color={theme === "system" ? "primary" : "default"}
-        onPress={() => setTheme("system")}
-      >
-        <LaptopIcon size={16} />
-      </Button>
-      <Button
-        isIconOnly
-        color={theme === "dark" ? "primary" : "default"}
-        onPress={() => setTheme("dark")}
-      >
-        <MoonIcon size={16} />
-      </Button>
-    </ButtonGroup>
+
+    <ToggleGroup type="single" value={theme} variant="outline" onValueChange={(value) => value && setTheme(value)} size="sm">
+      <ToggleGroupItem value="light" aria-label="Light mode">
+        <SunIcon className="h-4 w-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem value="system" aria-label="System mode">
+        <LaptopIcon className="h-4 w-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem value="dark" aria-label="Dark mode">
+        <MoonIcon className="h-4 w-4" />
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 }

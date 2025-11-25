@@ -1,0 +1,302 @@
+"use client";
+
+import { Command as CommandPrimitive } from "cmdk";
+import { Check, ChevronsUpDown, X } from "lucide-react";
+import * as React from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { type VariantProps, cva } from "class-variance-authority";
+
+/**
+ * Variants for the multi-select component to handle different styles.
+ * Uses class-variance-authority (cva) to define styles for the "trigger" element.
+ */
+const multiSelectVariants = cva("m-1", {
+  variants: {
+    variant: {
+      default: "border-foreground/10 text-foreground bg-card hover:bg-card/80",
+      secondary:
+        "border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      destructive:
+        "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+      flat: "border-transparent bg-background/50 text-foreground hover:bg-background/80",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export interface Option {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  fixed?: boolean;
+  icon?: React.ElementType;
+  [key: string]: any;
+}
+
+interface MultiSelectContextProps {
+  selectedValues: string[];
+  onValueChange: (value: string[]) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  maxSelectable?: number;
+  variant?: VariantProps<typeof multiSelectVariants>["variant"];
+}
+
+const MultiSelectContext = React.createContext<MultiSelectContextProps | null>(null);
+
+const useMultiSelect = () => {
+  const context = React.useContext(MultiSelectContext);
+  if (!context) {
+    throw new Error("useMultiSelect must be used within a MultiSelectProvider");
+  }
+  return context;
+};
+
+interface MultiSelectProps {
+  children: React.ReactNode;
+  defaultValue?: string[];
+  onValueChange?: (value: string[]) => void;
+  defaultOpen?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  modalPopover?: boolean;
+  maxSelectable?: number;
+  variant?: VariantProps<typeof multiSelectVariants>["variant"];
+}
+
+const MultiSelect = ({
+  children,
+  defaultValue = [],
+  onValueChange,
+  defaultOpen = false,
+  open: controlledOpen,
+  onOpenChange,
+  modalPopover = false,
+  maxSelectable = 3,
+  variant = "default",
+}: MultiSelectProps) => {
+  const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = onOpenChange ?? setUncontrolledOpen;
+
+  const handleValueChange = React.useCallback(
+    (values: string[]) => {
+      setSelectedValues(values);
+      onValueChange?.(values);
+    },
+    [onValueChange],
+  );
+
+  return (
+    <MultiSelectContext.Provider
+      value={{
+        selectedValues,
+        onValueChange: handleValueChange,
+        open,
+        setOpen,
+        maxSelectable,
+        variant,
+      }}
+    >
+      <Popover open={open} onOpenChange={setOpen} modal={modalPopover}>
+        {children}
+      </Popover>
+    </MultiSelectContext.Provider>
+  );
+};
+
+function MultiSelectTrigger({
+  className,
+  children,
+  ref,
+  ...props
+}: React.ComponentProps<typeof Button> & { placeholder?: string }) {
+  const { selectedValues, onValueChange, variant } = useMultiSelect();
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onValueChange([]);
+  };
+
+  const handleRemoveOption = (e: React.MouseEvent | React.KeyboardEvent, value: string) => {
+    e.stopPropagation();
+    const newValues = selectedValues.filter((v) => v !== value);
+    onValueChange(newValues);
+  };
+
+  const handlePreventEvent = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleKeyDownEnter = (e: React.KeyboardEvent, callback: () => void) => {
+    if (e.key === "Enter") {
+      e.stopPropagation();
+      callback();
+    }
+  };
+
+  return (
+    <PopoverTrigger asChild>
+      <Button
+        ref={ref}
+        variant={variant}
+        className={cn(
+          "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between",
+          className,
+        )}
+        {...props}
+      >
+        {selectedValues.length > 0 && (
+          <div className="flex justify-between items-center w-full">
+            <div className="flex flex-wrap items-center">
+              {selectedValues.map((value) => (
+                <Badge key={value} className={cn(multiSelectVariants({ variant }))}>
+                  {value}
+                  <div
+                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    onKeyDown={(e) => handleKeyDownEnter(e, () => handleRemoveOption(e, value))}
+                    onMouseDown={handlePreventEvent}
+                    onClick={(e) => handleRemoveOption(e, value)}
+                  >
+                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                  </div>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex items-center justify-between">
+              <X className="h-4 mx-2 cursor-pointer text-muted-foreground" onClick={handleClear} />
+              <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+            </div>
+          </div>
+        )}
+        {selectedValues.length === 0 && (
+          <div className="flex items-center justify-between w-full mx-auto">
+            <span className="text-sm text-muted-foreground mx-3">
+              {props.placeholder ?? "Select options"}
+            </span>
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+          </div>
+        )}
+      </Button>
+    </PopoverTrigger>
+  );
+}
+
+function MultiSelectContent({
+  className,
+  children,
+  ref,
+  ...props
+}: React.ComponentProps<typeof PopoverContent>) {
+  return (
+    <PopoverContent
+      ref={ref}
+      className={cn("w-(--radix-popover-trigger-width) p-0", className)}
+      align="start"
+      {...props}
+    >
+      <Command>{children}</Command>
+    </PopoverContent>
+  );
+}
+
+function MultiSelectInput({
+  className,
+  ref,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  const { setOpen } = useMultiSelect();
+  return (
+    <CommandPrimitive.Input
+      ref={ref}
+      className={cn(
+        "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 px-2",
+        className,
+      )}
+      onFocus={() => setOpen(true)}
+      {...props}
+    />
+  );
+}
+
+const MultiSelectList = CommandList;
+
+const MultiSelectGroup = CommandGroup;
+
+function MultiSelectItem({
+  className,
+  children,
+  ref,
+  ...props
+}: React.ComponentProps<typeof CommandItem>) {
+  const { selectedValues, onValueChange, maxSelectable } = useMultiSelect();
+  const value = props.value || "";
+  const isSelected = selectedValues.includes(value);
+
+  const handleSelect = () => {
+    if (maxSelectable && selectedValues.length >= maxSelectable && !isSelected) {
+      return;
+    }
+    const newValues = isSelected
+      ? selectedValues.filter((v) => v !== value)
+      : [...selectedValues, value];
+
+    onValueChange(newValues);
+  };
+
+  return (
+    <CommandItem
+      ref={ref}
+      className={cn("cursor-pointer", className)}
+      onSelect={handleSelect}
+      disabled={!!(maxSelectable && selectedValues.length >= maxSelectable && !isSelected)}
+      {...props}
+    >
+      <div
+        className={cn(
+          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm",
+          { "text-primary-foreground": isSelected },
+          { "opacity-50 [&_svg]:invisible": !isSelected },
+        )}
+      >
+        <Check className="h-4 w-4" />
+      </div>
+      {children}
+    </CommandItem>
+  );
+}
+
+function MultiSelectEmpty({
+  className,
+  children = "No results found.",
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Empty>) {
+  return (
+    <CommandPrimitive.Empty
+      className={cn("p-2 text-sm text-muted-foreground/50", className)}
+      {...props}
+    >
+      {children}
+    </CommandPrimitive.Empty>
+  );
+}
+
+export {
+  MultiSelect,
+  MultiSelectTrigger,
+  MultiSelectContent,
+  MultiSelectInput,
+  MultiSelectList,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectEmpty,
+};

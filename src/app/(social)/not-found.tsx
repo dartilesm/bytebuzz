@@ -1,7 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/ui/page-header";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -51,16 +51,17 @@ export default function NotFoundPage() {
         <h1 className="text-xl font-bold text-foreground mb-2 mt-16" aria-label={heading}>
           {heading}
         </h1>
-        <p className="text-default-500 mb-8">{message}</p>
+        <p className="text-muted-foreground mb-8">{message}</p>
         <Button
-          as={Link}
-          href="/root"
-          color="primary"
+          asChild
+          variant="default"
           aria-label="Go to root"
           tabIndex={0}
-          startContent={<HomeIcon size={16} />}
         >
-          Go to Root
+          <Link href="/root">
+            <HomeIcon size={16} className="mr-2" />
+            Go to Root
+          </Link>
         </Button>
       </div>
     </>

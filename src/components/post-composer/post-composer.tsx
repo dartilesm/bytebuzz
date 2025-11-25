@@ -11,8 +11,9 @@ import { usePostsContext } from "@/hooks/use-posts-context";
 import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { Avatar } from "@heroui/avatar";
-import { Button } from "@heroui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Section } from "@/components/ui/container";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LexicalEditor } from "lexical";
 import { $getRoot } from "lexical";
@@ -157,18 +158,25 @@ export function PostComposer({
   return (
     <form
       className={cn(
-        "dark:bg-default-100 bg-default-100 dark:hover:bg-default-200 hover:bg-default-200 rounded-xl overflow-hidden min-h-24 group/post-composer",
+        "dark:bg-muted bg-muted dark:hover:bg-muted/80 hover:bg-muted/80 rounded-xl overflow-hidden min-h-24 group/post-composer border border-border shadow-none",
         className
       )}
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
-        <div className='flex flex-row gap-2 md:gap-4 p-2 md:p-4'>
-          <div className='flex flex-row gap-2 z-10 flex-shrink-0'>
-            <Avatar isBordered src={user?.imageUrl} size="sm" className="md:w-10 md:h-10" />
+        <Section className='flex flex-row gap-2 md:gap-4'>
+          <div className='flex flex-row gap-2 z-10 shrink-0'>
+            <Avatar className='h-10 w-10 border-2 border-background'>
+              <AvatarImage src={user?.imageUrl} />
+              <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
+            </Avatar>
           </div>
           <div className='flex-1 min-w-0'>
-            <MarkdownEditor placeholder={placeholder} contentClassName='min-h-12 p-0 text-sm md:text-base' autoFocus />
+            <MarkdownEditor
+              placeholder={placeholder}
+              contentClassName='min-h-12 p-0 text-sm md:text-base'
+              autoFocus
+            />
             <div className='py-2 md:py-4'>{children}</div>
             <MarkdownToolbar className='bg-transparent border-none p-0 flex-wrap gap-1 md:gap-2'>
               <MarkdownToolbarDefaultActions
@@ -177,16 +185,16 @@ export function PostComposer({
               />
               <Button
                 type='submit'
-                color='primary'
+                variant='default'
                 size='sm'
                 className='ml-auto text-xs md:text-sm'
-                isDisabled={!form.formState.isValid || isPending}
+                disabled={!form.formState.isValid || isPending}
               >
                 Post
               </Button>
             </MarkdownToolbar>
           </div>
-        </div>
+        </Section>
       </MarkdownProvider>
     </form>
   );

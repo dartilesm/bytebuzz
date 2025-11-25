@@ -2,8 +2,9 @@ import { PostComposer } from "@/components/post-composer/post-composer";
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostThreadLine } from "@/components/post/post-thread-line";
 import { UserPost } from "@/components/post/user-post";
+import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { cn } from "@heroui/react";
+import { RepeatIcon } from "lucide-react";
 
 interface PostInteractionProps {
   /**
@@ -33,7 +34,7 @@ export function PostInteraction({
   const isRepost = action === "clone";
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 rounded-xl bg-card'>
       {isReply && (
         <div className='relative'>
           <PostThreadLine isFirstInThread />
@@ -47,16 +48,18 @@ export function PostInteraction({
         onSubmit={onSubmit}
         {...(isRepost && { repostPostId: post.id })}
         {...(isReply && { replyPostId: post.id })}
-        className={cn({
+        className={cn("border-0", {
           "rounded-b-xl rounded-t-none": isReply,
+          "dark:hover:bg-muted": isRepost
         })}
       >
         {isRepost && (
           <div className='mb-4 flex flex-col gap-1'>
-            <span className='text-sm text-content4-foreground/60 italic flex items-center gap-1'>
-              <span>Original post</span>
+            <span className='text-sm text-muted-foreground/60 italic flex items-center gap-1'>
+              <RepeatIcon size={14} />
+              <span> Original post</span>
             </span>
-            <CondensedUserPost post={post} isNavigationDisabled />
+            <CondensedUserPost className="bg-card-foreground/5 border-border border dark:bg-card" post={post} isNavigationDisabled />
           </div>
         )}
       </PostComposer>

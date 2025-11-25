@@ -1,7 +1,17 @@
 "use client";
 
-import { type TechnologyId, getTechnologyById, TECHNOLOGIES } from "@/lib/technologies";
-import { Chip, Select, SelectItem } from "@heroui/react";
+import { Badge } from "@/components/ui/badge";
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectEmpty,
+  MultiSelectGroup,
+  MultiSelectInput,
+  MultiSelectItem,
+  MultiSelectList,
+  MultiSelectTrigger,
+} from "@/components/ui/multiselect";
+import { TECHNOLOGIES, type TechnologyId } from "@/lib/technologies";
 import * as ReactIcons from "@icons-pack/react-simple-icons";
 import { type RefObject, useImperativeHandle, useState } from "react";
 
@@ -34,91 +44,50 @@ export function TechnologySelector({
     return IconComponent || null;
   }
 
-  function handleSelectionChange(keys: unknown) {
-    const selectedKeys = Array.from(keys as Iterable<string>) as TechnologyId[];
-    if (selectedKeys.length > MAX_SELECTED_TECHNOLOGIES) {
-      return;
-    }
-    setSelectedTechnologies(selectedKeys);
-    if (onTechnologiesChange) {
-      onTechnologiesChange(selectedKeys);
-    }
-  }
-
-  function handleChipClose(techId: TechnologyId) {
-    const newSelectedTechnologies = selectedTechnologies.filter((id) => id !== techId);
-    setSelectedTechnologies(newSelectedTechnologies);
-    if (onTechnologiesChange) {
-      onTechnologiesChange(newSelectedTechnologies);
-    }
-  }
-
   return (
     <div className="space-y-3">
-      {/* Technology Selector */}
-      <Select
-        classNames={{
-          base: "w-full",
-          trigger: "min-h-12 py-2",
+      <MultiSelect
+        defaultValue={initialTechnologies}
+        onValueChange={(values) => {
+          const newValues = values as TechnologyId[];
+          setSelectedTechnologies(newValues);
+          onTechnologiesChange?.(newValues);
         }}
-        isMultiline
-        items={TECHNOLOGIES}
-        label="Top Technologies"
-        placeholder="Search and select technologies..."
-        renderValue={(items) => {
-          return (
-            <div className="flex flex-wrap gap-2">
-              {items.map((item) => {
-                const tech = getTechnologyById(item.data?.id || "");
+        maxSelectable={MAX_SELECTED_TECHNOLOGIES}
+        variant="flat"
+        modalPopover
+      >
+        <MultiSelectTrigger placeholder="Search and select technologies..." />
+        <MultiSelectContent>
+          <MultiSelectInput placeholder="Search technologies..." />
+          <MultiSelectList>
+            <MultiSelectEmpty>No technology found.</MultiSelectEmpty>
+            <MultiSelectGroup>
+              {TECHNOLOGIES.map((tech) => {
+                const Icon = tech.icon ? getIconComponent(tech.icon) : null;
                 return (
-                  tech && (
-                    <Chip
-                      key={item.data?.id}
-                      onClose={() => {
-                        handleChipClose(tech.id);
-                      }}
-                    >
-                      {tech?.name}
-                    </Chip>
-                  )
+                  <MultiSelectItem key={tech.id} value={tech.id}>
+                    <div className="flex items-center gap-2 flex-1">
+                      {Icon ? (
+                        <Icon size={16} color="currentColor" />
+                      ) : (
+                        <span className="size-4 block bg-muted rounded-sm" />
+                      )}
+                      <span>{tech.name}</span>
+                    </div>
+                    <Badge variant="outline" className="ml-auto text-xs capitalize">
+                      {tech.category}
+                    </Badge>
+                  </MultiSelectItem>
                 );
               })}
-            </div>
-          );
-        }}
-        selectionMode="multiple"
-        variant="flat"
-        selectedKeys={new Set(selectedTechnologies)}
-        onSelectionChange={handleSelectionChange}
-      >
-        {(tech) => {
-          const Icon = tech.icon ? getIconComponent(tech.icon) : null;
-          return (
-            <SelectItem
-              key={tech.id}
-              textValue={tech.name}
-              className="h-10"
-              startContent={
-                Icon ? (
-                  <Icon size={16} color="currentColor" />
-                ) : (
-                  <span className="size-4 block bg-default-200 rounded-sm" />
-                )
-              }
-              endContent={
-                <Chip className="text-tiny text-default-400 capitalize" variant="solid" size="sm">
-                  {tech.category}
-                </Chip>
-              }
-            >
-              {tech.name}
-            </SelectItem>
-          );
-        }}
-      </Select>
+            </MultiSelectGroup>
+          </MultiSelectList>
+        </MultiSelectContent>
+      </MultiSelect>
 
       <div className="flex items-center justify-between">
-        <span className="text-tiny text-default-400">
+        <span className="text-xs text-muted-foreground/80">
           {selectedTechnologies.length} technologies selected out of {MAX_SELECTED_TECHNOLOGIES}
         </span>
       </div>

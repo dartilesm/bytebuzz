@@ -1,15 +1,15 @@
 "use client";
 
-import { addToast, HeroUIProvider, ToastProvider } from "@heroui/react";
 import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onError: (error) => {
-      addToast({
-        title: "Oh no! Something went wrong",
+      toast.error("Oh no! Something went wrong", {
         description: error.message,
-        color: "danger",
       });
     },
   }),
@@ -18,10 +18,12 @@ const queryClient = new QueryClient({
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <HeroUIProvider>
-        <ToastProvider />
+      <NextThemesProvider attribute="class" defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange>
+        <Toaster />
         {children}
-      </HeroUIProvider>
+      </NextThemesProvider>
     </QueryClientProvider>
   );
 }

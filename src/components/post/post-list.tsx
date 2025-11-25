@@ -2,7 +2,7 @@
 
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
-import { usePostsQuery } from "@/hooks/fetch/use-posts-query";
+import { usePostsQuery } from "@/hooks/queries/use-posts-query";
 import { useIntersectionObserver } from "@uidotdev/usehooks";
 import { useEffect } from "react";
 import { UserPost } from "./user-post";

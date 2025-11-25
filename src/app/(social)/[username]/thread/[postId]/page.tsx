@@ -108,17 +108,17 @@ async function ThreadPage({ params }: ThreadPageProps) {
   return (
     <>
       <PageHeader title='Thread' />
-      <div className='flex flex-col gap-4 w-full p-2 md:p-4'>
+      <div className='flex flex-col gap-4 w-full px-2 md:px-4'>
         <PostsProvider initialPosts={directReplies || []}>
           <PostWrapper isAncestry>
             <UserPost ancestry={postAncestry} />
           </PostWrapper>
+          <h2 className='text-lg font-medium'>Replies</h2>
           <PostComposer
             placeholder={`Reply to @${postAncestry?.at(-1)?.user?.username}`}
             replyPostId={postId}
           />
-          <div className='flex flex-col gap-4 min-h-[100dvh]'>
-            <h2 className='text-lg font-medium'>Replies</h2>
+          <div className='flex flex-col gap-4 min-h-dvh'>
             {!!directReplies?.length && <PostList />}
           </div>
         </PostsProvider>

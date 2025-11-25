@@ -8,7 +8,7 @@ export default function UserPageLoading() {
   return (
     <>
       <PageHeader title='' subtitle='' />
-      <div className='flex flex-col gap-4 w-full max-w-5xl mx-auto px-4'>
+      <div className='flex flex-col gap-4 w-full max-w-5xl mx-auto px-2 md:px-4'>
         <UserProfileCoverAvatarLoading />
         <UserProfileTopActionsLoading />
         <div className='flex flex-col gap-2'>

@@ -2,7 +2,10 @@
 
 import { useNavigationContext } from "@/context/navigation-context";
 import { useAuth } from "@clerk/nextjs";
-import { Avatar, Button, Popover, PopoverContent, PopoverTrigger, cn } from "@heroui/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { LogInIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,17 +23,18 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
     return (
       <Button
         className={cn("w-full px-2 max-xl:px-0 text-left flex justify-between", {
-          "bg-content3 dark:bg-content3/50": isActive,
+          "bg-muted": isActive,
         })}
-        variant='light'
-        as={Link}
-        href='/sign-in'
+        variant='ghost'
+        asChild
       >
-        <span className='flex items-center gap-2'>
-          <UserIcon size={24} />
-          Sign in
-        </span>
-        <LogInIcon size={18} />
+        <Link href='/sign-in'>
+          <span className='flex items-center gap-2'>
+            <UserIcon size={24} />
+            Sign in
+          </span>
+          <LogInIcon size={18} />
+        </Link>
       </Button>
     );
 
@@ -43,28 +47,23 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
   }
 
   return (
-    <Popover isOpen={isPopoverOpen} onOpenChange={setIsPopoverOpen} placement='right-start'>
-      <PopoverTrigger>
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+      <PopoverTrigger asChild>
         <Button
-          className={cn("flex items-center justify-between w-full", {
-            "bg-content3 dark:bg-content3/50": isActive,
+          className={cn("flex items-center justify-between w-full h-auto py-2", {
+            "bg-muted": isActive,
             "justify-center px-2 max-xl:px-0": true,
           })}
-          variant='light'
-          isIconOnly={true}
+          variant='ghost'
         >
           <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
-            <Avatar
-              src={user?.imageUrl}
-              radius='full'
-              className='outline-2 outline-content3 size-6'
-              classNames={{
-                base: "m-0",
-              }}
-            />
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={user?.imageUrl} />
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
             <span
-              className={cn("text-content2-foreground max-xl:hidden xl:inline", {
-                "text-content1-foreground": isActive,
+              className={cn("text-muted-foreground max-xl:hidden xl:inline", {
+                "text-foreground": isActive,
               })}
             >
               {label}
@@ -72,7 +71,7 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent side="right" align="start">
         <AccountDropdownContent onSignOut={handleSignOut} onClose={handleClose} />
       </PopoverContent>
     </Popover>
