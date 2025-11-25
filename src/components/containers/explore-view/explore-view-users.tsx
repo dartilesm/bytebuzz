@@ -39,23 +39,11 @@ export function ExploreViewUsers({
       {!hasResults && <ExploreViewEmpty />}
       {variant === "scroll" && hasResults && (
         <ScrollArea
-          className='w-full whitespace-nowrap pb-4'
+          className='w-full whitespace-nowrap pb-4 [&>div>div]:w-max'
           shadowClassName='from-background'
           orientation='horizontal'
         >
           <div className='flex gap-4'>
-            {users?.data?.map((user) => (
-              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
-            ))}
-            {users?.data?.map((user) => (
-              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
-            ))}
-            {users?.data?.map((user) => (
-              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
-            ))}
-            {users?.data?.map((user) => (
-              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
-            ))}
             {users?.data?.map((user) => (
               <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
             ))}

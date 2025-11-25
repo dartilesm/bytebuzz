@@ -45,6 +45,8 @@ export function PostContent({ children }: PostContentProps) {
   const canExpand = expansionLevel < expansionData.levels - 1;
   const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
 
+  console.log({ isFullyExpanded, content });
+
   useEffect(() => {
     if (contentRef.current) {
       const contentRefHeight = `${contentRef.current.scrollHeight}px`;
@@ -87,7 +89,7 @@ export function PostContent({ children }: PostContentProps) {
               onClick={handleExpand}
               className='self-start text-primary hover:text-primary-600 transition-colors'
             >
-              <ChevronDownIcon size={16} className="mr-2" />
+              <ChevronDownIcon size={16} className='mr-2' />
               View more
             </Button>
           )}
