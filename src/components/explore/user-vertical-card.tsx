@@ -10,14 +10,16 @@ import Image from "next/image";
 import Link from "next/link";
 import type { UrlObject } from "url";
 
-interface UserCardProps {
+interface UserVerticalCardProps {
   user: Tables<"users">;
 }
 
 /**
- * A stunning, modern user card component with glassmorphism and refined typography
+ * A vertical user card component for the explore view
+ * @param user - The user to display
+ * @returns A vertical user card component
  */
-export function UserCard2({ user }: UserCardProps) {
+export function UserVerticalCard({ user }: UserVerticalCardProps) {
   const { user: currentUser } = useUser();
   const isSameUser = currentUser?.id === user.id;
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { ExploreViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
-import { UserCard2 } from "@/components/explore/user-card-2";
+import { UserVerticalCard } from "@/components/explore/user-vertical-card";
 import type { userService } from "@/lib/db/services/user.service";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { Tables } from "database.types";
@@ -9,8 +9,8 @@ import { use } from "react";
 
 export interface ExplorerViewUsersProps {
   usersPromise:
-  | ReturnType<typeof userService.searchUsers>
-  | ReturnType<typeof userService.getTrendingUsers>;
+    | ReturnType<typeof userService.searchUsers>
+    | ReturnType<typeof userService.getTrendingUsers>;
   variant?: "grid" | "scroll";
   title?: string;
   showEmptyState?: boolean;
@@ -39,9 +39,9 @@ export function ExploreViewUsers({
       {!hasResults && <ExploreViewEmpty />}
       {variant === "scroll" && hasResults && (
         <ScrollArea className='w-full whitespace-nowrap pb-4'>
-          <div className="flex gap-4">
+          <div className='flex gap-4'>
             {users?.data?.map((user) => (
-              <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
+              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
             ))}
           </div>
           <ScrollBar orientation='horizontal' />
@@ -50,7 +50,7 @@ export function ExploreViewUsers({
       {variant === "grid" && hasResults && (
         <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-3'>
           {users?.data?.map((user) => (
-            <UserCard2 key={user.id} user={user as unknown as Tables<"users">} />
+            <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
           ))}
         </div>
       )}

@@ -7,11 +7,11 @@ import { Card } from "@/components/ui/card";
 import type { Tables } from "database.types";
 import Link from "next/link";
 
-interface UserCardProps {
+interface UserHorizontalCardProps {
   user: Tables<"users">;
 }
 
-export function UserCard({ user }: UserCardProps) {
+export function UserHorizontalCard({ user }: UserHorizontalCardProps) {
   return (
     <PostWrapper>
       <Card className='p-4 flex flex-col justify-between gap-4 relative dark:bg-card bg-card shadow-sm cursor-pointer border-0'>
