@@ -45,8 +45,6 @@ export function PostContent({ children }: PostContentProps) {
   const canExpand = expansionLevel < expansionData.levels - 1;
   const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
 
-  console.log({ isFullyExpanded, content });
-
   useEffect(() => {
     if (contentRef.current) {
       const contentRefHeight = `${contentRef.current.scrollHeight}px`;
