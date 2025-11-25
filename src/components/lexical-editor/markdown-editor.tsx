@@ -83,7 +83,7 @@ function EditorRefPlugin({ editorRef }: { editorRef?: RefObject<LexicalEditor> }
  */
 function Placeholder({ children }: { children: string }) {
   return (
-    <div className="absolute top-0 left-0 text-default-400 pointer-events-none select-none">
+    <div className="absolute top-0 left-0 text-muted-foreground/60 pointer-events-none select-none">
       {children}
     </div>
   );

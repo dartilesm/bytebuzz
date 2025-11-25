@@ -1,9 +1,8 @@
 "use client";
 
-import { Avatar } from "@heroui/react";
-
-import { Image } from "@heroui/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Tables } from "database.types";
+import Image from "next/image";
 import { use } from "react";
 
 export interface UserProfileCoverAvatarProps {
@@ -13,24 +12,28 @@ export interface UserProfileCoverAvatarProps {
 export function UserProfileCoverAvatar({ profilePromise }: UserProfileCoverAvatarProps) {
   const profile = use(profilePromise);
   return (
-    <div>
-      <Image
-        alt='Profile Cover'
-        classNames={{
-          wrapper: "w-full max-w-full max-w-full! aspect-[12/4] m-0",
-          img: "w-full h-full object-cover object-center m-0 aspect-[11/4] h-auto rounded-t-none",
-          blurredImg: "opacity-20",
-        }}
-        isBlurred
-        src={profile.cover_image_url ?? undefined}
-      />
+    <div className="space-y-4">
+      <div className="w-full aspect-12/4 relative">
+        <div className="absolute top-0 md:-left-4 -left-2 w-[calc(100%+16px)] md:w-[calc(100%+32px)] h-full bg-linear-to-bl from-gray-200 to-gray-300 dark:from-gray-800 dark:to-gray-900">
+          {
+            profile.cover_image_url && (
+              <Image
+                alt='Profile Cover'
+                src={profile.cover_image_url || ""}
+                fill
+                className="object-cover "
+              />
+            )
+          }
+        </div>
+
+      </div>
       <div className='relative'>
         <div className='absolute -bottom-16 left-1/2 -translate-x-1/2 z-10 flex flex-col'>
-          <Avatar
-            className='w-32 h-32 text-large'
-            src={profile.image_url ?? undefined}
-            isBordered
-          />
+          <Avatar className='w-32 h-32 border-4 border-background'>
+            <AvatarImage src={profile.image_url ?? undefined} className="object-cover" />
+            <AvatarFallback className="text-4xl">{profile.display_name?.[0]}</AvatarFallback>
+          </Avatar>
         </div>
       </div>
     </div>

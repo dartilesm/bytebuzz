@@ -1,6 +1,6 @@
 "use client";
 
-import { ModalContent, Modal } from "@heroui/react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { usePathname, useRouter, useSelectedLayoutSegment } from "next/navigation";
 
 export default function ModalLayout({ children }: { children: React.ReactNode }) {
@@ -20,21 +20,10 @@ export default function ModalLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <Modal
-      defaultOpen
-      size='xl'
-      backdrop='blur'
-      scrollBehavior='outside'
-      hideCloseButton
-      onClose={onClose}
-      className='flex justify-center items-center w-min'
-      placement='center'
-      classNames={{
-        base: "max-w-[95vw] md:max-w-xl",
-        wrapper: "p-2 md:p-4",
-      }}
-    >
-      <ModalContent>{children}</ModalContent>
-    </Modal>
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-[95vw] md:max-w-xl p-0 overflow-hidden border-none bg-transparent shadow-none [&>button]:hidden">
+        {children}
+      </DialogContent>
+    </Dialog>
   );
 }

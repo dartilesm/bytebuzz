@@ -60,9 +60,9 @@ export function PostProvider({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [action, setAction] = useState<"reply" | "clone">("reply");
 
-  function togglePostModal(isOpen?: boolean, action: "reply" | "clone" = "reply") {
-    setIsModalOpen(isOpen ?? !isModalOpen);
-    setAction(action);
+  function togglePostModal(open?: boolean, action?: "reply" | "clone") {
+    setIsModalOpen(open ?? !isModalOpen);
+    setAction(action ?? "reply");
   }
 
   return (

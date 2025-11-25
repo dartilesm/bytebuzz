@@ -1,6 +1,10 @@
 "use client";
 
-import { Button, ScrollShadow, Skeleton, Tooltip, cn } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import React, { type CSSProperties, useEffect } from "react";
 import { type ThemeRegistration, codeToHtml } from "shiki";
@@ -119,7 +123,7 @@ export function CodeBlock({
   return (
     <div
       className={cn(
-        "rounded-lg overflow-hidden border border-default-200 bg-content1 cursor-default",
+        "rounded-lg overflow-hidden border border-border bg-muted/50 cursor-default",
         className
       )}
       style={
@@ -131,50 +135,58 @@ export function CodeBlock({
     >
       <div className='flex items-center justify-between px-2 pt-1 pr-1 bg-[var(--editor-background)]'>
         <div className='flex items-center gap-2'>
-          <span className='text-xs font-base cursor-text font-sans text-default-500'>
+          <span className='text-xs font-base cursor-text font-sans text-muted-foreground'>
             {formatLanguage(language)}
           </span>
         </div>
         <div className='flex items-center gap-2'>
-          <Tooltip content='Download code' color='default'>
-            <Button
-              isIconOnly
-              variant='light'
-              color='default'
-              onPress={handleDownload}
-              aria-label='Download code'
-              className='size-8 min-w-8 text-default-400 hover:text-default-500'
-            >
-              <DownloadIcon size={14} />
-            </Button>
-          </Tooltip>
-          <Tooltip
-            content={copied ? "Copied!" : tooltipProps.content || "Copy code"}
-            color={tooltipProps.color || "default"}
-          >
-            <Button
-              isIconOnly
-              variant='light'
-              color='default'
-              onPress={handleCopy}
-              aria-label='Copy code'
-              className='size-8 min-w-8 text-default-400 hover:text-default-500'
-            >
-              <CopyIcon size={14} />
-            </Button>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={handleDownload}
+                  aria-label='Download code'
+                  className='size-8 min-w-8 text-muted-foreground hover:text-foreground'
+                >
+                  <DownloadIcon size={14} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Download code</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={handleCopy}
+                  aria-label='Copy code'
+                  className='size-8 min-w-8 text-muted-foreground hover:text-foreground'
+                >
+                  <CopyIcon size={14} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{copied ? "Copied!" : tooltipProps.content || "Copy code"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
-      <ScrollShadow
-        className={cn(
-          "max-h-[500px] overflow-auto [&>pre]:m-0 bg-[var(--editor-background)] text-xs cursor-text [&>pre]:p-2",
-          "data-[left-scroll=true]:[mask-image:linear-gradient(270deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[right-scroll=true]:[mask-image:linear-gradient(90deg,var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)] data-[left-right-scroll=true]:[mask-image:linear-gradient(to_right,var(--editor-background),var(--editor-background),transparent_0,var(--editor-background)_var(--scroll-shadow-size),var(--editor-background)_calc(100%_-_var(--scroll-shadow-size)),transparent)]"
-        )}
-        orientation='horizontal'
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-      />
+      <ScrollArea className="max-h-[500px] bg-[var(--editor-background)]">
+        <div
+          className="text-xs cursor-text [&>pre]:p-2 [&>pre]:m-0"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+        />
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   );
 }

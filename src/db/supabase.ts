@@ -44,10 +44,15 @@ export function createServerSupabaseClient({
   accessToken?: string | null;
 } = {}) {
   async function accessToken() {
+    // If accessToken is empty string, means the user is not authenticated
+    // and probably a cached service call
+    if (clerkToken === "") return null;
+    // If accessToken is provided, means the user's token was
+    // already computed and cached
     if (clerkToken) return clerkToken;
 
     const session = await auth();
-    return session.getToken();
+    return await session.getToken();
   }
 
   return createClient<Database>(

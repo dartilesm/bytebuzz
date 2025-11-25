@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Button, Link } from "@heroui/react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -60,20 +61,21 @@ export function PageHeader({
   } */
 
   return (
-    <header className={cn("sticky top-0 z-40 dark:bg-background bg-content1", className)}>
+    <header className={cn("sticky top-0 z-40 dark:bg-background bg-background", className)}>
       <div className='container flex items-center h-14 md:h-16 px-2 md:px-4'>
         <div className='flex items-center gap-1 md:gap-2 flex-1 min-w-0'>
           <div className='flex items-center gap-1 md:gap-2'>
             {showBackButton && (
               <Button
-                as={Link}
-                href={backLink}
-                isIconOnly
-                variant='light'
+                asChild
+                variant='ghost'
+                size='icon'
                 aria-label='Go back'
                 className='min-w-[44px] min-h-[44px]'
               >
-                <ArrowLeftIcon className='w-4 h-4 md:w-5 md:h-5' />
+                <Link href={backLink as any}>
+                  <ArrowLeftIcon className='w-4 h-4 md:w-5 md:h-5' />
+                </Link>
               </Button>
             )}
           </div>

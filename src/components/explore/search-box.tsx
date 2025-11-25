@@ -2,10 +2,18 @@
 
 import { SearchBoxEmpty } from "@/components/explore/search-box-empty";
 import { SearchBoxItem } from "@/components/explore/search-box-item";
-import { useUsersSearch } from "@/hooks/fetch/use-users-search";
-import { Autocomplete, AutocompleteItem, Spinner } from "@heroui/react";
+import { useUsersSearch } from "@/hooks/queries/use-users-search";
+import {
+  Autocomplete,
+  AutocompleteClear,
+  AutocompleteContent,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+  AutocompleteStatus,
+} from "@/components/ui/autocomplete";
 import type { Database } from "database.types";
-import { SearchIcon } from "lucide-react";
+import { Loader2, SearchIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
 
@@ -34,7 +42,7 @@ export function SearchBox({
   } = useUsersSearch(debouncedSearchTerm);
 
   function handleInputChange(term: string) {
-    setSearchTerm(inputRef.current?.value || "");
+    setSearchTerm(term);
     setDebouncedSearchTerm(term);
   }
 
@@ -48,86 +56,67 @@ export function SearchBox({
     onSearch?.("");
   }
 
+  function handleItemSelect(item: CombinedItem) {
+    if ("type" in item && item.type === "search") {
+      handleExactSearch();
+    }
+    setOpen(false);
+  }
+
   // Create combined items with search item first if there's a search term
   const combinedItems: CombinedItem[] =
     debouncedSearchTerm && debouncedSearchTerm.trim() !== ""
       ? [{ id: "search-exact", type: "search", term: debouncedSearchTerm }, ...users]
       : users;
 
+  const [open, setOpen] = useState(false);
+
   return (
     <Autocomplete
-      aria-label='Select an employee'
-      allowsEmptyCollection
-      classNames={{
-        listboxWrapper: "max-h-[320px]",
-        selectorButton: "text-default-500",
-      }}
-      defaultInputValue={debouncedSearchTerm}
-      defaultItems={combinedItems}
-      inputValue={searchTerm}
+      open={open}
+      onOpenChange={setOpen}
       items={combinedItems}
-      isLoading={isLoading}
-      errorMessage='Error fetching content'
-      inputProps={{
-        ref: inputRef,
-        classNames: {
-          input: "ml-1",
-          inputWrapper:
-            "bg-default-100/50 dark:bg-content2/50 backdrop-blur-xl hover:bg-default-200/50 dark:hover:bg-content2 group-data-[focused=true]:bg-default-200/50 dark:group-data-[focused=true]:bg-content2 rounded-medium border-content3 border",
-        },
+      openOnInputClick={combinedItems.length > 0}
+      variant="flat"
+      itemToStringValue={(item: unknown) => {
+        const val = item as CombinedItem;
+        if ("display_name" in val) return val.display_name || "";
+        return val.term;
       }}
-      selectorIcon={null}
-      listboxProps={{
-        emptyContent: <SearchBoxEmpty searchTerm={debouncedSearchTerm} />,
-        hideSelectedIcon: true,
-        itemClasses: {
-          base: [
-            "rounded-large",
-            "text-default-500",
-            "transition-all",
-            "duration-200",
-            "data-[hover=true]:text-foreground",
-            "data-[hover=true]:bg-default-100/80",
-            "dark:data-[hover=true]:bg-default-50/50",
-            "data-[pressed=true]:opacity-70",
-            "data-[pressed=true]:scale-[0.98]",
-            "data-[selectable=true]:focus:bg-default-100",
-            "data-[focus-visible=true]:ring-2",
-            "data-[focus-visible=true]:ring-primary-200",
-            "dark:data-[focus-visible=true]:ring-primary-800",
-          ],
-        },
-      }}
-      placeholder={placeholder}
-      popoverProps={{
-        isOpen: true,
-        offset: 10,
-        classNames: {
-          base: "rounded-large",
-          content:
-            "p-2 border-small border-default-100 bg-background/95 backdrop-blur-xl shadow-large",
-        },
-      }}
-      radius='full'
-      startContent={<SearchIcon className='text-default-400' size={20} strokeWidth={2.5} />}
-      endContent={isLoading ? <Spinner size='sm' variant='dots' /> : undefined}
-      variant='flat'
-      onInputChange={handleInputChange}
-      onClear={handleClear}
+      value={searchTerm}
+      onValueChange={handleInputChange}
+      filter={null}
     >
-      {(item) => {
-        const textValue =
-          typeof item === "object" && "display_name" in item ? item.display_name : item.term;
-        return (
-          <AutocompleteItem
+      <label className="flex items-center rounded-full px-3 relative w-full">
+        <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50 absolute left-2 z-10" />
+        <AutocompleteInput
+          ref={inputRef}
+          placeholder={placeholder}
+          className="absolute left-0 h-9 px-8"
+        />
+        {isLoading && <Loader2 className="h-4 w-4 animate-spin opacity-50" />}
+        {searchTerm && (
+          <AutocompleteClear onClick={handleClear} />
+        )}
+      </label>
+      <AutocompleteContent>
+        {isLoading && <AutocompleteStatus>Loading...</AutocompleteStatus>}
+        {!isLoading && combinedItems.length === 0 && debouncedSearchTerm && (
+          <AutocompleteStatus>
+            <SearchBoxEmpty searchTerm={debouncedSearchTerm} />
+          </AutocompleteStatus>
+        )}
+        <AutocompleteList>
+          {(item: CombinedItem) => <AutocompleteItem
             key={item.id}
-            textValue={textValue}
-            className='data-[hover=true]:bg-default-200 dark:data-[hover=true]:bg-default-100'
+            value={item}
+            onSelect={() => handleItemSelect(item)}
           >
             <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
           </AutocompleteItem>
-        );
-      }}
+          }
+        </AutocompleteList>
+      </AutocompleteContent>
     </Autocomplete>
   );
 }

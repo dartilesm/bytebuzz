@@ -1,13 +1,15 @@
 "use client";
 
 import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
-import { UserProfilePopoverCard } from "@/components/user-profile/user-profile-popover-card";
+import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
 import { PostProvider } from "@/context/post-provider";
 import { formatDateTime } from "@/lib/format-time";
 import { getRelativeTime } from "@/lib/relative-time";
 import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { Avatar, Card, CardBody, CardHeader, Tooltip } from "@heroui/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -89,15 +91,14 @@ export function CondensedUserPost({
       <div onClick={handleClick} onKeyDown={handleKeyDown}>
         <Card
           className={cn(
-            "relative flex flex-row gap-2 p-2 dark:bg-content2/50 bg-default-300/40 border dark:border-content3 border-content4 [box-shadow:none] transition-all duration-200",
+            "relative flex flex-row gap-2 p-2 bg-muted/40 border shadow-none transition-all duration-200",
             {
-              "cursor-pointer hover:dark:bg-content2/70 hover:bg-default-300/60 hover:border-content4 dark:hover:border-content2":
+              "cursor-pointer hover:bg-muted/60 hover:border-muted-foreground/20":
                 !isNavigationDisabled,
             },
             className
           )}
           tabIndex={isNavigationDisabled ? undefined : 0}
-          as='article'
           role={isNavigationDisabled ? undefined : "button"}
           aria-label={
             isNavigationDisabled
@@ -108,9 +109,16 @@ export function CondensedUserPost({
           <div className='flex justify-center relative pt-1'>
             {isInteractive ? (
               <Link href={`/@${user?.username}`} className='h-fit'>
-                <Tooltip content={<UserProfilePopoverCard user={user} />} delay={1000}>
-                  <UserAvatar user={user} />
-                </Tooltip>
+                <TooltipProvider>
+                  <Tooltip delayDuration={1000}>
+                    <TooltipTrigger asChild>
+                      <div><UserAvatar user={user} /></div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <UserProfilePopoverContent user={user} />
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </Link>
             ) : (
               <UserAvatar user={user} />
@@ -118,21 +126,28 @@ export function CondensedUserPost({
           </div>
 
           <div className='w-full overflow-hidden'>
-            <CardHeader className='flex items-center gap-2 pb-1 flex-1 p-0'>
+            <CardHeader className='flex items-center gap-2 pb-1 flex-1 p-0 space-y-0'>
               <div className='flex items-center justify-between w-full'>
                 <div className='flex items-center gap-1.5'>
                   {isInteractive ? (
-                    <Tooltip content={<UserProfilePopoverCard user={user} />} delay={1000}>
-                      <Link href={`/@${user?.username}`}>
-                        <UserInfo user={user} />
-                      </Link>
-                    </Tooltip>
+                    <TooltipProvider>
+                      <Tooltip delayDuration={1000}>
+                        <TooltipTrigger asChild>
+                          <Link href={`/@${user?.username}`}>
+                            <UserInfo user={user} />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <UserProfilePopoverContent user={user} />
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   ) : (
                     <UserInfo user={user} />
                   )}
-                  <span className='text-xs text-content4-foreground/50'>·</span>
+                  <span className='text-xs text-muted-foreground/50'>·</span>
                   <time
-                    className='text-xs text-content4-foreground/50'
+                    className='text-xs text-muted-foreground/50'
                     title={formatDateTime(created_at as unknown as Date)}
                   >
                     {getRelativeTime(new Date(created_at as unknown as Date))}
@@ -141,9 +156,9 @@ export function CondensedUserPost({
               </div>
             </CardHeader>
 
-            <CardBody className='text-sm gap-2 p-2'>
+            <CardContent className='text-sm gap-2 p-2 pt-0'>
               <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />
-            </CardBody>
+            </CardContent>
           </div>
         </Card>
       </div>
@@ -155,17 +170,16 @@ function UserInfo({ user }: { user: NestedPost["user"] }) {
   return (
     <div className='flex flex-row gap-1 items-center'>
       <span className='font-semibold text-sm'>{user?.display_name}</span>
-      <span className='text-xs text-content4-foreground/50'>@{user?.username}</span>
+      <span className='text-xs text-muted-foreground/50'>@{user?.username}</span>
     </div>
   );
 }
 
 function UserAvatar({ user }: { user: NestedPost["user"] }) {
   return (
-    <Avatar
-      src={user?.image_url ?? ""}
-      alt={user?.display_name ?? ""}
-      className='size-6 shrink-0 z-20'
-    />
+    <Avatar className='size-6 shrink-0 z-20'>
+      <AvatarImage src={user?.image_url ?? ""} alt={user?.display_name ?? ""} />
+      <AvatarFallback>{user?.display_name?.[0]}</AvatarFallback>
+    </Avatar>
   );
 }

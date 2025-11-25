@@ -1,5 +1,5 @@
 import { createPostAction } from "@/actions/create-post";
-import { addToast } from "@heroui/react";
+import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 /**
@@ -16,19 +16,13 @@ export function useCreatePostMutation() {
       // Invalidate the posts query to refetch the latest data
       queryClient.invalidateQueries({ queryKey: ["posts"] });
 
-      addToast({
-        title: "Post created",
+      toast.success("Post created", {
         description: "Your post has been published successfully",
-        variant: "flat",
-        color: "success",
       });
     },
     onError: (error: Error) => {
-      addToast({
-        title: "Failed to create post",
+      toast.error("Failed to create post", {
         description: error.message || "Something went wrong. Please try again.",
-        variant: "flat",
-        color: "danger",
       });
     },
   });

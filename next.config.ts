@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "*.supabase.co",
       },
+      {
+        hostname: "img.clerk.com",
+      },
     ],
   },
 };

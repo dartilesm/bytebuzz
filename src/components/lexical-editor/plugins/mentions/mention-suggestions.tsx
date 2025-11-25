@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardBody } from "@heroui/card";
-import { Avatar } from "@heroui/avatar";
-import { Button } from "@heroui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { User } from "./mention-node";
 
@@ -74,17 +74,17 @@ export function MentionSuggestions({
       }}
     >
       <Card className="w-64 max-h-64 overflow-auto shadow-lg">
-        <CardBody className="p-2">
+        <CardContent className="p-2">
           <div className="space-y-1">
             {suggestions.map((user, index) => (
               <Button
                 key={user.id}
-                variant={index === selectedIndex ? "flat" : "light"}
+                variant={index === selectedIndex ? "secondary" : "ghost"}
                 className={cn(
                   "w-full justify-start p-2 h-auto",
-                  "hover:bg-default-100 focus:bg-default-100",
+                  "hover:bg-accent focus:bg-accent",
                   {
-                    "bg-primary-100": index === selectedIndex,
+                    "bg-accent": index === selectedIndex,
                   },
                 )}
                 onClick={() => handleUserClick(user)}
@@ -94,17 +94,13 @@ export function MentionSuggestions({
                 aria-selected={index === selectedIndex}
               >
                 <div className="flex items-center gap-3 w-full">
-                  <Avatar
-                    src={user.avatarUrl}
-                    alt={user.displayName}
-                    size="sm"
-                    className="flex-shrink-0"
-                    showFallback
-                    name={user.displayName}
-                  />
+                  <Avatar className="h-8 w-8 flex-shrink-0">
+                    <AvatarImage src={user.avatarUrl} alt={user.displayName} />
+                    <AvatarFallback>{user.displayName[0]}</AvatarFallback>
+                  </Avatar>
                   <div className="flex flex-col items-start text-left min-w-0 flex-1">
                     <span className="font-medium text-sm truncate w-full">{user.displayName}</span>
-                    <span className="text-xs text-default-500 truncate w-full">
+                    <span className="text-xs text-muted-foreground truncate w-full">
                       @{user.username}
                     </span>
                   </div>
@@ -112,7 +108,7 @@ export function MentionSuggestions({
               </Button>
             ))}
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   );

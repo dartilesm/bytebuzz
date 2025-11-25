@@ -44,9 +44,9 @@ export function UserPostThread({ posts }: UserPostThreadProps) {
           post={post}
           minVisibleContentLength={1500}
           className={cn(
-            "dark:border-content2 border border-content3 bg-default-200/20 dark:bg-content1",
+            "border border-border bg-muted/20",
             {
-              "max-w-[calc(100%-2rem)] mx-auto dark:bg-content2/70 rounded-none border-t-0":
+              "max-w-[calc(100%-2rem)] mx-auto bg-muted/40 rounded-none border-t-0":
                 index < posts.length - 1,
               "rounded-t-xl border-t border-x border-b-0": index === 0 && !isFirstAndLastPost,
             }

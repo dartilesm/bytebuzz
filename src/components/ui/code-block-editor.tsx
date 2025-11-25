@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Button } from "@heroui/button";
-import { Select, SelectItem } from "@heroui/select";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useTheme } from "next-themes";
 import { Editor } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
@@ -140,88 +140,70 @@ export function CodeBlockEditor({
     <Card
       className={cn("w-full [box-shadow:none] border-default-300 border dark:border-0", className)}
     >
-      <CardHeader className='flex flex-row items-center justify-between gap-4 pb-2'>
+      <CardHeader className='flex flex-row items-center justify-between gap-4 pb-2 space-y-0'>
         <div className='flex items-center gap-2'>
           <Select
-            size='sm'
-            selectedKeys={[language]}
-            onSelectionChange={(keys) => {
-              const selectedLanguage = Array.from(keys)[0] as string;
-              handleLanguageChange(selectedLanguage);
-            }}
-            className='min-w-32'
-            aria-label='Select programming language'
+            value={language}
+            onValueChange={(value) => handleLanguageChange(value)}
           >
-            {supportedLanguages.map((lang: { value: string; label: string }) => (
-              <SelectItem key={lang.value}>{lang.label}</SelectItem>
-            ))}
+            <SelectTrigger className="w-[140px] h-8">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              {supportedLanguages.map((lang: { value: string; label: string }) => (
+                <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
+              ))}
+            </SelectContent>
           </Select>
 
-          <Chip size='sm' variant='flat' color='primary'>
+          <Badge variant='secondary'>
             {codeBlockEditorFunctions.getLineCount(code)} lines
-          </Chip>
+          </Badge>
 
-          <Chip
-            size='sm'
-            variant='flat'
-            color={
+          <Badge
+            variant={
               codeBlockEditorFunctions.getCharacterLimitStatus(code, CHARACTER_LIMIT)
                 .isApproachingLimit
-                ? "warning"
-                : "default"
+                ? "destructive"
+                : "secondary"
             }
           >
             {code.length}/{CHARACTER_LIMIT} chars
-          </Chip>
+          </Badge>
         </div>
 
         <div className='flex items-center gap-2'>
-          {/* {!readOnly && (
-            <Button
-              size="sm"
-              variant="flat"
-              startContent={isEditing ? <Eye size={16} /> : <Edit3 size={16} />}
-              onPress={handleToggleEdit}
-              aria-label={isEditing ? "Switch to preview mode" : "Switch to edit mode"}
-              className="cursor-pointer"
-            >
-              {isEditing ? "Preview" : "Edit"}
-            </Button>
-          )} */}
-
           <Button
-            size='sm'
-            variant='flat'
-            startContent={<Copy size={16} />}
-            onPress={handleCopyToClipboard}
-            color={copySuccess ? "success" : "default"}
+            size='icon'
+            variant='ghost'
+            onClick={handleCopyToClipboard}
             aria-label='Copy code to clipboard'
-            className='cursor-pointer'
-            isIconOnly
-          />
+            className={cn('cursor-pointer h-8 w-8', copySuccess && "text-green-500")}
+          >
+            <Copy size={16} />
+          </Button>
 
           <Button
-            size='sm'
-            variant='flat'
-            startContent={<Download size={16} />}
-            onPress={handleDownload}
+            size='icon'
+            variant='ghost'
+            onClick={handleDownload}
             aria-label='Download code as file'
-            className='cursor-pointer'
-            isIconOnly
-          />
+            className='cursor-pointer h-8 w-8'
+          >
+            <Download size={16} />
+          </Button>
 
           {!readOnly && (
             // Delete button
             <Button
-              size='sm'
-              variant='flat'
-              startContent={<Trash size={16} />}
-              onPress={handleRemoveCodeBlock}
+              size='icon'
+              variant='ghost'
+              onClick={handleRemoveCodeBlock}
               aria-label='Delete block code'
-              color='danger'
-              className='cursor-pointer'
-              isIconOnly
-            />
+              className='cursor-pointer h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10'
+            >
+              <Trash size={16} />
+            </Button>
           )}
         </div>
       </CardHeader>
@@ -242,7 +224,7 @@ export function CodeBlockEditor({
         );
       })()}
 
-      <CardBody className='p-0'>
+      <CardContent className='p-0'>
         <div className='relative' style={{ height: dynamicHeight }}>
           {isEditing ? (
             <div className='absolute inset-0'>
@@ -322,7 +304,7 @@ export function CodeBlockEditor({
             </div>
           )}
         </div>
-      </CardBody>
+      </CardContent>
     </Card>
   );
 }
