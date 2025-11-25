@@ -108,7 +108,7 @@ async function ThreadPage({ params }: ThreadPageProps) {
   return (
     <>
       <PageHeader title='Thread' />
-      <div className='flex flex-col gap-4 w-full'>
+      <div className='flex flex-col gap-4 w-full p-2 md:p-4'>
         <PostsProvider initialPosts={directReplies || []}>
           <PostWrapper isAncestry>
             <UserPost ancestry={postAncestry} />

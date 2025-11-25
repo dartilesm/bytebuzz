@@ -1,10 +1,12 @@
 import { withAnalytics } from "@/lib/with-analytics";
 import { SignUp } from "@clerk/nextjs";
 
-function SignUpPage() {
+async function SignUpPage({ searchParams }: PageProps<"/sign-up">) {
+  const { redirectUrl } = await searchParams;
+
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-      <SignUp />
+    <div className='flex min-h-[calc(100vh-4rem)] items-center justify-center'>
+      <SignUp fallbackRedirectUrl={(redirectUrl as string) || "/"} />
     </div>
   );
 }
