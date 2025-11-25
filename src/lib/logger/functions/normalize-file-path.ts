@@ -1,15 +1,10 @@
-import { relative } from "node:path";
 
 /**
  * Gets the project root directory
  * @returns {string} Project root path
  */
 function getProjectRoot(): string {
-  if (typeof process === "undefined" || !process.cwd) {
-    return "";
-  }
-
-  return process.cwd();
+  return process.env.PWD || "";
 }
 
 /**
@@ -75,26 +70,16 @@ export function normalizeFilePath(filePath: string): string {
     }
 
     // Fallback: show relative path from project root
-    try {
-      const relativePath = relative(projectRoot, filePath);
-      return relativePath.startsWith("..") ? filePath : relativePath;
-    } catch {
-      return bundledFile;
+    if (filePath.startsWith(projectRoot)) {
+      return filePath.slice(projectRoot.length).replace(/^[/\\]/, "");
     }
+    return bundledFile;
   }
 
   // Convert absolute paths to relative
-  try {
-    const relativePath = relative(projectRoot, filePath);
-
-    if (relativePath.startsWith("..")) {
-      // Path is outside project root, return as-is or show relative
-      return filePath;
-    }
-
-    return relativePath;
-  } catch {
-    // If relative() fails, return original path
-    return filePath;
+  if (filePath.startsWith(projectRoot)) {
+    return filePath.slice(projectRoot.length).replace(/^[/\\]/, "");
   }
+
+  return filePath;
 }
