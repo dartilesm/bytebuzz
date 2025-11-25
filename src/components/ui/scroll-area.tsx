@@ -73,6 +73,7 @@ interface ScrollAreaProps
   shadowVisibility?: "top" | "bottom" | "left" | "right" | "both" | "none";
   shadowSize?: "sm" | "md" | "lg";
   orientation?: "vertical" | "horizontal";
+  shadowClassName?: string;
 }
 
 function ScrollArea({
@@ -81,6 +82,7 @@ function ScrollArea({
   shadowVisibility,
   shadowSize = "md",
   orientation = "vertical",
+  shadowClassName,
   ...props
 }: ScrollAreaProps) {
   const { isIntersecting: isStartIntersecting, ref: startSentinelRef } = useIntersectionObserver({
@@ -145,6 +147,7 @@ function ScrollArea({
             size: shadowSize,
             visibility: isVertical ? "top" : "left",
           }),
+          shadowClassName,
           showStartShadow ? "opacity-100" : "opacity-0"
         )}
       />
@@ -157,6 +160,7 @@ function ScrollArea({
             size: shadowSize,
             visibility: isVertical ? "bottom" : "right",
           }),
+          shadowClassName,
           showEndShadow ? "opacity-100" : "opacity-0"
         )}
       />
