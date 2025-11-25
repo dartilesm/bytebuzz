@@ -1,10 +1,10 @@
 "use client";
 
-import { FollowButton } from "@/components/ui/follow-button";
-import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { FollowButton } from "@/components/ui/follow-button";
 import { cn } from "@/lib/utils";
+import { useUser } from "@clerk/nextjs";
 import type { Tables } from "database.types";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,80 +15,79 @@ interface UserCardProps {
 }
 
 /**
- * A modern user card component with a gradient background and centered layout
+ * A stunning, modern user card component with glassmorphism and refined typography
  */
 export function UserCard2({ user }: UserCardProps) {
   const { user: currentUser } = useUser();
   const isSameUser = currentUser?.id === user.id;
 
   return (
-    <Card className='relative rounded-2xl overflow-hidden max-w-[220px] shrink-0 border border-border dark:border-border shadow-xs hover:shadow-sm transition-shadow duration-300 bg-secondary-500/10 dark:bg-secondary-400/10'>
-      {/* Gradient Background Accent */}
-      <div
-        className={cn("absolute top-0 left-0 right-0 h-20 border-b border-border", {
-          "bg-gradient-to-br from-primary-400/20 via-secondary-400/10 to-transparent":
-            !user.cover_image_url,
-        })}
-      >
-        {user.cover_image_url && (
-          <Image
-            src={user.cover_image_url || ""}
-            alt={user.display_name}
-            fill
-            className='w-full h-full object-cover'
-          />
-        )}
+    <Card className='group relative flex flex-col overflow-hidden bg-background/60dark:bg-background/40 max-w-48 w-full shrink-0 py-0'>
+      {/* Cover Image or Gradient */}
+      <div className='relative h-20 w-full overflow-hidden bg-muted'>
+        <div
+          className={cn("absolute inset-0", {
+            "bg-linear-to-br from-primary/30 via-primary/10 to-background": !user.cover_image_url,
+          })}
+        >
+          {user.cover_image_url && (
+            <Image
+              src={user.cover_image_url || ""}
+              alt={user.display_name}
+              fill
+              className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-110'
+            />
+          )}
+        </div>
+        <div className='absolute inset-0 bg-linear-to-t from-background/80 to-transparent opacity-60' />
       </div>
 
-      <CardContent className='p-0'>
-        <Link href={`/@${user.username}` as unknown as UrlObject} className="block">
-          <div className='relative px-5 py-6 flex flex-col items-center gap-4'>
-            {/* Avatar with ring */}
-            <div className='relative'>
-              <Avatar className='size-24 ring-4 ring-background group-hover:scale-105 transition-transform duration-200 border-default-200'>
-                <AvatarImage src={user.image_url || undefined} alt={user.display_name} />
-                <AvatarFallback>{user.display_name[0]}</AvatarFallback>
-              </Avatar>
-            </div>
+      <CardContent className='relative flex flex-col items-center p-0'>
+        <Link
+          href={`/@${user.username}` as unknown as UrlObject}
+          className='flex flex-col items-center w-full gap-2 py-2'
+        >
+          {/* Avatar */}
+          <div className='relative -mt-24 mb-3'>
+            <Avatar className='size-24 border-4 border-background shadow-lg ring-1 ring-border/10 transition-transform duration-300 group-hover:scale-105'>
+              <AvatarImage
+                src={user.image_url || undefined}
+                alt={user.display_name}
+                className='object-cover'
+              />
+              <AvatarFallback className='bg-primary/10 text-2xl font-bold text-primary'>
+                {user.display_name[0]}
+              </AvatarFallback>
+            </Avatar>
+          </div>
 
-            {/* User info */}
-            <div className='text-center w-full space-y-1'>
-              <h3 className='font-bold text-lg truncate max-w-full group-hover:text-primary transition-colors'>
+          {/* User Info */}
+          <div className='flex flex-col items-center gap-1 px-4 text-center max-w-full w-full'>
+            <div>
+              <h3 className='line-clamp-1 text-md font-bold text-foreground max-w-full w-full text-wrap'>
                 {user.display_name}
               </h3>
-              <p className='text-sm text-muted-foreground truncate'>@{user.username}</p>
+              <p className='line-clamp-1 text-sm font-medium text-muted-foreground text-wrap'>
+                @{user.username}
+              </p>
             </div>
+            {user.bio && (
+              <p className='line-clamp-2 text-xs text-muted-foreground/80 max-w-full text-wrap'>
+                {user.bio} asd as dasd sad sad asd sad asd asdsa das dsad asd sada sdas das asd
+                asdas dsa das
+              </p>
+            )}
+          </div>
 
-            {/* Stats */}
-            <div
-              className={cn(
-                "flex gap-6 text-sm w-full justify-center py-2 border-y border-border",
-                {
-                  "border-b-0 pb-0": isSameUser,
-                }
-              )}
-            >
-              <div className='text-center'>
-                <p className='font-bold text-foreground text-base'>{user.follower_count}</p>
-                <p className='text-xs text-muted-foreground'>Followers</p>
-              </div>
-              <div className='h-auto w-px bg-border' />
-              <div className='text-center'>
-                <p className='font-bold text-foreground text-base'>{user.following_count}</p>
-                <p className='text-xs text-muted-foreground'>Following</p>
-              </div>
-            </div>
-          </div>
+          <div className='w-full px-4 h-8'></div>
         </Link>
+        {!isSameUser && (
+          <FollowButton
+            targetUserId={user.id}
+            className='absolute bottom-2 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)]'
+          />
+        )}
       </CardContent>
-      {!isSameUser && (
-        <CardFooter className='pt-0'>
-          {/* Follow button */}
-          <div className='w-full'>
-            <FollowButton targetUserId={user.id} className='w-full' />
-          </div>
-        </CardFooter>
-      )}
     </Card>
   );
 }

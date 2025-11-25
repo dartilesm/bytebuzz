@@ -1,46 +1,39 @@
 "use client";
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * A loading state component for UserCard2 that shows skeleton placeholders
+ * A loading state component for UserCard2 that matches the new stunning design
  */
 export function UserCard2Loading() {
   return (
-    <Card className='relative rounded-2xl overflow-hidden max-w-[220px] shrink-0 border border-default-200 dark:border-default-100 shadow-xs bg-secondary-500/10 dark:bg-secondary-400/10'>
-      {/* Gradient Background Accent */}
-      <Skeleton className='absolute top-0 left-0 right-0 h-20 rounded-none' />
+    <Card className='group relative flex flex-col overflow-hidden bg-background/60 dark:bg-background/40 max-w-48 w-full shrink-0 py-0'>
+      {/* Cover Skeleton */}
+      <div className='relative h-20 w-full'>
+        <Skeleton className='h-full w-full rounded-none' />
+      </div>
 
-      <CardContent className='p-0'>
-        <div className='relative px-5 py-6 flex flex-col items-center gap-4'>
-          {/* Avatar skeleton */}
-          <Skeleton className='size-24 rounded-full ring-4 ring-background' />
+      <CardContent className='relative flex flex-col items-center p-0'>
+        {/* Avatar Skeleton */}
+        <div className='relative -mt-24 mb-3'>
+          <Skeleton className='size-24 rounded-full border-4 border-background shadow-lg' />
+        </div>
 
-          {/* User info skeleton */}
-          <div className='text-center w-full space-y-1 flex flex-col items-center'>
-            <Skeleton className='h-6 w-32 rounded-lg' />
+        {/* User Info Skeleton */}
+        <div className='flex w-full flex-col items-center gap-2 px-4 max-w-full'>
+          <div className='w-full flex flex-col items-center gap-1'>
+            <Skeleton className='h-5 w-32 rounded-lg' />
             <Skeleton className='h-4 w-24 rounded-lg' />
           </div>
+          <Skeleton className='mt-2 h-8 w-full rounded-lg' />
+        </div>
 
-          {/* Stats skeleton */}
-          <div className='flex gap-6 text-sm w-full justify-center py-2 border-y border-default-200'>
-            <div className='text-center flex flex-col items-center gap-1'>
-              <Skeleton className='h-5 w-8 rounded-lg' />
-              <Skeleton className='h-3 w-16 rounded-lg' />
-            </div>
-            <div className='h-auto w-px bg-default-200' />
-            <div className='text-center flex flex-col items-center gap-1'>
-              <Skeleton className='h-5 w-8 rounded-lg' />
-              <Skeleton className='h-3 w-16 rounded-lg' />
-            </div>
-          </div>
+        {/* Follow Button Skeleton */}
+        <div className='w-full px-4 py-2'>
+          <Skeleton className='h-9 w-full rounded-md' />
         </div>
       </CardContent>
-      <CardFooter className='pt-0'>
-        {/* Follow button skeleton */}
-        <Skeleton className='w-full h-10 rounded-lg' />
-      </CardFooter>
     </Card>
   );
 }

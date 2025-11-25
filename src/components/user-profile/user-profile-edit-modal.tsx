@@ -116,7 +116,7 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className='max-w-2xl max-h-[90vh] p-0'>
+      <DialogContent className='max-w-2xl max-h-[90vh] p-0 overflow-hidden'>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className='flex flex-col justify-between max-h-[inherit]'

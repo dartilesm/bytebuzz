@@ -2,6 +2,7 @@
 
 import { FollowButton } from "@/components/ui/follow-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Database } from "database.types";
 import { SearchIcon } from "lucide-react";
 import Link from "next/link";
@@ -18,20 +19,16 @@ interface SearchBoxItemProps {
 }
 
 export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
-
   // Handle user item
   const user = item as User;
 
-  const { data: userData } = useUserDataQuery(user.id ?? "");
+  const { data: userData, isLoading } = useUserDataQuery(user.id ?? "");
 
   // Handle search item
   if ("type" in item && item.type === "search") {
     return (
       <div className='w-full cursor-pointer group'>
-        <div
-          className='flex items-center gap-3'
-          onClick={onExactSearch}
-        >
+        <div className='flex items-center gap-3' onClick={onExactSearch}>
           <div className='flex items-center justify-center size-9 rounded-full bg-muted group-hover:bg-background transition-colors border border-transparent group-hover:border-border'>
             <SearchIcon className='size-4 text-muted-foreground' />
           </div>
@@ -45,32 +42,37 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
     );
   }
 
+  if (isLoading) {
+    return <SearchBoxItemSkeleton />;
+  }
+
   return (
-    <Link
-      className='w-full block'
-      href={`/@${userData?.username}` as unknown as UrlObject}
-    >
+    <Link className='w-full block' href={`/@${userData?.username}` as unknown as UrlObject}>
       <div className='flex justify-between items-center gap-3'>
         <div className='flex gap-3 items-center flex-1 min-w-0'>
-          <Avatar className="size-10 border border-border">
+          <Avatar className='size-10 border border-border'>
             <AvatarImage src={userData?.image_url ?? undefined} alt={userData?.display_name} />
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+            <AvatarFallback className='bg-primary/10 text-primary font-semibold'>
               {userData?.display_name?.charAt(0)?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div className='flex flex-col gap-0.5 flex-1 min-w-0'>
-            <div className="flex items-center gap-2">
+            <div className='flex items-center gap-2'>
               <h4 className='text-sm font-semibold text-foreground truncate'>
                 {userData?.display_name}
               </h4>
               <span className='text-xs text-muted-foreground truncate'>@{userData?.username}</span>
             </div>
             <div className='flex items-center gap-3 text-xs text-muted-foreground'>
-              <span className="flex items-center gap-1">
-                <span className="font-medium text-foreground">{userData?.follower_count ?? 0}</span> followers
+              <span className='flex items-center gap-1'>
+                <span className='font-medium text-foreground'>{userData?.follower_count ?? 0}</span>{" "}
+                followers
               </span>
-              <span className="flex items-center gap-1">
-                <span className="font-medium text-foreground">{userData?.following_count ?? 0}</span> following
+              <span className='flex items-center gap-1'>
+                <span className='font-medium text-foreground'>
+                  {userData?.following_count ?? 0}
+                </span>{" "}
+                following
               </span>
             </div>
           </div>
@@ -80,5 +82,30 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
         </div>
       </div>
     </Link>
+  );
+}
+
+function SearchBoxItemSkeleton() {
+  return (
+    <div className='w-full block'>
+      <div className='flex justify-between items-center gap-3'>
+        <div className='flex gap-3 items-center flex-1 min-w-0'>
+          <Skeleton className='size-10 rounded-full' />
+          <div className='flex flex-col gap-2 flex-1 min-w-0'>
+            <div className='flex items-center gap-2'>
+              <Skeleton className='h-4 w-24' />
+              <Skeleton className='h-3 w-16' />
+            </div>
+            <div className='flex items-center gap-3'>
+              <Skeleton className='h-3 w-16' />
+              <Skeleton className='h-3 w-16' />
+            </div>
+          </div>
+        </div>
+        <div className='shrink-0'>
+          <Skeleton className='h-8 w-20 rounded-md' />
+        </div>
+      </div>
+    </div>
   );
 }

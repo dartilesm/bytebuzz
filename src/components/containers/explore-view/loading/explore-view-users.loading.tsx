@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function ExploreViewUsersLoading() {
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 px-2 md:px-4'>
       <Skeleton className='w-56 h-6 rounded-lg' />
       <div className='flex flex-row gap-4 overflow-hidden'>
         <UserCard2Loading />

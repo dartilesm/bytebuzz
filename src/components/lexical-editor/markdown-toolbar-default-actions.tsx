@@ -174,7 +174,11 @@ export function MarkdownToolbarDefaultActions({
       <Button
         variant='ghost'
         size='icon'
-        className={cn("text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8", buttonClassName)}
+        type='button'
+        className={cn(
+          "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
+          buttonClassName
+        )}
         onClick={() => handleInsertCodeBlock("javascript")}
       >
         <Code size={16} />
@@ -183,7 +187,11 @@ export function MarkdownToolbarDefaultActions({
       <Button
         variant='ghost'
         size='icon'
-        className={cn("text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8", buttonClassName)}
+        type='button'
+        className={cn(
+          "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
+          buttonClassName
+        )}
         onClick={handleMediaButtonClick}
       >
         <ImageUpIcon size={16} />
