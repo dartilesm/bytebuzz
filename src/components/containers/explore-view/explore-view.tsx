@@ -13,6 +13,7 @@ import {
 import { ExploreViewPostsLoading } from "@/components/containers/explore-view/loading/explore-view-posts.loading";
 import { ExploreViewUsersLoading } from "@/components/containers/explore-view/loading/explore-view-users.loading";
 import { SearchBox } from "@/components/explore/search-box";
+import { Section } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "next/navigation";
@@ -94,23 +95,17 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
           <Tabs
             value={activeSearchTypeRef.current}
             onValueChange={(key) => handleSearchTypeChange(key as SearchType)}
-            className="w-full"
-            variant="underline"
+            className='w-full'
+            variant='underline'
           >
-            <TabsList className="w-full justify-around rounded-none border-b border-border bg-background p-0 gap-0 sticky top-14 md:top-16 z-40">
-              <TabsTrigger value="all">
-                All
-              </TabsTrigger>
-              <TabsTrigger value="users">
-                Users
-              </TabsTrigger>
-              <TabsTrigger value="posts">
-                Posts
-              </TabsTrigger>
+            <TabsList className='w-full justify-around rounded-none border-b border-border bg-background p-0 gap-0 sticky top-14 md:top-16 z-40'>
+              <TabsTrigger value='all'>All</TabsTrigger>
+              <TabsTrigger value='users'>Users</TabsTrigger>
+              <TabsTrigger value='posts'>Posts</TabsTrigger>
             </TabsList>
 
-            <TabsContent value='all' className="mt-0">
-              <div className='space-y-4 p-2 md:p-4 pt-4'>
+            <TabsContent value='all' className='mt-0'>
+              <Section className='space-y-4 pt-4'>
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers
@@ -125,30 +120,30 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
                     <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
                   </Suspense>
                 )}
-              </div>
+              </Section>
             </TabsContent>
-            <TabsContent value='users' className="mt-0">
-              <div className='space-y-4 p-2 md:p-4 pt-4'>
+            <TabsContent value='users' className='mt-0'>
+              <Section className='space-y-4 pt-4'>
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers usersPromise={usersPromise} />
                   </Suspense>
                 )}
-              </div>
+              </Section>
             </TabsContent>
-            <TabsContent value='posts' className="mt-0">
-              <div className='space-y-4 p-2 md:p-4 pt-4'>
+            <TabsContent value='posts' className='mt-0'>
+              <Section className='space-y-4 pt-4'>
                 {postsPromise && (
                   <Suspense fallback={<ExploreViewPostsLoading />}>
                     <ExploreViewPosts postsPromise={postsPromise} />
                   </Suspense>
                 )}
-              </div>
+              </Section>
             </TabsContent>
           </Tabs>
         )}
         {!activeSearchTypeRef.current && (
-          <div className='space-y-4 p-2 md:p-4'>
+          <Section className='space-y-4'>
             {usersPromise && (
               <Suspense fallback={<ExploreViewUsersLoading />}>
                 <ExploreViewUsers
@@ -163,7 +158,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
                 <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
               </Suspense>
             )}
-          </div>
+          </Section>
         )}
       </ExploreViewProvider>
     </>

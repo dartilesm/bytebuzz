@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Section } from "@/components/ui/container";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LexicalEditor } from "lexical";
 import { $getRoot } from "lexical";
@@ -163,15 +164,19 @@ export function PostComposer({
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
-        <div className='flex flex-row gap-2 md:gap-4 p-2 md:p-4'>
+        <Section className='flex flex-row gap-2 md:gap-4'>
           <div className='flex flex-row gap-2 z-10 shrink-0'>
-            <Avatar className="h-10 w-10 border-2 border-background">
+            <Avatar className='h-10 w-10 border-2 border-background'>
               <AvatarImage src={user?.imageUrl} />
               <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
             </Avatar>
           </div>
           <div className='flex-1 min-w-0'>
-            <MarkdownEditor placeholder={placeholder} contentClassName='min-h-12 p-0 text-sm md:text-base' autoFocus />
+            <MarkdownEditor
+              placeholder={placeholder}
+              contentClassName='min-h-12 p-0 text-sm md:text-base'
+              autoFocus
+            />
             <div className='py-2 md:py-4'>{children}</div>
             <MarkdownToolbar className='bg-transparent border-none p-0 flex-wrap gap-1 md:gap-2'>
               <MarkdownToolbarDefaultActions
@@ -189,7 +194,7 @@ export function PostComposer({
               </Button>
             </MarkdownToolbar>
           </div>
-        </div>
+        </Section>
       </MarkdownProvider>
     </form>
   );
