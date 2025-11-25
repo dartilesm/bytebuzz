@@ -26,7 +26,8 @@ import type { Tables } from "database.types";
 import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TechnologySelector } from "./technology-selector";
 
@@ -56,6 +57,12 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   // State to store file objects for upload
   const [imageFile, setImageFile] = useState<File | undefined>();
   const [coverImageFile, setCoverImageFile] = useState<File | undefined>();
+
+  // Track pathname to detect route changes and close modal naturally
+  const pathname = usePathname();
+  const initialPathnameRef = useRef<string>(pathname);
+
+  if (pathname !== initialPathnameRef.current) onClose();
 
   const {
     control,
@@ -93,12 +100,8 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
     const blobUrl = URL.createObjectURL(file);
     onChange(blobUrl);
 
-    // Store file for later upload
-    if (type === "avatar") {
-      setImageFile(file);
-    } else {
-      setCoverImageFile(file);
-    }
+    if (type === "avatar") return setImageFile(file);
+    return setCoverImageFile(file);
   }
 
   // Handle save with react-hook-form's handleSubmit

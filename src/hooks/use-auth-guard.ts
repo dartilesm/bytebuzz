@@ -1,15 +1,52 @@
-import { useUser } from "@clerk/nextjs";
-import { toast } from "sonner";
-import { redirect, RedirectType } from "next/navigation";
+import { useSession } from "@clerk/nextjs";
+import { addToast } from "@heroui/react";
+import { usePathname, useRouter } from "next/navigation";
+import { startTransition, useEffect, useState } from "react";
+
+interface PendingAction {
+  fn: (...args: unknown[]) => unknown;
+  args: unknown[];
+  scrollY: number;
+}
 
 export function useAuthGuard() {
-  const { user } = useUser();
+  const { isSignedIn } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+
+  useEffect(resumePendingAction, [isSignedIn, pendingAction]);
+
+  function resumePendingAction() {
+    if (!isSignedIn || !pendingAction) return;
+
+    const { fn, args, scrollY } = pendingAction;
+
+    void Promise.resolve(fn(...args)).then(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+      });
+      setPendingAction(null);
+    });
+  }
 
   function withAuth<T extends (...args: unknown[]) => unknown>(fn: T) {
     return async (...args: Parameters<T>) => {
-      if (!user) {
-        toast.warning("You need to be signed in to do that");
-        redirect("/sign-in", RedirectType.push);
+      if (!isSignedIn) {
+        addToast({
+          title: "You need to be signed in to do that",
+          color: "warning",
+        });
+        setPendingAction({
+          fn,
+          args,
+          scrollY: window.scrollY,
+        });
+        startTransition(() => {
+          const redirectUrl = encodeURIComponent(pathname);
+          router.push(`/sign-in?redirectUrl=${redirectUrl}`, { scroll: false });
+        });
+        return;
       }
       return fn(...args);
     };
