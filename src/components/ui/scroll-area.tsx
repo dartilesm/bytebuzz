@@ -97,16 +97,14 @@ function ScrollArea({
   const isVertical = orientation === "vertical";
 
   const showStartShadow =
-    (shadowVisibility === undefined ||
-      shadowVisibility === "both" ||
-      shadowVisibility === (isVertical ? "top" : "left")) &&
-    !isStartIntersecting;
+    shadowVisibility === undefined
+      ? !isStartIntersecting
+      : shadowVisibility === "both" || shadowVisibility === (isVertical ? "top" : "left");
 
   const showEndShadow =
-    (shadowVisibility === undefined ||
-      shadowVisibility === "both" ||
-      shadowVisibility === (isVertical ? "bottom" : "right")) &&
-    !isEndIntersecting;
+    shadowVisibility === undefined
+      ? !isEndIntersecting
+      : shadowVisibility === "both" || shadowVisibility === (isVertical ? "bottom" : "right");
 
   return (
     <ScrollAreaPrimitive.Root
