@@ -38,13 +38,24 @@ export function ExploreViewUsers({
       {title && <h2 className='text-lg font-medium'>{title}</h2>}
       {!hasResults && <ExploreViewEmpty />}
       {variant === "scroll" && hasResults && (
-        <ScrollArea className='w-full whitespace-nowrap pb-4'>
+        <ScrollArea className='w-full whitespace-nowrap pb-4' orientation='horizontal'>
           <div className='flex gap-4'>
             {users?.data?.map((user) => (
               <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
             ))}
+            {users?.data?.map((user) => (
+              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
+            ))}
+            {users?.data?.map((user) => (
+              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
+            ))}
+            {users?.data?.map((user) => (
+              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
+            ))}
+            {users?.data?.map((user) => (
+              <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
+            ))}
           </div>
-          <ScrollBar orientation='horizontal' />
         </ScrollArea>
       )}
       {variant === "grid" && hasResults && (

@@ -1,38 +1,78 @@
-"use client"
+"use client";
 
-import type * as React from "react"
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
-import { useIntersectionObserver } from "usehooks-ts"
-import { cva, type VariantProps } from "class-variance-authority"
+import type * as React from "react";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import { useIntersectionObserver } from "usehooks-ts";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const scrollShadowVariants = cva(
-  "pointer-events-none absolute left-0 right-0 bg-gradient-to-b from-card to-transparent transition-opacity duration-300 z-10",
+  "pointer-events-none absolute from-card to-transparent transition-opacity duration-300 z-10",
   {
     variants: {
-      size: {
-        sm: "h-8",
-        md: "h-12",
-        lg: "h-16",
-      },
       orientation: {
+        vertical: "left-0 right-0",
+        horizontal: "top-0 bottom-0",
+      },
+      size: {
+        sm: "",
+        md: "",
+        lg: "",
+      },
+      visibility: {
         top: "top-0 bg-gradient-to-b",
         bottom: "bottom-0 bg-gradient-to-t",
+        left: "left-0 bg-gradient-to-r",
+        right: "right-0 bg-gradient-to-l",
       },
     },
+    compoundVariants: [
+      {
+        orientation: "vertical",
+        size: "sm",
+        class: "h-8",
+      },
+      {
+        orientation: "vertical",
+        size: "md",
+        class: "h-12",
+      },
+      {
+        orientation: "vertical",
+        size: "lg",
+        class: "h-16",
+      },
+      {
+        orientation: "horizontal",
+        size: "sm",
+        class: "w-8",
+      },
+      {
+        orientation: "horizontal",
+        size: "md",
+        class: "w-12",
+      },
+      {
+        orientation: "horizontal",
+        size: "lg",
+        class: "w-16",
+      },
+    ],
     defaultVariants: {
+      orientation: "vertical",
       size: "md",
-      orientation: "top",
+      visibility: "top",
     },
   }
-)
+);
 
 interface ScrollAreaProps
   extends React.ComponentProps<typeof ScrollAreaPrimitive.Root>,
-  VariantProps<typeof scrollShadowVariants> {
-  shadowVisibility?: "top" | "bottom" | "both" | "none"
-  shadowSize?: "sm" | "md" | "lg"
+    VariantProps<typeof scrollShadowVariants> {
+  shadowVisibility?: "top" | "bottom" | "left" | "right" | "both" | "none";
+  shadowSize?: "sm" | "md" | "lg";
+  orientation?: "vertical" | "horizontal";
 }
 
 function ScrollArea({
@@ -40,70 +80,91 @@ function ScrollArea({
   children,
   shadowVisibility,
   shadowSize = "md",
+  orientation = "vertical",
   ...props
 }: ScrollAreaProps) {
-  const { isIntersecting: isTopIntersecting, ref: topSentinelRef } = useIntersectionObserver({
+  const { isIntersecting: isStartIntersecting, ref: startSentinelRef } = useIntersectionObserver({
     threshold: 0,
     rootMargin: "0px",
-  })
-  const { isIntersecting: isBottomIntersecting, ref: bottomSentinelRef } = useIntersectionObserver({
+  });
+  const { isIntersecting: isEndIntersecting, ref: endSentinelRef } = useIntersectionObserver({
     threshold: 0,
     rootMargin: "0px",
-  })
+  });
 
-  const showTopShadow =
-    shadowVisibility === "top" ||
-    shadowVisibility === "both" ||
-    (shadowVisibility === undefined && !isTopIntersecting)
+  const isVertical = orientation === "vertical";
 
-  const showBottomShadow =
-    shadowVisibility === "bottom" ||
-    shadowVisibility === "both" ||
-    (shadowVisibility === undefined && !isBottomIntersecting)
+  const showStartShadow =
+    (shadowVisibility === undefined ||
+      shadowVisibility === "both" ||
+      shadowVisibility === (isVertical ? "top" : "left")) &&
+    !isStartIntersecting;
 
-  // If shadowVisibility is "none", force hide both
-  const isTopVisible = shadowVisibility === "none" ? false : showTopShadow
-  const isBottomVisible = shadowVisibility === "none" ? false : showBottomShadow
+  const showEndShadow =
+    (shadowVisibility === undefined ||
+      shadowVisibility === "both" ||
+      shadowVisibility === (isVertical ? "bottom" : "right")) &&
+    !isEndIntersecting;
 
   return (
     <ScrollAreaPrimitive.Root
-      data-slot="scroll-area"
+      data-slot='scroll-area'
       className={cn("relative", className)}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
-        data-slot="scroll-area-viewport"
-        className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+        data-slot='scroll-area-viewport'
+        className='focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&>div]:relative [&>div]:w-max [&>div]:overflow-hidden'
       >
-        {/* Top Sentinel */}
-        <div ref={topSentinelRef} className="h-px w-full absolute top-0 pointer-events-none opacity-0" />
+        {/* Start Sentinel */}
+        <div
+          ref={startSentinelRef}
+          className={cn("absolute pointer-events-none", {
+            "h-px w-full top-0": isVertical,
+            "w-px h-full left-0": !isVertical,
+          })}
+        />
 
         {children}
 
-        {/* Bottom Sentinel */}
-        <div ref={bottomSentinelRef} className="h-px w-full absolute bottom-0 pointer-events-none opacity-0" />
+        {/* End Sentinel */}
+        <div
+          ref={endSentinelRef}
+          className={cn("absolute pointer-events-none", {
+            "h-px w-full bottom-0": isVertical,
+            "w-px h-full right-0": !isVertical,
+          })}
+        />
       </ScrollAreaPrimitive.Viewport>
 
-      {/* Top Gradient */}
+      {/* Start Gradient */}
       <div
         className={cn(
-          scrollShadowVariants({ size: shadowSize, orientation: "top" }),
-          isTopVisible ? "opacity-100" : "opacity-0"
+          scrollShadowVariants({
+            orientation,
+            size: shadowSize,
+            visibility: isVertical ? "top" : "left",
+          }),
+          showStartShadow ? "opacity-100" : "opacity-0"
         )}
       />
 
-      {/* Bottom Gradient */}
+      {/* End Gradient */}
       <div
         className={cn(
-          scrollShadowVariants({ size: shadowSize, orientation: "bottom" }),
-          isBottomVisible ? "opacity-100" : "opacity-0"
+          scrollShadowVariants({
+            orientation,
+            size: shadowSize,
+            visibility: isVertical ? "bottom" : "right",
+          }),
+          showEndShadow ? "opacity-100" : "opacity-0"
         )}
       />
 
-      <ScrollBar />
+      <ScrollBar orientation={orientation} />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
-  )
+  );
 }
 
 function ScrollBar({
@@ -113,24 +174,22 @@ function ScrollBar({
 }: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
   return (
     <ScrollAreaPrimitive.ScrollAreaScrollbar
-      data-slot="scroll-area-scrollbar"
+      data-slot='scroll-area-scrollbar'
       orientation={orientation}
       className={cn(
         "flex touch-none p-px transition-colors select-none",
-        orientation === "vertical" &&
-        "h-full w-2.5 border-l border-l-transparent",
-        orientation === "horizontal" &&
-        "h-2.5 flex-col border-t border-t-transparent",
+        orientation === "vertical" && "h-full w-2.5 border-l border-l-transparent",
+        orientation === "horizontal" && "h-2.5 flex-col border-t border-t-transparent",
         className
       )}
       {...props}
     >
       <ScrollAreaPrimitive.ScrollAreaThumb
-        data-slot="scroll-area-thumb"
-        className="bg-border relative flex-1 rounded-full"
+        data-slot='scroll-area-thumb'
+        className='bg-border relative flex-1 rounded-full'
       />
     </ScrollAreaPrimitive.ScrollAreaScrollbar>
-  )
+  );
 }
 
-export { ScrollArea, ScrollBar }
+export { ScrollArea, ScrollBar };
