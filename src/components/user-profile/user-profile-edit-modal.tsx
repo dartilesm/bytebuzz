@@ -14,22 +14,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { profileEditModalSchema, type ProfileEditModalFormData } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
 import { log } from "@/lib/logger/logger";
 import type { TechnologyId } from "@/lib/technologies";
-import { SiGithub } from "@icons-pack/react-simple-icons";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { Tables } from "database.types";
-import { CameraIcon, GlobeIcon, ImageIcon, UserIcon } from "lucide-react";
+import { CameraIcon, ImageIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TechnologySelector } from "./technology-selector";
+import { PERSONAL_INFO_INPUTS, SOCIAL_MEDIA_INPUTS } from "@/components/user-profile/edit-modal/user-profile-edit-inputs";
+import { Separator } from "@/components/ui/separator";
 
 interface UserProfileEditModalProps {
   onClose: () => void;
@@ -38,16 +40,16 @@ interface UserProfileEditModalProps {
 }
 
 export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEditModalProps) {
-  // Replace form state with react-hook-form
-  const form = useForm<Tables<"users">>({
+  const form = useForm<ProfileEditModalFormData>({
+    resolver: zodResolver(profileEditModalSchema),
     defaultValues: {
-      ...profile,
+      display_name: profile.display_name || "",
       bio: profile.bio || "",
       location: profile.location || "",
       website: profile.website || "",
       image_url: profile.image_url || "",
       cover_image_url: profile.cover_image_url || "",
-      top_technologies: profile.top_technologies || [],
+      top_technologies: (profile.top_technologies || []) as string[],
       github_url: profile.github_url || "",
       linkedin_url: profile.linkedin_url || "",
     },
@@ -105,14 +107,14 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   }
 
   // Handle save with react-hook-form's handleSubmit
-  const onSubmit = (data: Tables<"users">) => {
+  const onSubmit = (data: ProfileEditModalFormData) => {
     const mutationData: UpdateProfileWithFilesData = {
       ...data,
       imageFile,
       coverImageFile,
       currentImageUrl: profile.image_url || undefined,
       currentCoverImageUrl: profile.cover_image_url || undefined,
-    };
+    } as Tables<"users"> & UpdateProfileWithFilesData;
 
     updateProfileMutation.mutate(mutationData);
   };
@@ -209,13 +211,6 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                     <Controller
                       name='display_name'
                       control={control}
-                      rules={{
-                        required: "Display name is required",
-                        maxLength: {
-                          value: 50,
-                          message: "Display name cannot exceed 50 characters",
-                        },
-                      }}
                       render={({ field }) => (
                         <div className='space-y-2'>
                           <Label htmlFor='display_name' className='text-muted-foreground/70'>
@@ -304,12 +299,6 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
               <Controller
                 name='bio'
                 control={control}
-                rules={{
-                  maxLength: {
-                    value: 500,
-                    message: "Bio cannot exceed 500 characters",
-                  },
-                }}
                 render={({ field }) => (
                   <div className='space-y-2'>
                     <Label htmlFor='bio'>Biography</Label>
@@ -332,134 +321,120 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
                   </div>
                 )}
               />
-              {/* Location */}
-              <Controller
-                name='location'
-                control={control}
-                render={({ field }) => (
-                  <div className='space-y-2'>
-                    <Label htmlFor='location'>Location</Label>
-                    <Input
-                      id='location'
-                      placeholder='e.g., San Francisco, CA'
-                      variant='flat'
-                      {...field}
-                      value={field.value || ""}
-                    />
-                  </div>
-                )}
-              />
-              {/* Website */}
-              <Controller
-                name='website'
-                control={control}
-                rules={{
-                  pattern: {
-                    value:
-                      /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
-                    message: "Please enter a valid URL",
-                  },
-                }}
-                render={({ field }) => (
-                  <div className='space-y-2'>
-                    <Label htmlFor='website'>Website</Label>
-                    <div className='relative'>
-                      <GlobeIcon className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
-                      <Input
-                        id='website'
-                        placeholder='https://yourwebsite.com'
-                        className='pl-9'
-                        variant='flat'
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </div>
-                    {errors.website && (
-                      <p className='text-xs text-destructive'>{errors.website.message}</p>
-                    )}
-                  </div>
-                )}
-              />
-              {/* Social Media Links */}
-              {/* GitHub */}
-              <Controller
-                name='github_url'
-                control={control}
-                rules={{
-                  pattern: {
-                    value: /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/,
-                    message: "Please enter a valid GitHub profile URL",
-                  },
-                }}
-                render={({ field }) => (
-                  <div className='space-y-2'>
-                    <Label htmlFor='github_url'>GitHub Profile</Label>
-                    <div className='relative'>
-                      <div className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground'>
-                        <SiGithub size={16} />
+              {/* Personal Info Fields */}
+              {PERSONAL_INFO_INPUTS.map((fieldConfig) => {
+                const placeholder =
+                  typeof fieldConfig.placeholder === "function"
+                    ? fieldConfig.placeholder(profile.username)
+                    : fieldConfig.placeholder;
+                const hasIcon = "icon" in fieldConfig && fieldConfig.icon !== undefined;
+                const IconComponent = hasIcon ? fieldConfig.icon : null;
+
+                return (
+                  <Controller
+                    key={fieldConfig.name}
+                    name={fieldConfig.name}
+                    control={control}
+                    render={({ field }) => (
+                      <div className='space-y-2'>
+                        <Label htmlFor={fieldConfig.name}>{fieldConfig.label}</Label>
+                        <div className={hasIcon ? "relative" : undefined}>
+                          {hasIcon && IconComponent && (
+                            <div className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground'>
+                              <IconComponent />
+                            </div>
+                          )}
+                          <Input
+                            id={fieldConfig.name}
+                            placeholder={placeholder}
+                            className={hasIcon ? "pl-9" : undefined}
+                            variant='flat'
+                            type={fieldConfig.type}
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </div>
+                        {errors[fieldConfig.name] && (
+                          <p className='text-xs text-destructive'>
+                            {errors[fieldConfig.name]?.message}
+                          </p>
+                        )}
                       </div>
-                      <Input
-                        id='github_url'
-                        placeholder={`https://github.com/${profile.username}`}
-                        className='pl-9'
-                        variant='flat'
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </div>
-                    {errors.github_url && (
-                      <p className='text-xs text-destructive'>{errors.github_url.message}</p>
                     )}
+                  />
+                );
+              })}
+              {/* Social Media Section */}
+              <div className='space-y-4'>
+                <Separator />
+                <div className='space-y-4'>
+                  <h3 className='text-sm text-muted-foreground/80'>Social Profiles</h3>
+                  <div className='space-y-4'>
+                    {SOCIAL_MEDIA_INPUTS.map((fieldConfig) => {
+                      const placeholder =
+                        typeof fieldConfig.placeholder === "function"
+                          ? fieldConfig.placeholder(profile.username)
+                          : fieldConfig.placeholder;
+                      const hasIcon = "icon" in fieldConfig && fieldConfig.icon !== undefined;
+                      const IconComponent = hasIcon ? fieldConfig.icon : null;
+
+                      return (
+                        <Controller
+                          key={fieldConfig.name}
+                          name={fieldConfig.name}
+                          control={control}
+                          render={({ field }) => (
+                            <div className='space-y-2'>
+                              <Label htmlFor={fieldConfig.name}>{fieldConfig.label}</Label>
+                              <div className={hasIcon ? "relative" : undefined}>
+                                {hasIcon && IconComponent && (
+                                  <div className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground'>
+                                    <IconComponent />
+                                  </div>
+                                )}
+                                <Input
+                                  id={fieldConfig.name}
+                                  placeholder={placeholder}
+                                  className={hasIcon ? "pl-9" : undefined}
+                                  variant='flat'
+                                  type={fieldConfig.type}
+                                  {...field}
+                                  value={field.value || ""}
+                                />
+                              </div>
+                              {errors[fieldConfig.name] && (
+                                <p className='text-xs text-destructive'>
+                                  {errors[fieldConfig.name]?.message}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        />
+                      );
+                    })}
                   </div>
-                )}
-              />
-              {/* LinkedIn */}
-              <Controller
-                name='linkedin_url'
-                control={control}
-                rules={{
-                  pattern: {
-                    value:
-                      /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/[a-zA-Z0-9-]+\/?|company\/[a-zA-Z0-9-]+\/?)$/,
-                    message: "Please enter a valid LinkedIn profile URL",
-                  },
-                }}
-                render={({ field }) => (
-                  <div className='space-y-2'>
-                    <Label htmlFor='linkedin_url'>LinkedIn Profile</Label>
-                    <div className='relative'>
-                      <div className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground'>
-                        <LinkedInIcon size={16} fill='currentColor' />
+                </div>
+              </div>
+              {/* Technologies Section */}
+              <div className='space-y-4'>
+                <Separator />
+                <div className='space-y-4'>
+                  <h3 className='text-sm font-semibold text-foreground'>Technologies</h3>
+                  <Controller
+                    name='top_technologies'
+                    control={control}
+                    render={({ field }) => (
+                      <div className='space-y-2'>
+                        <Label htmlFor='top_technologies'>Top Technologies</Label>
+                        <TechnologySelector
+                          initialTechnologies={(field.value || []) as TechnologyId[]}
+                          onTechnologiesChange={field.onChange}
+                        />
                       </div>
-                      <Input
-                        id='linkedin_url'
-                        placeholder={`https://linkedin.com/in/${profile.username}`}
-                        className='pl-9'
-                        variant='flat'
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </div>
-                    {errors.linkedin_url && (
-                      <p className='text-xs text-destructive'>{errors.linkedin_url.message}</p>
                     )}
-                  </div>
-                )}
-              />
-              {/* Top Technologies */}
-              <Controller
-                name='top_technologies'
-                control={control}
-                render={({ field }) => (
-                  <div className='space-y-2'>
-                    <Label htmlFor='top_technologies'>Top Technologies</Label>
-                    <TechnologySelector
-                      initialTechnologies={field.value as TechnologyId[]}
-                      onTechnologiesChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <DialogFooter className='bg-background px-6 py-4'>

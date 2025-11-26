@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import { Link2Icon, MoreHorizontalIcon, PencilIcon, Share2Icon } from "lucide-react";
+import { Link2Icon, MoreHorizontalIcon, PencilIcon, PlusIcon, Share2Icon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { use, useState } from "react";
 import type { Tables } from "database.types";
@@ -31,6 +31,7 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
   const { withAuth } = useAuthGuard();
   const { isMobile } = useNavigationContext();
   const isCurrentUser = user?.username === profile.username;
+  const hasSocialLinks = profile.github_url || profile.linkedin_url;
 
   function handleCopyLink() {
     navigator.clipboard.writeText(window.location.href);
@@ -111,6 +112,26 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
               </TooltipTrigger>
               <TooltipContent>
                 <p>View LinkedIn profile</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        {isCurrentUser && hasSocialLinks && (
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='outline'
+                  size='icon'
+                  className='border-dashed border rounded-md text-muted-foreground bg-transparent'
+                  onClick={withAuth(toggleEditProfileModal)}
+                  aria-label='Add social links'
+                >
+                  <PlusIcon size={16} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <span>Add social links</span>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
