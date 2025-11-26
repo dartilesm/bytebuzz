@@ -18,11 +18,12 @@ export function PostActionModal({ post, action, onOpenChange }: PostActionModalP
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onOpenChange(false)}>
       <DialogContent
-        className={cn("max-w-xl p-0 gap-0 overflow-hidden [&>button]:hidden rounded-xl bg-background", {
-          "dark:bg-muted": action === "clone",
-        })}
+        className={cn("max-w-xl p-0 gap-0 overflow-hidden [&>button]:hidden rounded-xl")}
       >
-        <DialogHeader className="flex flex-row justify-between p-2 pl-4 items-center space-y-0">
+        <DialogHeader className={cn("flex flex-row justify-between p-2 pl-4 items-center space-y-0", {
+          "dark:bg-card": action === "reply",
+          "dark:bg-muted": action === "clone",
+        })}>
           <DialogTitle className="text-sm font-medium flex items-center gap-1 text-muted-foreground/60">
             <Repeat2Icon size={14} />
             {action === "reply" ? "Reply to" : "Repost"} @{post.user?.username}&apos;s post
@@ -31,9 +32,7 @@ export function PostActionModal({ post, action, onOpenChange }: PostActionModalP
             <XIcon size={14} />
           </Button>
         </DialogHeader>
-        <div>
-          <PostInteraction post={post} action={action} onSubmit={onOpenChange} />
-        </div>
+        <PostInteraction post={post} action={action} onSubmit={onOpenChange} />
       </DialogContent>
     </Dialog>
   );

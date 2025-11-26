@@ -62,7 +62,7 @@ export function AccountDropdownContent({ onSignOut, onClose }: AccountDropdownCo
         </Link>
       </Button>
 
-      <div className='w-full flex items-center justify-between px-4 py-2'>
+      <div className='w-full flex items-center justify-between px-3 py-2'>
         <span className="text-sm font-medium flex items-center gap-2">
           <SunMoonIcon size={18} />
           Theme

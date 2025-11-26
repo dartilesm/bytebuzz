@@ -34,11 +34,11 @@ export function PostInteraction({
   const isRepost = action === "clone";
 
   return (
-    <div className='flex flex-col gap-2 rounded-xl bg-card'>
+    <div className='flex flex-col gap-2 rounded-xl bg-muted'>
       {isReply && (
         <div className='relative'>
           <PostThreadLine isFirstInThread />
-          <UserPost post={post} isNavigationDisabled>
+          <UserPost post={post} isNavigationDisabled className="rounded-none border-0">
             {post.repost && <CondensedUserPost post={post.repost} isNavigationDisabled />}
           </UserPost>
         </div>
@@ -48,8 +48,8 @@ export function PostInteraction({
         onSubmit={onSubmit}
         {...(isRepost && { repostPostId: post.id })}
         {...(isReply && { replyPostId: post.id })}
-        className={cn("border-0", {
-          "rounded-b-xl rounded-t-none": isReply,
+        className={cn("border-0 rounded-none", {
+          "rounded-b-xl": isReply,
           "dark:hover:bg-muted": isRepost
         })}
       >

@@ -102,16 +102,21 @@ export function PostFooter() {
   const sortedReactions = getSortedReactions(reactionsWithCounts);
   const totalReactions = getTotalReactions(sortedReactions);
 
+  const hasReactions = sortedReactions.length > 0;
+
   return (
     <>
-      <CardFooter className={cn("z-30 flex flex-col gap-1 w-full px-2 md:px-4 pt-2 md:pt-4 pb-2 md:pb-4")} id="post-card-footer">
+      <CardFooter className={cn("z-30 flex flex-col w-full px-2 md:px-4 pt-2", {
+        "pb-2": !hasReactions,
+        "gap-2 pb-1": hasReactions,
+      })} id="post-card-footer">
         {!isNavigationDisabled && (
           <>
             {/* Legend: All reactions ordered + total counter */}
-            {sortedReactions.length > 0 && (
+            {hasReactions && (
               <div
                 className={cn(
-                  "flex flex-row items-center ml-1 md:ml-2 w-full gap-1 md:gap-2 py-1",
+                  "flex flex-row items-center ml-1 md:ml-2 w-full gap-1 md:gap-2",
                   {
                     "px-2 md:px-3.5": isThreadPagePost,
                   }
@@ -145,11 +150,11 @@ export function PostFooter() {
                 )}
               </div>
             )}
-            <Separator
+            {hasReactions && <Separator
               className={cn("dark:bg-muted bg-border", {
                 "w-[calc(100%-(var(--spacing)*8.5))]": isThreadPagePost,
               })}
-            />
+            />}
             <div
               className={cn(
                 "z-30 flex flex-row gap-1 md:gap-2 justify-between w-full",
@@ -163,7 +168,7 @@ export function PostFooter() {
                 <Tooltip delayDuration={0} open={isReactionsTooltipOpen} onOpenChange={setIsReactionsTooltipOpen}>
                   <TooltipTrigger asChild>
                     <Button
-                      variant={!selectedReaction ? "ghost" : "secondary"}
+                      variant={!selectedReaction ? "ghost" : "flat"}
                       size={!selectedReaction ? "icon" : "sm"}
                       onClick={() => setIsReactionsTooltipOpen(!isReactionsTooltipOpen)}
                       className={cn(
