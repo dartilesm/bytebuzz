@@ -6,14 +6,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-import React, { type CSSProperties, useEffect } from "react";
+import { type CSSProperties, type MouseEvent, useEffect, useState } from "react";
 import { type ThemeRegistration, codeToHtml } from "shiki";
 
-import oneDarkProTheme from "@shikijs/themes/github-dark";
-import oneLightTheme from "@shikijs/themes/one-light";
-import { CopyIcon, DownloadIcon } from "lucide-react";
+import githubDarkHighContrast from "@shikijs/themes/github-dark-high-contrast";
+import githubLightTheme from "@shikijs/themes/github-light";
+import { CheckIcon, CopyIcon, DownloadIcon, XIcon } from "lucide-react";
 import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
 import { log } from "@/lib/logger/logger";
+import { useCopyToClipboard, useDebounceCallback, useDebounceValue } from "usehooks-ts";
+import { toast } from "sonner";
+
+const enum COPY_STATUS {
+  IDLE = "idle",
+  COPIED = "copied",
+  ERROR = "error",
+}
 
 interface CodeBlockProps {
   code: string;
@@ -40,10 +48,15 @@ export function CodeBlock({
   tooltipProps = {},
 }: CodeBlockProps) {
   const { resolvedTheme } = useTheme();
-  const [copied, setCopied] = React.useState(false);
-  const [highlightedHtml, setHighlightedHtml] = React.useState<string>("");
+  const [highlightedHtml, setHighlightedHtml] = useState<string>("");
 
-  const codeTheme: ThemeRegistration = resolvedTheme === "dark" ? oneDarkProTheme : oneLightTheme;
+  const [copyStatus, setCopyStatus] = useState<COPY_STATUS>(COPY_STATUS.IDLE);
+  const debouncedSetCopyStatus = useDebounceCallback(setCopyStatus, 2000);
+
+  const [_, copyCodeBlock] = useCopyToClipboard();
+
+  const codeTheme: ThemeRegistration =
+    resolvedTheme === "dark" ? githubDarkHighContrast : githubLightTheme;
 
   // Highlight code with Shiki
   useEffect(() => {
@@ -80,13 +93,18 @@ export function CodeBlock({
   /**
    * Handles copying code to clipboard
    */
-  function handleCopy() {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+  async function handleCopy() {
+    try {
+      throw new Error("Failed to copy code");
+      await copyCodeBlock(code);
+      setCopyStatus(COPY_STATUS.COPIED);
+    } catch (error) {
+      log.error("Failed to copy code", { error });
+      toast.warning("Failed to copy code");
+      setCopyStatus(COPY_STATUS.ERROR);
+    } finally {
+      debouncedSetCopyStatus(COPY_STATUS.IDLE);
+    }
   }
 
   /**
@@ -113,7 +131,7 @@ export function CodeBlock({
     URL.revokeObjectURL(url);
   }
 
-  function handleClick(event: React.MouseEvent<HTMLDivElement>) {
+  function handleClick(event: MouseEvent<HTMLDivElement>) {
     event.preventDefault();
     event.stopPropagation();
   }
@@ -123,7 +141,7 @@ export function CodeBlock({
   return (
     <div
       className={cn(
-        "rounded-lg overflow-hidden border border-border bg-muted/50 cursor-default",
+        "rounded-lg overflow-hidden border border-border bg-muted/50 cursor-default group/code-block",
         className
       )}
       style={
@@ -133,24 +151,23 @@ export function CodeBlock({
       }
       onClick={handleClick}
     >
-      <div className='flex items-center justify-between px-2 pt-1 pr-1 bg-[var(--editor-background)]'>
+      <div className='flex items-center justify-between px-2 pt-1 pr-1 bg-(--editor-background)'>
         <div className='flex items-center gap-2'>
           <span className='text-xs font-base cursor-text font-sans text-muted-foreground'>
             {formatLanguage(language)}
           </span>
         </div>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 opacity-0 group-hover/code-block:opacity-100 transition-opacity duration-200'>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant='ghost'
-                  size='icon'
                   onClick={handleDownload}
                   aria-label='Download code'
-                  className='size-8 min-w-8 text-muted-foreground hover:text-foreground'
+                  className='size-6 text-muted-foreground hover:text-foreground group/download-button rounded-md'
                 >
-                  <DownloadIcon size={14} />
+                  <DownloadIcon className='size-3 text-muted-foreground/60 group-hover/download-button:text-foreground' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -163,29 +180,31 @@ export function CodeBlock({
               <TooltipTrigger asChild>
                 <Button
                   variant='ghost'
-                  size='icon'
                   onClick={handleCopy}
                   aria-label='Copy code'
-                  className='size-8 min-w-8 text-muted-foreground hover:text-foreground'
+                  className='size-6 text-muted-foreground hover:text-foreground group/copy-button rounded-md'
                 >
-                  <CopyIcon size={14} />
+                  {copyStatus === COPY_STATUS.IDLE && <CopyIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />}
+                  {copyStatus === COPY_STATUS.COPIED && <CheckIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />}
+                  {copyStatus === COPY_STATUS.ERROR && <XIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{copied ? "Copied!" : tooltipProps.content || "Copy code"}</p>
+                {copyStatus === COPY_STATUS.IDLE && "Copy code"}
+                {copyStatus === COPY_STATUS.COPIED && "Copied!"}
+                {copyStatus === COPY_STATUS.ERROR && "Failed to copy code"}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
       </div>
 
-      <ScrollArea className="max-h-[500px] bg-[var(--editor-background)]">
+      <ScrollArea className='max-h-[500px] bg-(--editor-background)'>
         <div
-          className="text-xs cursor-text [&>pre]:p-2 [&>pre]:m-0"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          className='text-xs cursor-text [&>pre]:p-2 [&>pre]:m-0'
           dangerouslySetInnerHTML={{ __html: highlightedHtml }}
         />
-        <ScrollBar orientation="horizontal" />
+        <ScrollBar orientation='horizontal' />
       </ScrollArea>
     </div>
   );

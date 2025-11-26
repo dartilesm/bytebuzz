@@ -102,7 +102,7 @@ export function addLineNumbers(
   const linesWithNumbers = lines
     .map((line: string, index: number) => {
       const lineNumber = (index + 1).toString().padStart(paddingWidth, " ");
-      return `<span class="code-line-number text-default-400" style="display: inline-block; min-width: ${paddingWidth + 3}ch; user-select: none;">${lineNumber} |</span> ${line}`;
+      return `<span class="code-line-number text-muted-foreground/40 select-none mr-4 text-right inline-block min-w-[2ch]">${lineNumber}</span>${line}`;
     })
     .join("\n");
 
