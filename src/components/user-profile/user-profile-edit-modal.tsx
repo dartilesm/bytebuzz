@@ -13,25 +13,41 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { profileEditModalSchema, type ProfileEditModalFormData } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
+import {
+  profileEditModalSchema,
+  type ProfileEditModalFormData,
+} from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
 import { log } from "@/lib/logger/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Tables } from "database.types";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useTimeout } from "usehooks-ts";
 import { PersonalInfoSection } from "./edit-modal/personal-info-section";
 import { ProfileSectionProvider } from "./edit-modal/profile-section-context";
 import { SocialMediaSection } from "./edit-modal/social-media-section";
 import { TechnologiesSection } from "./edit-modal/technologies-section";
 
+export const enum ProfileEditModalSection {
+  Personal = "Personal",
+  Social = "Social",
+  Technologies = "Technologies",
+}
+
 interface UserProfileEditModalProps {
   onClose: () => void;
   profile: Tables<"users">;
   onSave: (data: Tables<"users">) => void;
+  sectionToScroll?: ProfileEditModalSection;
 }
 
-export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEditModalProps) {
+export function UserProfileEditModal({
+  onClose,
+  profile,
+  onSave,
+  sectionToScroll,
+}: UserProfileEditModalProps) {
   const form = useForm<ProfileEditModalFormData>({
     resolver: zodResolver(profileEditModalSchema),
     defaultValues: {
@@ -57,6 +73,19 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
   const initialPathnameRef = useRef<string>(pathname);
 
   if (pathname !== initialPathnameRef.current) onClose();
+
+  useTimeout(scrollToSection, 300);
+
+  function scrollToSection() {
+    if (!sectionToScroll) return;
+    const sectionElement = document.getElementById(sectionToScroll);
+    if (sectionElement) {
+      sectionElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }
 
   const { handleSubmit } = form;
 
@@ -116,9 +145,12 @@ export function UserProfileEditModal({ onClose, profile, onSave }: UserProfileEd
             <div className='px-6 overflow-y-auto scrollbar-auto'>
               <ProfileSectionProvider profile={profile}>
                 <div className='space-y-6'>
-                  <PersonalInfoSection handleImageUpload={handleImageUpload} />
-                  <SocialMediaSection />
-                  <TechnologiesSection />
+                  <PersonalInfoSection
+                    id={ProfileEditModalSection.Personal}
+                    handleImageUpload={handleImageUpload}
+                  />
+                  <SocialMediaSection id={ProfileEditModalSection.Social} />
+                  <TechnologiesSection id={ProfileEditModalSection.Technologies} />
                 </div>
               </ProfileSectionProvider>
             </div>

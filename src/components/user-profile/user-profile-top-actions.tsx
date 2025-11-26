@@ -5,7 +5,12 @@ import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { SiGithub } from "@icons-pack/react-simple-icons";
@@ -14,6 +19,7 @@ import dynamic from "next/dynamic";
 import { use, useState } from "react";
 import type { Tables } from "database.types";
 import { useNavigationContext } from "@/context/navigation-context";
+import { ProfileEditModalSection } from "@/components/user-profile/user-profile-edit-modal";
 
 const UserProfileEditModal = dynamic(
   () => import("./user-profile-edit-modal").then((mod) => mod.UserProfileEditModal),
@@ -65,22 +71,13 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
 
   return (
     <div className='flex justify-between'>
-      <div className="flex gap-2">
+      <div className='flex gap-2'>
         {profile.github_url && (
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <Button
-                  asChild
-                  variant='ghost'
-                  size='icon'
-                  aria-label='View GitHub profile'
-                >
-                  <a
-                    href={profile.github_url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
+                <Button asChild variant='ghost' size='icon' aria-label='View GitHub profile'>
+                  <a href={profile.github_url} target='_blank' rel='noopener noreferrer'>
                     <SiGithub size={16} />
                   </a>
                 </Button>
@@ -95,17 +92,8 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <Button
-                  asChild
-                  variant='ghost'
-                  size='icon'
-                  aria-label='View LinkedIn profile'
-                >
-                  <a
-                    href={profile.linkedin_url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
+                <Button asChild variant='ghost' size='icon' aria-label='View LinkedIn profile'>
+                  <a href={profile.linkedin_url} target='_blank' rel='noopener noreferrer'>
                     <LinkedInIcon size={16} fill='currentColor' />
                   </a>
                 </Button>
@@ -145,15 +133,12 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
-            <DropdownMenuItem
-              key='copy-link'
-              onClick={handleCopyLink}
-            >
-              <Link2Icon size={16} className="mr-2" />
+            <DropdownMenuItem key='copy-link' onClick={handleCopyLink}>
+              <Link2Icon size={16} className='mr-2' />
               Copy profile link
             </DropdownMenuItem>
             <DropdownMenuItem key='share' onClick={handleShare}>
-              <Share2Icon size={16} className="mr-2" />
+              <Share2Icon size={16} className='mr-2' />
               Share profile
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -161,11 +146,11 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
         {!isCurrentUser && <FollowButton targetUserId={profile.id} size='md' />}
         {isCurrentUser && (
           <Button
-            variant="default"
+            variant='default'
             onClick={withAuth(toggleEditProfileModal)}
             size={isMobile ? "icon" : "default"}
           >
-            {!isMobile && <PencilIcon size={16} className="ml-2" />}
+            {!isMobile && <PencilIcon size={16} className='ml-2' />}
             {isMobile ? <PencilIcon size={16} /> : "Edit profile"}
           </Button>
         )}
@@ -175,6 +160,7 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
           onClose={withAuth(toggleEditProfileModal)}
           profile={profile}
           onSave={withAuth(handleOnSave)}
+          sectionToScroll={ProfileEditModalSection.Social}
         />
       )}
     </div>

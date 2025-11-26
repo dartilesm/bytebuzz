@@ -19,12 +19,13 @@ interface PersonalInfoSectionProps {
     onChange: (value: string) => void,
     type: "avatar" | "cover"
   ) => void;
+  id: string;
 }
 
 /**
  * Personal information section component for the profile edit modal
  */
-export function PersonalInfoSection({ handleImageUpload }: PersonalInfoSectionProps) {
+export function PersonalInfoSection({ handleImageUpload, id }: PersonalInfoSectionProps) {
   const { profile } = useProfileSectionContext();
   const { control, watch, formState } = useFormContext<ProfileEditModalFormData>();
   const { errors } = formState;
@@ -34,7 +35,7 @@ export function PersonalInfoSection({ handleImageUpload }: PersonalInfoSectionPr
   const bioCharCount = 500 - bio.length;
 
   return (
-    <div className='space-y-4'>
+    <div id={id} className='space-y-4'>
       <h3 className='text-sm text-muted-foreground/80'>Personal Information</h3>
       <div className='space-y-6 dark:bg-accent/50 bg-border/70 rounded-lg p-4'>
         <Alert color='info' variant='flat'>
