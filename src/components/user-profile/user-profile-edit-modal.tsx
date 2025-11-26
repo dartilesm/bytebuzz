@@ -79,11 +79,18 @@ export function UserProfileEditModal({
   function scrollToSection() {
     if (!sectionToScroll) return;
     const sectionElement = document.getElementById(sectionToScroll);
+
     if (sectionElement) {
       sectionElement.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
+      // Add highlight animation class
+      sectionElement.classList.toggle("animate-pulse");
+      // Remove the class after animation completes (2000ms)
+      setTimeout(() => {
+        sectionElement.classList.remove("animate-pulse");
+      }, 4000);
     }
   }
 

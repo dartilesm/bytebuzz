@@ -26,6 +26,11 @@ const UserProfileEditModal = dynamic(
   { ssr: false }
 );
 
+interface EditModalState {
+  isOpen: boolean;
+  sectionToScroll?: ProfileEditModalSection;
+}
+
 export interface UserProfileTopActionsProps {
   profilePromise: Promise<Tables<"users">>;
 }
@@ -33,7 +38,7 @@ export interface UserProfileTopActionsProps {
 export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsProps) {
   const profile = use(profilePromise);
   const { user } = useUser();
-  const [isEditing, setIsEditing] = useState(false);
+  const [editModalState, setEditModalState] = useState<EditModalState>({ isOpen: false });
   const { withAuth } = useAuthGuard();
   const { isMobile } = useNavigationContext();
   const isCurrentUser = user?.username === profile.username;
@@ -57,16 +62,17 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
     }
   }
 
-  function toggleEditProfileModal() {
-    if (isCurrentUser)
-      setTimeout(() => {
-        // Wait for the modal to close before setting isEditing to true
-        setIsEditing(!isEditing);
-      }, 500);
+  function toggleEditProfileModal(sectionToScroll?: ProfileEditModalSection) {
+    if (isCurrentUser) {
+      setEditModalState({
+        isOpen: !editModalState.isOpen,
+        sectionToScroll,
+      });
+    }
   }
 
   function handleOnSave() {
-    setIsEditing(false);
+    setEditModalState({ isOpen: false });
   }
 
   return (
@@ -111,8 +117,8 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
                 <Button
                   variant='outline'
                   size='icon'
-                  className='border-dashed border rounded-md text-muted-foreground bg-transparent'
-                  onClick={withAuth(toggleEditProfileModal)}
+                  className='border-dashed border rounded-md text-muted-foreground bg-transparent border-muted-foreground/40'
+                  onClick={withAuth(() => toggleEditProfileModal(ProfileEditModalSection.Social))}
                   aria-label='Add social links'
                 >
                   <PlusIcon size={16} />
@@ -147,7 +153,7 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
         {isCurrentUser && (
           <Button
             variant='default'
-            onClick={withAuth(toggleEditProfileModal)}
+            onClick={withAuth(() => toggleEditProfileModal())}
             size={isMobile ? "icon" : "default"}
           >
             {!isMobile && <PencilIcon size={16} className='ml-2' />}
@@ -155,12 +161,12 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
           </Button>
         )}
       </div>
-      {isEditing && (
+      {editModalState.isOpen && (
         <UserProfileEditModal
-          onClose={withAuth(toggleEditProfileModal)}
+          onClose={withAuth(() => toggleEditProfileModal())}
           profile={profile}
           onSave={withAuth(handleOnSave)}
-          sectionToScroll={ProfileEditModalSection.Social}
+          sectionToScroll={editModalState.sectionToScroll}
         />
       )}
     </div>
