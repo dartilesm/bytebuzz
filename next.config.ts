@@ -20,9 +20,6 @@ const nextConfig: NextConfig = {
         hostname: "localhost",
       },
       {
-        hostname: "bytebuzz.dev",
-      },
-      {
         hostname: "*.supabase.co",
       },
       {
