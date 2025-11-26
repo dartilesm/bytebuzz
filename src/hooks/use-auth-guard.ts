@@ -1,7 +1,7 @@
 import { useSession } from "@clerk/nextjs";
-import { addToast } from "@heroui/react";
 import { usePathname, useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface PendingAction {
   fn: (...args: unknown[]) => unknown;
@@ -33,10 +33,7 @@ export function useAuthGuard() {
   function withAuth<T extends (...args: unknown[]) => unknown>(fn: T) {
     return async (...args: Parameters<T>) => {
       if (!isSignedIn) {
-        addToast({
-          title: "You need to be signed in to do that",
-          color: "warning",
-        });
+        toast.warning("You need to be signed in to do that");
         setPendingAction({
           fn,
           args,

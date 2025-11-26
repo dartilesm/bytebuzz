@@ -21,7 +21,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
       <NextThemesProvider attribute="class" defaultTheme="system"
         enableSystem
         disableTransitionOnChange>
-        <Toaster />
+        <Toaster richColors />
         {children}
       </NextThemesProvider>
     </QueryClientProvider>
