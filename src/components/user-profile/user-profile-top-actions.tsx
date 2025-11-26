@@ -110,7 +110,7 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
             </Tooltip>
           </TooltipProvider>
         )}
-        {isCurrentUser && hasSocialLinks && (
+        {isCurrentUser && !hasSocialLinks && (
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>

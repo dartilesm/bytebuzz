@@ -15,9 +15,6 @@ export interface UserProfileDescriptionProps {
 export function UserProfileDescription({ profilePromise }: UserProfileDescriptionProps) {
   const profile = use(profilePromise);
 
-  /**
-   * Get selected technologies
-   */
   function getSelectedTechnologies() {
     if (!profile.top_technologies || profile.top_technologies.length === 0) {
       return [];
@@ -43,7 +40,7 @@ export function UserProfileDescription({ profilePromise }: UserProfileDescriptio
         <div className='flex flex-col gap-2'>
           <div className='flex flex-wrap gap-2'>
             {selectedTechnologies.map((tech) => (
-              <Badge key={tech.id} variant='secondary' className='text-xs font-medium'>
+              <Badge key={tech.id} variant='flat' className='text-xs font-medium'>
                 {tech.name}
               </Badge>
             ))}
@@ -62,17 +59,15 @@ export function UserProfileDescription({ profilePromise }: UserProfileDescriptio
             </div>
           )}
           {profile.website && (
-            <Button
-              asChild
-              variant='link'
-              className='text-sm h-auto p-0 text-primary'
-            >
+            <Button asChild variant='link' className='text-sm h-auto p-0 text-primary'>
               <Link
                 href={
-                  (profile.website.startsWith("http") ? profile.website : `https://${profile.website}`) as any
+                  (profile.website.startsWith("http")
+                    ? profile.website
+                    : `https://${profile.website}`) as any
                 }
-                target="_blank"
-                rel="noopener noreferrer"
+                target='_blank'
+                rel='noopener noreferrer'
               >
                 <span className='flex items-center gap-1.5'>
                   <Link2Icon size={14} className='text-muted-foreground shrink-0' />
