@@ -9,10 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from "react";
 import type { MediaData } from "./media-node";
-import { useState, useEffect } from "react";
 
 interface MediaEditModalProps {
   /**
@@ -75,13 +75,14 @@ export function MediaEditModal({ open, onOpenChange, mediaData, onSave }: MediaE
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-2xl'>
-        <DialogHeader>
-          <DialogTitle>Edit Media</DialogTitle>
-          <DialogDescription>Update the metadata for this media file</DialogDescription>
+      <DialogContent className='max-w-2xl max-h-[calc(100vh-12rem)] overflow-auto scrollbar-auto p-0'>
+        <DialogHeader className='pl-6 pr-3 py-4'>
+          <div>
+            <DialogTitle>Edit Media</DialogTitle>
+            <DialogDescription>Update the metadata for this media file</DialogDescription>
+          </div>
         </DialogHeader>
-
-        <div className='space-y-6'>
+        <div className='space-y-6 px-6'>
           {/* Media Preview */}
           <div className='relative w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center max-h-96'>
             {mediaData.type === "image" && (
@@ -116,17 +117,17 @@ export function MediaEditModal({ open, onOpenChange, mediaData, onSave }: MediaE
               value={altText}
               onChange={(e) => setAltText(e.target.value)}
               placeholder='Enter alt text...'
-              className='w-full'
+              className='w-full resize-none'
               variant='flat'
             />
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant='outline' onClick={handleCancel}>
+        <DialogFooter className='sticky bottom-0 bg-background px-6 py-4'>
+          <Button variant='ghost' onClick={handleCancel}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
