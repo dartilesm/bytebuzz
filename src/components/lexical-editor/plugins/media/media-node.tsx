@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -25,6 +25,7 @@ import { DecoratorNode } from "lexical";
 import { DownloadIcon, PencilIcon, TrashIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { MediaEditModal } from "./media-edit-modal";
 
 export type MediaType = "image" | "video";
 
@@ -226,6 +227,7 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
   const [editor] = useLexicalComposerContext();
   const [api, setApi] = useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [editingMediaItem, setEditingMediaItem] = useState<MediaData | null>(null);
   const hasMoreThanOneItem = items.length > 1;
 
   /**
@@ -283,7 +285,20 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
   }
 
   function handleEditMedia() {
-    // TODO: Implement edit media metadata functionality
+    const currentItem = items[currentIndex] || items[0];
+    if (currentItem) {
+      setEditingMediaItem(currentItem);
+    }
+  }
+
+  function handleSaveMedia(updatedData: Partial<MediaData>) {
+    if (!editingMediaItem) return;
+
+    editor.update(() => {
+      node.updateItem(editingMediaItem.id, updatedData);
+    });
+
+    setEditingMediaItem(null);
   }
 
   if (items.length === 0) {
@@ -415,6 +430,18 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
           </span>
         </Badge>
       </div>
+
+      {/* Media Edit Modal */}
+      <MediaEditModal
+        open={editingMediaItem !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingMediaItem(null);
+          }
+        }}
+        mediaData={editingMediaItem}
+        onSave={handleSaveMedia}
+      />
     </CardContent>
   );
 }

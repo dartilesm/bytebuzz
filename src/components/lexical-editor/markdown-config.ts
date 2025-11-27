@@ -1,5 +1,6 @@
 import { TRANSFORMERS } from "@lexical/markdown";
 import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
+import { MEDIA_TRANSFORMER } from "./plugins/media/media-transformer";
 
 /**
  * Centralized configuration for markdown editor features
@@ -136,4 +137,19 @@ function shouldExcludeTransformer(transformer: (typeof TRANSFORMERS)[number]): b
  */
 export const customTransformers = TRANSFORMERS.filter(
   (transformer) => !shouldExcludeTransformer(transformer),
-).concat([ENHANCED_CODE_BLOCK_TRANSFORMER]);
+)
+  // Remove default image transformer if media is enabled (we use our custom one)
+  .filter((transformer) => {
+    if (MARKDOWN_FEATURES.media && transformer.type === "element") {
+      // Check if this is the default image transformer by looking at its regex
+      const imageRegex = /^!\[([^\]]*)\]\(([^)]+)\)$/;
+      if ("regExp" in transformer && transformer.regExp?.source === imageRegex.source) {
+        return false; // Exclude default image transformer
+      }
+    }
+    return true;
+  })
+  .concat([
+    ENHANCED_CODE_BLOCK_TRANSFORMER,
+    ...(MARKDOWN_FEATURES.media ? [MEDIA_TRANSFORMER] : []),
+  ]);
