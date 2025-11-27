@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import type {
   DOMConversionMap,
@@ -12,9 +13,9 @@ import type {
   SerializedLexicalNode,
 } from "lexical";
 import { DecoratorNode } from "lexical";
-import { ChevronLeft, ChevronRight, Download, Trash } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Pencil, Trash } from "lucide-react";
 import type React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export type MediaType = "image" | "video";
 
@@ -218,9 +219,8 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isCarousel = items.length > 1;
 
-  /**
-   * Scroll to a specific index in the carousel
-   */
+  useEffect(handleNewMedia, [items.length]);
+
   function scrollToIndex(index: number) {
     if (!scrollContainerRef.current) return;
     const container = scrollContainerRef.current;
@@ -244,49 +244,42 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
     setCurrentIndex(newIndex);
   }
 
-  /**
-   * Handle previous button click
-   */
   function handlePrevious() {
     const newIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
     scrollToIndex(newIndex);
   }
 
-  /**
-   * Handle next button click
-   */
   function handleNext() {
     const newIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
     scrollToIndex(newIndex);
   }
 
-  /**
-   * Handle media removal for a specific item
-   */
   function handleRemoveMedia(itemId: string) {
     editor.update(() => {
       node.removeItem(itemId);
-      // If no items left, remove the node
-      if (node.getItems().length === 0) {
-        node.remove();
-      } else {
-        // Adjust current index if needed
-        const newItems = node.getItems();
-        if (currentIndex >= newItems.length) {
-          setCurrentIndex(newItems.length - 1);
-        }
-      }
+      if (node.getItems().length === 0) node.remove();
+
+      // If the removed item was not the first one, scroll to the previous one
+      // Imagine the user is deleting the first item (meaning currentIndex is 0),
+      // they will see the second item as the first one
+      if (currentIndex !== 0) return handlePrevious();
     });
   }
 
-  /**
-   * Handle media download for a specific item
-   */
   function handleDownloadMedia(item: MediaData) {
     const link = document.createElement("a");
-    link.href = item.src;
-    link.download = item.title || `media-${item.id}`;
+    link.href = item?.src;
+    link.download = item?.title || `media-${item?.id}`;
     link.click();
+  }
+
+  function handleNewMedia() {
+    // if new media is added, scroll to it
+    scrollToIndex(items.length - 1);
+  }
+
+  function handleEditMedia() {
+    // TODO: Implement edit media metadata functionality
   }
 
   if (items.length === 0) {
@@ -296,153 +289,169 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
   const currentItem = items[currentIndex];
 
   return (
-    <Card className='w-full'>
-      <CardContent>
-        <div className='flex flex-col gap-3'>
+    <Card className='w-full my-2 py-0'>
+      <CardContent className='p-0'>
+        <div className='relative group'>
           {/* Media Content */}
-          <div className='relative'>
-            {isCarousel && (
-              <div className='relative'>
-                {/* Carousel Container */}
-                <div
-                  ref={scrollContainerRef}
-                  onScroll={handleScroll}
-                  className='flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth'
-                >
-                  {items.map((item) => (
-                    <div key={item.id} className='w-full snap-start shrink-0'>
-                      {item.type === "image" && (
-                        <img
-                          src={item.src}
-                          alt={item.alt || ""}
-                          title={item.title}
-                          className='w-full h-full rounded-lg shadow-sm max-h-96 bg-muted object-cover'
-                          loading='lazy'
-                        />
-                      )}
-                      {item.type === "video" && (
-                        <video
-                          src={item.src}
-                          title={item.title}
-                          controls
-                          className='w-full h-auto rounded-lg shadow-sm max-h-96'
-                          preload='metadata'
-                        >
-                          <track kind='captions' src='' label='Captions' />
-                          Your browser does not support the video tag.
-                        </video>
-                      )}
-                    </div>
+          {isCarousel && (
+            <div className='relative'>
+              {/* Carousel Container */}
+              <div
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className='flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth rounded-lg'
+              >
+                {items.map((item) => (
+                  <div key={item.id} className='w-full snap-start shrink-0'>
+                    {item.type === "image" && (
+                      <img
+                        src={item.src}
+                        alt={item.alt || ""}
+                        title={item.title}
+                        className={cn(
+                          "w-full h-full rounded-lg shadow-sm max-h-96 bg-muted object-cover",
+                          {
+                            "animate-pulse": item.isLoading,
+                          }
+                        )}
+                        loading='lazy'
+                      />
+                    )}
+                    {item.type === "video" && (
+                      <video
+                        src={item.src}
+                        title={item.title}
+                        controls
+                        className={cn("w-full h-full rounded-lg shadow-sm max-h-96", {
+                          "animate-pulse": item.isLoading,
+                        })}
+                        preload='metadata'
+                      >
+                        <track kind='captions' src='' label='Captions' />
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Carousel Navigation Buttons */}
+              {items.length > 1 && (
+                <>
+                  <Button
+                    size='icon'
+                    variant='secondary'
+                    onClick={handlePrevious}
+                    aria-label='Previous media'
+                    className='absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background z-10'
+                  >
+                    <ChevronLeft size={16} />
+                  </Button>
+                  <Button
+                    size='icon'
+                    variant='secondary'
+                    onClick={handleNext}
+                    aria-label='Next media'
+                    className='absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background z-10'
+                  >
+                    <ChevronRight size={16} />
+                  </Button>
+                </>
+              )}
+
+              {/* Carousel Indicators */}
+              {items.length > 1 && (
+                <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10'>
+                  {items.map((_, index) => (
+                    <button
+                      key={index}
+                      type='button'
+                      onClick={() => scrollToIndex(index)}
+                      aria-label={`Go to slide ${index + 1}`}
+                      className={`h-2 rounded-full transition-all ${
+                        index === currentIndex
+                          ? "w-8 bg-primary"
+                          : "w-2 bg-background/60 hover:bg-background/80"
+                      }`}
+                    />
                   ))}
                 </div>
+              )}
+            </div>
+          )}
+          {!isCarousel && (
+            <div className='relative rounded-lg overflow-hidden'>
+              {currentItem && currentItem.type === "image" && (
+                <img
+                  src={currentItem.src}
+                  alt={currentItem.alt || ""}
+                  title={currentItem.title}
+                  className={cn(
+                    "w-full h-auto rounded-lg shadow-sm max-h-96 bg-muted object-cover",
+                    {
+                      "animate-pulse": currentItem.isLoading,
+                    }
+                  )}
+                  loading='lazy'
+                />
+              )}
+              {currentItem && currentItem.type === "video" && (
+                <video
+                  src={currentItem.src}
+                  title={currentItem.title}
+                  controls
+                  className={cn("w-full h-auto rounded-lg shadow-sm max-h-96", {
+                    "animate-pulse": currentItem.isLoading,
+                  })}
+                  preload='metadata'
+                >
+                  <track kind='captions' src='' label='Captions' />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+            </div>
+          )}
 
-                {/* Navigation Buttons */}
-                {items.length > 1 && (
-                  <>
-                    <Button
-                      size='icon'
-                      variant='secondary'
-                      onClick={handlePrevious}
-                      aria-label='Previous media'
-                      className='absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full shadow-lg bg-background/80 hover:bg-background'
-                    >
-                      <ChevronLeft size={16} />
-                    </Button>
-                    <Button
-                      size='icon'
-                      variant='secondary'
-                      onClick={handleNext}
-                      aria-label='Next media'
-                      className='absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full shadow-lg bg-background/80 hover:bg-background'
-                    >
-                      <ChevronRight size={16} />
-                    </Button>
-                  </>
-                )}
-
-                {/* Carousel Indicators */}
-                {items.length > 1 && (
-                  <div className='flex justify-center gap-2 mt-2'>
-                    {items.map((_, index) => (
-                      <Button
-                        key={index}
-                        size='icon'
-                        variant='secondary'
-                        onClick={() => scrollToIndex(index)}
-                        aria-label={`Go to slide ${index + 1}`}
-                        className={`h-2 rounded-full transition-all ${
-                          index === currentIndex
-                            ? "w-8 bg-primary"
-                            : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-            {!isCarousel && (
-              <div className='relative'>
-                {currentItem.type === "image" && (
-                  <img
-                    src={currentItem.src}
-                    alt={currentItem.alt || ""}
-                    title={currentItem.title}
-                    className='w-full h-auto rounded-lg shadow-sm max-h-96 bg-muted object-cover'
-                    loading='lazy'
-                  />
-                )}
-                {currentItem.type === "video" && (
-                  <video
-                    src={currentItem.src}
-                    title={currentItem.title}
-                    controls
-                    className='w-full h-auto rounded-lg shadow-sm max-h-96'
-                    preload='metadata'
-                  >
-                    <track kind='captions' src='' label='Captions' />
-                    Your browser does not support the video tag.
-                  </video>
-                )}
-              </div>
-            )}
+          {/* Floating Action Buttons - Top Right Corner */}
+          <div className='absolute top-2 right-2 flex items-center gap-1 z-20'>
+            <Button
+              size='icon'
+              variant='secondary'
+              onClick={handleEditMedia}
+              aria-label='Edit media metadata'
+              className='h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background'
+              disabled={currentItem?.isLoading}
+            >
+              <Pencil size={14} />
+            </Button>
+            <Button
+              size='icon'
+              variant='secondary'
+              onClick={() => handleDownloadMedia(currentItem)}
+              aria-label='Download media'
+              className='h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background'
+              disabled={currentItem?.isLoading}
+            >
+              <Download size={14} />
+            </Button>
+            <Button
+              size='icon'
+              variant='destructive'
+              onClick={() => handleRemoveMedia(currentItem?.id)}
+              aria-label='Delete media'
+              className='h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background'
+              disabled={currentItem?.isLoading}
+            >
+              <Trash size={14} />
+            </Button>
           </div>
 
-          {/* Media Info and Actions */}
-          <div className='flex items-center justify-between'>
-            <div className='flex flex-col gap-1'>
-              {currentItem.title && (
-                <span className='text-sm font-medium text-foreground'>{currentItem.title}</span>
-              )}
-              <span className='text-xs text-muted-foreground capitalize'>
-                {currentItem.type} • {currentItem.id}
-                {isCarousel && ` • ${currentIndex + 1} of ${items.length}`}
-              </span>
-            </div>
-
-            <div className='flex items-center gap-2'>
-              <Button
-                size='icon'
-                variant='ghost'
-                onClick={() => handleDownloadMedia(currentItem)}
-                aria-label='Download media'
-                className='cursor-pointer h-8 w-8'
-                disabled={currentItem.isLoading}
-              >
-                <Download size={16} />
-              </Button>
-
-              <Button
-                size='icon'
-                variant='destructive'
-                onClick={() => handleRemoveMedia(currentItem.id)}
-                aria-label='Delete media'
-                className='cursor-pointer h-8 w-8'
-                disabled={currentItem.isLoading}
-              >
-                <Trash size={16} />
-              </Button>
-            </div>
+          {/* Compact Media Info - Bottom Left */}
+          <div className='absolute bottom-2 left-2 bg-background/90 backdrop-blur-sm rounded-md px-2 py-1 z-10'>
+            <span className='text-xs text-muted-foreground capitalize'>
+              {currentItem?.type}
+              {isCarousel && ` • ${currentIndex + 1}/${items.length}`}
+            </span>
           </div>
         </div>
       </CardContent>
