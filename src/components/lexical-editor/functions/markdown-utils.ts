@@ -46,18 +46,21 @@ function nodeToMarkdown(node: LexicalNode): string {
 
   // Media nodes (images and videos)
   if ($isMediaNode(node)) {
-    const mediaData = node.getMediaData();
+    const items = node.getItems();
+    const markdownParts: string[] = [];
 
-    if (mediaData.type === "image") {
-      // Convert to markdown image syntax
-      const alt = mediaData.alt || mediaData.title || "Image";
-      return `![${alt}](${mediaData.src})`;
+    for (const mediaData of items) {
+      if (mediaData.type === "image") {
+        // Convert to markdown image syntax
+        const alt = mediaData.alt || mediaData.title || "Image";
+        markdownParts.push(`![${alt}](${mediaData.src})`);
+      } else if (mediaData.type === "video") {
+        // Videos don't have standard markdown syntax, so we'll use HTML
+        markdownParts.push(`<video src="${mediaData.src}" controls${mediaData.title ? ` title="${mediaData.title}"` : ""}></video>`);
+      }
     }
 
-    if (mediaData.type === "video") {
-      // Videos don't have standard markdown syntax, so we'll use HTML
-      return `<video src="${mediaData.src}" controls${mediaData.title ? ` title="${mediaData.title}"` : ""}></video>`;
-    }
+    return markdownParts.join("\n\n");
   }
 
   // Headings

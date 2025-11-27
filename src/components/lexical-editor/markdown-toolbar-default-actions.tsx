@@ -10,7 +10,7 @@ import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon } from "lucide-react";
 import { useRef } from "react";
 import { $createEnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
-import { $createMediaNode, type MediaData } from "./plugins/media/media-node";
+import { $createMediaNode, $isMediaNode, type MediaData } from "./plugins/media/media-node";
 import { removeMediaNodeById, updateMediaNodeById } from "./functions/media-node-helpers";
 import {
   validateMediaFile,
@@ -68,6 +68,8 @@ export function MarkdownToolbarDefaultActions({
 
   /**
    * Inserts media at the end of the editor content
+   * If the last node is a MediaNode, adds the new item to it
+   * Otherwise, creates a new MediaNode with the item
    */
   function handleInsertMedia(mediaData: MediaData): void {
     try {
@@ -75,15 +77,24 @@ export function MarkdownToolbarDefaultActions({
         log.info("Creating media node with data", { mediaData });
 
         const root = $getRoot();
+        const children = root.getChildren();
+        const lastChild = children[children.length - 1];
 
-        // Create the media node
-        const mediaNode = $createMediaNode(mediaData);
-        log.info("Media node created", { mediaNode });
+        // Check if the last node is a MediaNode
+        if ($isMediaNode(lastChild)) {
+          // Add the new item to the existing MediaNode
+          lastChild.addItem(mediaData);
+          log.info("Media item added to existing MediaNode");
+        } else {
+          // Create a new MediaNode with the item
+          const mediaNode = $createMediaNode(mediaData);
+          log.info("Media node created", { mediaNode });
 
-        // Always append media at the end
-        root.append(mediaNode);
+          // Always append media at the end
+          root.append(mediaNode);
 
-        log.info("Media node appended to root");
+          log.info("Media node appended to root");
+        }
       });
 
       // Focus back to the editor after update
