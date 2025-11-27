@@ -55,35 +55,16 @@ export function Sidebar() {
             />
           ))}
         </SidebarSection>
-
-        {/* <SidebarSection title='Organization'>
-          <SidebarItem to='/cap-table' icon='lucide:pie-chart' label='Cap Table' isActive={false} />
-          <SidebarItem
-            to='/analytics'
-            icon='lucide:bar-chart-2'
-            label='Analytics'
-            isActive={false}
-          />
-          <SidebarItem to='/perks' icon='lucide:gift' label='Perks' isActive={false} badge='3' />
-          <SidebarItem to='/expenses' icon='lucide:file-text' label='Expenses' isActive={false} />
-          <SidebarItem to='/settings' icon='lucide:settings' label='Settings' isActive={false} />
-        </SidebarSection> */}
-
-        {/*         <SidebarSection title='Your Teams'>
-          <TeamItem code='HU' name='HeroUI' />
-          <TeamItem code='TV' name='Tailwind Variants' />
-          <TeamItem code='HP' name='HeroUI Pro' />
-        </SidebarSection> */}
       </div>
 
       <div className='mt-auto py-4'>
         <SidebarItem
           as='a'
           href='https://github.com/dartilesm/bytebuzz/issues'
-          icon={<BugIcon size={24} className='text-default-500' />}
+          icon={<BugIcon className='text-default-500 size-5' />}
           label={
             <span className='text-default-500 flex items-center justify-between w-full'>
-              Bug Report <ExternalLinkIcon size={16} className='text-default-500' />
+              Bug Report <ExternalLinkIcon className='text-default-500' />
             </span>
           }
           isExternal
