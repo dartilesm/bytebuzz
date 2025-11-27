@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -21,9 +22,9 @@ import type {
   SerializedLexicalNode,
 } from "lexical";
 import { DecoratorNode } from "lexical";
-import { Download, Pencil, Trash } from "lucide-react";
+import { DownloadIcon, PencilIcon, TrashIcon } from "lucide-react";
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export type MediaType = "image" | "video";
 
@@ -225,7 +226,7 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
   const [editor] = useLexicalComposerContext();
   const [api, setApi] = useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const isCarousel = items.length > 1;
+  const hasMoreThanOneItem = items.length > 1;
 
   /**
    * Sync current index with carousel API events
@@ -264,7 +265,7 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
       }
 
       // If we removed an item, adjust the carousel position
-      if (api && isCarousel) {
+      if (api && hasMoreThanOneItem) {
         const newItems = node.getItems();
         // If we removed the last item, go to the previous one
         if (itemIndex >= newItems.length && newItems.length > 0) {
@@ -292,158 +293,129 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
   const currentItem = items[currentIndex] || items[0];
 
   return (
-    <Card className='w-full my-2 py-0'>
-      <CardContent className='p-0'>
-        <div className='relative group'>
-          {/* Media Content */}
-          {isCarousel ? (
-            <Carousel
-              setApi={setApi}
-              opts={{
-                align: "start",
-                loop: false,
-              }}
-              className='w-full'
-            >
-              <CarouselContent className='ml-0'>
-                {items.map((item) => (
-                  <CarouselItem key={item.id} className='pl-0 basis-full'>
-                    <div className='relative'>
-                      {item.type === "image" && (
-                        <img
-                          src={item.src}
-                          alt={item.alt || ""}
-                          title={item.title}
-                          className={cn(
-                            "w-full h-auto rounded-lg shadow-sm max-h-96 bg-muted object-cover",
-                            {
-                              "animate-pulse": item.isLoading,
-                            }
-                          )}
-                          loading='lazy'
-                        />
-                      )}
-                      {item.type === "video" && (
-                        <video
-                          src={item.src}
-                          title={item.title}
-                          controls
-                          className={cn("w-full h-auto rounded-lg shadow-sm max-h-96", {
-                            "animate-pulse": item.isLoading,
-                          })}
-                          preload='metadata'
-                        >
-                          <track kind='captions' src='' label='Captions' />
-                          Your browser does not support the video tag.
-                        </video>
-                      )}
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
+    <CardContent className='p-0 border border-border rounded-lg overflow-hidden dark:bg-accent bg-accent/20'>
+      <div className='relative group'>
+        {/* Media Content */}
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "start",
+            loop: false,
+          }}
+          className='w-full'
+        >
+          <CarouselContent className='ml-0'>
+            {items.map((item) => (
+              <CarouselItem
+                key={item.id}
+                className='pl-0 w-full h-auto max-h-96 flex items-center justify-center'
+              >
+                <>
+                  {item.type === "image" && (
+                    <img
+                      src={item.src}
+                      alt={item.alt || ""}
+                      title={item.title}
+                      className={cn("w-full object-contain object-center", {
+                        "animate-pulse": item.isLoading,
+                      })}
+                      loading='lazy'
+                    />
+                  )}
+                  {item.type === "video" && (
+                    <video
+                      src={item.src}
+                      title={item.title}
+                      controls
+                      className={cn("w-full h-full rounded-lg shadow-sm max-h-96", {
+                        "animate-pulse": item.isLoading,
+                      })}
+                      preload='metadata'
+                    >
+                      <track kind='captions' src='' label='Captions' />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                </>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {hasMoreThanOneItem && (
+            <>
               <CarouselPrevious className='left-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background' />
               <CarouselNext className='right-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background' />
-            </Carousel>
-          ) : (
-            <div className='relative rounded-lg overflow-hidden'>
-              {currentItem && currentItem.type === "image" && (
-                <img
-                  src={currentItem.src}
-                  alt={currentItem.alt || ""}
-                  title={currentItem.title}
-                  className={cn(
-                    "w-full h-auto rounded-lg shadow-sm max-h-96 bg-muted object-cover",
-                    {
-                      "animate-pulse": currentItem.isLoading,
-                    }
-                  )}
-                  loading='lazy'
-                />
-              )}
-              {currentItem && currentItem.type === "video" && (
-                <video
-                  src={currentItem.src}
-                  title={currentItem.title}
-                  controls
-                  className={cn("w-full h-auto rounded-lg shadow-sm max-h-96", {
-                    "animate-pulse": currentItem.isLoading,
-                  })}
-                  preload='metadata'
-                >
-                  <track kind='captions' src='' label='Captions' />
-                  Your browser does not support the video tag.
-                </video>
-              )}
-            </div>
+            </>
           )}
+        </Carousel>
 
-          {/* Carousel Indicators */}
-          {isCarousel && (
-            <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10'>
-              {items.map((_, index) => (
-                <Button
-                  key={index}
-                  type='button'
-                  size='icon'
-                  onClick={() => {
-                    api?.scrollTo(index);
-                  }}
-                  aria-label={`Go to slide ${index + 1}`}
-                  className={cn(
-                    "h-2 rounded-full transition-all",
-                    index === currentIndex
-                      ? "w-8 bg-primary"
-                      : "w-2 bg-background/60 hover:bg-background/80"
-                  )}
-                />
-              ))}
-            </div>
-          )}
+        {/* Carousel Indicators */}
+        {hasMoreThanOneItem && (
+          <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10'>
+            {items.map((_, index) => (
+              <Button
+                key={index}
+                type='button'
+                size='icon'
+                variant={index === currentIndex ? "default" : "outline"}
+                onClick={() => {
+                  api?.scrollTo(index);
+                }}
+                aria-label={`Go to slide ${index + 1}`}
+                className={cn("h-2 rounded-full transition-all", {
+                  "w-2": index !== currentIndex,
+                })}
+              />
+            ))}
+          </div>
+        )}
 
-          {/* Floating Action Buttons - Top Right Corner */}
-          <div className='absolute top-2 right-2 flex items-center gap-1 z-20'>
+        {/* Floating Action Buttons - Top Right Corner */}
+        <div className='absolute top-2 px-2 flex items-center justify-between gap-1 z-20 w-full'>
+          <div>
             <Button
-              size='icon'
-              variant='secondary'
+              size='icon-sm'
+              variant='flat'
               onClick={handleEditMedia}
               aria-label='Edit media metadata'
-              className='h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background'
               disabled={currentItem?.isLoading}
             >
-              <Pencil size={14} />
+              <PencilIcon className='size-4' />
             </Button>
+          </div>
+          <div className='flex items-center gap-1'>
             <Button
-              size='icon'
-              variant='secondary'
+              size='icon-sm'
+              variant='flat'
               onClick={() => handleDownloadMedia(currentItem)}
               aria-label='Download media'
-              className='h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background'
               disabled={currentItem?.isLoading}
             >
-              <Download size={14} />
+              <DownloadIcon className='size-4' />
             </Button>
             <Button
-              size='icon'
-              variant='destructive'
+              size='icon-sm'
+              variant='flat'
               onClick={() => handleRemoveMedia(currentItem?.id)}
               aria-label='Delete media'
-              className='h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background'
               disabled={currentItem?.isLoading}
             >
-              <Trash size={14} />
+              <TrashIcon className='size-4' />
             </Button>
           </div>
-
-          {/* Compact Media Info - Bottom Left */}
-          <div className='absolute bottom-2 left-2 bg-background/90 backdrop-blur-sm rounded-md px-2 py-1 z-10'>
-            <span className='text-xs text-muted-foreground capitalize'>
-              {currentItem?.type}
-              {isCarousel && ` • ${currentIndex + 1}/${items.length}`}
-            </span>
-          </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Compact Media Info - Bottom Left */}
+        <Badge
+          variant='flat'
+          className='absolute bottom-2 left-2 z-10 flex items-center justify-center'
+        >
+          <span className='text-xs capitalize'>
+            {currentItem?.type}
+            {hasMoreThanOneItem && ` • ${currentIndex + 1}/${items.length}`}
+          </span>
+        </Badge>
+      </div>
+    </CardContent>
   );
 }
 
