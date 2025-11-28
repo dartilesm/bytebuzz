@@ -1,39 +1,33 @@
 "use client";
 
-import { CodeBlock } from "@/components/ui/code-block-old";
+import { extractCodeBlockMetadata } from "@/components/markdown-viewer/functions/get-code-block-metadata";
+import { Badge } from "@/components/ui/badge";
+import {
+  type BundledLanguage,
+  CodeBlock,
+  CodeBlockBody,
+  CodeBlockContent,
+  CodeBlockCopyButton,
+  CodeBlockFilename,
+  CodeBlockFiles,
+  CodeBlockHeader,
+  CodeBlockItem,
+  CodeBlockSelect,
+  CodeBlockSelectContent,
+  CodeBlockSelectItem,
+  CodeBlockSelectTrigger,
+  CodeBlockSelectValue,
+} from "@/components/ui/code-block/client";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
-import type { ReactElement } from "react";
+import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { ComponentPropsWithoutRef } from "react";
-import { cn } from "@/lib/utils";
-import { useMemo } from "react";
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 
-/**
- * Extracts metadata from code blocks in markdown
- * Returns a map of code content to metadata
- */
-function extractCodeBlockMetadata(markdown: string): Map<string, string> {
-  const metadataMap = new Map<string, string>();
-  const codeBlockRegex = /^```(\S+)?(?:\s+(.*))?\n([\s\S]*?)\n```$/gm;
-
-  let match;
-  while ((match = codeBlockRegex.exec(markdown)) !== null) {
-    const metadata = match[2] || "";
-    const code = match[3] || "";
-
-    if (metadata) {
-      // Use code content as key to match later
-      metadataMap.set(code.trim(), metadata);
-    }
-  }
-
-  return metadataMap;
-}
 
 export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
   // Extract image count from markdown by counting ![] patterns
@@ -62,16 +56,53 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
             const language = className?.replace("language-", "");
             if (!className)
               return (
-                <code className='text-xs bg-muted px-1 py-0.5 rounded-sm font-mono'>
+                <code className="text-xs bg-muted px-1 py-0.5 rounded-sm font-mono">
                   {children}
                 </code>
               );
 
             // Extract metadata for this code block
             const codeContent = (children as string) || "";
-            const metadata = codeBlockMetadata.get(codeContent.trim()) || undefined;
+            const filename = codeBlockMetadata.title;
+            const languageValue = language || "text";
 
-            return <CodeBlock code={codeContent} language={language} metadata={metadata} />;
+            return <CodeBlock value={languageValue}
+              data={[
+                {
+                  language: languageValue,
+                  filename: filename,
+                  code: codeContent,
+                },
+              ]}>
+              <CodeBlockHeader className="h-8">
+                <Badge variant="flat">
+                  {languageValue}
+                </Badge>
+                <CodeBlockFiles>
+                  {(item) => (
+                    <CodeBlockFilename key={item.language} value={item.language}>
+                      {item.filename}
+                    </CodeBlockFilename>
+                  )}
+                </CodeBlockFiles>
+                <CodeBlockCopyButton
+                  onCopy={() => console.log("Copied code to clipboard")}
+                  onError={() => console.error("Failed to copy code to clipboard")}
+                />
+              </CodeBlockHeader>
+              <CodeBlockBody>
+                {(item) => (
+                  <CodeBlockItem key={item.language} value={item.language}>
+                    <CodeBlockContent
+                      language={item.language as BundledLanguage}
+                      className="[&>pre]:p-2 [&>pre_.line]:p-0"
+                    >
+                      {item.code}
+                    </CodeBlockContent>
+                  </CodeBlockItem>
+                )}
+              </CodeBlockBody>
+            </CodeBlock>
           },
           ul: ({ ...props }) => {
             const { children, className } = props;
@@ -93,7 +124,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
         disallowedElements={["img"]}
       >
         {markdown}
-      </Markdown>
+      </Markdown >
       {imageCount > 0 && (
         <div
           className={cn(
@@ -106,7 +137,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
               "[&_>:nth-child(1)]:[grid-area:1/1/3/2]",
               "[&_>:nth-child(2)]:[grid-area:1/2/2/3]",
               "[&_>:nth-child(3)]:[grid-area:2/2/3/3]",
-            ]
+            ],
           )}
         >
           <Markdown
@@ -128,15 +159,15 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 return (
                   <div
                     className={cn(
-                      "relative outline-[0.5px] dark:outline-content2 outline-content3"
+                      "relative outline-[0.5px] dark:outline-content2 outline-content3",
                     )}
                   >
                     <Image
-                      className='h-full'
+                      className="h-full"
                       src={imageUrl}
                       alt={alt || "Image"}
                       fill
-                      objectFit='cover'
+                      objectFit="cover"
                       unoptimized
                     />
                   </div>
