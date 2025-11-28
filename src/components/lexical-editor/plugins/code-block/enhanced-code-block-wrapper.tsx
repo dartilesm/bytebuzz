@@ -142,7 +142,6 @@ export function EnhancedCodeBlockWrapper({
       <CodeBlockEditor
         initialCode={code}
         initialLanguage={language}
-        initialMetadata={metadata}
         onCodeChange={handleCodeChange}
         onLanguageChange={handleLanguageChange}
         onMetadataChange={handleMetadataChange}
