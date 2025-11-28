@@ -1,5 +1,7 @@
 "use client";
 
+import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
+import { serializeCodeBlockMetadata } from "@/components/markdown-viewer/functions/serialize-code-block-metadata";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -10,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -21,7 +22,7 @@ import {
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
 import { Editor } from "@monaco-editor/react";
-import { Copy, Download, MoreVertical, Settings, Trash } from "lucide-react";
+import { Copy, Download, MoreVertical, Trash } from "lucide-react";
 import type { editor } from "monaco-editor";
 import { useTheme } from "next-themes";
 import { useCallback, useRef, useState } from "react";
@@ -35,8 +36,6 @@ interface CodeBlockEditorProps {
   initialCode?: string;
   /** Initial programming language */
   initialLanguage?: string;
-  /** Initial metadata */
-  initialMetadata?: string;
   /** Callback when code changes */
   onCodeChange?: (code: string) => void;
   /** Callback when language changes */
@@ -59,7 +58,6 @@ interface CodeBlockEditorProps {
 export function CodeBlockEditor({
   initialCode = "",
   initialLanguage = "javascript",
-  initialMetadata = "",
   onCodeChange,
   onLanguageChange,
   onMetadataChange,
@@ -73,13 +71,9 @@ export function CodeBlockEditor({
 
   const [code, setCode] = useState(initialCode);
   const [language, setLanguage] = useState(initialLanguage);
-  const [metadata, setMetadata] = useState(initialMetadata);
+  const [metadata, setMetadata] = useState(serializeCodeBlockMetadata({ fileName: `code.${codeBlockEditorFunctions.getLanguageExtension(language)}` }));
 
-  const [isMetadataOpen, setIsMetadataOpen] = useState(false);
 
-  /**
-   * Handle code content changes
-   */
   function handleCodeChange(newCode: string): void {
     // Enforce character limit using utility function
     const limitedCode = codeBlockEditorFunctions.enforceCharacterLimit(newCode, CHARACTER_LIMIT);
@@ -88,25 +82,20 @@ export function CodeBlockEditor({
     onCodeChange?.(limitedCode);
   }
 
-  /**
-   * Handle language selection changes
-   */
+
   function handleLanguageChange(newLanguage: string): void {
     setLanguage(newLanguage);
     onLanguageChange?.(newLanguage);
   }
 
-  /**
-   * Handle metadata changes
-   */
-  function handleMetadataChange(newMetadata: string): void {
-    setMetadata(newMetadata);
-    onMetadataChange?.(newMetadata);
+  function handleMetadataChange(metadataName: string, metadataValue: string): void {
+    const parsedMetadata = parseCodeBlockMetadata(metadata);
+    const serializedMetadata = serializeCodeBlockMetadata({ ...parsedMetadata, [metadataName]: metadataValue });
+    setMetadata(serializedMetadata);
+    onMetadataChange?.(serializedMetadata);
   }
 
-  /**
-   * Handle copy to clipboard functionality
-   */
+
   const handleCopyToClipboard = useCallback(async (): Promise<void> => {
     try {
       await codeBlockEditorFunctions.copyToClipboard(code);
@@ -115,30 +104,18 @@ export function CodeBlockEditor({
     }
   }, [code]);
 
-  /**
-   * Handle download functionality
-   */
   const handleDownload = useCallback((): void => {
     codeBlockEditorFunctions.downloadCode(code, language);
   }, [code, language]);
 
-  /**
-   * Handle removing the code block from the editor
-   */
   function handleRemoveCodeBlock(): void {
     onRemoveCodeBlock?.();
   }
 
-  /**
-   * Handle Monaco Editor mount
-   */
   function handleEditorDidMount(editor: editor.IStandaloneCodeEditor): void {
     editorRef.current = editor;
   }
 
-  /**
-   * Handle Monaco Editor value changes
-   */
   function handleEditorChange(value: string | undefined): void {
     const newValue = value || "";
     handleCodeChange(newValue);
@@ -156,14 +133,14 @@ export function CodeBlockEditor({
   return (
     <Card className={cn("w-full border-border border p-0 gap-0 overflow-hidden", className)}>
       <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 p-2 h-10 bg-accent/30">
-        <div className="flex items-center gap-2 flex-1">
+        <div>
           <Select
             value={language}
             onValueChange={(value) => handleLanguageChange(value)}
             variant="flat"
             size="sm"
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger>
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
             <SelectContent>
@@ -174,41 +151,18 @@ export function CodeBlockEditor({
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div>
           <Input
             placeholder="Filename (optional)"
             defaultValue={`code.${languageExtension}`}
             variant="flat"
             size="sm"
+            onChange={(e) => handleMetadataChange("fileName", e.target.value)}
           />
         </div>
 
         <div className="flex items-center gap-1">
-          <Popover open={isMetadataOpen} onOpenChange={setIsMetadataOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground"
-                aria-label="Edit metadata"
-              >
-                <Settings size={16} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Metadata</label>
-                <Input
-                  value={metadata}
-                  onChange={(e) => handleMetadataChange(e.target.value)}
-                  placeholder="metadata1=value1, metadata2=value2"
-                  className="text-sm"
-                  defaultValue={`code.${language}`}
-                />
-                {metadata && <p className="text-xs text-muted-foreground">Current: {metadata}</p>}
-              </div>
-            </PopoverContent>
-          </Popover>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
