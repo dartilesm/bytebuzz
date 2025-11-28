@@ -3,23 +3,41 @@
  * Returns a record of code content to an object of metadatas
  */
 export function parseCodeBlockMetadata(markdown: string): Record<string, string> {
-    // Match the opening “```xxx some_text key="value",key2=value2 more_text”
-    const match = markdown.match(/^```[a-zA-Z0-9]*\s+(.+)$/m);
-    if (!match) return {};
+    let metadataString = markdown;
 
-    const metadataString = match[1];
+    // 1. Try to extract from code block fence if present
+    // Match ```lang metadata...
+    // We allow - in language name
+    const codeBlockMatch = markdown.match(/^```[a-zA-Z0-9-]*\s+(.+)$/m);
+    if (codeBlockMatch) {
+        metadataString = codeBlockMatch[1];
+    } else {
+        // Fallback: if the input contains code block fences but didn't match the regex above
+        // (likely because there is no metadata after the language, e.g. ```js),
+        // we assume there is no metadata to parse.
+        // If the input DOES NOT contain code block fences, we assume the user passed
+        // a raw metadata string (e.g. 'key="value"'), so we proceed to parse it.
+        if (markdown.includes("```")) {
+            return {};
+        }
+    }
 
-    // Regex to find key="value" or key=value pairs.
-    // It captures key, and then either a quoted value or an unquoted value.
-    const metadataPairsRegex = /([a-zA-Z0-9_]+)=(?:"([^"]*)"|([^,\s]+))/g;
-    let metadataMatch;
+    // 2. Regex to find key="value" or key=value pairs.
+    // Handles comma/space separators.
+    // (?:^|[\s,]+) -> Matches start or separators (space/comma)
+    // ([a-zA-Z0-9_-]+) -> Matches key (alphanumeric + _ + -)
+    // = -> Matches equals
+    // (?:"([^"]*)"|([^,\s"}]+)) -> Matches quoted value (group 2) or unquoted value (group 3)
+    const metadataPairsRegex = /(?:^|[\s,]+)([a-zA-Z0-9_-]+)=(?:"([^"]*)"|([^,\s"}]+))/g;
+
     const result: Record<string, string> = {};
+    let match;
 
-    while ((metadataMatch = metadataPairsRegex.exec(metadataString)) !== null) {
-        const key = metadataMatch[1];
-        // Prioritize the quoted value (group 2), otherwise use the unquoted value (group 3)
-        const value = metadataMatch[2] !== undefined ? metadataMatch[2] : metadataMatch[3];
-        if (key && value !== undefined) {
+    while ((match = metadataPairsRegex.exec(metadataString)) !== null) {
+        const key = match[1];
+        // Group 2 is quoted value, Group 3 is unquoted
+        const value = match[2] !== undefined ? match[2] : match[3];
+        if (key) {
             result[key] = value;
         }
     }
