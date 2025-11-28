@@ -582,11 +582,11 @@ export const CodeBlockContent = ({
     />
   );
 };
-export type CodeBlockLanguageProps = HTMLAttributes<HTMLDivElement> & {
-  language: string;
-};
+export type CodeBlockLanguageProps = HTMLAttributes<HTMLDivElement>;
 
-export const CodeBlockLanguage = ({ className, language, ...props }: CodeBlockLanguageProps) => {
+export const CodeBlockLanguage = ({ className, ...props }: CodeBlockLanguageProps) => {
+  const { value } = useContext(CodeBlockContext);
+  const language = value || "text";
   const supportedLanguages = codeBlockEditorFunctions.getSupportedLanguages();
   const languageOption = supportedLanguages.find((lang) => lang.value === language);
   const displayName = languageOption?.label || language.charAt(0).toUpperCase() + language.slice(1);

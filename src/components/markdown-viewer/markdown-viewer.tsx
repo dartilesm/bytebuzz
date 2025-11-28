@@ -73,7 +73,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 ]}
               >
                 <CodeBlockHeader className="h-8">
-                  <CodeBlockLanguage language={languageValue} />
+                  <CodeBlockLanguage />
                   <CodeBlockFiles>
                     {(item) => (
                       <CodeBlockFilename key={item.language} value={item.language}>
