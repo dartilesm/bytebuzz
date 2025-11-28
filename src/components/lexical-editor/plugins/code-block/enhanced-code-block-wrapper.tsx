@@ -147,9 +147,7 @@ export function EnhancedCodeBlockWrapper({
         onLanguageChange={handleLanguageChange}
         onMetadataChange={handleMetadataChange}
         onRemoveCodeBlock={handleRemoveCodeBlock}
-        height='300px'
-        showLineNumbers={true}
-        className='my-4'
+        showLineNumbers
       />
     </div>
   );
