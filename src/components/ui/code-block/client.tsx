@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader } from "@/components/ui/card";
 import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
 import {
   Select,
@@ -322,7 +323,7 @@ export const CodeBlock = ({
 
   return (
     <CodeBlockContext.Provider value={{ value, onValueChange, data }}>
-      <div className={cn("size-full overflow-hidden rounded-md border", className)} {...props} />
+      <Card className={cn("size-full overflow-hidden p-0 gap-0", className)} {...props} />
     </CodeBlockContext.Provider>
   );
 };
@@ -330,10 +331,7 @@ export const CodeBlock = ({
 export type CodeBlockHeaderProps = HTMLAttributes<HTMLDivElement>;
 
 export const CodeBlockHeader = ({ className, ...props }: CodeBlockHeaderProps) => (
-  <div
-    className={cn("flex flex-row items-center border-b bg-accent/30 p-1", className)}
-    {...props}
-  />
+  <CardHeader className={cn("flex flex-row items-center bg-accent/30 p-2", className)} {...props} />
 );
 
 export type CodeBlockFilesProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
