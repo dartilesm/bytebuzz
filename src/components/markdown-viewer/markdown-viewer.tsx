@@ -1,7 +1,7 @@
 "use client";
 
 import { extractCodeBlockMetadata } from "@/components/markdown-viewer/functions/get-code-block-metadata";
-import { Badge } from "@/components/ui/badge";
+
 import {
   type BundledLanguage,
   CodeBlock,
@@ -12,11 +12,7 @@ import {
   CodeBlockFiles,
   CodeBlockHeader,
   CodeBlockItem,
-  CodeBlockSelect,
-  CodeBlockSelectContent,
-  CodeBlockSelectItem,
-  CodeBlockSelectTrigger,
-  CodeBlockSelectValue,
+  CodeBlockLanguage,
 } from "@/components/ui/code-block/client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -27,7 +23,6 @@ import remarkGfm from "remark-gfm";
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
-
 
 export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
   // Extract image count from markdown by counting ![] patterns
@@ -66,43 +61,45 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
             const filename = codeBlockMetadata.title;
             const languageValue = language || "text";
 
-            return <CodeBlock value={languageValue}
-              data={[
-                {
-                  language: languageValue,
-                  filename: filename,
-                  code: codeContent,
-                },
-              ]}>
-              <CodeBlockHeader className="h-8">
-                <Badge variant="flat">
-                  {languageValue}
-                </Badge>
-                <CodeBlockFiles>
+            return (
+              <CodeBlock
+                value={languageValue}
+                data={[
+                  {
+                    language: languageValue,
+                    filename: filename,
+                    code: codeContent,
+                  },
+                ]}
+              >
+                <CodeBlockHeader className="h-8">
+                  <CodeBlockLanguage language={languageValue} />
+                  <CodeBlockFiles>
+                    {(item) => (
+                      <CodeBlockFilename key={item.language} value={item.language}>
+                        {item.filename}
+                      </CodeBlockFilename>
+                    )}
+                  </CodeBlockFiles>
+                  <CodeBlockCopyButton
+                    onCopy={() => console.log("Copied code to clipboard")}
+                    onError={() => console.error("Failed to copy code to clipboard")}
+                  />
+                </CodeBlockHeader>
+                <CodeBlockBody>
                   {(item) => (
-                    <CodeBlockFilename key={item.language} value={item.language}>
-                      {item.filename}
-                    </CodeBlockFilename>
+                    <CodeBlockItem key={item.language} value={item.language}>
+                      <CodeBlockContent
+                        language={item.language as BundledLanguage}
+                        className="[&>pre]:p-2 [&>pre_.line]:p-0"
+                      >
+                        {item.code}
+                      </CodeBlockContent>
+                    </CodeBlockItem>
                   )}
-                </CodeBlockFiles>
-                <CodeBlockCopyButton
-                  onCopy={() => console.log("Copied code to clipboard")}
-                  onError={() => console.error("Failed to copy code to clipboard")}
-                />
-              </CodeBlockHeader>
-              <CodeBlockBody>
-                {(item) => (
-                  <CodeBlockItem key={item.language} value={item.language}>
-                    <CodeBlockContent
-                      language={item.language as BundledLanguage}
-                      className="[&>pre]:p-2 [&>pre_.line]:p-0"
-                    >
-                      {item.code}
-                    </CodeBlockContent>
-                  </CodeBlockItem>
-                )}
-              </CodeBlockBody>
-            </CodeBlock>
+                </CodeBlockBody>
+              </CodeBlock>
+            );
           },
           ul: ({ ...props }) => {
             const { children, className } = props;
@@ -124,7 +121,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
         disallowedElements={["img"]}
       >
         {markdown}
-      </Markdown >
+      </Markdown>
       {imageCount > 0 && (
         <div
           className={cn(
