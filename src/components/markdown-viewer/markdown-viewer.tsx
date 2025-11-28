@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock } from "@/components/ui/code-block";
+import { CodeBlock } from "@/components/ui/code-block-old";
 import Image from "next/image";
 import type { ReactElement } from "react";
 import Markdown from "react-markdown";

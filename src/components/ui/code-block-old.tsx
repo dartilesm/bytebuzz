@@ -16,6 +16,7 @@ import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/co
 import { log } from "@/lib/logger/logger";
 import { useCopyToClipboard, useDebounceCallback } from "usehooks-ts";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 const enum COPY_STATUS {
   IDLE = "idle",
@@ -49,7 +50,6 @@ export function CodeBlock({
   hideSymbol = false,
 }: CodeBlockProps) {
   const { resolvedTheme } = useTheme();
-  const [highlightedHtml, setHighlightedHtml] = useState<string>("");
 
   const [copyStatus, setCopyStatus] = useState<COPY_STATUS>(COPY_STATUS.IDLE);
   const debouncedSetCopyStatus = useDebounceCallback(setCopyStatus, 2000);
@@ -59,37 +59,32 @@ export function CodeBlock({
   const codeTheme: ThemeRegistration =
     resolvedTheme === "dark" ? githubDarkHighContrast : githubLightTheme;
 
-  // Highlight code with Shiki
-  useEffect(() => {
-    if (!code) {
-      setHighlightedHtml("");
-      return;
+  const { data: highlightedHtml } = useQuery({
+    queryKey: ["code-block", code, language, showLineNumbers, hideSymbol, codeTheme],
+    queryFn: () => getHighlightedCode(),
+    enabled: !!code,
+  });
+
+  async function getHighlightedCode() {
+    if (!code) return "";
+
+    try {
+      const highlighted = await codeToHtml(code, {
+        lang: language.toLowerCase(),
+        theme: codeTheme,
+        defaultColor: "dark",
+      });
+
+      const processedHtml = addLineNumbers(highlighted, showLineNumbers, hideSymbol);
+      return processedHtml;
+    } catch (error) {
+      log.error("Error highlighting code", { error });
+      // Fallback to plain text
+      const plainHtml = `<pre class="shiki ${codeTheme}" tabindex="0"><code>${code}</code></pre>`;
+      const processedHtml = addLineNumbers(plainHtml, showLineNumbers, hideSymbol);
+      return processedHtml;
     }
-
-    /**
-     * Highlights code using Shiki
-     */
-    async function highlightCode() {
-      try {
-        const highlighted = await codeToHtml(code, {
-          lang: language.toLowerCase(),
-          theme: codeTheme,
-          defaultColor: "dark",
-        });
-
-        const processedHtml = addLineNumbers(highlighted, showLineNumbers, hideSymbol);
-        setHighlightedHtml(processedHtml);
-      } catch (error) {
-        log.error("Error highlighting code", { error });
-        // Fallback to plain text
-        const plainHtml = `<pre class="shiki ${codeTheme}" tabindex="0"><code>${code}</code></pre>`;
-        const processedHtml = addLineNumbers(plainHtml, showLineNumbers, hideSymbol);
-        setHighlightedHtml(processedHtml);
-      }
-    }
-
-    highlightCode();
-  }, [code, language, showLineNumbers, hideSymbol, codeTheme]);
+  }
 
   /**
    * Handles copying code to clipboard
