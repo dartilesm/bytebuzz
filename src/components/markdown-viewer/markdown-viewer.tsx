@@ -12,7 +12,7 @@ import {
   CodeBlockFiles,
   CodeBlockHeader,
   CodeBlockItem,
-  CodeBlockLanguage,
+  CodeBlockLanguage
 } from "@/components/ui/code-block/client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -72,26 +72,32 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                   },
                 ]}
               >
-                <CodeBlockHeader className="h-8">
+                <CodeBlockHeader className="h-10 flex justify-between items-center">
                   <CodeBlockLanguage />
-                  <CodeBlockFiles>
-                    {(item) => (
-                      <CodeBlockFilename key={item.language} value={item.language}>
-                        {item.filename}
-                      </CodeBlockFilename>
-                    )}
-                  </CodeBlockFiles>
-                  <CodeBlockCopyButton
-                    onCopy={() => console.log("Copied code to clipboard")}
-                    onError={() => console.error("Failed to copy code to clipboard")}
-                  />
+                  {filename && (
+                    <CodeBlockFiles>
+                      {(item) => (
+                        <CodeBlockFilename key={item.language} value={item.language}>
+                          {item.filename}
+                        </CodeBlockFilename>
+                      )}
+                    </CodeBlockFiles>
+                  )}
+                  <div className="flex items-center">
+                    {/* <CodeBlockActionButton tooltipContent="Save to snippets">
+                      <Button size="icon-sm" variant="ghost">
+                        <BookmarkIcon className="size-3.5" />
+                      </Button>
+                    </CodeBlockActionButton> */}
+                    <CodeBlockCopyButton />
+                  </div>
                 </CodeBlockHeader>
                 <CodeBlockBody>
                   {(item) => (
                     <CodeBlockItem key={item.language} value={item.language}>
                       <CodeBlockContent
                         language={item.language as BundledLanguage}
-                        className="[&>pre]:p-2 [&>pre_.line]:p-0"
+                        className="text-xs [&>pre]:p-2 [&>pre_.line]:p-0"
                       >
                         {item.code}
                       </CodeBlockContent>

@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import {
@@ -94,6 +95,7 @@ import {
   SiWebassembly,
 } from "react-icons/si";
 import { type BundledLanguage, type CodeOptionsMultipleThemes, codeToHtml } from "shiki";
+import { useCopyToClipboard } from "usehooks-ts";
 
 export type { BundledLanguage } from "shiki";
 
@@ -329,7 +331,7 @@ export type CodeBlockHeaderProps = HTMLAttributes<HTMLDivElement>;
 
 export const CodeBlockHeader = ({ className, ...props }: CodeBlockHeaderProps) => (
   <div
-    className={cn("flex flex-row items-center border-b bg-secondary p-1", className)}
+    className={cn("flex flex-row items-center border-b bg-accent/30 p-1", className)}
     {...props}
   />
 );
@@ -423,6 +425,33 @@ export const CodeBlockSelectItem = ({ className, ...props }: CodeBlockSelectItem
   <SelectItem className={cn("text-sm", className)} {...props} />
 );
 
+export type CodeBlockActionButtonProps = ComponentProps<typeof Button> & {
+  tooltipContent?: ReactNode;
+};
+
+export const CodeBlockActionButton = ({
+  tooltipContent,
+  asChild,
+  children,
+  className,
+  ...props
+}: CodeBlockActionButtonProps) => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button className={cn("shrink-0 text-muted-foreground", className)}
+            size="icon-sm"
+            variant="ghost" {...props}>
+            {children}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent sideOffset={5}>{tooltipContent}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
 export type CodeBlockCopyButtonProps = ComponentProps<typeof Button> & {
   onCopy?: () => void;
   onError?: (error: Error) => void;
@@ -442,17 +471,18 @@ export const CodeBlockCopyButton = ({
   const { data, value } = useContext(CodeBlockContext);
   const code = data.find((item) => item.language === value)?.code;
 
+  const [, copyCode] = useCopyToClipboard();
+
   const copyToClipboard = () => {
     if (typeof window === "undefined" || !navigator.clipboard.writeText || !code) {
       return;
     }
 
-    navigator.clipboard.writeText(code).then(() => {
-      setIsCopied(true);
-      onCopy?.();
+    copyCode(code);
+    setIsCopied(true);
+    onCopy?.();
 
-      setTimeout(() => setIsCopied(false), timeout);
-    }, onError);
+    setTimeout(() => setIsCopied(false), timeout);
   };
 
   if (asChild) {
@@ -464,16 +494,17 @@ export const CodeBlockCopyButton = ({
 
   const Icon = isCopied ? CheckIcon : CopyIcon;
 
-  return (
+  return (<CodeBlockActionButton tooltipContent={isCopied ? "Copied!" : "Copy"}>
     <Button
-      className={cn("shrink-0", className)}
+      className={cn("shrink-0 text-muted-foreground", className)}
       onClick={copyToClipboard}
-      size="icon"
+      size="icon-sm"
       variant="ghost"
       {...props}
     >
-      {children ?? <Icon className="text-muted-foreground" size={14} />}
+      {children ?? <Icon className="size-3.5" />}
     </Button>
+  </CodeBlockActionButton>
   );
 };
 

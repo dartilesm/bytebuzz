@@ -99,8 +99,8 @@ export const codeBlockEditorFunctions = {
     return [
       { value: "javascript", label: "JavaScript" },
       { value: "typescript", label: "TypeScript" },
-      { value: "jsx", label: "JSX (React)" },
-      { value: "tsx", label: "TSX (React + TypeScript)" },
+      { value: "jsx", label: "JSX" },
+      { value: "tsx", label: "TSX" },
       { value: "python", label: "Python" },
       { value: "java", label: "Java" },
       { value: "cpp", label: "C++" },
