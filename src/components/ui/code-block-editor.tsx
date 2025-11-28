@@ -18,7 +18,7 @@ import { Editor } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, vs } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, Download, Trash, Settings } from "lucide-react";
+import { Copy, Download, Trash, Settings, Trash2 } from "lucide-react";
 import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
 import { cn } from "@/lib/utils";
 import { log } from "@/lib/logger/logger";
@@ -157,8 +157,8 @@ export function CodeBlockEditor({
     >
       <CardHeader className='flex flex-row items-center justify-between gap-4 space-y-0 p-2 h-10 bg-accent/30'>
         <div className='flex items-center gap-2'>
-          <Select value={language} onValueChange={(value) => handleLanguageChange(value)}>
-            <SelectTrigger className='w-[140px] h-8'>
+          <Select value={language} onValueChange={(value) => handleLanguageChange(value)} variant="flat" size="sm">
+            <SelectTrigger className='w-[140px]'>
               <SelectValue placeholder='Select language' />
             </SelectTrigger>
             <SelectContent>
