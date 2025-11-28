@@ -1,8 +1,8 @@
 /**
- * Extracts metadata from code blocks in markdown
+ * Parses metadata from code blocks in markdown
  * Returns a record of code content to an object of metadatas
  */
-export function extractCodeBlockMetadata(markdown: string): Record<string, string> {
+export function parseCodeBlockMetadata(markdown: string): Record<string, string> {
     // Match the opening “```xxx key=value,key2=value2”
     const match = markdown.match(/^```[a-zA-Z0-9]*\s+(.+)$/m);
     if (!match) return {};

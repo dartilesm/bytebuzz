@@ -1,6 +1,6 @@
 "use client";
 
-import { extractCodeBlockMetadata } from "@/components/markdown-viewer/functions/get-code-block-metadata";
+import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 
 import {
   type BundledLanguage,
@@ -29,7 +29,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
 
   // Extract metadata from code blocks
-  const codeBlockMetadata = extractCodeBlockMetadata(markdown);
+  const codeBlockMetadata = parseCodeBlockMetadata(markdown);
 
   return (
     <>
