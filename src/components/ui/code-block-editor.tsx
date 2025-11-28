@@ -77,17 +77,30 @@ export function CodeBlockEditor({
     }),
   );
 
+  function handleOnChange(updates: Partial<CodeBlockEditorValue>) {
+    const newCode = updates.code ?? code;
+    const newLanguage = updates.language ?? language;
+    const newMetadata = updates.metadata ?? metadata;
+
+    if (updates.code !== undefined) setCode(newCode);
+    if (updates.language !== undefined) setLanguage(newLanguage);
+    if (updates.metadata !== undefined) setMetadata(newMetadata);
+
+    onChange?.({
+      code: newCode,
+      language: newLanguage,
+      metadata: newMetadata,
+    });
+  }
+
   function handleCodeChange(newCode: string): void {
     // Enforce character limit using utility function
     const limitedCode = codeBlockEditorFunctions.enforceCharacterLimit(newCode, CHARACTER_LIMIT);
-
-    setCode(limitedCode);
-    onChange?.({ code: limitedCode, language, metadata });
+    handleOnChange({ code: limitedCode });
   }
 
   function handleLanguageChange(newLanguage: string): void {
-    setLanguage(newLanguage);
-    onChange?.({ code, language: newLanguage, metadata });
+    handleOnChange({ language: newLanguage });
   }
 
   function handleMetadataChange(metadataName: string, metadataValue: string): void {
@@ -96,8 +109,7 @@ export function CodeBlockEditor({
       ...parsedMetadata,
       [metadataName]: metadataValue,
     });
-    setMetadata(serializedMetadata);
-    onChange?.({ code, language, metadata: serializedMetadata });
+    handleOnChange({ metadata: serializedMetadata });
   }
 
   const handleCopyToClipboard = useCallback(async (): Promise<void> => {
