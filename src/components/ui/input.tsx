@@ -1,4 +1,4 @@
-import type * as React from "react"
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -11,27 +11,37 @@ const inputVariants = cva(
         default: "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 min-w-0 border bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none",
         flat: "shadow-none border-none bg-input/80 dark:bg-input/60 focus-visible:bg-input dark:focus-visible:bg-input/80",
       },
+      size: {
+        default: "h-9",
+        sm: "h-8",
+        lg: "h-10",
+      }
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   },
 )
 
-function Input({ className, variant, type, ...props }: React.ComponentProps<"input"> & VariantProps<typeof inputVariants>) {
+export interface InputProps
+  extends Omit<React.ComponentProps<"input">, "size">,
+  VariantProps<typeof inputVariants> { }
 
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, variant, size, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        data-slot="input"
+        className={cn(inputVariants({ variant, size }), className)}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
 
-  return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn(
-        inputVariants({ variant }),
-        className
-      )}
-      {...props}
-    />
-  )
-}
+Input.displayName = "Input";
 
 export { Input }
