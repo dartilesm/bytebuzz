@@ -1,10 +1,10 @@
 "use client";
 
+import { CodeBlockEditor, type CodeBlockEditorValue } from "@/components/ui/code-block-editor";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { CodeBlockEditor } from "@/components/ui/code-block-editor";
-import type { EnhancedCodeBlockNode } from "./enhanced-code-block-node";
-import { useRef, useEffect, type KeyboardEvent } from "react";
 import { $createParagraphNode } from "lexical";
+import { type KeyboardEvent, useEffect, useRef } from "react";
+import type { EnhancedCodeBlockNode } from "./enhanced-code-block-node";
 
 interface EnhancedCodeBlockWrapperProps {
   node: EnhancedCodeBlockNode;
@@ -16,43 +16,21 @@ interface EnhancedCodeBlockWrapperProps {
 /**
  * Wrapper component that properly integrates CodeBlockEditor with Lexical
  */
-export function EnhancedCodeBlockWrapper({
-  node,
-  language,
-  code,
-  metadata,
-}: EnhancedCodeBlockWrapperProps) {
+export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeBlockWrapperProps) {
   const [editor] = useLexicalComposerContext();
   const enterPressCount = useRef(0);
   const enterPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   /**
-   * Handle code changes and update the node
+   * Handle code block changes (code, language, metadata)
    */
-  function handleCodeChange(newCode: string): void {
+  function handleChange(value: CodeBlockEditorValue): void {
+    console.log({ value });
     editor.update(() => {
       const writableNode = node.getWritable();
-      writableNode.setCode(newCode);
-    });
-  }
-
-  /**
-   * Handle language changes and update the node
-   */
-  function handleLanguageChange(newLanguage: string): void {
-    editor.update(() => {
-      const writableNode = node.getWritable();
-      writableNode.setLanguage(newLanguage);
-    });
-  }
-
-  /**
-   * Handle metadata changes and update the node
-   */
-  function handleMetadataChange(newMetadata: string): void {
-    editor.update(() => {
-      const writableNode = node.getWritable();
-      writableNode.setMetadata(newMetadata);
+      writableNode.setCode(value.code);
+      writableNode.setLanguage(value.language);
+      writableNode.setMetadata(value.metadata);
     });
   }
 
@@ -142,9 +120,7 @@ export function EnhancedCodeBlockWrapper({
       <CodeBlockEditor
         initialCode={code}
         initialLanguage={language}
-        onCodeChange={handleCodeChange}
-        onLanguageChange={handleLanguageChange}
-        onMetadataChange={handleMetadataChange}
+        onChange={handleChange}
         onRemoveCodeBlock={handleRemoveCodeBlock}
         showLineNumbers
       />

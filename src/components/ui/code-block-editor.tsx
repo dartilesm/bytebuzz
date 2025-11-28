@@ -31,17 +31,19 @@ import { codeBlockEditorFunctions } from "./functions/code-block-editor-function
 // Character limit constant
 const CHARACTER_LIMIT = 10_000;
 
+export interface CodeBlockEditorValue {
+  code: string;
+  language: string;
+  metadata: string;
+}
+
 interface CodeBlockEditorProps {
   /** Initial code content */
   initialCode?: string;
   /** Initial programming language */
   initialLanguage?: string;
-  /** Callback when code changes */
-  onCodeChange?: (code: string) => void;
-  /** Callback when language changes */
-  onLanguageChange?: (language: string) => void;
-  /** Callback when metadata changes */
-  onMetadataChange?: (metadata: string) => void;
+  /** Callback when value changes */
+  onChange?: (value: CodeBlockEditorValue) => void;
   /** Callback when code block is removed */
   onRemoveCodeBlock?: () => void;
   /** Custom height for the editor */
@@ -58,9 +60,7 @@ interface CodeBlockEditorProps {
 export function CodeBlockEditor({
   initialCode = "",
   initialLanguage = "javascript",
-  onCodeChange,
-  onLanguageChange,
-  onMetadataChange,
+  onChange,
   onRemoveCodeBlock,
   height = "400px",
   showLineNumbers = true,
@@ -71,30 +71,34 @@ export function CodeBlockEditor({
 
   const [code, setCode] = useState(initialCode);
   const [language, setLanguage] = useState(initialLanguage);
-  const [metadata, setMetadata] = useState(serializeCodeBlockMetadata({ fileName: `code.${codeBlockEditorFunctions.getLanguageExtension(language)}` }));
-
+  const [metadata, setMetadata] = useState(
+    serializeCodeBlockMetadata({
+      fileName: `code.${codeBlockEditorFunctions.getLanguageExtension(language)}`,
+    }),
+  );
 
   function handleCodeChange(newCode: string): void {
     // Enforce character limit using utility function
     const limitedCode = codeBlockEditorFunctions.enforceCharacterLimit(newCode, CHARACTER_LIMIT);
 
     setCode(limitedCode);
-    onCodeChange?.(limitedCode);
+    onChange?.({ code: limitedCode, language, metadata });
   }
-
 
   function handleLanguageChange(newLanguage: string): void {
     setLanguage(newLanguage);
-    onLanguageChange?.(newLanguage);
+    onChange?.({ code, language: newLanguage, metadata });
   }
 
   function handleMetadataChange(metadataName: string, metadataValue: string): void {
     const parsedMetadata = parseCodeBlockMetadata(metadata);
-    const serializedMetadata = serializeCodeBlockMetadata({ ...parsedMetadata, [metadataName]: metadataValue });
+    const serializedMetadata = serializeCodeBlockMetadata({
+      ...parsedMetadata,
+      [metadataName]: metadataValue,
+    });
     setMetadata(serializedMetadata);
-    onMetadataChange?.(serializedMetadata);
+    onChange?.({ code, language, metadata: serializedMetadata });
   }
-
 
   const handleCopyToClipboard = useCallback(async (): Promise<void> => {
     try {
