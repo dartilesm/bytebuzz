@@ -56,6 +56,7 @@ export function PostContent({ children }: PostContentProps) {
   function handleExpand() {
     setExpansionLevel((prev) => prev + 1);
   }
+
   return (
     <CardContent
       className={cn("flex-1 py-0 text-sm px-2 md:px-4", {

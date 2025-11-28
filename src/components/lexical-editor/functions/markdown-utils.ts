@@ -11,6 +11,7 @@ import { $isHeadingNode, $isQuoteNode, type HeadingNode } from "@lexical/rich-te
 import { $isListNode, $isListItemNode, type ListNode, type ListItemNode } from "@lexical/list";
 import { $isCodeNode, type CodeNode } from "@lexical/code";
 import { $isLinkNode, type LinkNode } from "@lexical/link";
+import { encodeMediaMetadata, mediaDataToMetadata } from "./media-metadata-utils";
 
 /**
  * Converts the current editor state to markdown string
@@ -41,23 +42,41 @@ function nodeToMarkdown(node: LexicalNode): string {
   if ($isEnhancedCodeBlockNode(node)) {
     const language = node.getLanguage();
     const code = node.getCode();
+    const metadata = node.getMetadata();
+
+    if (metadata) {
+      return `\`\`\`${language} ${metadata}\n${code}\n\`\`\``;
+    }
+
     return `\`\`\`${language}\n${code}\n\`\`\``;
   }
 
   // Media nodes (images and videos)
   if ($isMediaNode(node)) {
-    const mediaData = node.getMediaData();
+    const items = node.getItems();
+    const markdownParts: string[] = [];
 
-    if (mediaData.type === "image") {
-      // Convert to markdown image syntax
-      const alt = mediaData.alt || mediaData.title || "Image";
-      return `![${alt}](${mediaData.src})`;
+    for (const mediaData of items) {
+      if (mediaData.type === "image") {
+        // Convert to markdown image syntax with metadata encoded in URL
+        const alt = mediaData.alt || mediaData.title || "Image";
+        const metadata = mediaDataToMetadata(mediaData);
+        const urlWithMetadata = encodeMediaMetadata(mediaData.src, metadata);
+        markdownParts.push(`![${alt}](${urlWithMetadata})`);
+      } else if (mediaData.type === "video") {
+        // Videos don't have standard markdown syntax, so we'll use HTML
+        // Include metadata in the src URL
+        const metadata = mediaDataToMetadata(mediaData);
+        const urlWithMetadata = encodeMediaMetadata(mediaData.src, metadata);
+        markdownParts.push(
+          `<video src="${urlWithMetadata}" controls${
+            mediaData.title ? ` title="${mediaData.title}"` : ""
+          }></video>`
+        );
+      }
     }
 
-    if (mediaData.type === "video") {
-      // Videos don't have standard markdown syntax, so we'll use HTML
-      return `<video src="${mediaData.src}" controls${mediaData.title ? ` title="${mediaData.title}"` : ""}></video>`;
-    }
+    return markdownParts.join("\n\n");
   }
 
   // Headings

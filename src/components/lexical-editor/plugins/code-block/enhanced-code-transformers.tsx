@@ -17,13 +17,26 @@ export const ENHANCED_CODE_BLOCK_TRANSFORMER: ElementTransformer = {
 
     const language = node.getLanguage();
     const code = node.getCode();
+    const metadata = node.getMetadata();
+
+    if (metadata) {
+      return `\`\`\`${language} ${metadata}\n${code}\n\`\`\``;
+    }
 
     return `\`\`\`${language}\n${code}\n\`\`\``;
   },
-  regExp: /^```(\w+)?(?:\s*)$/,
-  replace: (parentNode, _children, match) => {
+  regExp: /^```(\S+)?(?:\s+(.*))?$/,
+  replace: (parentNode, children, match) => {
     const language = match[1] || "plaintext";
-    const codeBlockNode = $createEnhancedCodeBlockNode(language);
+    const metadata = match[2] || "";
+
+    // Extract code from children (text nodes)
+    let code = "";
+    if (children && children.length > 0) {
+      code = children.map((child) => child.getTextContent()).join("\n");
+    }
+
+    const codeBlockNode = $createEnhancedCodeBlockNode(language, code, metadata);
     parentNode.replace(codeBlockNode);
   },
   type: "element",

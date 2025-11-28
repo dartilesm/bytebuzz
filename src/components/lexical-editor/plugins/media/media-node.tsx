@@ -1,7 +1,17 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import type {
   DOMConversionMap,
@@ -12,8 +22,10 @@ import type {
   SerializedLexicalNode,
 } from "lexical";
 import { DecoratorNode } from "lexical";
-import { Download, Trash } from "lucide-react";
+import { DownloadIcon, PencilIcon, TrashIcon } from "lucide-react";
 import type React from "react";
+import { useEffect, useState } from "react";
+import { MediaEditModal } from "./media-edit-modal";
 
 export type MediaType = "image" | "video";
 
@@ -29,7 +41,8 @@ export interface MediaData {
 }
 
 export interface SerializedMediaNode extends SerializedLexicalNode {
-  mediaData: MediaData;
+  items: MediaData[];
+  version: number;
 }
 
 /**
@@ -40,48 +53,89 @@ export interface SerializedMediaNode extends SerializedLexicalNode {
  * - Responsive display
  * - Delete functionality
  * - Download capability
+ * - Carousel display for multiple items
  * - Always positioned at the end of content
  */
 export class MediaNode extends DecoratorNode<React.ReactElement> {
-  __mediaData: MediaData;
+  __items: MediaData[];
 
   static getType(): string {
     return "media";
   }
 
   static clone(node: MediaNode): MediaNode {
-    return new MediaNode(node.__mediaData, node.__key);
+    return new MediaNode(node.__items, node.__key);
   }
 
   static transform(): null {
     return null;
   }
 
-  constructor(mediaData: MediaData, key?: NodeKey) {
+  constructor(items: MediaData | MediaData[], key?: NodeKey) {
     super(key);
-    this.__mediaData = mediaData;
+    // Support both single item and array for backward compatibility
+    this.__items = Array.isArray(items) ? items : [items];
   }
 
   /**
-   * Gets the media data
+   * Gets all media items
+   */
+  getItems(): MediaData[] {
+    return this.__items;
+  }
+
+  /**
+   * Sets all media items
+   */
+  setItems(items: MediaData[]): void {
+    const writable = this.getWritable();
+    writable.__items = items;
+  }
+
+  /**
+   * Adds a new media item to the node
+   */
+  addItem(item: MediaData): void {
+    const writable = this.getWritable();
+    writable.__items = [...writable.__items, item];
+  }
+
+  /**
+   * Removes a media item by ID
+   */
+  removeItem(itemId: string): void {
+    const writable = this.getWritable();
+    writable.__items = writable.__items.filter((item) => item.id !== itemId);
+  }
+
+  /**
+   * Updates a media item by ID
+   */
+  updateItem(itemId: string, updatedData: Partial<MediaData>): void {
+    const writable = this.getWritable();
+    writable.__items = writable.__items.map((item) =>
+      item.id === itemId ? { ...item, ...updatedData } : item
+    );
+  }
+
+  /**
+   * Gets a media item by ID
+   */
+  getItemById(itemId: string): MediaData | undefined {
+    return this.__items.find((item) => item.id === itemId);
+  }
+
+  /**
+   * Backward compatibility: gets the first media data
    */
   getMediaData(): MediaData {
-    return this.__mediaData;
-  }
-
-  /**
-   * Sets the media data
-   */
-  setMediaData(mediaData: MediaData): void {
-    const writable = this.getWritable();
-    writable.__mediaData = mediaData;
+    return this.__items[0];
   }
 
   createDOM(): HTMLElement {
     const element = document.createElement("div");
     element.setAttribute("data-lexical-media", "true");
-    element.setAttribute("data-media-type", this.__mediaData.type);
-    element.setAttribute("data-media-id", this.__mediaData.id);
+    element.setAttribute("data-media-count", this.__items.length.toString());
     return element;
   }
 
@@ -98,30 +152,45 @@ export class MediaNode extends DecoratorNode<React.ReactElement> {
     };
   }
 
-  static importJSON(serializedNode: SerializedMediaNode): MediaNode {
-    const { mediaData } = serializedNode;
-    return $createMediaNode(mediaData);
+  static importJSON(serializedNode: SerializedLexicalNode): MediaNode {
+    const node = serializedNode as SerializedMediaNode & { mediaData?: MediaData };
+    // Handle backward compatibility: if old format with single mediaData, convert to array
+    if (
+      "mediaData" in node &&
+      node.mediaData &&
+      typeof node.mediaData === "object" &&
+      "id" in node.mediaData
+    ) {
+      return $createMediaNode([node.mediaData]);
+    }
+    // New format with items array
+    if ("items" in node && Array.isArray(node.items)) {
+      return $createMediaNode(node.items);
+    }
+    // Fallback: empty array
+    return $createMediaNode([]);
   }
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement("div");
     element.setAttribute("data-lexical-media", "true");
-    element.setAttribute("data-media-type", this.__mediaData.type);
-    element.setAttribute("data-media-id", this.__mediaData.id);
+    element.setAttribute("data-media-count", this.__items.length.toString());
 
-    // Create appropriate media element for export
-    if (this.__mediaData.type === "image") {
-      const img = document.createElement("img");
-      img.src = this.__mediaData.src;
-      img.alt = this.__mediaData.alt || "";
-      if (this.__mediaData.title) img.title = this.__mediaData.title;
-      element.appendChild(img);
-    } else if (this.__mediaData.type === "video") {
-      const video = document.createElement("video");
-      video.src = this.__mediaData.src;
-      video.controls = true;
-      if (this.__mediaData.title) video.title = this.__mediaData.title;
-      element.appendChild(video);
+    // Create appropriate media elements for export
+    for (const item of this.__items) {
+      if (item.type === "image") {
+        const img = document.createElement("img");
+        img.src = item.src;
+        img.alt = item.alt || "";
+        if (item.title) img.title = item.title;
+        element.appendChild(img);
+      } else if (item.type === "video") {
+        const video = document.createElement("video");
+        video.src = item.src;
+        video.controls = true;
+        if (item.title) video.title = item.title;
+        element.appendChild(video);
+      }
     }
 
     return { element };
@@ -129,9 +198,9 @@ export class MediaNode extends DecoratorNode<React.ReactElement> {
 
   exportJSON(): SerializedMediaNode {
     return {
-      mediaData: this.__mediaData,
+      items: this.__items,
       type: "media",
-      version: 1,
+      version: 2,
     };
   }
 
@@ -139,7 +208,7 @@ export class MediaNode extends DecoratorNode<React.ReactElement> {
    * Renders the media component
    */
   decorate(): React.ReactElement {
-    return <MediaComponent node={this} mediaData={this.__mediaData} />;
+    return <MediaComponent node={this} items={this.__items} />;
   }
 
   isInline(): boolean {
@@ -154,102 +223,235 @@ export class MediaNode extends DecoratorNode<React.ReactElement> {
 /**
  * Media component that renders the actual media content
  */
-function MediaComponent({ node, mediaData }: { node: MediaNode; mediaData: MediaData }) {
+function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }) {
   const [editor] = useLexicalComposerContext();
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [editingMediaItem, setEditingMediaItem] = useState<MediaData | null>(null);
+  const hasMoreThanOneItem = items.length > 1;
 
   /**
-   * Handle media removal
+   * Sync current index with carousel API events
    */
-  function handleRemoveMedia(): void {
+  useEffect(() => {
+    if (!api) return;
+    if (items.length === 0) return;
+    handleNewMediaItems();
+
+    api.on("select", handleCarouselNavigate);
+    api.on("reInit", handleNewMediaItems);
+
+    return () => {
+      api.off("select", handleCarouselNavigate);
+      api.off("reInit", handleNewMediaItems);
+    };
+  }, [api, items.length]);
+
+  function handleCarouselNavigate() {
+    if (!api) return;
+    setCurrentIndex(api.selectedScrollSnap());
+  }
+
+  function handleNewMediaItems() {
+    if (!api) return;
+    api.scrollTo(items.length - 1);
+  }
+
+  function handleRemoveMedia(itemId: string) {
     editor.update(() => {
-      node.remove();
+      const itemIndex = items.findIndex((item) => item.id === itemId);
+      node.removeItem(itemId);
+      if (node.getItems().length === 0) {
+        node.remove();
+        return;
+      }
+
+      // If we removed an item, adjust the carousel position
+      if (api && hasMoreThanOneItem) {
+        const newItems = node.getItems();
+        // If we removed the last item, go to the previous one
+        if (itemIndex >= newItems.length && newItems.length > 0) {
+          api.scrollTo(newItems.length - 1);
+        }
+      }
     });
   }
 
-  /**
-   * Handle media download
-   */
-  function handleDownloadMedia(): void {
+  function handleDownloadMedia(item: MediaData) {
     const link = document.createElement("a");
-    link.href = mediaData.src;
-    link.download = mediaData.title || `media-${mediaData.id}`;
+    link.href = item?.src;
+    link.download = item?.title || `media-${item?.id}`;
     link.click();
   }
 
+  function handleEditMedia() {
+    const currentItem = items[currentIndex] || items[0];
+    if (currentItem) {
+      setEditingMediaItem(currentItem);
+    }
+  }
+
+  function handleSaveMedia(updatedData: Partial<MediaData>) {
+    if (!editingMediaItem) return;
+
+    editor.update(() => {
+      node.updateItem(editingMediaItem.id, updatedData);
+    });
+
+    setEditingMediaItem(null);
+  }
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  const currentItem = items[currentIndex] || items[0];
+
   return (
-    <Card className="w-full my-4">
-      <CardContent className="p-4">
-        <div className="flex flex-col gap-3">
-          {/* Media Content */}
-          <div className="relative">
-            {mediaData.type === "image" ? (
-              <img
-                src={mediaData.src}
-                alt={mediaData.alt || ""}
-                title={mediaData.title}
-                className="w-full h-auto rounded-lg shadow-sm max-h-96 object-contain bg-muted"
-                loading="lazy"
+    <CardContent className='p-0 border border-border rounded-lg overflow-hidden dark:bg-accent bg-accent/20'>
+      <div className='relative group'>
+        {/* Media Content */}
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "start",
+            loop: false,
+          }}
+          className='w-full'
+        >
+          <CarouselContent className='ml-0'>
+            {items.map((item) => (
+              <CarouselItem
+                key={item.id}
+                className='pl-0 w-full h-auto max-h-96 flex items-center justify-center'
+              >
+                <>
+                  {item.type === "image" && (
+                    <img
+                      src={item.src}
+                      alt={item.alt || ""}
+                      title={item.title}
+                      className={cn("w-full object-contain object-center", {
+                        "animate-pulse": item.isLoading,
+                      })}
+                      loading='lazy'
+                    />
+                  )}
+                  {item.type === "video" && (
+                    <video
+                      src={item.src}
+                      title={item.title}
+                      controls
+                      className={cn("w-full h-full rounded-lg shadow-sm max-h-96", {
+                        "animate-pulse": item.isLoading,
+                      })}
+                      preload='metadata'
+                    >
+                      <track kind='captions' src='' label='Captions' />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                </>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {hasMoreThanOneItem && (
+            <>
+              <CarouselPrevious className='left-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background' />
+              <CarouselNext className='right-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background' />
+            </>
+          )}
+        </Carousel>
+
+        {/* Carousel Indicators */}
+        {hasMoreThanOneItem && (
+          <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10'>
+            {items.map((_, index) => (
+              <Button
+                key={index}
+                type='button'
+                size='icon'
+                variant={index === currentIndex ? "default" : "outline"}
+                onClick={() => {
+                  api?.scrollTo(index);
+                }}
+                aria-label={`Go to slide ${index + 1}`}
+                className={cn("h-2 rounded-full transition-all", {
+                  "w-2": index !== currentIndex,
+                })}
               />
-            ) : (
-              <video
-                src={mediaData.src}
-                title={mediaData.title}
-                controls
-                className="w-full h-auto rounded-lg shadow-sm max-h-96"
-                preload="metadata"
-              >
-                <track kind="captions" src="" label="Captions" />
-                Your browser does not support the video tag.
-              </video>
-            )}
+            ))}
           </div>
+        )}
 
-          {/* Media Info and Actions */}
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col gap-1">
-              {mediaData.title && (
-                <span className="text-sm font-medium text-foreground">{mediaData.title}</span>
-              )}
-              <span className="text-xs text-muted-foreground capitalize">
-                {mediaData.type} • {mediaData.id}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={handleDownloadMedia}
-                aria-label="Download media"
-                className="cursor-pointer h-8 w-8"
-                disabled={mediaData.isLoading}
-              >
-                <Download size={16} />
-              </Button>
-
-              <Button
-                size="icon"
-                variant="destructive"
-                onClick={handleRemoveMedia}
-                aria-label="Delete media"
-                className="cursor-pointer h-8 w-8"
-                disabled={mediaData.isLoading}
-              >
-                <Trash size={16} />
-              </Button>
-            </div>
+        {/* Floating Action Buttons - Top Right Corner */}
+        <div className='absolute top-2 px-2 flex items-center justify-between gap-1 z-20 w-full'>
+          <div>
+            <Button
+              size='icon-sm'
+              variant='flat'
+              onClick={handleEditMedia}
+              aria-label='Edit media metadata'
+              disabled={currentItem?.isLoading}
+            >
+              <PencilIcon className='size-4' />
+            </Button>
+          </div>
+          <div className='flex items-center gap-1'>
+            <Button
+              size='icon-sm'
+              variant='flat'
+              onClick={() => handleDownloadMedia(currentItem)}
+              aria-label='Download media'
+              disabled={currentItem?.isLoading}
+            >
+              <DownloadIcon className='size-4' />
+            </Button>
+            <Button
+              size='icon-sm'
+              variant='flat'
+              onClick={() => handleRemoveMedia(currentItem?.id)}
+              aria-label='Delete media'
+              disabled={currentItem?.isLoading}
+            >
+              <TrashIcon className='size-4' />
+            </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Compact Media Info - Bottom Left */}
+        <Badge
+          variant='flat'
+          className='absolute bottom-2 left-2 z-10 flex items-center justify-center'
+        >
+          <span className='text-xs capitalize'>
+            {currentItem?.type}
+            {hasMoreThanOneItem && ` • ${currentIndex + 1}/${items.length}`}
+          </span>
+        </Badge>
+      </div>
+
+      {/* Media Edit Modal */}
+      <MediaEditModal
+        open={editingMediaItem !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingMediaItem(null);
+          }
+        }}
+        mediaData={editingMediaItem}
+        onSave={handleSaveMedia}
+      />
+    </CardContent>
   );
 }
 
 /**
  * Creates a new MediaNode
+ * Accepts either a single MediaData or an array of MediaData items
  */
-export function $createMediaNode(mediaData: MediaData): MediaNode {
-  return new MediaNode(mediaData);
+export function $createMediaNode(items: MediaData | MediaData[]): MediaNode {
+  return new MediaNode(items);
 }
 
 /**
@@ -266,40 +468,71 @@ function $convertMediaElement(domNode: Node): DOMConversionOutput {
   const node = domNode as HTMLElement;
 
   if (node.getAttribute("data-lexical-media") === "true") {
-    const mediaType = node.getAttribute("data-media-type") as MediaType;
-    const mediaId = node.getAttribute("data-media-id") || "";
+    const items: MediaData[] = [];
 
-    // Try to extract media info from child elements
-    let src = "";
-    let alt = "";
-    let title = "";
+    // Extract all media elements (images and videos)
+    const images = node.querySelectorAll("img");
+    const videos = node.querySelectorAll("video");
 
-    if (mediaType === "image") {
-      const img = node.querySelector("img");
-      if (img) {
-        src = img.src;
-        alt = img.alt;
-        title = img.title;
+    for (const img of images) {
+      items.push({
+        id: img.src.split("/").pop() || `image-${items.length}`,
+        type: "image",
+        src: img.src,
+        alt: img.alt,
+        title: img.title,
+      });
+    }
+
+    for (const video of videos) {
+      items.push({
+        id: video.src.split("/").pop() || `video-${items.length}`,
+        type: "video",
+        src: video.src,
+        title: video.title,
+      });
+    }
+
+    // If no items found, try legacy format
+    if (items.length === 0) {
+      const mediaType = node.getAttribute("data-media-type") as MediaType;
+      const mediaId = node.getAttribute("data-media-id") || "";
+
+      let src = "";
+      let alt = "";
+      let title = "";
+
+      if (mediaType === "image") {
+        const img = node.querySelector("img");
+        if (img) {
+          src = img.src;
+          alt = img.alt;
+          title = img.title;
+        }
+      } else if (mediaType === "video") {
+        const video = node.querySelector("video");
+        if (video) {
+          src = video.src;
+          title = video.title;
+        }
       }
-    } else if (mediaType === "video") {
-      const video = node.querySelector("video");
-      if (video) {
-        src = video.src;
-        title = video.title;
+
+      if (src) {
+        items.push({
+          id: mediaId || src.split("/").pop() || "media-0",
+          type: mediaType,
+          src,
+          alt,
+          title,
+        });
       }
     }
 
-    const mediaData: MediaData = {
-      id: mediaId,
-      type: mediaType,
-      src,
-      alt,
-      title,
-    };
-
-    return {
-      node: $createMediaNode(mediaData),
-    };
+    if (items.length > 0) {
+      return {
+        node: $createMediaNode(items),
+      };
+    }
   }
 
   return { node: null };
