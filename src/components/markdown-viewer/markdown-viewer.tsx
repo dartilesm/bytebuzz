@@ -7,15 +7,40 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
-
+import { useMemo } from "react";
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 
+/**
+ * Extracts metadata from code blocks in markdown
+ * Returns a map of code content to metadata
+ */
+function extractCodeBlockMetadata(markdown: string): Map<string, string> {
+  const metadataMap = new Map<string, string>();
+  const codeBlockRegex = /^```(\S+)?(?:\s+(.*))?\n([\s\S]*?)\n```$/gm;
+
+  let match;
+  while ((match = codeBlockRegex.exec(markdown)) !== null) {
+    const metadata = match[2] || "";
+    const code = match[3] || "";
+
+    if (metadata) {
+      // Use code content as key to match later
+      metadataMap.set(code.trim(), metadata);
+    }
+  }
+
+  return metadataMap;
+}
+
 export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
   // Extract image count from markdown by counting ![] patterns
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
+
+  // Extract metadata from code blocks
+  const codeBlockMetadata = extractCodeBlockMetadata(markdown);
 
   return (
     <>
@@ -35,8 +60,18 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           code: ({ node, ...props }) => {
             const { children, className } = props;
             const language = className?.replace("language-", "");
-            if (!className) return <code className='text-xs bg-muted px-1 py-0.5 rounded-sm font-mono'>{children}</code>;
-            return <CodeBlock code={children as string} language={language} />;
+            if (!className)
+              return (
+                <code className='text-xs bg-muted px-1 py-0.5 rounded-sm font-mono'>
+                  {children}
+                </code>
+              );
+
+            // Extract metadata for this code block
+            const codeContent = (children as string) || "";
+            const metadata = codeBlockMetadata.get(codeContent.trim()) || undefined;
+
+            return <CodeBlock code={codeContent} language={language} metadata={metadata} />;
           },
           ul: ({ ...props }) => {
             const { children, className } = props;

@@ -14,7 +14,7 @@ import githubLightTheme from "@shikijs/themes/github-light";
 import { CheckIcon, CopyIcon, DownloadIcon, XIcon } from "lucide-react";
 import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
 import { log } from "@/lib/logger/logger";
-import { useCopyToClipboard, useDebounceCallback, useDebounceValue } from "usehooks-ts";
+import { useCopyToClipboard, useDebounceCallback } from "usehooks-ts";
 import { toast } from "sonner";
 
 const enum COPY_STATUS {
@@ -26,6 +26,7 @@ const enum COPY_STATUS {
 interface CodeBlockProps {
   code: string;
   language?: string;
+  metadata?: string;
   showLineNumbers?: boolean;
   className?: string;
   hideSymbol?: boolean;
@@ -42,10 +43,10 @@ interface CodeBlockProps {
 export function CodeBlock({
   code = "",
   language = "javascript",
+  metadata,
   showLineNumbers = true,
   className = "",
   hideSymbol = false,
-  tooltipProps = {},
 }: CodeBlockProps) {
   const { resolvedTheme } = useTheme();
   const [highlightedHtml, setHighlightedHtml] = useState<string>("");
@@ -88,7 +89,7 @@ export function CodeBlock({
     }
 
     highlightCode();
-  }, [code, language, showLineNumbers, hideSymbol, resolvedTheme]);
+  }, [code, language, showLineNumbers, hideSymbol, codeTheme]);
 
   /**
    * Handles copying code to clipboard
@@ -150,6 +151,7 @@ export function CodeBlock({
         } as CSSProperties
       }
       onClick={handleClick}
+      data-metadata={metadata || undefined}
     >
       <div className='flex items-center justify-between px-2 pt-1 pr-1 bg-(--editor-background)'>
         <div className='flex items-center gap-2'>
@@ -184,9 +186,15 @@ export function CodeBlock({
                   aria-label='Copy code'
                   className='size-6 text-muted-foreground hover:text-foreground group/copy-button rounded-md'
                 >
-                  {copyStatus === COPY_STATUS.IDLE && <CopyIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />}
-                  {copyStatus === COPY_STATUS.COPIED && <CheckIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />}
-                  {copyStatus === COPY_STATUS.ERROR && <XIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />}
+                  {copyStatus === COPY_STATUS.IDLE && (
+                    <CopyIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />
+                  )}
+                  {copyStatus === COPY_STATUS.COPIED && (
+                    <CheckIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />
+                  )}
+                  {copyStatus === COPY_STATUS.ERROR && (
+                    <XIcon className='size-3 text-muted-foreground/60 group-hover/copy-button:text-foreground' />
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

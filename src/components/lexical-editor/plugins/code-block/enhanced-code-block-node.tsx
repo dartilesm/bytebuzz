@@ -16,6 +16,7 @@ import { log } from "@/lib/logger/logger";
 export interface SerializedEnhancedCodeBlockNode extends SerializedLexicalNode {
   language: string;
   code: string;
+  metadata?: string;
 }
 
 /**
@@ -32,19 +33,21 @@ export interface SerializedEnhancedCodeBlockNode extends SerializedLexicalNode {
 export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
   __language: string;
   __code: string;
+  __metadata: string;
 
   static getType(): string {
     return "enhanced-code-block";
   }
 
   static clone(node: EnhancedCodeBlockNode): EnhancedCodeBlockNode {
-    return new EnhancedCodeBlockNode(node.__language, node.__code, node.__key);
+    return new EnhancedCodeBlockNode(node.__language, node.__code, node.__key, node.__metadata);
   }
 
-  constructor(language: string, code = "", key?: NodeKey) {
+  constructor(language: string, code = "", key?: NodeKey, metadata = "") {
     super(key);
     this.__language = language;
     this.__code = code;
+    this.__metadata = metadata;
   }
 
   /**
@@ -77,10 +80,28 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
     writable.__code = code;
   }
 
+  /**
+   * Gets the metadata for this code block
+   */
+  getMetadata(): string {
+    return this.__metadata;
+  }
+
+  /**
+   * Sets the metadata for this code block
+   */
+  setMetadata(metadata: string): void {
+    const writable = this.getWritable();
+    writable.__metadata = metadata;
+  }
+
   createDOM(): HTMLElement {
     const element = document.createElement("div");
     element.setAttribute("data-lexical-enhanced-code-block", "true");
     element.setAttribute("data-language", this.__language);
+    if (this.__metadata) {
+      element.setAttribute("data-metadata", this.__metadata);
+    }
     return element;
   }
 
@@ -98,14 +119,17 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
   }
 
   static importJSON(serializedNode: SerializedEnhancedCodeBlockNode): EnhancedCodeBlockNode {
-    const { language, code } = serializedNode;
-    return $createEnhancedCodeBlockNode(language, code);
+    const { language, code, metadata } = serializedNode;
+    return $createEnhancedCodeBlockNode(language, code, metadata);
   }
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement("div");
     element.setAttribute("data-lexical-enhanced-code-block", "true");
     element.setAttribute("data-language", this.__language);
+    if (this.__metadata) {
+      element.setAttribute("data-metadata", this.__metadata);
+    }
 
     // Create a pre element with the code for export
     const pre = document.createElement("pre");
@@ -122,6 +146,7 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
     return {
       language: this.__language,
       code: this.__code,
+      metadata: this.__metadata || undefined,
       type: "enhanced-code-block",
       version: 1,
     };
@@ -131,8 +156,19 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
    * Renders the CodeBlockEditor component
    */
   decorate(): React.ReactElement {
-    log.info("Decorate code block", { code: this.__code, language: this.__language });
-    return <EnhancedCodeBlockWrapper node={this} code={this.__code} language={this.__language} />;
+    log.info("Decorate code block", {
+      code: this.__code,
+      language: this.__language,
+      metadata: this.__metadata,
+    });
+    return (
+      <EnhancedCodeBlockWrapper
+        node={this}
+        code={this.__code}
+        language={this.__language}
+        metadata={this.__metadata}
+      />
+    );
   }
 
   isInline(): boolean {
@@ -147,8 +183,12 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
 /**
  * Creates a new EnhancedCodeBlockNode
  */
-export function $createEnhancedCodeBlockNode(language: string, code = ""): EnhancedCodeBlockNode {
-  return new EnhancedCodeBlockNode(language, code);
+export function $createEnhancedCodeBlockNode(
+  language: string,
+  code = "",
+  metadata = ""
+): EnhancedCodeBlockNode {
+  return new EnhancedCodeBlockNode(language, code, undefined, metadata);
 }
 
 /**
@@ -168,13 +208,14 @@ function $convertEnhancedCodeBlockElement(domNode: Node): DOMConversionOutput {
 
   if (node.getAttribute("data-lexical-enhanced-code-block") === "true") {
     const language = node.getAttribute("data-language") || "javascript";
+    const metadata = node.getAttribute("data-metadata") || "";
 
     // Try to extract code from a pre/code element if it exists
     const codeElement = node.querySelector("code");
     const code = codeElement?.textContent || "";
 
     return {
-      node: $createEnhancedCodeBlockNode(language, code),
+      node: $createEnhancedCodeBlockNode(language, code, metadata),
     };
   }
 

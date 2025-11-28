@@ -42,6 +42,12 @@ function nodeToMarkdown(node: LexicalNode): string {
   if ($isEnhancedCodeBlockNode(node)) {
     const language = node.getLanguage();
     const code = node.getCode();
+    const metadata = node.getMetadata();
+
+    if (metadata) {
+      return `\`\`\`${language} ${metadata}\n${code}\n\`\`\``;
+    }
+
     return `\`\`\`${language}\n${code}\n\`\`\``;
   }
 

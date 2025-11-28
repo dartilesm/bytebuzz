@@ -10,12 +10,18 @@ interface EnhancedCodeBlockWrapperProps {
   node: EnhancedCodeBlockNode;
   language: string;
   code: string;
+  metadata: string;
 }
 
 /**
  * Wrapper component that properly integrates CodeBlockEditor with Lexical
  */
-export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeBlockWrapperProps) {
+export function EnhancedCodeBlockWrapper({
+  node,
+  language,
+  code,
+  metadata,
+}: EnhancedCodeBlockWrapperProps) {
   const [editor] = useLexicalComposerContext();
   const enterPressCount = useRef(0);
   const enterPressTimer = useRef<NodeJS.Timeout | null>(null);
@@ -37,6 +43,16 @@ export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeB
     editor.update(() => {
       const writableNode = node.getWritable();
       writableNode.setLanguage(newLanguage);
+    });
+  }
+
+  /**
+   * Handle metadata changes and update the node
+   */
+  function handleMetadataChange(newMetadata: string): void {
+    editor.update(() => {
+      const writableNode = node.getWritable();
+      writableNode.setMetadata(newMetadata);
     });
   }
 
@@ -126,12 +142,14 @@ export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeB
       <CodeBlockEditor
         initialCode={code}
         initialLanguage={language}
+        initialMetadata={metadata}
         onCodeChange={handleCodeChange}
         onLanguageChange={handleLanguageChange}
+        onMetadataChange={handleMetadataChange}
         onRemoveCodeBlock={handleRemoveCodeBlock}
-        height="300px"
+        height='300px'
         showLineNumbers={true}
-        className="my-4"
+        className='my-4'
       />
     </div>
   );

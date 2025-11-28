@@ -2,15 +2,23 @@
 
 import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 import { useTheme } from "next-themes";
 import { Editor } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, vs } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, Download, Trash } from "lucide-react";
+import { Copy, Download, Trash, Settings } from "lucide-react";
 import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
 import { cn } from "@/lib/utils";
 import { log } from "@/lib/logger/logger";
@@ -19,12 +27,16 @@ interface CodeBlockEditorProps {
   initialCode?: string;
   /** Initial programming language */
   initialLanguage?: string;
+  /** Initial metadata */
+  initialMetadata?: string;
   /** Whether the editor is in read-only mode */
   readOnly?: boolean;
   /** Callback when code changes */
   onCodeChange?: (code: string) => void;
   /** Callback when language changes */
   onLanguageChange?: (language: string) => void;
+  /** Callback when metadata changes */
+  onMetadataChange?: (metadata: string) => void;
   /** Callback when code block is removed */
   onRemoveCodeBlock?: () => void;
   /** Custom height for the editor */
@@ -41,9 +53,11 @@ interface CodeBlockEditorProps {
 export function CodeBlockEditor({
   initialCode = "",
   initialLanguage = "javascript",
+  initialMetadata = "",
   readOnly = false,
   onCodeChange,
   onLanguageChange,
+  onMetadataChange,
   onRemoveCodeBlock,
   height = "400px",
   showLineNumbers = true,
@@ -54,8 +68,10 @@ export function CodeBlockEditor({
 
   const [code, setCode] = useState(initialCode);
   const [language, setLanguage] = useState(initialLanguage);
+  const [metadata, setMetadata] = useState(initialMetadata);
   const [isEditing, setIsEditing] = useState(!readOnly);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isMetadataOpen, setIsMetadataOpen] = useState(false);
 
   // Character limit constant
   const CHARACTER_LIMIT = 1000;
@@ -77,6 +93,14 @@ export function CodeBlockEditor({
   function handleLanguageChange(newLanguage: string): void {
     setLanguage(newLanguage);
     onLanguageChange?.(newLanguage);
+  }
+
+  /**
+   * Handle metadata changes
+   */
+  function handleMetadataChange(newMetadata: string): void {
+    setMetadata(newMetadata);
+    onMetadataChange?.(newMetadata);
   }
 
   /**
@@ -142,23 +166,20 @@ export function CodeBlockEditor({
     >
       <CardHeader className='flex flex-row items-center justify-between gap-4 pb-2 space-y-0'>
         <div className='flex items-center gap-2'>
-          <Select
-            value={language}
-            onValueChange={(value) => handleLanguageChange(value)}
-          >
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Select language" />
+          <Select value={language} onValueChange={(value) => handleLanguageChange(value)}>
+            <SelectTrigger className='w-[140px] h-8'>
+              <SelectValue placeholder='Select language' />
             </SelectTrigger>
             <SelectContent>
               {supportedLanguages.map((lang: { value: string; label: string }) => (
-                <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
+                <SelectItem key={lang.value} value={lang.value}>
+                  {lang.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
-          <Badge variant='secondary'>
-            {codeBlockEditorFunctions.getLineCount(code)} lines
-          </Badge>
+          <Badge variant='secondary'>{codeBlockEditorFunctions.getLineCount(code)} lines</Badge>
 
           <Badge
             variant={
@@ -173,12 +194,38 @@ export function CodeBlockEditor({
         </div>
 
         <div className='flex items-center gap-2'>
+          {!readOnly && (
+            <Popover open={isMetadataOpen} onOpenChange={setIsMetadataOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type='button'
+                  className='h-8 w-8 flex items-center justify-center rounded-md hover:bg-default-200 cursor-pointer'
+                  aria-label='Edit metadata'
+                >
+                  <Settings size={16} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className='w-80'>
+                <div className='space-y-2'>
+                  <label className='text-sm font-medium'>Metadata</label>
+                  <Input
+                    value={metadata}
+                    onChange={(e) => handleMetadataChange(e.target.value)}
+                    placeholder='metadata1=value1, metadata2=value2'
+                    className='text-sm'
+                  />
+                  {metadata && <p className='text-xs text-muted-foreground'>Current: {metadata}</p>}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+
           <Button
             size='icon'
             variant='ghost'
             onClick={handleCopyToClipboard}
             aria-label='Copy code to clipboard'
-            className={cn('cursor-pointer h-8 w-8', copySuccess && "text-green-500")}
+            className={cn("cursor-pointer h-8 w-8", copySuccess && "text-green-500")}
           >
             <Copy size={16} />
           </Button>
