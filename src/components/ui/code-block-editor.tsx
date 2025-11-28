@@ -27,6 +27,7 @@ import type { editor } from "monaco-editor";
 import { useTheme } from "next-themes";
 import { useCallback, useRef, useState } from "react";
 import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
+import { useCopyToClipboard } from "usehooks-ts";
 
 // Character limit constant
 const CHARACTER_LIMIT = 10_000;
@@ -69,80 +70,63 @@ export function CodeBlockEditor({
   const { theme } = useTheme();
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
-  const [code, setCode] = useState(initialCode);
-  const [language, setLanguage] = useState(initialLanguage);
-  const [metadata, setMetadata] = useState(
-    serializeCodeBlockMetadata({
-      fileName: `code.${codeBlockEditorFunctions.getLanguageExtension(language)}`,
+  const [editorValue, setEditorValue] = useState({
+    code: initialCode,
+    language: initialLanguage,
+    metadata: serializeCodeBlockMetadata({
+      fileName: `code.${codeBlockEditorFunctions.getLanguageExtension(initialLanguage)}`,
     }),
-  );
+  });
 
-  function handleOnChange(updates: Partial<CodeBlockEditorValue>) {
-    const newCode = updates.code ?? code;
-    const newLanguage = updates.language ?? language;
-    const newMetadata = updates.metadata ?? metadata;
+  const [, copyCode] = useCopyToClipboard();
 
-    if (updates.code !== undefined) setCode(newCode);
-    if (updates.language !== undefined) setLanguage(newLanguage);
-    if (updates.metadata !== undefined) setMetadata(newMetadata);
+  function handleOnChange(editorChange: Partial<CodeBlockEditorValue>) {
+    const newEditorValue = {
+      ...editorValue,
+      ...editorChange,
+    };
 
-    onChange?.({
-      code: newCode,
-      language: newLanguage,
-      metadata: newMetadata,
-    });
+    setEditorValue(newEditorValue);
+    onChange?.(newEditorValue);
   }
 
-  function handleCodeChange(newCode: string): void {
+  function handleCodeChange(newCode: string) {
     // Enforce character limit using utility function
     const limitedCode = codeBlockEditorFunctions.enforceCharacterLimit(newCode, CHARACTER_LIMIT);
     handleOnChange({ code: limitedCode });
   }
 
-  function handleLanguageChange(newLanguage: string): void {
-    handleOnChange({ language: newLanguage });
-  }
-
-  function handleMetadataChange(metadataName: string, metadataValue: string): void {
-    const parsedMetadata = parseCodeBlockMetadata(metadata);
-    const serializedMetadata = serializeCodeBlockMetadata({
-      ...parsedMetadata,
-      [metadataName]: metadataValue,
-    });
-    handleOnChange({ metadata: serializedMetadata });
-  }
-
-  const handleCopyToClipboard = useCallback(async (): Promise<void> => {
+  async function handleCopyToClipboard() {
     try {
-      await codeBlockEditorFunctions.copyToClipboard(code);
+      await copyCode(editorValue.code);
     } catch (error) {
       log.error("Failed to copy code", { error });
     }
-  }, [code]);
+  }
 
-  const handleDownload = useCallback((): void => {
-    codeBlockEditorFunctions.downloadCode(code, language);
-  }, [code, language]);
+  function handleDownload() {
+    codeBlockEditorFunctions.downloadCode(editorValue);
+  }
 
-  function handleRemoveCodeBlock(): void {
+  function handleRemoveCodeBlock() {
     onRemoveCodeBlock?.();
   }
 
-  function handleEditorDidMount(editor: editor.IStandaloneCodeEditor): void {
+  function handleEditorDidMount(editor: editor.IStandaloneCodeEditor) {
     editorRef.current = editor;
   }
 
-  function handleEditorChange(value: string | undefined): void {
+  function handleEditorChange(value: string | undefined) {
     const newValue = value || "";
     handleCodeChange(newValue);
   }
 
   const supportedLanguages = codeBlockEditorFunctions.getSupportedLanguages();
-  const monacoLanguage = codeBlockEditorFunctions.getMonacoLanguage(language);
+  const monacoLanguage = codeBlockEditorFunctions.getMonacoLanguage(editorValue.language);
 
-  const dynamicHeight = codeBlockEditorFunctions.calculateDynamicHeight(code, height);
+  const dynamicHeight = codeBlockEditorFunctions.calculateDynamicHeight(editorValue.code, height);
 
-  const languageExtension = codeBlockEditorFunctions.getLanguageExtension(language);
+  const languageExtension = codeBlockEditorFunctions.getLanguageExtension(editorValue.language);
 
   /* const limitStatus = codeBlockEditorFunctions.getCharacterLimitStatus(code, CHARACTER_LIMIT); */
 
@@ -151,8 +135,8 @@ export function CodeBlockEditor({
       <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 p-2 h-10 bg-accent/30">
         <div>
           <Select
-            value={language}
-            onValueChange={(value) => handleLanguageChange(value)}
+            value={editorValue.language}
+            onValueChange={(value) => handleOnChange({ language: value })}
             variant="flat"
             size="sm"
           >
@@ -174,7 +158,7 @@ export function CodeBlockEditor({
             defaultValue={`code.${languageExtension}`}
             variant="flat"
             size="sm"
-            onChange={(e) => handleMetadataChange("fileName", e.target.value)}
+            onChange={(e) => handleOnChange({ metadata: serializeCodeBlockMetadata({ fileName: e.target.value }) })}
           />
         </div>
 
@@ -222,7 +206,7 @@ export function CodeBlockEditor({
             <Editor
               height="100%"
               language={monacoLanguage}
-              value={code}
+              value={editorValue.code}
               onChange={handleEditorChange}
               onMount={handleEditorDidMount}
               theme={theme === "dark" ? "vs-dark" : "light"}
@@ -271,17 +255,17 @@ export function CodeBlockEditor({
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between gap-2 p-2">
-        <Badge variant="secondary">{codeBlockEditorFunctions.getLineCount(code)} lines</Badge>
+        <Badge variant="secondary">{codeBlockEditorFunctions.getLineCount(editorValue.code)} lines</Badge>
 
         <Badge
           variant={
-            codeBlockEditorFunctions.getCharacterLimitStatus(code, CHARACTER_LIMIT)
+            codeBlockEditorFunctions.getCharacterLimitStatus(editorValue.code, CHARACTER_LIMIT)
               .isApproachingLimit
               ? "destructive"
               : "secondary"
           }
         >
-          {code.length}/{CHARACTER_LIMIT} chars
+          {editorValue.code.length}/{CHARACTER_LIMIT} chars
         </Badge>
       </CardFooter>
     </Card>

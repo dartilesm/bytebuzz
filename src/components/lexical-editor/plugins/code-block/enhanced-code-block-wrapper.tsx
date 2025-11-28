@@ -25,7 +25,6 @@ export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeB
    * Handle code block changes (code, language, metadata)
    */
   function handleChange(value: CodeBlockEditorValue): void {
-    console.log({ value });
     editor.update(() => {
       const writableNode = node.getWritable();
       writableNode.setCode(value.code);

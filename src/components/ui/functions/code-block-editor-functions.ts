@@ -1,3 +1,7 @@
+import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
+import { CodeBlockEditorValue } from "@/components/ui/code-block-editor";
+import { parse } from "path";
+
 interface LanguageOption {
   value: string;
   label: string;
@@ -32,11 +36,12 @@ export const codeBlockEditorFunctions = {
   /**
    * Download code as a file with appropriate extension based on language
    */
-  downloadCode(code: string, language: string): void {
-    const extension = this.getLanguageExtension(language);
-    const filename = `code.${extension}`;
+  downloadCode(editorValue: CodeBlockEditorValue): void {
+    const extension = this.getLanguageExtension(editorValue.language);
+    const metadata = parseCodeBlockMetadata(editorValue.metadata);
+    const filename = metadata?.fileName || `code.${extension}`;
 
-    const blob = new Blob([code], { type: "text/plain" });
+    const blob = new Blob([editorValue.code], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
