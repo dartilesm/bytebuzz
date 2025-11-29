@@ -64,7 +64,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
 
             return (
               <CodeBlock
-                value={languageValue}
+                defaultValue={languageValue}
                 data={[
                   {
                     language: languageValue,
@@ -74,20 +74,20 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 ]}
               >
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
-                  <CodeBlockLanguage />
-                  {filename && (
-                    <CodeBlockFiles>
-                      {(item) => {
-                        console.log({ item })
-                        return (
-                          <CodeBlockFilename key={item.language} value={item.language}>
+                  {filename && <CodeBlockFiles>
+                    {(item) => {
+                      return (
+                        <>
+                          {item.language && <CodeBlockLanguage data={item} />}
+                          {item.filename && <CodeBlockFilename key={item.language} value={item.language}>
                             {item.filename}
-                          </CodeBlockFilename>
-                        )
-                      }
-                      }
-                    </CodeBlockFiles>
-                  )}
+                          </CodeBlockFilename>}
+                        </>
+                      )
+                    }
+                    }
+                  </CodeBlockFiles>
+                  }
                   <div className="flex items-center">
                     {/* <CodeBlockActionButton tooltipContent="Save to snippets">
                       <Button size="icon-sm" variant="ghost">
@@ -104,7 +104,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                         language={item.language as BundledLanguage}
                         className="text-xs [&>pre]:p-2 [&>pre_.line]:p-0"
                       >
-                        {item.code}
+                        {item.code?.trim?.()}
                       </CodeBlockContent>
                     </CodeBlockItem>
                   )}
