@@ -6,17 +6,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-import { type CSSProperties, type MouseEvent, useEffect, useState } from "react";
+import { type CSSProperties, type MouseEvent, useState } from "react";
 import { type ThemeRegistration, codeToHtml } from "shiki";
 
+import { log } from "@/lib/logger/logger";
 import githubDarkHighContrast from "@shikijs/themes/github-dark-high-contrast";
 import githubLightTheme from "@shikijs/themes/github-light";
-import { CheckIcon, CopyIcon, DownloadIcon, XIcon } from "lucide-react";
-import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
-import { log } from "@/lib/logger/logger";
-import { useCopyToClipboard, useDebounceCallback } from "usehooks-ts";
-import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { CheckIcon, CopyIcon, DownloadIcon, XIcon } from "lucide-react";
+import { toast } from "sonner";
+import { useCopyToClipboard, useDebounceCallback } from "usehooks-ts";
+import { addLineNumbers, formatLanguage, getFileExtension } from "./functions/code-block-functions";
 
 const enum COPY_STATUS {
   IDLE = "idle",

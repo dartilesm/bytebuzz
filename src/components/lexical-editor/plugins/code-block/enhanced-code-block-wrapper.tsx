@@ -16,7 +16,12 @@ interface EnhancedCodeBlockWrapperProps {
 /**
  * Wrapper component that properly integrates CodeBlockEditor with Lexical
  */
-export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeBlockWrapperProps) {
+export function EnhancedCodeBlockWrapper({
+  node,
+  language,
+  code,
+  metadata,
+}: EnhancedCodeBlockWrapperProps) {
   const [editor] = useLexicalComposerContext();
   const enterPressCount = useRef(0);
   const enterPressTimer = useRef<NodeJS.Timeout | null>(null);
@@ -30,6 +35,16 @@ export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeB
       writableNode.setCode(value.code);
       writableNode.setLanguage(value.language);
       writableNode.setMetadata(value.metadata);
+    });
+  }
+
+  /**
+   * Handle metadata changes and update the node
+   */
+  function handleMetadataChange(newMetadata: string): void {
+    editor.update(() => {
+      const writableNode = node.getWritable();
+      writableNode.setMetadata(newMetadata);
     });
   }
 

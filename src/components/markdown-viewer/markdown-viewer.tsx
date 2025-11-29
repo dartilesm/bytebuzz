@@ -28,7 +28,6 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
 
 
-
   return (
     <>
       <Markdown

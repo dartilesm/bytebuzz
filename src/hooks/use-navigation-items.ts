@@ -55,7 +55,7 @@ function computeIsVisible(
 function computeIcon(icon: NavigationItem["icon"], context: NavigationContext): ReactNode {
   if (typeof icon === "function") return icon(context);
   const IconComponent = icon;
-  return createElement(IconComponent);
+  return createElement(IconComponent, { className: "size-5 text-inherit" });
 }
 
 /**

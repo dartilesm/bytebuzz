@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Icon } from "@iconify/react";
 import type { ElementType, ReactNode } from "react";
 
 export interface SidebarItemProps {
@@ -12,7 +11,6 @@ export interface SidebarItemProps {
   label: string | ReactNode;
   isActive?: boolean;
   isExternal?: boolean;
-  hasAddButton?: boolean;
   badge?: string;
 }
 
@@ -27,7 +25,6 @@ export function SidebarItem({
   label,
   isActive,
   isExternal = false,
-  hasAddButton = false,
   badge,
 }: SidebarItemProps) {
   // Determine if navigation should be allowed
@@ -45,55 +42,49 @@ export function SidebarItem({
       })}
     >
       {canNavigate ? (
-        <Component href={href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined}>
-            <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
-                {icon}
-                {/* Hide label below xl */}
-                <span
-                className={cn("text-muted-foreground flex-1 max-xl:hidden xl:inline text-left", {
-                    "text-foreground": isActive,
-                })}
-                >
-                {label}
-                </span>
-            </div>
-
-            {hasAddButton && (
-                <button
-                className='text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 max-xl:hidden xl:inline'
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                >
-                <Icon icon='lucide:plus' width={16} height={16} />
-                </button>
+        <Component
+          href={href}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+        >
+          <div
+            className={cn(
+              "flex items-center w-full",
+              "max-xl:justify-center xl:gap-3 text-muted-foreground",
+              {
+                "text-foreground": isActive,
+              }
             )}
+          >
+            {icon}
+            {/* Hide label below xl */}
+            <span className='flex-1 max-xl:hidden xl:inline text-left'>{label}</span>
+          </div>
 
-            {badge && (
-                <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
-                {badge}
-                </Badge>
-            )}
+          {badge && (
+            <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
+              {badge}
+            </Badge>
+          )}
         </Component>
       ) : (
-        <div className="flex items-center w-full justify-between">
-             <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
-                {icon}
-                {/* Hide label below xl */}
-                <span
-                className={cn("text-muted-foreground flex-1 max-xl:hidden xl:inline text-left", {
-                    "text-foreground": isActive,
-                })}
-                >
-                {label}
-                </span>
-            </div>
-             {badge && (
-                <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
-                {badge}
-                </Badge>
-            )}
+        <div className='flex items-center w-full justify-between'>
+          <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
+            {icon}
+            {/* Hide label below xl */}
+            <span
+              className={cn("text-muted-foreground flex-1 max-xl:hidden xl:inline text-left", {
+                "text-foreground": isActive,
+              })}
+            >
+              {label}
+            </span>
+          </div>
+          {badge && (
+            <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
+              {badge}
+            </Badge>
+          )}
         </div>
       )}
     </Button>
