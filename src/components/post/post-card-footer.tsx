@@ -271,13 +271,12 @@ function PostFooterReactionButton({
   const [isReactionsTooltipOpen, setIsReactionsTooltipOpen] = useState(false);
   const debouncedSetIsReactionsTooltipOpen = useDebounceCallback(setIsReactionsTooltipOpen, 300);
 
-
   function handleReactionTooltipOpen(state: boolean) {
     if (state) {
       debouncedSetIsReactionsTooltipOpen.cancel();
     }
 
-    return debouncedSetIsReactionsTooltipOpen(state);
+    return setIsReactionsTooltipOpen(state);
   }
 
   function handleReactionClick(reaction: Reaction["type"] | null) {
@@ -319,33 +318,34 @@ function PostFooterReactionButton({
             {selectedReaction && <span className='text-sm capitalize'>{selectedReaction}</span>}
           </Button>
         </TooltipTrigger>
-        <TooltipContent side='top' align='start' className='flex flex-row gap-2 p-1 z-0'>
-          <div
-            onMouseEnter={() => handleReactionTooltipOpen(true)}
-            onMouseLeave={() => handleReactionTooltipOpen(false)}
-          >
-            <TooltipProvider>
-              {reactions.map((reaction) => (
-                <Tooltip key={reaction.type}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='p-2 group h-10 w-10'
-                      onClick={() => handleReactionClick?.(reaction.type)}
-                    >
-                      <span className='text-xl group-hover:text-3xl transition-all duration-200'>
-                        {reaction.icon}
-                      </span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{reaction.label}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </TooltipProvider>
-          </div>
+        <TooltipContent
+          side='top'
+          align='start'
+          className='flex flex-row gap-2 p-1 z-0 max-h-12'
+          onMouseEnter={() => handleReactionTooltipOpen(true)}
+          onMouseLeave={() => handleReactionTooltipOpen(false)}
+        >
+          <TooltipProvider>
+            {reactions.map((reaction) => (
+              <Tooltip key={reaction.type}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='p-2 group h-10 w-10 hover:w-14 hover:scale-150 transition-all duration-200 origin-bottom hover:bg-transparent dark:hover:bg-transparent'
+                    onClick={() => handleReactionClick?.(reaction.type)}
+                  >
+                    <span className='text-xl group-hover:text-3xl transition-all duration-200'>
+                      {reaction.icon}
+                    </span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{reaction.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </TooltipProvider>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
