@@ -1,6 +1,5 @@
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
-import { CodeBlockEditorValue } from "@/components/ui/code-block-editor";
-import { parse } from "path";
+import type { CodeBlockEditorValue } from "@/components/ui/code-block-editor";
 
 interface LanguageOption {
   value: string;
@@ -202,7 +201,7 @@ export const codeBlockEditorFunctions = {
    */
   getCharacterLimitStatus(
     code: string,
-    limit: number,
+    limit: number
   ): {
     isApproachingLimit: boolean;
     isAtLimit: boolean;

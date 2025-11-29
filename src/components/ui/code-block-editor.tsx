@@ -1,6 +1,5 @@
 "use client";
 
-import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 import { serializeCodeBlockMetadata } from "@/components/markdown-viewer/functions/serialize-code-block-metadata";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,9 +24,9 @@ import { Editor } from "@monaco-editor/react";
 import { Copy, Download, MoreVertical, Trash } from "lucide-react";
 import type { editor } from "monaco-editor";
 import { useTheme } from "next-themes";
-import { useCallback, useRef, useState } from "react";
-import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
+import { useRef, useState } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
+import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
 
 // Character limit constant
 const CHARACTER_LIMIT = 10_000;
@@ -152,14 +151,20 @@ export function CodeBlockEditor({
             </SelectContent>
           </Select>
         </div>
-        <div>
-          <Input
-            placeholder="Filename (optional)"
-            defaultValue={`code.${languageExtension}`}
-            variant="flat"
-            size="sm"
-            onChange={(e) => handleOnChange({ metadata: serializeCodeBlockMetadata({ fileName: e.target.value }) })}
-          />
+        <div className="*:not-first:mt-2">
+          <div className="relative">
+            <Input
+              placeholder="Filename (optional)"
+              defaultValue={`filename`}
+              variant="flat"
+              size="sm"
+              className="peer pe-12"
+              onChange={(e) => handleOnChange({ metadata: serializeCodeBlockMetadata({ fileName: `${e.target.value}.${languageExtension}` }) })}
+            />
+            <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground text-sm peer-disabled:opacity-50">
+              .{languageExtension}
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-1">
