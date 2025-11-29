@@ -20,7 +20,6 @@ export function EnhancedCodeBlockWrapper({
   node,
   language,
   code,
-  metadata,
 }: EnhancedCodeBlockWrapperProps) {
   const [editor] = useLexicalComposerContext();
   const enterPressCount = useRef(0);
@@ -35,16 +34,6 @@ export function EnhancedCodeBlockWrapper({
       writableNode.setCode(value.code);
       writableNode.setLanguage(value.language);
       writableNode.setMetadata(value.metadata);
-    });
-  }
-
-  /**
-   * Handle metadata changes and update the node
-   */
-  function handleMetadataChange(newMetadata: string): void {
-    editor.update(() => {
-      const writableNode = node.getWritable();
-      writableNode.setMetadata(newMetadata);
     });
   }
 
