@@ -28,8 +28,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
   // Extract image count from markdown by counting ![] patterns
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
 
-  // Extract metadata from code blocks
-  const codeBlockMetadata = parseCodeBlockMetadata(markdown);
+
 
   return (
     <>
@@ -58,8 +57,10 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
 
             // Extract metadata for this code block
             const codeContent = (children as string) || "";
-            const filename = codeBlockMetadata.title;
             const languageValue = language || "text";
+
+            const metadata = parseCodeBlockMetadata(node?.data?.meta ?? "");
+            const filename = metadata?.fileName;
 
             return (
               <CodeBlock
@@ -76,11 +77,15 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                   <CodeBlockLanguage />
                   {filename && (
                     <CodeBlockFiles>
-                      {(item) => (
-                        <CodeBlockFilename key={item.language} value={item.language}>
-                          {item.filename}
-                        </CodeBlockFilename>
-                      )}
+                      {(item) => {
+                        console.log({ item })
+                        return (
+                          <CodeBlockFilename key={item.language} value={item.language}>
+                            {item.filename}
+                          </CodeBlockFilename>
+                        )
+                      }
+                      }
                     </CodeBlockFiles>
                   )}
                   <div className="flex items-center">
