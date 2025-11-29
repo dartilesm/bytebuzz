@@ -12,7 +12,7 @@ import {
   CodeBlockFiles,
   CodeBlockHeader,
   CodeBlockItem
-} from "@/components/ui/code-block/client";
+} from "@/components/ui/code-block/code-block";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
