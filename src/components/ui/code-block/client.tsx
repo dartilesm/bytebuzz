@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import {
@@ -24,7 +23,6 @@ import {
 import { CheckIcon, CopyIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement, ReactNode } from "react";
 import { cloneElement, createContext, useContext, useEffect, useState } from "react";
-import type { IconType } from "react-icons";
 import {
   SiAstro,
   SiBiome,
@@ -349,40 +347,30 @@ export const CodeBlockFiles = ({ className, children, ...props }: CodeBlockFiles
 };
 
 export type CodeBlockFilenameProps = HTMLAttributes<HTMLDivElement> & {
-  icon?: IconType;
-  value?: string;
+  data: CodeBlockData;
 };
 
-export const CodeBlockFilename = ({
-  className,
-  icon,
-  value,
-  children,
-  ...props
-}: CodeBlockFilenameProps) => {
-  const { value: activeValue } = useContext(CodeBlockContext);
-  const defaultIcon = Object.entries(filenameIconMap).find(([pattern]) => {
+export const CodeBlockFilename = ({ className, data, ...props }: CodeBlockFilenameProps) => {
+  const { language, filename } = data;
+  const supportedLanguages = codeBlockEditorFunctions.getSupportedLanguages();
+  const languageData = supportedLanguages.find((lang) => lang.value === language)
+  if (!languageData) return null;
+
+  const Icon = Object.entries(filenameIconMap).find(([pattern]) => {
     const regex = new RegExp(
       `^${pattern.replace(/\\/g, "\\\\").replace(/\./g, "\\.").replace(/\*/g, ".*")}$`,
     );
-    return regex.test(children as string);
+    return regex.test(filename);
   })?.[1];
-  const Icon = icon ?? defaultIcon;
-
-  if (value !== activeValue) {
-    return null;
-  }
 
   return (
-    <div
-      className="flex items-center gap-2 bg-secondary px-4 py-1.5 text-muted-foreground text-xs"
-      {...props}
-    >
-      {Icon && <Icon className="h-4 w-4 shrink-0" />}
-      <span className="flex-1 truncate">{children}</span>
+    <div className={cn("flex items-center gap-2 text-muted-foreground text-xs", className)} {...props}>
+      {Icon && <Icon className="size-3" />}
+      {filename}
     </div>
   );
 };
+
 
 export type CodeBlockSelectProps = ComponentProps<typeof Select>;
 
@@ -609,28 +597,5 @@ export const CodeBlockContent = ({
       dangerouslySetInnerHTML={{ __html: html }}
       {...props}
     />
-  );
-};
-export type CodeBlockLanguageProps = HTMLAttributes<HTMLDivElement>;
-
-export const CodeBlockLanguage = ({ className, ...props }: CodeBlockLanguageProps) => {
-  const { value } = useContext(CodeBlockContext);
-  const language = value || "text";
-  const supportedLanguages = codeBlockEditorFunctions.getSupportedLanguages();
-  const languageOption = supportedLanguages.find((lang) => lang.value === language);
-  const displayName = languageOption?.label || language.charAt(0).toUpperCase() + language.slice(1);
-
-  const Icon = Object.entries(filenameIconMap).find(([pattern]) => {
-    const regex = new RegExp(
-      `^${pattern.replace(/\\/g, "\\\\").replace(/\./g, "\\.").replace(/\*/g, ".*")}$`,
-    );
-    return regex.test(`file.${language}`);
-  })?.[1];
-
-  return (
-    <Badge variant="flat" className={cn("gap-2", className)} {...props}>
-      {Icon && <Icon className="size-3" />}
-      {displayName}
-    </Badge>
   );
 };

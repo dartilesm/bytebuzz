@@ -11,8 +11,7 @@ import {
   CodeBlockFilename,
   CodeBlockFiles,
   CodeBlockHeader,
-  CodeBlockItem,
-  CodeBlockLanguage
+  CodeBlockItem
 } from "@/components/ui/code-block/client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -75,17 +74,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
               >
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
                   {filename && <CodeBlockFiles>
-                    {(item) => {
-                      return (
-                        <>
-                          {item.language && <CodeBlockLanguage data={item} />}
-                          {item.filename && <CodeBlockFilename key={item.language} value={item.language}>
-                            {item.filename}
-                          </CodeBlockFilename>}
-                        </>
-                      )
-                    }
-                    }
+                    {(item) => item && <CodeBlockFilename data={item} />}
                   </CodeBlockFiles>
                   }
                   <div className="flex items-center">
