@@ -16,6 +16,7 @@ import {
   CodeBlockHeader,
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
+import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { cn } from "@/lib/utils";
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
@@ -23,6 +24,7 @@ type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 
 export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
+  const { openViewer } = useContentViewerContext();
   // Extract image count from markdown by counting ![] patterns
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
 
@@ -153,11 +155,24 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 const { src, alt } = props;
                 const imageUrl = `${src}?postId=${postId}`;
 
+                const imageComponent = (
+                  <div className="relative h-full w-full flex items-center justify-center">
+                    <Image
+                      className="h-full w-full object-contain"
+                      src={imageUrl}
+                      alt={alt || "Image"}
+                      fill
+                      unoptimized
+                    />
+                  </div>
+                );
+
                 return (
                   <div
                     className={cn(
-                      "relative outline-[0.5px] dark:outline-content2 outline-content3",
+                      "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
+                    onClick={() => openViewer(imageComponent, postId)}
                   >
                     <Image
                       className="h-full object-cover"

@@ -4,6 +4,7 @@ import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { ContentViewerProvider } from "@/context/content-viewer-context";
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -24,8 +25,10 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        <Toaster richColors />
-        {children}
+        <ContentViewerProvider>
+          <Toaster richColors />
+          {children}
+        </ContentViewerProvider>
       </NextThemesProvider>
     </QueryClientProvider>
   );
