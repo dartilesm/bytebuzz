@@ -21,22 +21,6 @@ const eslintConfig = [
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-  {
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["../*", "./*"],
-              message:
-                "Relative imports are not allowed. Use absolute imports with @/ alias instead.",
-            },
-          ],
-        },
-      ],
-    },
-  },
 ];
 
 export default eslintConfig;
