@@ -5,19 +5,16 @@ import { NavigationContextProvider } from "@/context/navigation-context";
 import { currentUser } from "@clerk/nextjs/server";
 import { serializeUser } from "@/lib/auth/serialize-user";
 import { detectMobileFromHeaders } from "@/lib/device/detect-mobile";
-import { headers } from "next/headers";
 
 /**
  * Layout for the social section. Renders the main chrome and an optional `@modal` parallel route
  * as an overlay. Required for intercepted routes like `(.)sign-in` and `(.)sign-up` to display
  * over the current page during soft navigation.
  */
-export default async function AuthenticatedLayout({ children, modal }: LayoutProps<"/">) {
+export default async function AuthenticatedLayout({ children, authentication }: LayoutProps<"/">) {
   const user = await currentUser();
   const serializedUser = serializeUser(user);
   const isMobile = await detectMobileFromHeaders();
-  const headerList = await headers();
-  console.log("x-full-url", headerList.get("x-full-url"));
 
   return (
     <NavigationContextProvider initialUser={serializedUser} initialIsMobile={isMobile}>
@@ -26,7 +23,7 @@ export default async function AuthenticatedLayout({ children, modal }: LayoutPro
           <Sidebar />
         </div>
         <div className='flex flex-col min-h-dvh w-full max-w-full md:max-w-[600px] md:border-x border-x-content2/80'>
-          {modal}
+          {authentication}
           {children}
         </div>
         <div className='hidden lg:flex flex-col gap-4 sticky top-4 h-fit'>

@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-export default function ModalLayout({ children }: { children: React.ReactNode }) {
+export default function AuthenticationModalLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const initialPathnameRef = useRef<string>(pathname);
