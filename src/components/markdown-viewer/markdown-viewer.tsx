@@ -11,7 +11,7 @@ import {
   CodeBlockFilename,
   CodeBlockFiles,
   CodeBlockHeader,
-  CodeBlockItem
+  CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -26,7 +26,6 @@ type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
   // Extract image count from markdown by counting ![] patterns
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
-
 
   return (
     <>
@@ -48,7 +47,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
             const language = className?.replace("language-", "");
             if (!className)
               return (
-                <code className="text-xs bg-muted px-1 py-0.5 rounded-sm font-mono">
+                <code className='text-xs bg-muted px-1 py-0.5 rounded-sm font-mono'>
                   {children}
                 </code>
               );
@@ -71,12 +70,15 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                   },
                 ]}
               >
-                <CodeBlockHeader className="h-10 flex justify-between items-center">
-                  {filename && <CodeBlockFiles>
-                    {(item) => item && <CodeBlockFilename data={item} />}
-                  </CodeBlockFiles>
-                  }
-                  <div className="flex items-center">
+                <CodeBlockHeader className='h-10 flex justify-between items-center'>
+                  {filename && (
+                    <CodeBlockFiles>
+                      {(item) =>
+                        item && <CodeBlockFilename key={item.code + item.language} data={item} />
+                      }
+                    </CodeBlockFiles>
+                  )}
+                  <div className='flex items-center'>
                     {/* <CodeBlockActionButton tooltipContent="Save to snippets">
                       <Button size="icon-sm" variant="ghost">
                         <BookmarkIcon className="size-3.5" />
@@ -90,7 +92,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     <CodeBlockItem key={item.language} value={item.language}>
                       <CodeBlockContent
                         language={item.language as BundledLanguage}
-                        className="text-xs [&>pre]:p-2 [&>pre_.line]:p-0"
+                        className='text-xs [&>pre]:p-2 [&>pre_.line]:p-0'
                       >
                         {item.code?.trim?.()}
                       </CodeBlockContent>
@@ -133,7 +135,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
               "[&_>:nth-child(1)]:[grid-area:1/1/3/2]",
               "[&_>:nth-child(2)]:[grid-area:1/2/2/3]",
               "[&_>:nth-child(3)]:[grid-area:2/2/3/3]",
-            ],
+            ]
           )}
         >
           <Markdown
@@ -155,15 +157,14 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 return (
                   <div
                     className={cn(
-                      "relative outline-[0.5px] dark:outline-content2 outline-content3",
+                      "relative outline-[0.5px] dark:outline-content2 outline-content3"
                     )}
                   >
                     <Image
-                      className="h-full"
+                      className='h-full object-cover'
                       src={imageUrl}
                       alt={alt || "Image"}
                       fill
-                      objectFit="cover"
                       unoptimized
                     />
                   </div>

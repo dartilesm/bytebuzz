@@ -1,8 +1,13 @@
 import { PromotedAd } from "@/components/promoted-ad";
 import { UserToFollowList } from "@/components/user-to-follow-list";
 import { userService } from "@/lib/db/services/user.service";
+import { currentUser } from "@clerk/nextjs/server";
 
 async function getRandomUnfollowedUsers() {
+  const user = await currentUser();
+  if (!user) {
+    return { data: [], error: "Unauthorized" };
+  }
   return await userService.getRandomUnfollowedUsers(3);
 }
 
