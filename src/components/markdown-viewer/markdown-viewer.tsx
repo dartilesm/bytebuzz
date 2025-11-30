@@ -72,7 +72,9 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
                   {filename && (
                     <CodeBlockFiles>
-                      {(item) => item && <CodeBlockFilename data={item} />}
+                      {(item) =>
+                        item && <CodeBlockFilename key={item.code + item.language} data={item} />
+                      }
                     </CodeBlockFiles>
                   )}
                   <div className="flex items-center">
@@ -158,11 +160,10 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     )}
                   >
                     <Image
-                      className="h-full"
+                      className="h-full object-cover"
                       src={imageUrl}
                       alt={alt || "Image"}
                       fill
-                      objectFit="cover"
                       unoptimized
                     />
                   </div>

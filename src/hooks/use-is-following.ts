@@ -36,7 +36,7 @@ export function useIsFollowing(targetUserId: string | undefined) {
       if (!targetUserId) throw new Error("targetUserId is required");
       return fetchIsFollowing(targetUserId);
     },
-    enabled: Boolean(targetUserId),
+    enabled: Boolean(targetUserId) && Boolean(userId),
     select: (data) => data.isFollowing,
     placeholderData: (data) => data,
   });

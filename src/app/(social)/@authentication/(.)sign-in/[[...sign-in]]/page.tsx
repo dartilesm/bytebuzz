@@ -1,6 +1,6 @@
 import { SignIn } from "@clerk/nextjs";
 
-export default async function SignInPage({ searchParams }: PageProps<"/sign-in">) {
+export default async function SignInPage({ searchParams }: PageProps<"/sign-in/[[...sign-in]]">) {
   const { redirectUrl } = await searchParams;
 
   return <SignIn oauthFlow="popup" fallbackRedirectUrl={(redirectUrl as string) || "/"} />;

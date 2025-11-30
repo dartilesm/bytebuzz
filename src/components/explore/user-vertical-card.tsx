@@ -44,7 +44,7 @@ export function UserVerticalCard({ user }: UserVerticalCardProps) {
         <div className="absolute inset-0 bg-linear-to-t from-background/80 to-transparent opacity-60" />
       </div>
 
-      <CardContent className="relative flex flex-col items-center p-0">
+      <CardContent className="relative flex flex-col items-center p-0 flex-1">
         <Link
           href={`/@${user.username}` as unknown as UrlObject}
           className="flex flex-col items-center w-full gap-2 py-2"
@@ -75,12 +75,10 @@ export function UserVerticalCard({ user }: UserVerticalCardProps) {
             </div>
             {user.bio && (
               <p className="line-clamp-2 text-xs text-muted-foreground/80 max-w-full text-wrap">
-                {user.bio} asd as dasd sad sad asd sad asd asdsa das dsad asd sada sdas das asd
-                asdas dsa das
+                {user.bio}
               </p>
             )}
           </div>
-
           <div className="w-full px-4 h-8"></div>
         </Link>
         {!isSameUser && (
