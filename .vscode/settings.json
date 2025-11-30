@@ -1,14 +1,14 @@
 {
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "biomejs.biome",
     "typescript.preferences.importModuleSpecifier": "non-relative"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "biomejs.biome",
     "javascript.preferences.importModuleSpecifier": "non-relative"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "biomejs.biome",
     "typescript.preferences.importModuleSpecifier": "non-relative"
   },
   "javascript.preferences.importModuleSpecifier": "non-relative",
