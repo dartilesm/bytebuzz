@@ -15,7 +15,7 @@ export function useUpdateProfileMutation(
     Awaited<ReturnType<typeof updateProfile>>,
     Error,
     UpdateProfileWithFilesData
-  >
+  >,
 ) {
   const mutation = useMutation({
     ...useMutationProps,
@@ -68,7 +68,7 @@ export function useUpdateProfileMutation(
 async function handleImageUpload(
   file: File | undefined,
   type: "avatar" | "cover",
-  currentUrl?: string
+  currentUrl?: string,
 ): Promise<string | undefined> {
   if (!file) return undefined;
 

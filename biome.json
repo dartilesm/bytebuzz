@@ -9,6 +9,7 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
+      "!**/*.json",
       "!**/.vscode/**",
       "!**/node_modules/**",
       "!**/dist/**",
