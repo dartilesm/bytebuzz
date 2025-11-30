@@ -79,7 +79,7 @@
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.708 0 0);
 
-  --scrollbar-color: oklch(0.708 0 0)
+  --scrollbar-color: oklch(0.708 0 0);
 }
 
 .dark {
@@ -115,7 +115,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.439 0 0);
 
-  --scrollbar-color: oklch(1 0 0 / 15%)
+  --scrollbar-color: oklch(1 0 0 / 15%);
 }
 
 @layer base {
