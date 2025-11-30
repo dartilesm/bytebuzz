@@ -42,7 +42,7 @@ export function shouldRenderAsThread(post: NestedPost | undefined, isThread?: bo
  */
 export function isFirstPostInThread(
   post: NestedPost | undefined,
-  isFirstInThread?: boolean
+  isFirstInThread?: boolean,
 ): boolean {
   if (isFirstInThread !== undefined) {
     return isFirstInThread;
@@ -63,7 +63,7 @@ export function isFirstPostInThread(
  */
 export function isLastPostInThread(
   post: NestedPost | undefined,
-  isLastInThread?: boolean
+  isLastInThread?: boolean,
 ): boolean {
   if (isLastInThread !== undefined) {
     return isLastInThread;

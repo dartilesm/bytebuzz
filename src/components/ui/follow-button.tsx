@@ -1,14 +1,10 @@
+import { useUser } from "@clerk/nextjs";
+import { Loader2, UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToggleFollowMutation } from "@/hooks/mutation/use-toggle-follow-mutation";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { useIsFollowing } from "@/hooks/use-is-following";
-import { useUser } from "@clerk/nextjs";
-import {
-  Loader2,
-  UserRoundCheckIcon,
-  UserRoundPlusIcon
-} from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface FollowButtonProps {
   targetUserId: string;
@@ -42,7 +38,7 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
             updateFollowStatus(!!response.data);
           }
         },
-      }
+      },
     );
   }
 
@@ -59,7 +55,13 @@ export function FollowButton({ targetUserId, size = "sm", className }: FollowBut
     >
       {!isLoading && isFollowed && <UserRoundCheckIcon size={14} />}
       {!isLoading && !isFollowed && <UserRoundPlusIcon size={14} />}
-      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isFollowed ? "Following" : "Follow"}
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : isFollowed ? (
+        "Following"
+      ) : (
+        "Follow"
+      )}
     </Button>
   );
 }

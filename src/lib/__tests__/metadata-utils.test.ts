@@ -1,10 +1,10 @@
-import { describe, it, expect } from "vitest";
-import {
-  generateUserProfileMetadata,
-  generatePostThreadMetadata,
-  generateFallbackMetadata,
-} from "../metadata-utils";
 import type { Tables } from "database.types";
+import { describe, expect, it } from "vitest";
+import {
+  generateFallbackMetadata,
+  generatePostThreadMetadata,
+  generateUserProfileMetadata,
+} from "@/lib/metadata-utils";
 import type { NestedPost } from "@/types/nested-posts";
 
 describe("metadata-utils", () => {

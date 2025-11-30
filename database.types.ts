@@ -1,597 +1,589 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
-  }
+    PostgrestVersion: "12.2.3 (519615d)";
+  };
   public: {
     Tables: {
       post_media: {
         Row: {
-          alt_text: string | null
-          created_at: string | null
-          display_order: number | null
-          file_path: string
-          file_size: number | null
-          file_url: string
-          id: string
-          media_type: string
-          mime_type: string | null
-          post_id: string | null
-        }
+          alt_text: string | null;
+          created_at: string | null;
+          display_order: number | null;
+          file_path: string;
+          file_size: number | null;
+          file_url: string;
+          id: string;
+          media_type: string;
+          mime_type: string | null;
+          post_id: string | null;
+        };
         Insert: {
-          alt_text?: string | null
-          created_at?: string | null
-          display_order?: number | null
-          file_path: string
-          file_size?: number | null
-          file_url: string
-          id?: string
-          media_type?: string
-          mime_type?: string | null
-          post_id?: string | null
-        }
+          alt_text?: string | null;
+          created_at?: string | null;
+          display_order?: number | null;
+          file_path: string;
+          file_size?: number | null;
+          file_url: string;
+          id?: string;
+          media_type?: string;
+          mime_type?: string | null;
+          post_id?: string | null;
+        };
         Update: {
-          alt_text?: string | null
-          created_at?: string | null
-          display_order?: number | null
-          file_path?: string
-          file_size?: number | null
-          file_url?: string
-          id?: string
-          media_type?: string
-          mime_type?: string | null
-          post_id?: string | null
-        }
+          alt_text?: string | null;
+          created_at?: string | null;
+          display_order?: number | null;
+          file_path?: string;
+          file_size?: number | null;
+          file_url?: string;
+          id?: string;
+          media_type?: string;
+          mime_type?: string | null;
+          post_id?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "post_media_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
+            foreignKeyName: "post_media_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       posts: {
         Row: {
-          approve_count: number | null
-          cache_count: number | null
-          coffee_count: number | null
-          content: string | null
-          created_at: string | null
-          fts: unknown | null
-          id: string
-          parent_post_id: string | null
-          reply_count: number | null
-          repost_count: number | null
-          repost_post_id: string | null
-          star_count: number | null
-          user_id: string
-        }
+          approve_count: number | null;
+          cache_count: number | null;
+          coffee_count: number | null;
+          content: string | null;
+          created_at: string | null;
+          fts: unknown | null;
+          id: string;
+          parent_post_id: string | null;
+          reply_count: number | null;
+          repost_count: number | null;
+          repost_post_id: string | null;
+          star_count: number | null;
+          user_id: string;
+        };
         Insert: {
-          approve_count?: number | null
-          cache_count?: number | null
-          coffee_count?: number | null
-          content?: string | null
-          created_at?: string | null
-          fts?: unknown | null
-          id?: string
-          parent_post_id?: string | null
-          reply_count?: number | null
-          repost_count?: number | null
-          repost_post_id?: string | null
-          star_count?: number | null
-          user_id?: string
-        }
+          approve_count?: number | null;
+          cache_count?: number | null;
+          coffee_count?: number | null;
+          content?: string | null;
+          created_at?: string | null;
+          fts?: unknown | null;
+          id?: string;
+          parent_post_id?: string | null;
+          reply_count?: number | null;
+          repost_count?: number | null;
+          repost_post_id?: string | null;
+          star_count?: number | null;
+          user_id?: string;
+        };
         Update: {
-          approve_count?: number | null
-          cache_count?: number | null
-          coffee_count?: number | null
-          content?: string | null
-          created_at?: string | null
-          fts?: unknown | null
-          id?: string
-          parent_post_id?: string | null
-          reply_count?: number | null
-          repost_count?: number | null
-          repost_post_id?: string | null
-          star_count?: number | null
-          user_id?: string
-        }
+          approve_count?: number | null;
+          cache_count?: number | null;
+          coffee_count?: number | null;
+          content?: string | null;
+          created_at?: string | null;
+          fts?: unknown | null;
+          id?: string;
+          parent_post_id?: string | null;
+          reply_count?: number | null;
+          repost_count?: number | null;
+          repost_post_id?: string | null;
+          star_count?: number | null;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "posts_parent_post_id_fkey"
-            columns: ["parent_post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
+            foreignKeyName: "posts_parent_post_id_fkey";
+            columns: ["parent_post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "posts_repost_post_id_fkey"
-            columns: ["repost_post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
+            foreignKeyName: "posts_repost_post_id_fkey";
+            columns: ["repost_post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "posts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            foreignKeyName: "posts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       reactions: {
         Row: {
-          created_at: string | null
-          id: string
-          post_id: string | null
-          reaction_type: string
-          user_id: string
-        }
+          created_at: string | null;
+          id: string;
+          post_id: string | null;
+          reaction_type: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string | null
-          id?: string
-          post_id?: string | null
-          reaction_type: string
-          user_id?: string
-        }
+          created_at?: string | null;
+          id?: string;
+          post_id?: string | null;
+          reaction_type: string;
+          user_id?: string;
+        };
         Update: {
-          created_at?: string | null
-          id?: string
-          post_id?: string | null
-          reaction_type?: string
-          user_id?: string
-        }
+          created_at?: string | null;
+          id?: string;
+          post_id?: string | null;
+          reaction_type?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "reactions_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
+            foreignKeyName: "reactions_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "reactions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            foreignKeyName: "reactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       user_followers: {
         Row: {
-          created_at: string | null
-          follower_id: string
-          user_id: string
-        }
+          created_at: string | null;
+          follower_id: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string | null
-          follower_id?: string
-          user_id: string
-        }
+          created_at?: string | null;
+          follower_id?: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string | null
-          follower_id?: string
-          user_id?: string
-        }
+          created_at?: string | null;
+          follower_id?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "user_followers_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            foreignKeyName: "user_followers_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       users: {
         Row: {
-          bio: string | null
-          cover_image_url: string | null
-          display_name: string
-          follower_count: number | null
-          following_count: number | null
-          fts: unknown | null
-          github_url: string | null
-          id: string
-          image_url: string | null
-          join_date: string | null
-          linkedin_url: string | null
-          location: string | null
-          top_technologies: string[] | null
-          username: string
-          website: string | null
-        }
+          bio: string | null;
+          cover_image_url: string | null;
+          display_name: string;
+          follower_count: number | null;
+          following_count: number | null;
+          fts: unknown | null;
+          github_url: string | null;
+          id: string;
+          image_url: string | null;
+          join_date: string | null;
+          linkedin_url: string | null;
+          location: string | null;
+          top_technologies: string[] | null;
+          username: string;
+          website: string | null;
+        };
         Insert: {
-          bio?: string | null
-          cover_image_url?: string | null
-          display_name: string
-          follower_count?: number | null
-          following_count?: number | null
-          fts?: unknown | null
-          github_url?: string | null
-          id?: string
-          image_url?: string | null
-          join_date?: string | null
-          linkedin_url?: string | null
-          location?: string | null
-          top_technologies?: string[] | null
-          username: string
-          website?: string | null
-        }
+          bio?: string | null;
+          cover_image_url?: string | null;
+          display_name: string;
+          follower_count?: number | null;
+          following_count?: number | null;
+          fts?: unknown | null;
+          github_url?: string | null;
+          id?: string;
+          image_url?: string | null;
+          join_date?: string | null;
+          linkedin_url?: string | null;
+          location?: string | null;
+          top_technologies?: string[] | null;
+          username: string;
+          website?: string | null;
+        };
         Update: {
-          bio?: string | null
-          cover_image_url?: string | null
-          display_name?: string
-          follower_count?: number | null
-          following_count?: number | null
-          fts?: unknown | null
-          github_url?: string | null
-          id?: string
-          image_url?: string | null
-          join_date?: string | null
-          linkedin_url?: string | null
-          location?: string | null
-          top_technologies?: string[] | null
-          username?: string
-          website?: string | null
-        }
-        Relationships: []
-      }
-    }
+          bio?: string | null;
+          cover_image_url?: string | null;
+          display_name?: string;
+          follower_count?: number | null;
+          following_count?: number | null;
+          fts?: unknown | null;
+          github_url?: string | null;
+          id?: string;
+          image_url?: string | null;
+          join_date?: string | null;
+          linkedin_url?: string | null;
+          location?: string | null;
+          top_technologies?: string[] | null;
+          username?: string;
+          website?: string | null;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
       cleanup_orphaned_images: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
       delete_storage_object: {
-        Args: { file_path: string }
-        Returns: undefined
-      }
+        Args: { file_path: string };
+        Returns: undefined;
+      };
       get_post_ancestry: {
-        Args: { start_id: string }
+        Args: { start_id: string };
         Returns: {
-          approve_count: number
-          cache_count: number
-          coffee_count: number
-          content: string
-          created_at: string
-          id: string
-          parent_post_id: string
-          reaction: Json
-          repost: Json
-          repost_post_id: string
-          star_count: number
-          user: Json
-        }[]
-      }
+          approve_count: number;
+          cache_count: number;
+          coffee_count: number;
+          content: string;
+          created_at: string;
+          id: string;
+          parent_post_id: string;
+          reaction: Json;
+          repost: Json;
+          repost_post_id: string;
+          star_count: number;
+          user: Json;
+        }[];
+      };
       get_random_unfollowed_users: {
-        Args: { count: number }
+        Args: { count: number };
         Returns: {
-          bio: string | null
-          cover_image_url: string | null
-          display_name: string
-          follower_count: number | null
-          following_count: number | null
-          fts: unknown | null
-          github_url: string | null
-          id: string
-          image_url: string | null
-          join_date: string | null
-          linkedin_url: string | null
-          location: string | null
-          top_technologies: string[] | null
-          username: string
-          website: string | null
-        }[]
-      }
+          bio: string | null;
+          cover_image_url: string | null;
+          display_name: string;
+          follower_count: number | null;
+          following_count: number | null;
+          fts: unknown | null;
+          github_url: string | null;
+          id: string;
+          image_url: string | null;
+          join_date: string | null;
+          linkedin_url: string | null;
+          location: string | null;
+          top_technologies: string[] | null;
+          username: string;
+          website: string | null;
+        }[];
+      };
       get_replies_to_depth: {
-        Args: { max_depth: number; target_id: string }
+        Args: { max_depth: number; target_id: string };
         Returns: {
-          approve_count: number
-          cache_count: number
-          coffee_count: number
-          content: string
-          created_at: string
-          id: string
-          level: number
-          parent_post_id: string
-          reaction: Json
-          repost_post_id: string
-          star_count: number
-          user: Json
-        }[]
-      }
+          approve_count: number;
+          cache_count: number;
+          coffee_count: number;
+          content: string;
+          created_at: string;
+          id: string;
+          level: number;
+          parent_post_id: string;
+          reaction: Json;
+          repost_post_id: string;
+          star_count: number;
+          user: Json;
+        }[];
+      };
       get_trending_posts: {
-        Args: { limit_count?: number; offset_count?: number }
+        Args: { limit_count?: number; offset_count?: number };
         Returns: {
-          approve_count: number
-          cache_count: number
-          coffee_count: number
-          content: string
-          created_at: string
-          engagement_score: number
-          id: string
-          parent_post_id: string
-          reaction: Json
-          reply_count: number
-          repost: Json
-          repost_count: number
-          repost_post_id: string
-          star_count: number
-          user: Json
-        }[]
-      }
+          approve_count: number;
+          cache_count: number;
+          coffee_count: number;
+          content: string;
+          created_at: string;
+          engagement_score: number;
+          id: string;
+          parent_post_id: string;
+          reaction: Json;
+          reply_count: number;
+          repost: Json;
+          repost_count: number;
+          repost_post_id: string;
+          star_count: number;
+          user: Json;
+        }[];
+      };
       get_trending_users: {
         Args: {
-          limit_count?: number
-          offset_count?: number
-          only_following?: boolean
-        }
+          limit_count?: number;
+          offset_count?: number;
+          only_following?: boolean;
+        };
         Returns: {
-          bio: string
-          cover_image_url: string
-          display_name: string
-          follower_count: number
-          following_count: number
-          github_url: string
-          id: string
-          image_url: string
-          join_date: string
-          last_post_date: string
-          linkedin_url: string
-          location: string
-          recent_engagement_score: number
-          recent_posts_count: number
-          top_technologies: string[]
-          username: string
-          website: string
-        }[]
-      }
+          bio: string;
+          cover_image_url: string;
+          display_name: string;
+          follower_count: number;
+          following_count: number;
+          github_url: string;
+          id: string;
+          image_url: string;
+          join_date: string;
+          last_post_date: string;
+          linkedin_url: string;
+          location: string;
+          recent_engagement_score: number;
+          recent_posts_count: number;
+          top_technologies: string[];
+          username: string;
+          website: string;
+        }[];
+      };
       get_user_feed: {
-        Args: Record<PropertyKey, never>
+        Args: Record<PropertyKey, never>;
         Returns: {
-          approve_count: number
-          cache_count: number
-          coffee_count: number
-          content: string
-          created_at: string
-          id: string
-          parent_post_id: string
-          reaction: Json
-          reply_count: number
-          repost: Json
-          repost_count: number
-          repost_post_id: string
-          star_count: number
-          user: Json
-        }[]
-      }
+          approve_count: number;
+          cache_count: number;
+          coffee_count: number;
+          content: string;
+          created_at: string;
+          id: string;
+          parent_post_id: string;
+          reaction: Json;
+          reply_count: number;
+          repost: Json;
+          repost_count: number;
+          repost_post_id: string;
+          star_count: number;
+          user: Json;
+        }[];
+      };
       get_user_posts_by_username: {
-        Args: { input_username: string }
+        Args: { input_username: string };
         Returns: {
-          approve_count: number
-          cache_count: number
-          coffee_count: number
-          content: string
-          created_at: string
-          id: string
-          parent_post_id: string
-          reaction: Json
-          reply_count: number
-          repost: Json
-          repost_count: number
-          repost_post_id: string
-          star_count: number
-          user: Json
-        }[]
-      }
+          approve_count: number;
+          cache_count: number;
+          coffee_count: number;
+          content: string;
+          created_at: string;
+          id: string;
+          parent_post_id: string;
+          reaction: Json;
+          reply_count: number;
+          repost: Json;
+          repost_count: number;
+          repost_post_id: string;
+          star_count: number;
+          user: Json;
+        }[];
+      };
       search_posts: {
         Args: {
-          limit_count?: number
-          offset_count?: number
-          search_term: string
-        }
+          limit_count?: number;
+          offset_count?: number;
+          search_term: string;
+        };
         Returns: {
-          approve_count: number
-          cache_count: number
-          coffee_count: number
-          content: string
-          created_at: string
-          id: string
-          parent_post_id: string
-          rank: number
-          reaction: Json
-          reply_count: number
-          repost: Json
-          repost_count: number
-          repost_post_id: string
-          star_count: number
-          user: Json
-        }[]
-      }
+          approve_count: number;
+          cache_count: number;
+          coffee_count: number;
+          content: string;
+          created_at: string;
+          id: string;
+          parent_post_id: string;
+          rank: number;
+          reaction: Json;
+          reply_count: number;
+          repost: Json;
+          repost_count: number;
+          repost_post_id: string;
+          star_count: number;
+          user: Json;
+        }[];
+      };
       search_users: {
         Args: {
-          limit_count?: number
-          offset_count?: number
-          search_term: string
-        }
+          limit_count?: number;
+          offset_count?: number;
+          search_term: string;
+        };
         Returns: {
-          bio: string
-          cover_image_url: string
-          display_name: string
-          follower_count: number
-          following_count: number
-          github_url: string
-          id: string
-          image_url: string
-          join_date: string
-          linkedin_url: string
-          location: string
-          rank: number
-          top_technologies: string[]
-          username: string
-          website: string
-        }[]
-      }
+          bio: string;
+          cover_image_url: string;
+          display_name: string;
+          follower_count: number;
+          following_count: number;
+          github_url: string;
+          id: string;
+          image_url: string;
+          join_date: string;
+          linkedin_url: string;
+          location: string;
+          rank: number;
+          top_technologies: string[];
+          username: string;
+          website: string;
+        }[];
+      };
       toggle_follow: {
-        Args: { target_user_id: string }
-        Returns: boolean
-      }
+        Args: { target_user_id: string };
+        Returns: boolean;
+      };
       toggle_reaction: {
-        Args: { input_post_id: string; input_reaction_type: string }
+        Args: { input_post_id: string; input_reaction_type: string };
         Returns: {
-          created_at: string | null
-          id: string
-          post_id: string | null
-          reaction_type: string
-          user_id: string
-        }
-      }
-    }
+          created_at: string | null;
+          id: string;
+          post_id: string | null;
+          reaction_type: string;
+          user_id: string;
+        };
+      };
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
     Enums: {},
   },
-} as const
+} as const;

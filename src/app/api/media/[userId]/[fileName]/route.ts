@@ -1,6 +1,6 @@
+import { type NextRequest, NextResponse } from "next/server";
 import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
-import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * GET handler for media files
@@ -11,7 +11,7 @@ import { type NextRequest, NextResponse } from "next/server";
  */
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ userId: string; fileName: string }> }
+  { params }: { params: Promise<{ userId: string; fileName: string }> },
 ) {
   try {
     const { userId, fileName } = await params;
@@ -37,7 +37,7 @@ export async function GET(
     // Download the file with caching
     const { data, error } = await mediaService.downloadFile(
       "post-images",
-      `${path}/${matchingFile.name}`
+      `${path}/${matchingFile.name}`,
     );
 
     if (error || !data) {

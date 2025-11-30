@@ -1,6 +1,5 @@
 import { isDomainAllowed } from "@/lib/analytics/domain-check";
-import { log } from "../logger/logger";
-
+import { log } from "@/lib/logger/logger";
 
 interface PageViewEventData {
   ip: string;
@@ -39,7 +38,6 @@ export async function sendPageViewEvent(data: PageViewEventData) {
       },
       body: JSON.stringify(pageInfo),
     });
-    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
     log.info("Page view analytics response", { pageViewAnalyticsResponse: response });
   } catch (error) {
     log.error("Error sending page view analytics", { error });

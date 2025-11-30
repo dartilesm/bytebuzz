@@ -1,5 +1,5 @@
-import { UserHorizontalCard } from "@/components/explore/user-horizontal-card";
 import type { Tables } from "database.types";
+import { UserHorizontalCard } from "@/components/explore/user-horizontal-card";
 
 type UserToFollowListProps = {
   users: Tables<"users">[];
@@ -11,11 +11,11 @@ type UserToFollowListProps = {
  */
 export function UserToFollowList({ users }: UserToFollowListProps) {
   return (
-    <div className='shadow-none bg-transparent rounded-none border-0 flex flex-col gap-2'>
-      <div className='px-0 pt-0'>
-        <div className='text-lg font-medium'>Who to follow</div>
+    <div className="shadow-none bg-transparent rounded-none border-0 flex flex-col gap-2">
+      <div className="px-0 pt-0">
+        <div className="text-lg font-medium">Who to follow</div>
       </div>
-      <div className='px-0 space-y-2'>
+      <div className="px-0 space-y-2">
         {users.map((user) => (
           <UserHorizontalCard key={user.id} user={user} />
         ))}

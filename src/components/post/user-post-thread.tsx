@@ -1,10 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { CondensedUserPost } from "@/components/post/condensed-user-post";
+import { UserPost } from "@/components/post/user-post";
 import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { useEffect, useRef } from "react";
-import { UserPost } from "./user-post";
-import { CondensedUserPost } from "@/components/post/condensed-user-post";
 
 interface UserPostThreadProps {
   posts: NestedPost[];
@@ -32,7 +32,7 @@ export function UserPostThread({ posts }: UserPostThreadProps) {
   }
 
   return (
-    <div ref={containerRef} className='flex flex-col w-full'>
+    <div ref={containerRef} className="flex flex-col w-full">
       {posts.map((post, index) => (
         <UserPost
           key={post.id}
@@ -43,14 +43,11 @@ export function UserPostThread({ posts }: UserPostThreadProps) {
           isLastInThread={isFirstAndLastPost || index === posts.length - 1}
           post={post}
           minVisibleContentLength={1500}
-          className={cn(
-            "border border-border bg-muted/20",
-            {
-              "max-w-[calc(100%-2rem)] mx-auto bg-muted/40 rounded-none border-t-0":
-                index < posts.length - 1,
-              "rounded-t-xl border-t border-x border-b-0": index === 0 && !isFirstAndLastPost,
-            }
-          )}
+          className={cn("border border-border bg-muted/20", {
+            "max-w-[calc(100%-2rem)] mx-auto bg-muted/40 rounded-none border-t-0":
+              index < posts.length - 1,
+            "rounded-t-xl border-t border-x border-b-0": index === 0 && !isFirstAndLastPost,
+          })}
         >
           {post.repost && <CondensedUserPost post={post.repost} />}
         </UserPost>

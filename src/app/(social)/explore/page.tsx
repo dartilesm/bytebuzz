@@ -1,9 +1,9 @@
+import { currentUser } from "@clerk/nextjs/server";
 import { ExploreView } from "@/components/containers/explore-view/explore-view";
 import { postService } from "@/lib/db/services/post.service";
 import { userService } from "@/lib/db/services/user.service";
 import { withCacheService } from "@/lib/db/with-cache-service";
 import { withAnalytics } from "@/lib/with-analytics";
-import { currentUser } from "@clerk/nextjs/server";
 export type ExplorePageSearchParams = {
   all?: string;
   users?: string;
@@ -54,7 +54,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
     cacheTags: ["explore-page", "trending-users", user?.id ?? "", searchParams?.toString() ?? ""],
   })();
 
-  return <ExploreView key='explore-page' postsPromise={postsPromise} usersPromise={usersPromise} />;
+  return <ExploreView key="explore-page" postsPromise={postsPromise} usersPromise={usersPromise} />;
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });

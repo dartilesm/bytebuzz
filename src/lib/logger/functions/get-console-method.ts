@@ -3,9 +3,7 @@
  * @param {number} level - Pino log level number
  * @returns {string} Console method name
  */
-export function getConsoleMethod(
-  level: number
-): "log" | "warn" | "error" | "info" | "debug" {
+export function getConsoleMethod(level: number): "log" | "warn" | "error" | "info" | "debug" {
   if (level >= 60) {
     return "error";
   }
@@ -23,4 +21,3 @@ export function getConsoleMethod(
   }
   return "log";
 }
-

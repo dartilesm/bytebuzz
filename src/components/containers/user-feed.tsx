@@ -1,5 +1,5 @@
-import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostList } from "@/components/post/post-list";
+import { PostComposer } from "@/components/post-composer/post-composer";
 import { Section } from "@/components/ui/container";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
@@ -12,7 +12,7 @@ export async function UserFeed() {
 
   return (
     <PostsProvider initialPosts={initialPosts || []}>
-      <Section className='w-full flex flex-col gap-2 md:gap-4'>
+      <Section className="w-full flex flex-col gap-2 md:gap-4">
         <PostComposer />
         <PostList postQueryType={POST_QUERY_TYPE.USER_FEED} />
       </Section>

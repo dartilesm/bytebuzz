@@ -1,9 +1,9 @@
 "use server";
 
-import { userService } from "@/lib/db/services/user.service";
 import { auth } from "@clerk/nextjs/server";
 import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
+import { userService } from "@/lib/db/services/user.service";
 
 export type UpdateProfileData = Partial<Tables<"users">>;
 
@@ -14,7 +14,7 @@ export async function updateProfile(data: UpdateProfileData) {
   }
 
   // Exclude username from profile data
-  const { id, username, ...profileData } = data;
+  const { id: _id, username: _username, ...profileData } = data;
 
   const result = await userService.updateProfile({ id: session.userId, ...profileData });
 

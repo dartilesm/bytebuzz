@@ -1,5 +1,11 @@
 "use client";
 
+import { Editor } from "@monaco-editor/react";
+import { Copy, Download, MoreVertical, Trash } from "lucide-react";
+import type { editor } from "monaco-editor";
+import { useTheme } from "next-themes";
+import { useRef, useState } from "react";
+import { useCopyToClipboard } from "usehooks-ts";
 import { serializeCodeBlockMetadata } from "@/components/markdown-viewer/functions/serialize-code-block-metadata";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,13 +27,6 @@ import {
 } from "@/components/ui/select";
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
-import { Editor } from "@monaco-editor/react";
-import { Copy, Download, MoreVertical, Trash } from "lucide-react";
-import type { editor } from "monaco-editor";
-import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
-import { useCopyToClipboard } from "usehooks-ts";
-import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
 
 // Character limit constant
 const CHARACTER_LIMIT = 10_000;
@@ -159,7 +159,13 @@ export function CodeBlockEditor({
               variant="flat"
               size="sm"
               className="peer pe-12"
-              onChange={(e) => handleOnChange({ metadata: serializeCodeBlockMetadata({ fileName: `${e.target.value}.${languageExtension}` }) })}
+              onChange={(e) =>
+                handleOnChange({
+                  metadata: serializeCodeBlockMetadata({
+                    fileName: `${e.target.value}.${languageExtension}`,
+                  }),
+                })
+              }
             />
             <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground text-sm peer-disabled:opacity-50">
               .{languageExtension}
@@ -260,7 +266,9 @@ export function CodeBlockEditor({
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between gap-2 p-2">
-        <Badge variant="secondary">{codeBlockEditorFunctions.getLineCount(editorValue.code)} lines</Badge>
+        <Badge variant="secondary">
+          {codeBlockEditorFunctions.getLineCount(editorValue.code)} lines
+        </Badge>
 
         <Badge
           variant={

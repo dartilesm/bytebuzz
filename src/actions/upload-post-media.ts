@@ -1,8 +1,8 @@
 "use server";
 
+import { currentUser } from "@clerk/nextjs/server";
 import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
-import { currentUser } from "@clerk/nextjs/server";
 
 /**
  * Uploads a media file to Supabase storage in a temporary location
@@ -29,15 +29,10 @@ export async function uploadPostMediaAction(
     const filePath = `${userId}/temp/${fileNameWithoutExtension}.${extension}`;
 
     // Upload the file to Supabase storage
-    const { error: uploadError } = await mediaService.uploadFile(
-      "post-images",
-      filePath,
-      file,
-      {
-        cacheControl: "3600",
-        upsert: false,
-      }
-    );
+    const { error: uploadError } = await mediaService.uploadFile("post-images", filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
 
     if (uploadError) {
       throw new Error(`Failed to upload file: ${uploadError.message}`);

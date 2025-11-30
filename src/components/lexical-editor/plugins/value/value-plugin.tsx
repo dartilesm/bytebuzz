@@ -1,10 +1,10 @@
 "use client";
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useEffect } from "react";
-import { $getRoot, $createParagraphNode, $createTextNode } from "lexical";
 import { $convertFromMarkdownString } from "@lexical/markdown";
-import { customTransformers } from "../../markdown-config";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
+import { useEffect } from "react";
+import { customTransformers } from "@/components/lexical-editor/markdown-config";
 
 interface ValuePluginProps {
   /**

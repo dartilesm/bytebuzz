@@ -1,9 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 import { HomeIcon, LogInIcon, MessageSquareIcon, TelescopeIcon, UserIcon } from "lucide-react";
-import type { ElementType, ReactNode } from "react";
 import Link from "next/link";
-import { SidebarAccountDropdown } from "./sidebar-account-dropdown";
-import { MobileProfileButton } from "./mobile-profile-button";
+import type { ElementType, ReactNode } from "react";
+import { MobileProfileButton } from "@/components/sidebar/mobile-profile-button";
+import { SidebarAccountDropdown } from "@/components/sidebar/sidebar-account-dropdown";
 
 /**
  * Context object passed to navigation item functions
@@ -84,7 +84,7 @@ export interface NavigationItem {
       isActive: boolean;
       category?: "main" | "secondary";
     },
-    context: NavigationContext
+    context: NavigationContext,
   ) => ReactNode | null;
 }
 

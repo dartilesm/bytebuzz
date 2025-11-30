@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { uploadPostMediaAction } from "@/actions/upload-post-media";
 import { toast } from "sonner";
+import { uploadPostMediaAction } from "@/actions/upload-post-media";
 
 /**
  * Hook for uploading media files to Supabase storage

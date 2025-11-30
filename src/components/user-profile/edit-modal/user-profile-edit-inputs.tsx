@@ -1,16 +1,16 @@
-import { GlobeIcon } from "lucide-react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import { GlobeIcon } from "lucide-react";
+import type { ReactNode, SVGProps } from "react";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import type { ProfileEditModalFormData } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
-import type { ReactNode, SVGProps } from "react";
 
 type UserProfileEditInput = {
   name: keyof ProfileEditModalFormData;
   label: string;
   placeholder: string | ((username: string) => string);
   type: "text" | "url";
-  icon?: ((props: SVGProps<SVGSVGElement>) => ReactNode);
-}
+  icon?: (props: SVGProps<SVGSVGElement>) => ReactNode;
+};
 
 /**
  * Personal information inputs (Location, Website)
@@ -47,7 +47,7 @@ export const SOCIAL_MEDIA_INPUTS: UserProfileEditInput[] = [
     label: "LinkedIn Profile",
     placeholder: (username: string) => `https://linkedin.com/in/${username}`,
     type: "url",
-    icon: () => <LinkedInIcon size={16} fill='currentColor' />,
+    icon: () => <LinkedInIcon size={16} fill="currentColor" />,
   },
 ];
 

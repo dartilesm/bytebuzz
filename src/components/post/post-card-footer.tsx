@@ -1,5 +1,17 @@
 "use client";
 
+import { SiX } from "@icons-pack/react-simple-icons";
+import { CopyIcon, MessageSquareIcon, RepeatIcon, Share2Icon, StarIcon } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useDebounceCallback } from "usehooks-ts";
+import {
+  getReactionsWithCounts,
+  getSortedReactions,
+  getTotalReactions,
+  type Reaction,
+} from "@/components/post/functions/reactions-utils";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import {
@@ -16,18 +28,6 @@ import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { SiX } from "@icons-pack/react-simple-icons";
-import { CopyIcon, MessageSquareIcon, RepeatIcon, Share2Icon, StarIcon } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useDebounceCallback } from "usehooks-ts";
-import {
-  type Reaction,
-  getReactionsWithCounts,
-  getSortedReactions,
-  getTotalReactions,
-} from "./functions/reactions-utils";
 
 const reactions: Reaction[] = [
   { type: "star", icon: "🌟", label: "Star" },
@@ -62,7 +62,7 @@ function shareUrl(post: NestedPost) {
 export function PostFooter() {
   const { isThreadPagePost, togglePostModal, post, isNavigationDisabled } = usePostContext();
   const [selectedReaction, setSelectedReaction] = useState<Reaction["type"] | null>(
-    post.reaction?.reaction_type ?? null
+    post.reaction?.reaction_type ?? null,
   );
   const toggleReactionMutation = useToggleReactionMutation();
 
@@ -82,7 +82,7 @@ export function PostFooter() {
         onError: () => {
           setSelectedReaction(lastReaction);
         },
-      }
+      },
     );
   }
 
@@ -97,7 +97,7 @@ export function PostFooter() {
   const reactionsWithCounts = getReactionsWithCounts(
     post,
     reactions,
-    post.reaction?.reaction_type ?? null
+    post.reaction?.reaction_type ?? null,
   );
   const sortedReactions = getSortedReactions(reactionsWithCounts);
   const totalReactions = getTotalReactions(sortedReactions);
@@ -111,7 +111,7 @@ export function PostFooter() {
           "pb-2": !hasReactions,
           "gap-2 pb-1": hasReactions,
         })}
-        id='post-card-footer'
+        id="post-card-footer"
       >
         {!isNavigationDisabled && (
           <>
@@ -121,9 +121,9 @@ export function PostFooter() {
                 className={cn("flex flex-row items-center ml-1 md:ml-2 w-full gap-1 md:gap-2", {
                   "px-2 md:px-3.5": isThreadPagePost,
                 })}
-                aria-label='Reactions legend'
+                aria-label="Reactions legend"
               >
-                <div className='flex flex-row items-center'>
+                <div className="flex flex-row items-center">
                   {sortedReactions.map((reaction, reactionIndex) => (
                     <span
                       key={reaction.type}
@@ -135,16 +135,16 @@ export function PostFooter() {
                           "z-3": reactionIndex === 1,
                           "z-2": reactionIndex === 2,
                           "z-1": reactionIndex === 3,
-                        }
+                        },
                       )}
                       aria-label={reaction.label}
                     >
-                      <span aria-hidden='true'>{reaction.icon}</span>
+                      <span aria-hidden="true">{reaction.icon}</span>
                     </span>
                   ))}
                 </div>
                 {totalReactions > 0 && (
-                  <span className='text-muted-foreground text-xs' aria-label='Total reactions'>
+                  <span className="text-muted-foreground text-xs" aria-label="Total reactions">
                     {totalReactions}
                   </span>
                 )}
@@ -173,15 +173,15 @@ export function PostFooter() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant='ghost'
+                      variant="ghost"
                       size={Boolean(post?.reply_count) ? "sm" : "icon"}
-                      className='flex flex-row gap-1 md:gap-2 text-muted-foreground min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2'
+                      className="flex flex-row gap-1 md:gap-2 text-muted-foreground min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2"
                       onClick={withAuth(() => togglePostModal(true, "reply"))}
-                      aria-label='Comment'
+                      aria-label="Comment"
                     >
-                      <MessageSquareIcon className='text-inherit' size={18} />
+                      <MessageSquareIcon className="text-inherit" size={18} />
                       {Boolean(post?.reply_count) && (
-                        <span className='text-sm'>{post?.reply_count}</span>
+                        <span className="text-sm">{post?.reply_count}</span>
                       )}
                     </Button>
                   </TooltipTrigger>
@@ -196,13 +196,13 @@ export function PostFooter() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant='ghost'
-                      size='icon'
-                      className='text-muted-foreground min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0'
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0"
                       onClick={withAuth(() => togglePostModal(true, "clone"))}
-                      aria-label='Repost'
+                      aria-label="Repost"
                     >
-                      <RepeatIcon className='text-inherit' size={26} />
+                      <RepeatIcon className="text-inherit" size={26} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -217,33 +217,33 @@ export function PostFooter() {
                     <TooltipTrigger asChild>
                       <DropdownMenuTrigger asChild>
                         <Button
-                          variant='ghost'
-                          size='icon'
-                          className='text-muted-foreground max-w-32 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2'
-                          aria-label='Share'
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground max-w-32 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2"
+                          aria-label="Share"
                         >
-                          <Share2Icon className='text-inherit' size={18} />
+                          <Share2Icon className="text-inherit" size={18} />
                         </Button>
                       </DropdownMenuTrigger>
                     </TooltipTrigger>
-                    <DropdownMenuContent align='end'>
-                      <DropdownMenuItem key='x' asChild>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem key="x" asChild>
                         <Link
                           href={getXPostPreview(post) as any}
-                          target='_blank'
-                          className='flex items-center'
+                          target="_blank"
+                          className="flex items-center"
                         >
-                          <SiX className='text-inherit mr-2' size={16} />
+                          <SiX className="text-inherit mr-2" size={16} />
                           Share on X
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem key='copy' onClick={() => copyUrl(post)}>
-                        <CopyIcon className='text-inherit mr-2' size={16} />
+                      <DropdownMenuItem key="copy" onClick={() => copyUrl(post)}>
+                        <CopyIcon className="text-inherit mr-2" size={16} />
                         Copy link
                       </DropdownMenuItem>
-                      <DropdownMenuItem key='native' onClick={() => shareUrl(post)}>
-                        <Share2Icon className='text-inherit mr-2' size={16} />
+                      <DropdownMenuItem key="native" onClick={() => shareUrl(post)}>
+                        <Share2Icon className="text-inherit mr-2" size={16} />
                         Share via ...
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -302,26 +302,26 @@ function PostFooterReactionButton({
               "group flex items-center gap-1 md:gap-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 px-2",
               {
                 "text-muted-foreground": !selectedReaction,
-              }
+              },
             )}
           >
             {selectedReaction && (
-              <span className='text-lg'>
+              <span className="text-lg">
                 {reactions.find((r) => r.type === selectedReaction)?.icon}
               </span>
             )}
             {!selectedReaction && (
-              <span className='text-lg'>
-                <StarIcon className='text-inherit' size={18} />
+              <span className="text-lg">
+                <StarIcon className="text-inherit" size={18} />
               </span>
             )}
-            {selectedReaction && <span className='text-sm capitalize'>{selectedReaction}</span>}
+            {selectedReaction && <span className="text-sm capitalize">{selectedReaction}</span>}
           </Button>
         </TooltipTrigger>
         <TooltipContent
-          side='top'
-          align='start'
-          className='flex flex-row gap-2 p-1 z-0 max-h-12'
+          side="top"
+          align="start"
+          className="flex flex-row gap-2 p-1 z-0 max-h-12"
           onMouseEnter={() => handleReactionTooltipOpen(true)}
           onMouseLeave={() => handleReactionTooltipOpen(false)}
         >
@@ -330,12 +330,12 @@ function PostFooterReactionButton({
               <Tooltip key={reaction.type}>
                 <TooltipTrigger asChild>
                   <Button
-                    variant='ghost'
-                    size='icon'
-                    className='p-2 group h-10 w-10 hover:w-14 hover:scale-150 transition-all duration-200 origin-bottom hover:bg-transparent dark:hover:bg-transparent'
+                    variant="ghost"
+                    size="icon"
+                    className="p-2 group h-10 w-10 hover:w-14 hover:scale-150 transition-all duration-200 origin-bottom hover:bg-transparent dark:hover:bg-transparent"
                     onClick={() => handleReactionClick?.(reaction.type)}
                   >
-                    <span className='text-xl group-hover:text-3xl transition-all duration-200'>
+                    <span className="text-xl group-hover:text-3xl transition-all duration-200">
                       {reaction.icon}
                     </span>
                   </Button>

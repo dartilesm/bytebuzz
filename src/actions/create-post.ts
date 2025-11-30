@@ -1,11 +1,11 @@
 "use server";
 
-import { postService } from "@/lib/db/services/post.service";
-import { mediaService } from "@/lib/db/services/media.service";
-import { log } from "@/lib/logger/logger";
 import { currentUser } from "@clerk/nextjs/server";
 import type { Tables } from "database.types";
 import { revalidatePath } from "next/cache";
+import { mediaService } from "@/lib/db/services/media.service";
+import { postService } from "@/lib/db/services/post.service";
+import { log } from "@/lib/logger/logger";
 
 type PostExpectedFields = Pick<
   Partial<Tables<"posts">>,
@@ -61,7 +61,7 @@ export async function createPostAction({
         const { error: moveError } = await mediaService.moveFile(
           "post-images",
           media.path,
-          permanentPath
+          permanentPath,
         );
 
         if (moveError) {
@@ -69,10 +69,7 @@ export async function createPostAction({
         }
 
         // Generate the proxy URL for the permanent location using service
-        const publicUrl = mediaService.getPublicUrl(
-          "post-images",
-          permanentPath
-        );
+        const publicUrl = mediaService.getPublicUrl("post-images", permanentPath);
 
         return {
           post_id: post.id,
@@ -86,13 +83,10 @@ export async function createPostAction({
         const mediaRecords = await Promise.all(mediaPromises);
 
         // Create media records using service
-        const { error: mediaError } =
-          await mediaService.createMediaRecords(mediaRecords);
+        const { error: mediaError } = await mediaService.createMediaRecords(mediaRecords);
 
         if (mediaError) {
-          throw new Error(
-            `Failed to create media records: ${mediaError.message}`
-          );
+          throw new Error(`Failed to create media records: ${mediaError.message}`);
         }
       } catch (error) {
         // If any media operation fails, clean up post and all moved files

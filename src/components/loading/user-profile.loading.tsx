@@ -1,10 +1,10 @@
 "use client";
 
+import type { Tables } from "database.types";
 import { UserPostLoading } from "@/components/loading/user-post.loading";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileProvider } from "@/context/profile-provider";
-import type { Tables } from "database.types";
 
 export function UserProfileLoading() {
   return (

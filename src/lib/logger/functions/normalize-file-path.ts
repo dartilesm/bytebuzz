@@ -1,4 +1,3 @@
-
 /**
  * Gets the project root directory
  * @returns {string} Project root path

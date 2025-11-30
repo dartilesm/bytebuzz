@@ -1,8 +1,8 @@
 "use server";
 
+import { auth } from "@clerk/nextjs/server";
 import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
-import { auth } from "@clerk/nextjs/server";
 
 export type ProfileImageType = "avatar" | "cover";
 

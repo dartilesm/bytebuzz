@@ -1,8 +1,8 @@
 import {
-  createCanvas,
-  loadImage as canvasLoadImage,
-  type CanvasRenderingContext2D as NodeCanvasRenderingContext2D,
   type Image as CanvasImage,
+  loadImage as canvasLoadImage,
+  createCanvas,
+  type CanvasRenderingContext2D as NodeCanvasRenderingContext2D,
 } from "canvas";
 
 // Image metadata

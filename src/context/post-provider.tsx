@@ -1,9 +1,9 @@
 "use client";
 
-import { PostActionModal } from "@/components/post/post-action-modal";
-import type { NestedPost } from "@/types/nested-posts";
 import { useParams } from "next/navigation";
 import { createContext, useState } from "react";
+import { PostActionModal } from "@/components/post/post-action-modal";
+import type { NestedPost } from "@/types/nested-posts";
 
 export interface PostContextType {
   post: NestedPost;

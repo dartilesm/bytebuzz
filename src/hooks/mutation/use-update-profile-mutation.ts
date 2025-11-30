@@ -1,7 +1,7 @@
-import { type UpdateProfileData, updateProfile } from "@/actions/update-profile";
-import { uploadProfileImage, deleteProfileImage } from "@/actions/upload-profile-image";
-import { log } from "@/lib/logger/logger";
 import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import { type UpdateProfileData, updateProfile } from "@/actions/update-profile";
+import { deleteProfileImage, uploadProfileImage } from "@/actions/upload-profile-image";
+import { log } from "@/lib/logger/logger";
 
 export type UpdateProfileWithFilesData = UpdateProfileData & {
   imageFile?: File;
@@ -15,7 +15,7 @@ export function useUpdateProfileMutation(
     Awaited<ReturnType<typeof updateProfile>>,
     Error,
     UpdateProfileWithFilesData
-  >
+  >,
 ) {
   const mutation = useMutation({
     ...useMutationProps,
@@ -25,7 +25,7 @@ export function useUpdateProfileMutation(
         currentCoverImageUrl,
         coverImageFile,
         imageFile,
-        fts, // Exclude from update as it can only be updated to DEFAULT
+        fts: _fts, // Exclude from update as it can only be updated to DEFAULT
         ...profileDataToUpdate
       } = data;
 
@@ -68,7 +68,7 @@ export function useUpdateProfileMutation(
 async function handleImageUpload(
   file: File | undefined,
   type: "avatar" | "cover",
-  currentUrl?: string
+  currentUrl?: string,
 ): Promise<string | undefined> {
   if (!file) return undefined;
 

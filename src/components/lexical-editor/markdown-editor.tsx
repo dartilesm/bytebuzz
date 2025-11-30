@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -11,14 +10,13 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import type { EditorState, LexicalEditor } from "lexical";
 import { type RefObject, useEffect } from "react";
-import { editorStateToMarkdown } from "./functions/markdown-utils";
-
-import { customTransformers } from "./markdown-config";
-import { useMarkdownContext } from "./markdown-provider";
-
-import { MentionPlugin } from "./plugins/mentions/mention-plugin";
-import { ValuePlugin } from "./plugins/value/value-plugin";
+import { editorStateToMarkdown } from "@/components/lexical-editor/functions/markdown-utils";
+import { customTransformers } from "@/components/lexical-editor/markdown-config";
+import { useMarkdownContext } from "@/components/lexical-editor/markdown-provider";
+import { MentionPlugin } from "@/components/lexical-editor/plugins/mentions/mention-plugin";
 import { SmartTextPlugin } from "@/components/lexical-editor/plugins/smart-text-plugin/smart-text-plugin";
+import { ValuePlugin } from "@/components/lexical-editor/plugins/value/value-plugin";
+import { cn } from "@/lib/utils";
 
 interface MarkdownEditorProps {
   /**
@@ -52,7 +50,9 @@ interface MarkdownEditorProps {
  */
 function OnChangeMarkdownPlugin({
   onChange,
-}: { onChange?: (markdown: string, editorState: EditorState) => void }) {
+}: {
+  onChange?: (markdown: string, editorState: EditorState) => void;
+}) {
   function handleEditorChange(editorState: EditorState) {
     if (!onChange) return;
 

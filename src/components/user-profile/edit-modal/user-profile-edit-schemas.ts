@@ -16,7 +16,7 @@ export const profileEditModalSchema = z.object({
     .string()
     .regex(
       /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
-      "Please enter a valid URL"
+      "Please enter a valid URL",
     )
     .optional()
     .or(z.literal("")),
@@ -24,7 +24,7 @@ export const profileEditModalSchema = z.object({
     .string()
     .regex(
       /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9-]+\/?$/,
-      "Please enter a valid GitHub profile URL"
+      "Please enter a valid GitHub profile URL",
     )
     .optional()
     .or(z.literal("")),
@@ -32,7 +32,7 @@ export const profileEditModalSchema = z.object({
     .string()
     .regex(
       /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/[a-zA-Z0-9-]+\/?|company\/[a-zA-Z0-9-]+\/?)$/,
-      "Please enter a valid LinkedIn profile URL"
+      "Please enter a valid LinkedIn profile URL",
     )
     .optional()
     .or(z.literal("")),

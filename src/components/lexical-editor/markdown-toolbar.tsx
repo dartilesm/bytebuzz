@@ -1,8 +1,8 @@
 "use client";
 
+import { useMarkdownContext } from "@/components/lexical-editor/markdown-provider";
+import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
 import { cn } from "@/lib/utils";
-import { useMarkdownContext } from "./markdown-provider";
-import { MarkdownToolbarDefaultActions } from "./markdown-toolbar-default-actions";
 
 interface MarkdownToolbarProps {
   /**

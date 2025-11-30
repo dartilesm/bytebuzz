@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import type { User } from "@/components/lexical-editor/plugins/mentions/mention-node";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { User } from "./mention-node";
 
 interface MentionSuggestionsProps {
   /**

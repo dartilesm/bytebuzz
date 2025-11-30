@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { extractPlainTextFromMarkdown } from "../markdown-text-extractor";
+import { describe, expect, it } from "vitest";
+import { extractPlainTextFromMarkdown } from "@/lib/markdown-text-extractor";
 
 describe("extractPlainTextFromMarkdown", () => {
   it("should remove all markdown syntax and return clean text", () => {

@@ -1,6 +1,6 @@
 import { TRANSFORMERS } from "@lexical/markdown";
-import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "./plugins/code-block/enhanced-code-transformers";
-import { MEDIA_TRANSFORMER } from "./plugins/media/media-transformer";
+import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "@/components/lexical-editor/plugins/code-block/enhanced-code-transformers";
+import { MEDIA_TRANSFORMER } from "@/components/lexical-editor/plugins/media/media-transformer";
 
 /**
  * Centralized configuration for markdown editor features

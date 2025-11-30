@@ -1,5 +1,5 @@
 import type { Logtail } from "@logtail/node";
-import { getConsoleMethod } from "./get-console-method";
+import { getConsoleMethod } from "@/lib/logger/functions/get-console-method";
 
 function extractLogContext(logObj: Record<string, unknown>): Record<string, unknown> {
   const context: Record<string, unknown> = {};

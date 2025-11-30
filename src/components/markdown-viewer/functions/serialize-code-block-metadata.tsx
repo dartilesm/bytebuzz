@@ -3,5 +3,5 @@
  * Returns a string like '{"key":"value","key2":"value2"}'.
  */
 export function serializeCodeBlockMetadata(metadata: Record<string, string>): string {
-    return JSON.stringify(metadata);
+  return JSON.stringify(metadata);
 }

@@ -1,5 +1,5 @@
 import type { DestinationStream } from "pino";
-import { writeToConsole } from "./functions/write-to-console";
+import { writeToConsole } from "@/lib/logger/functions/write-to-console";
 
 /**
  * Formats a log entry for console output

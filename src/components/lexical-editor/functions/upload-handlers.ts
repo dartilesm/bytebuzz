@@ -1,4 +1,4 @@
-import type { MediaData } from "../plugins/media/media-node";
+import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
 
 /**
  * Creates media data for a blob URL (used for immediate preview)

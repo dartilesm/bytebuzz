@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -10,7 +9,8 @@ import type {
   SerializedLexicalNode,
 } from "lexical";
 import { DecoratorNode } from "lexical";
-import { EnhancedCodeBlockWrapper } from "./enhanced-code-block-wrapper";
+import type React from "react";
+import { EnhancedCodeBlockWrapper } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-wrapper";
 import { log } from "@/lib/logger/logger";
 
 export interface SerializedEnhancedCodeBlockNode extends SerializedLexicalNode {
@@ -186,7 +186,7 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
 export function $createEnhancedCodeBlockNode(
   language: string,
   code = "",
-  metadata = ""
+  metadata = "",
 ): EnhancedCodeBlockNode {
   return new EnhancedCodeBlockNode(language, code, undefined, metadata);
 }
@@ -195,7 +195,7 @@ export function $createEnhancedCodeBlockNode(
  * Checks if a node is an EnhancedCodeBlockNode
  */
 export function $isEnhancedCodeBlockNode(
-  node: LexicalNode | null | undefined
+  node: LexicalNode | null | undefined,
 ): node is EnhancedCodeBlockNode {
   return node instanceof EnhancedCodeBlockNode;
 }

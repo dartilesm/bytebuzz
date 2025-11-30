@@ -1,5 +1,5 @@
 import { $getRoot } from "lexical";
-import { $isMediaNode, type MediaData } from "../plugins/media/media-node";
+import { $isMediaNode, type MediaData } from "@/components/lexical-editor/plugins/media/media-node";
 
 /**
  * Finds a media node that contains an item with the given ID

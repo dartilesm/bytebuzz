@@ -1,16 +1,16 @@
 "use client";
 
-import { useNavigationContext } from "@/context/navigation-context";
 import { useAuth } from "@clerk/nextjs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { LogInIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { AccountDropdownContent } from "./account-dropdown-content";
-import type { SidebarItemProps } from "./sidebar-item";
+import { AccountDropdownContent } from "@/components/sidebar/account-dropdown-content";
+import type { SidebarItemProps } from "@/components/sidebar/sidebar-item";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useNavigationContext } from "@/context/navigation-context";
+import { cn } from "@/lib/utils";
 
 type SidebarAccountDropdownProps = Pick<SidebarItemProps, "isActive" | "label">;
 
@@ -25,11 +25,11 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
         className={cn("w-full px-2 max-xl:px-0 text-left flex justify-between", {
           "bg-muted": isActive,
         })}
-        variant='ghost'
+        variant="ghost"
         asChild
       >
-        <Link href='/sign-in'>
-          <span className='flex items-center gap-2'>
+        <Link href="/sign-in">
+          <span className="flex items-center gap-2">
             <UserIcon size={24} />
             Sign in
           </span>
@@ -54,7 +54,7 @@ export function SidebarAccountDropdown({ isActive, label }: SidebarAccountDropdo
             "bg-muted": isActive,
             "justify-center px-2 max-xl:px-0": true,
           })}
-          variant='ghost'
+          variant="ghost"
         >
           <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
             <Avatar className="h-6 w-6">

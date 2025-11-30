@@ -1,5 +1,5 @@
-import { withAnalytics } from "@/lib/with-analytics";
 import { UserProfile } from "@clerk/nextjs";
+import { withAnalytics } from "@/lib/with-analytics";
 
 function UserProfilePage() {
   return (

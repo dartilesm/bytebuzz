@@ -1,10 +1,10 @@
 "use client";
 
-import { CodeBlockEditor, type CodeBlockEditorValue } from "@/components/ui/code-block-editor";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createParagraphNode } from "lexical";
 import { type KeyboardEvent, useEffect, useRef } from "react";
-import type { EnhancedCodeBlockNode } from "./enhanced-code-block-node";
+import type { EnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import { CodeBlockEditor, type CodeBlockEditorValue } from "@/components/ui/code-block-editor";
 
 interface EnhancedCodeBlockWrapperProps {
   node: EnhancedCodeBlockNode;
@@ -16,11 +16,7 @@ interface EnhancedCodeBlockWrapperProps {
 /**
  * Wrapper component that properly integrates CodeBlockEditor with Lexical
  */
-export function EnhancedCodeBlockWrapper({
-  node,
-  language,
-  code,
-}: EnhancedCodeBlockWrapperProps) {
+export function EnhancedCodeBlockWrapper({ node, language, code }: EnhancedCodeBlockWrapperProps) {
   const [editor] = useLexicalComposerContext();
   const enterPressCount = useRef(0);
   const enterPressTimer = useRef<NodeJS.Timeout | null>(null);

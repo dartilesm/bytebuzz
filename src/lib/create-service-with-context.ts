@@ -15,9 +15,10 @@ type ThisParameterType<T> = T extends (this: infer This, ...args: any[]) => any 
  * Check if a method has the correct 'this' parameter type
  * If not, return never which will cause the property to not be assignable
  */
-type ValidateMethod<T> = ThisParameterType<T> extends ServiceContext
-  ? T
-  : `This method must have 'this: ServiceContext' as its first parameter.
+type ValidateMethod<T> =
+  ThisParameterType<T> extends ServiceContext
+    ? T
+    : `This method must have 'this: ServiceContext' as its first parameter.
     hint: "Add 'this: ServiceContext' after the function name, before other parameters".
     example: "async function myMethod(this: ServiceContext, ...args) { ... }"`;
 
@@ -66,7 +67,7 @@ function withContext<T extends ServiceMethodWithContext>(fn: T) {
  * ```
  */
 export function createServiceWithContext<T extends Record<string, ServiceMethodWithContext>>(
-  service: ValidatedService<T>
+  service: ValidatedService<T>,
 ): ServiceWithoutThisParam<T> {
   const serviceWithContext: Partial<T> = {};
   for (const method in service) {

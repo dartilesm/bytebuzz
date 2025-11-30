@@ -1,23 +1,30 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import { SiMarkdown } from "@icons-pack/react-simple-icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon } from "lucide-react";
 import { useRef } from "react";
-import { $createEnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
-import { $createMediaNode, $isMediaNode, type MediaData } from "./plugins/media/media-node";
-import { removeMediaNodeById, updateMediaNodeById } from "./functions/media-node-helpers";
 import {
-  validateMediaFile,
+  removeMediaNodeById,
+  updateMediaNodeById,
+} from "@/components/lexical-editor/functions/media-node-helpers";
+import {
   createBlobMediaData,
   createLoadingMediaData,
-} from "./functions/upload-handlers";
+  validateMediaFile,
+} from "@/components/lexical-editor/functions/upload-handlers";
+import { $createEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import {
+  $createMediaNode,
+  $isMediaNode,
+  type MediaData,
+} from "@/components/lexical-editor/plugins/media/media-node";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { log } from "@/lib/logger/logger";
+import { cn } from "@/lib/utils";
 
 interface MarkdownToolbarDefaultActionsProps {
   /**
@@ -183,12 +190,12 @@ export function MarkdownToolbarDefaultActions({
   return (
     <>
       <Button
-        variant='ghost'
-        size='icon'
-        type='button'
+        variant="ghost"
+        size="icon"
+        type="button"
         className={cn(
           "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
-          buttonClassName
+          buttonClassName,
         )}
         onClick={() => handleInsertCodeBlock("javascript")}
       >
@@ -196,12 +203,12 @@ export function MarkdownToolbarDefaultActions({
       </Button>
 
       <Button
-        variant='ghost'
-        size='icon'
-        type='button'
+        variant="ghost"
+        size="icon"
+        type="button"
         className={cn(
           "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
-          buttonClassName
+          buttonClassName,
         )}
         onClick={handleMediaButtonClick}
       >
@@ -213,11 +220,11 @@ export function MarkdownToolbarDefaultActions({
           <Tooltip delayDuration={0}>
             <TooltipTrigger>
               <Badge
-                variant='outline'
-                className='text-muted-foreground hover:text-muted-foreground inline-flex gap-2 items-center cursor-pointer font-normal'
+                variant="outline"
+                className="text-muted-foreground hover:text-muted-foreground inline-flex gap-2 items-center cursor-pointer font-normal"
               >
-                <SiMarkdown size={16} fill='currentColor' />
-                <span className='leading-0'>Markdown supported*</span>
+                <SiMarkdown size={16} fill="currentColor" />
+                <span className="leading-0">Markdown supported*</span>
               </Badge>
             </TooltipTrigger>
             <TooltipContent>
@@ -230,11 +237,11 @@ export function MarkdownToolbarDefaultActions({
       {/* Hidden file input for media upload */}
       <input
         ref={fileInputRef}
-        type='file'
-        accept='image/*,video/*'
+        type="file"
+        accept="image/*,video/*"
         onChange={handleFileUpload}
-        className='hidden'
-        aria-label='Upload media file'
+        className="hidden"
+        aria-label="Upload media file"
       />
     </>
   );

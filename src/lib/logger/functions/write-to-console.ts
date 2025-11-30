@@ -1,4 +1,4 @@
-import { getConsoleMethod } from "./get-console-method";
+import { getConsoleMethod } from "@/lib/logger/functions/get-console-method";
 
 /**
  * Writes a log object to the console using the appropriate console method

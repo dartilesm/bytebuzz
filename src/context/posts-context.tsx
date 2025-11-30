@@ -1,9 +1,9 @@
 "use client";
 
-import type { NestedPost } from "@/types/nested-posts";
+import { useRouter } from "next/navigation";
 import { createContext, useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import type { NestedPost } from "@/types/nested-posts";
 
 interface PostsContextType {
   posts: NestedPost[];

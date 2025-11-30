@@ -1,12 +1,15 @@
 {
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome",
+    "typescript.preferences.importModuleSpecifier": "non-relative"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome",
+    "javascript.preferences.importModuleSpecifier": "non-relative"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome",
+    "typescript.preferences.importModuleSpecifier": "non-relative"
   },
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.importModuleSpecifier": "non-relative",
@@ -14,6 +17,10 @@
     "*.css": "tailwindcss",
     "supabase/functions/**/*.ts": "typescript",
     "supabase/functions/**/*.tsx": "typescriptreact"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   },
   // Deno settings for Edge Functions
   "deno.enable": true,

@@ -1,8 +1,8 @@
 import { usePathname } from "next/navigation";
-import type { NavigationItem, NavigationContext } from "@/components/sidebar/navigation-items";
-import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import type { ElementType, ReactNode } from "react";
 import { createElement } from "react";
+import type { NavigationContext, NavigationItem } from "@/components/sidebar/navigation-items";
+import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import { useNavigationContext } from "@/context/navigation-context";
 
 export interface ComputedNavigationItem {
@@ -21,7 +21,7 @@ export interface ComputedNavigationItem {
  * (takes context and returns ElementType | null) vs a component constructor
  */
 function isNavigationFunction(
-  fn: ElementType | ((context: NavigationContext) => ElementType | null)
+  fn: ElementType | ((context: NavigationContext) => ElementType | null),
 ): fn is (context: NavigationContext) => ElementType | null {
   if (typeof fn !== "function") return false;
 
@@ -42,7 +42,7 @@ function isNavigationFunction(
  */
 function computeIsVisible(
   isVisible: NavigationItem["isVisible"],
-  context: NavigationContext
+  context: NavigationContext,
 ): boolean {
   if (typeof isVisible === "function") return isVisible(context);
   if (typeof isVisible === "boolean") return isVisible;
@@ -63,7 +63,7 @@ function computeIcon(icon: NavigationItem["icon"], context: NavigationContext): 
  */
 function computeAs(
   as: NavigationItem["as"],
-  context: NavigationContext
+  context: NavigationContext,
 ): ElementType | null | undefined {
   if (typeof as !== "function") return as;
   if (isNavigationFunction(as)) return as(context);
@@ -83,7 +83,7 @@ function computeHref(href: NavigationItem["href"], context: NavigationContext): 
  */
 function createOnClickHandler(
   onClick: NavigationItem["onClick"],
-  context: NavigationContext
+  context: NavigationContext,
 ): (() => void) | undefined {
   if (!onClick) return undefined;
   return () => {
@@ -97,7 +97,7 @@ function createOnClickHandler(
 function computeIsActive(
   item: NavigationItem,
   href: string | undefined,
-  context: NavigationContext
+  context: NavigationContext,
 ): boolean {
   if (item.isActive) return item.isActive(context);
   if (!href) return false;
@@ -109,7 +109,7 @@ function computeIsActive(
  */
 function computeCategory(
   category: NavigationItem["category"],
-  context: NavigationContext
+  context: NavigationContext,
 ): "main" | "secondary" {
   if (typeof category === "function") return category(context);
   if (category === "secondary") return "secondary";
@@ -122,7 +122,7 @@ function computeCategory(
 function shouldIncludeItem(
   as: ElementType | null | undefined,
   href: string | undefined,
-  onClick: NavigationItem["onClick"]
+  onClick: NavigationItem["onClick"],
 ): boolean {
   const hasValidNavigation = !!as || !!href || !!onClick;
   if (hasValidNavigation) return true;

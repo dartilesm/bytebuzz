@@ -1,17 +1,17 @@
 "use client";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useEffect } from "react";
+import { mergeRegister } from "@lexical/utils";
+import type { TextNode } from "lexical";
 import {
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_NORMAL,
-  KEY_TAB_COMMAND,
   KEY_SPACE_COMMAND,
+  KEY_TAB_COMMAND,
 } from "lexical";
-import { mergeRegister } from "@lexical/utils";
-import type { TextNode } from "lexical";
-import { $createEnhancedCodeBlockNode } from "./enhanced-code-block-node";
+import { useEffect } from "react";
+import { $createEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
 
 interface CodeBlockPluginProps {
   /**

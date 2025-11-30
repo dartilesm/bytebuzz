@@ -1,5 +1,5 @@
-import { withCacheService } from "@/lib/db/with-cache-service";
 import type { NextRequest } from "next/server";
+import { withCacheService } from "@/lib/db/with-cache-service";
 
 /**
  * GET /api/users/[id]
@@ -8,10 +8,7 @@ import type { NextRequest } from "next/server";
  * @param params - Route parameters containing the user ID
  * @returns User data object
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!id) {
     return new Response(JSON.stringify({ error: "Missing user ID" }), { status: 400 });
@@ -31,4 +28,3 @@ export async function GET(
     headers: { "Content-Type": "application/json" },
   });
 }
-

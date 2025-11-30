@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { PostThreadLine } from "@/components/post/post-thread-line";
-import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
-import { usePostContext } from "@/hooks/use-post-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
+import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 export function PostAvatarAndThreadLine() {
   const { isThread, isFirstInThread, isLastInThread, isThreadPagePost, post } = usePostContext();
@@ -21,11 +21,14 @@ export function PostAvatarAndThreadLine() {
       <TooltipProvider delayDuration={1000}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link href={`/@${user?.username}`} className='h-fit'>
+            <Link href={`/@${user?.username}`} className="h-fit">
               <Avatar
-                className={cn("shrink-0 z-20 outline-2 outline-border border-background border-2 size-10 md:size-11", {
-                  "size-9 md:size-10": !isThreadPagePost,
-                })}
+                className={cn(
+                  "shrink-0 z-20 outline-2 outline-border border-background border-2 size-10 md:size-11",
+                  {
+                    "size-9 md:size-10": !isThreadPagePost,
+                  },
+                )}
               >
                 <AvatarImage src={user?.image_url ?? ""} alt={user?.display_name ?? ""} />
                 <AvatarFallback>{user?.display_name?.[0] ?? ""}</AvatarFallback>

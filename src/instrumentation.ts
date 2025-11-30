@@ -1,10 +1,10 @@
-import { log } from "@/lib/logger/logger";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { logs } from "@opentelemetry/sdk-node";
 import { registerOTel } from "@vercel/otel";
+import { log } from "@/lib/logger/logger";
 
 const otelCollectorUrl = process.env.NEXT_PUBLIC_BETTERSTACK_ENDPOINT;
 
@@ -25,7 +25,7 @@ export function register() {
           new OTLPLogExporter({
             url: `${otelCollectorUrl}/v1/logs`,
             headers,
-          })
+          }),
         ),
       ],
       metricReaders: [
@@ -57,7 +57,7 @@ export function onRequestError(
       | "server-rendering";
     revalidateReason: "on-demand" | "stale" | undefined; // undefined is a normal request without revalidation
     renderType: "dynamic" | "dynamic-resume"; // 'dynamic-resume' for PPR
-  }
+  },
 ) {
   const errorMessage = `Unhandled error in route "${context.routePath}" [${context.routeType}]: ${
     error?.message ?? "No error message provided"

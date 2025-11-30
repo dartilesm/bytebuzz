@@ -40,4 +40,3 @@ export function serializeUser(user: User | null): SerializedUser | null {
     updatedAt: user.updatedAt ? new Date(user.updatedAt).toISOString() : undefined,
   };
 }
-

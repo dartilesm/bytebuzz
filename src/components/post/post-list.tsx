@@ -1,13 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
+import { useIntersectionObserver } from "usehooks-ts";
+import { UserPostLoading } from "@/components/loading/user-post.loading";
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
-import { usePostsQuery } from "@/hooks/queries/use-posts-query";
-import { useEffect } from "react";
-import { UserPost } from "./user-post";
-import { UserPostLoading } from "@/components/loading/user-post.loading";
+import { UserPost } from "@/components/post/user-post";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
-import { useIntersectionObserver } from "usehooks-ts";
+import { usePostsQuery } from "@/hooks/queries/use-posts-query";
 
 interface PostListProps {
   postQueryType?: POST_QUERY_TYPE;
@@ -32,7 +32,7 @@ export function PostList({ postQueryType }: PostListProps) {
   }, [isIntersecting]);
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className="flex flex-col gap-2">
       {data.pages.map((page) => {
         return page.data?.map((post) => (
           <PostWrapper key={post.id}>
@@ -45,7 +45,7 @@ export function PostList({ postQueryType }: PostListProps) {
       {/* Tracker ref for the last post */}
       <div ref={ref} />
       {data.pages.flatMap((page) => page.data).length === 0 && (
-        <span className='text-center text-sm text-muted-foreground'>No posts found</span>
+        <span className="text-center text-sm text-muted-foreground">No posts found</span>
       )}
       {isFetchingNextPage && <UserPostLoading />}
     </div>

@@ -1,15 +1,15 @@
+import type { Tables } from "database.types";
+import { Suspense } from "react";
 import { PageHeader } from "@/components/ui/page-header";
+import { UserProfileContentLoading } from "@/components/user-profile/loading/user-profile-content.loading";
+import { UserProfileCoverAvatarLoading } from "@/components/user-profile/loading/user-profile-cover-avatar.loading";
+import { UserProfileDescriptionLoading } from "@/components/user-profile/loading/user-profile-description.loading";
+import { UserProfileTopActionsLoading } from "@/components/user-profile/loading/user-profile-top-actions.loading";
 import { UserProfileContent } from "@/components/user-profile/user-profile-content";
 import { UserProfileCoverAvatar } from "@/components/user-profile/user-profile-cover-avatar";
 import { UserProfileDescription } from "@/components/user-profile/user-profile-description";
 import { UserProfileTopActions } from "@/components/user-profile/user-profile-top-actions";
 import { ProfileProvider } from "@/context/profile-provider";
-import { Suspense } from "react";
-import { UserProfileCoverAvatarLoading } from "@/components/user-profile/loading/user-profile-cover-avatar.loading";
-import { UserProfileTopActionsLoading } from "@/components/user-profile/loading/user-profile-top-actions.loading";
-import { UserProfileDescriptionLoading } from "@/components/user-profile/loading/user-profile-description.loading";
-import { UserProfileContentLoading } from "@/components/user-profile/loading/user-profile-content.loading";
-import type { Tables } from "database.types";
 import type { postService } from "@/lib/db/services/post.service";
 
 type UserProfileProps = {
@@ -24,8 +24,8 @@ export async function UserProfile({ profile, postsPromise }: UserProfileProps) {
   return (
     <ProfileProvider profile={profile}>
       <PageHeader title={profile.display_name} subtitle={`@${profile.username}`} />
-      <div className='flex flex-col gap-4 md:gap-6 w-full max-w-5xl mx-auto md:px-4 dark:bg-background'>
-        <div className='px-2 md:px-0'>
+      <div className="flex flex-col gap-4 md:gap-6 w-full max-w-5xl mx-auto md:px-4 dark:bg-background">
+        <div className="px-2 md:px-0">
           <Suspense fallback={<UserProfileCoverAvatarLoading />}>
             <UserProfileCoverAvatar profilePromise={profilePromise} />
           </Suspense>
@@ -33,8 +33,8 @@ export async function UserProfile({ profile, postsPromise }: UserProfileProps) {
             <UserProfileTopActions profilePromise={profilePromise} />
           </Suspense>
         </div>
-        <div className='flex flex-col gap-2'>
-          <div className='px-2 md:px-0'>
+        <div className="flex flex-col gap-2">
+          <div className="px-2 md:px-0">
             <Suspense fallback={<UserProfileDescriptionLoading />}>
               <UserProfileDescription profilePromise={profilePromise} />
             </Suspense>

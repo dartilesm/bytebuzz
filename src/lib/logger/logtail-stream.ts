@@ -1,6 +1,6 @@
-import type { DestinationStream } from "pino";
 import { Logtail } from "@logtail/node";
-import { writeToLogtail } from "./functions/write-to-logtail";
+import type { DestinationStream } from "pino";
+import { writeToLogtail } from "@/lib/logger/functions/write-to-logtail";
 
 /**
  * Logtail client instance (singleton)
@@ -31,7 +31,6 @@ function getLogtailClient(): Logtail | null {
 
   return logtailClient;
 }
-
 
 /**
  * Flushes logs on process exit (for serverless environments)

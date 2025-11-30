@@ -1,15 +1,14 @@
 "use client";
 
+import { cva, type VariantProps } from "class-variance-authority";
 import { Command as CommandPrimitive } from "cmdk";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import * as React from "react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { type VariantProps, cva } from "class-variance-authority";
 
 /**
  * Variants for the multi-select component to handle different styles.

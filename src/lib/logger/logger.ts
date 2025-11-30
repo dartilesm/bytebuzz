@@ -1,8 +1,8 @@
-import { getCallerInfo, type CallerInfo } from "@/lib/logger/logger-caller";
 import pino, { type Level, type LogFn, type Logger } from "pino";
-import { getPinoStreams } from "@/lib/logger/pino-streams";
-import { writeToConsole } from "@/lib/logger/functions/write-to-console";
 import { getLogLevel } from "@/lib/logger/functions/get-log-level";
+import { writeToConsole } from "@/lib/logger/functions/write-to-console";
+import { type CallerInfo, getCallerInfo } from "@/lib/logger/logger-caller";
+import { getPinoStreams } from "@/lib/logger/pino-streams";
 
 let loggerInstance: Logger | null = null;
 
@@ -73,7 +73,7 @@ function logWithCaller(
   level: Level,
   msg: string,
   meta?: LogMetadata,
-  caller?: CallerInfo | null
+  caller?: CallerInfo | null,
 ): void {
   const callerInfo = caller === undefined ? getCallerInfo() : caller;
   const prefix = formatCallerPrefix(callerInfo);

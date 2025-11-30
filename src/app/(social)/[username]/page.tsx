@@ -1,10 +1,10 @@
-import { UserProfile } from "@/components/user-profile/user-profile";
-import { generateUserProfileMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
-import { withAnalytics } from "@/lib/with-analytics";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { log } from "@/lib/logger/logger";
+import { UserProfile } from "@/components/user-profile/user-profile";
 import { withCacheService } from "@/lib/db/with-cache-service";
+import { log } from "@/lib/logger/logger";
+import { generateFallbackMetadata, generateUserProfileMetadata } from "@/lib/metadata-utils";
+import { withAnalytics } from "@/lib/with-analytics";
 
 interface UserPageProps {
   params: Promise<{ username: string }>;

@@ -1,17 +1,20 @@
+import { $isCodeNode, type CodeNode } from "@lexical/code";
+import { $isLinkNode, type LinkNode } from "@lexical/link";
+import { $isListItemNode, $isListNode, type ListItemNode, type ListNode } from "@lexical/list";
+import { $isHeadingNode, $isQuoteNode, type HeadingNode } from "@lexical/rich-text";
 import {
   $getRoot,
   type EditorState,
+  type ElementNode,
   type LexicalNode,
   type TextNode,
-  type ElementNode,
 } from "lexical";
-import { $isEnhancedCodeBlockNode } from "../plugins/code-block/enhanced-code-block-node";
-import { $isMediaNode } from "../plugins/media/media-node";
-import { $isHeadingNode, $isQuoteNode, type HeadingNode } from "@lexical/rich-text";
-import { $isListNode, $isListItemNode, type ListNode, type ListItemNode } from "@lexical/list";
-import { $isCodeNode, type CodeNode } from "@lexical/code";
-import { $isLinkNode, type LinkNode } from "@lexical/link";
-import { encodeMediaMetadata, mediaDataToMetadata } from "./media-metadata-utils";
+import {
+  encodeMediaMetadata,
+  mediaDataToMetadata,
+} from "@/components/lexical-editor/functions/media-metadata-utils";
+import { $isEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import { $isMediaNode } from "@/components/lexical-editor/plugins/media/media-node";
 
 /**
  * Converts the current editor state to markdown string
@@ -71,7 +74,7 @@ function nodeToMarkdown(node: LexicalNode): string {
         markdownParts.push(
           `<video src="${urlWithMetadata}" controls${
             mediaData.title ? ` title="${mediaData.title}"` : ""
-          }></video>`
+          }></video>`,
         );
       }
     }

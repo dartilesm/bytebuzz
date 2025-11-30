@@ -11,13 +11,12 @@
   }
 
   &::-webkit-scrollbar {
-    background: transparent; 
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: transparent;
   }
-
 }
 
 @utility scrollbar-hide {
