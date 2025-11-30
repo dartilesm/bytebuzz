@@ -1,6 +1,10 @@
+import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
+import type { CodeBlockEditorValue } from "@/components/ui/code-block-editor";
+
 interface LanguageOption {
   value: string;
   label: string;
+  extension: string;
 }
 
 /**
@@ -31,45 +35,12 @@ export const codeBlockEditorFunctions = {
   /**
    * Download code as a file with appropriate extension based on language
    */
-  downloadCode(code: string, language: string): void {
-    const fileExtensions: Record<string, string> = {
-      javascript: "js",
-      typescript: "ts",
-      jsx: "jsx",
-      tsx: "tsx",
-      python: "py",
-      java: "java",
-      cpp: "cpp",
-      c: "c",
-      csharp: "cs",
-      php: "php",
-      ruby: "rb",
-      go: "go",
-      rust: "rs",
-      swift: "swift",
-      kotlin: "kt",
-      scala: "scala",
-      html: "html",
-      css: "css",
-      scss: "scss",
-      sass: "sass",
-      less: "less",
-      json: "json",
-      xml: "xml",
-      yaml: "yml",
-      markdown: "md",
-      sql: "sql",
-      bash: "sh",
-      powershell: "ps1",
-      dockerfile: "dockerfile",
-      nginx: "conf",
-      apache: "conf",
-    };
+  downloadCode(editorValue: CodeBlockEditorValue): void {
+    const extension = this.getLanguageExtension(editorValue.language);
+    const metadata = parseCodeBlockMetadata(editorValue.metadata);
+    const filename = metadata?.fileName || `code.${extension}`;
 
-    const extension = fileExtensions[language] || "txt";
-    const filename = `code.${extension}`;
-
-    const blob = new Blob([code], { type: "text/plain" });
+    const blob = new Blob([editorValue.code], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
@@ -97,38 +68,43 @@ export const codeBlockEditorFunctions = {
    */
   getSupportedLanguages(): LanguageOption[] {
     return [
-      { value: "javascript", label: "JavaScript" },
-      { value: "typescript", label: "TypeScript" },
-      { value: "jsx", label: "JSX (React)" },
-      { value: "tsx", label: "TSX (React + TypeScript)" },
-      { value: "python", label: "Python" },
-      { value: "java", label: "Java" },
-      { value: "cpp", label: "C++" },
-      { value: "c", label: "C" },
-      { value: "csharp", label: "C#" },
-      { value: "php", label: "PHP" },
-      { value: "ruby", label: "Ruby" },
-      { value: "go", label: "Go" },
-      { value: "rust", label: "Rust" },
-      { value: "swift", label: "Swift" },
-      { value: "kotlin", label: "Kotlin" },
-      { value: "scala", label: "Scala" },
-      { value: "html", label: "HTML" },
-      { value: "css", label: "CSS" },
-      { value: "scss", label: "SCSS" },
-      { value: "sass", label: "Sass" },
-      { value: "less", label: "Less" },
-      { value: "json", label: "JSON" },
-      { value: "xml", label: "XML" },
-      { value: "yaml", label: "YAML" },
-      { value: "markdown", label: "Markdown" },
-      { value: "sql", label: "SQL" },
-      { value: "bash", label: "Bash" },
-      { value: "powershell", label: "PowerShell" },
-      { value: "dockerfile", label: "Dockerfile" },
-      { value: "nginx", label: "Nginx" },
-      { value: "apache", label: "Apache" },
+      { value: "javascript", label: "JavaScript", extension: "js" },
+      { value: "typescript", label: "TypeScript", extension: "ts" },
+      { value: "jsx", label: "JSX", extension: "jsx" },
+      { value: "tsx", label: "TSX", extension: "tsx" },
+      { value: "python", label: "Python", extension: "py" },
+      { value: "java", label: "Java", extension: "java" },
+      { value: "cpp", label: "C++", extension: "cpp" },
+      { value: "c", label: "C", extension: "c" },
+      { value: "csharp", label: "C#", extension: "cs" },
+      { value: "php", label: "PHP", extension: "php" },
+      { value: "ruby", label: "Ruby", extension: "rb" },
+      { value: "go", label: "Go", extension: "go" },
+      { value: "rust", label: "Rust", extension: "rs" },
+      { value: "swift", label: "Swift", extension: "swift" },
+      { value: "kotlin", label: "Kotlin", extension: "kt" },
+      { value: "scala", label: "Scala", extension: "scala" },
+      { value: "html", label: "HTML", extension: "html" },
+      { value: "css", label: "CSS", extension: "css" },
+      { value: "scss", label: "SCSS", extension: "scss" },
+      { value: "sass", label: "Sass", extension: "sass" },
+      { value: "less", label: "Less", extension: "less" },
+      { value: "json", label: "JSON", extension: "json" },
+      { value: "xml", label: "XML", extension: "xml" },
+      { value: "yaml", label: "YAML", extension: "yaml" },
+      { value: "markdown", label: "Markdown", extension: "md" },
+      { value: "sql", label: "SQL", extension: "sql" },
+      { value: "bash", label: "Bash", extension: "sh" },
+      { value: "powershell", label: "PowerShell", extension: "ps1" },
+      { value: "dockerfile", label: "Dockerfile", extension: "dockerfile" },
+      { value: "nginx", label: "Nginx", extension: "conf" },
+      { value: "apache", label: "Apache", extension: "conf" },
     ];
+  },
+
+  getLanguageExtension(language: string): string {
+    const languageOption = this.getSupportedLanguages().find((lang) => lang.value === language);
+    return languageOption?.extension || "txt";
   },
 
   /**
@@ -225,7 +201,7 @@ export const codeBlockEditorFunctions = {
    */
   getCharacterLimitStatus(
     code: string,
-    limit: number,
+    limit: number
   ): {
     isApproachingLimit: boolean;
     isAtLimit: boolean;

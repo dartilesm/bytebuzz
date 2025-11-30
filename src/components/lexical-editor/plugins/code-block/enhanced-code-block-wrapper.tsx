@@ -1,10 +1,10 @@
 "use client";
 
+import { CodeBlockEditor, type CodeBlockEditorValue } from "@/components/ui/code-block-editor";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { CodeBlockEditor } from "@/components/ui/code-block-editor";
-import type { EnhancedCodeBlockNode } from "./enhanced-code-block-node";
-import { useRef, useEffect, type KeyboardEvent } from "react";
 import { $createParagraphNode } from "lexical";
+import { type KeyboardEvent, useEffect, useRef } from "react";
+import type { EnhancedCodeBlockNode } from "./enhanced-code-block-node";
 
 interface EnhancedCodeBlockWrapperProps {
   node: EnhancedCodeBlockNode;
@@ -20,39 +20,20 @@ export function EnhancedCodeBlockWrapper({
   node,
   language,
   code,
-  metadata,
 }: EnhancedCodeBlockWrapperProps) {
   const [editor] = useLexicalComposerContext();
   const enterPressCount = useRef(0);
   const enterPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   /**
-   * Handle code changes and update the node
+   * Handle code block changes (code, language, metadata)
    */
-  function handleCodeChange(newCode: string): void {
+  function handleChange(value: CodeBlockEditorValue): void {
     editor.update(() => {
       const writableNode = node.getWritable();
-      writableNode.setCode(newCode);
-    });
-  }
-
-  /**
-   * Handle language changes and update the node
-   */
-  function handleLanguageChange(newLanguage: string): void {
-    editor.update(() => {
-      const writableNode = node.getWritable();
-      writableNode.setLanguage(newLanguage);
-    });
-  }
-
-  /**
-   * Handle metadata changes and update the node
-   */
-  function handleMetadataChange(newMetadata: string): void {
-    editor.update(() => {
-      const writableNode = node.getWritable();
-      writableNode.setMetadata(newMetadata);
+      writableNode.setCode(value.code);
+      writableNode.setLanguage(value.language);
+      writableNode.setMetadata(value.metadata);
     });
   }
 
@@ -142,14 +123,9 @@ export function EnhancedCodeBlockWrapper({
       <CodeBlockEditor
         initialCode={code}
         initialLanguage={language}
-        initialMetadata={metadata}
-        onCodeChange={handleCodeChange}
-        onLanguageChange={handleLanguageChange}
-        onMetadataChange={handleMetadataChange}
+        onChange={handleChange}
         onRemoveCodeBlock={handleRemoveCodeBlock}
-        height='300px'
-        showLineNumbers={true}
-        className='my-4'
+        showLineNumbers
       />
     </div>
   );
