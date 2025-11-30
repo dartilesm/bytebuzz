@@ -14,7 +14,7 @@ export async function updateProfile(data: UpdateProfileData) {
   }
 
   // Exclude username from profile data
-  const { id, username, ...profileData } = data;
+  const { id: _id, username: _username, ...profileData } = data;
 
   const result = await userService.updateProfile({ id: session.userId, ...profileData });
 
