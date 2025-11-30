@@ -91,10 +91,7 @@
           "options": {
             "patterns": [
               {
-                "group": [
-                  "../**",
-                  "./**"
-                ],
+                "group": ["../**", "./**"],
                 "message": "Relative imports are not allowed. Use absolute imports with @/ alias instead."
               }
             ]
@@ -134,9 +131,7 @@
         "noConsole": {
           "level": "warn",
           "options": {
-            "allow": [
-              "log"
-            ]
+            "allow": ["log"]
           }
         }
       }
