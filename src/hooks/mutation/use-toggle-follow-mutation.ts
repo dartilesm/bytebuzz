@@ -1,6 +1,6 @@
-import { type ToggleFollowData, toggleFollow } from "@/actions/toggle-follow";
 import { useUser } from "@clerk/nextjs";
 import { type UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { type ToggleFollowData, toggleFollow } from "@/actions/toggle-follow";
 /**
  * Hook to handle toggling follow status for users
  * @param useMutationProps - Additional mutation options from React Query

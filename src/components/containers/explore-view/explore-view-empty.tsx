@@ -1,7 +1,7 @@
-import { useExplorerViewContext } from "@/components/containers/explore-view/explore-view-context";
-import { Button } from "@/components/ui/button";
 import { FilesIcon, PaperclipIcon, User2Icon } from "lucide-react";
 import Link from "next/link";
+import { useExplorerViewContext } from "@/components/containers/explore-view/explore-view-context";
+import { Button } from "@/components/ui/button";
 
 type SearchType = "all" | "users" | "posts";
 

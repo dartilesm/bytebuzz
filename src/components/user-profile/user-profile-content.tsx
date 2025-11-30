@@ -1,12 +1,12 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
+import { use, useState } from "react";
 import { PostList } from "@/components/post/post-list";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
 import type { postService } from "@/lib/db/services/post.service";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AnimatePresence, motion } from "motion/react";
-import { use, useState } from "react";
 
 const enum UserProfileTabs {
   POSTS = "posts",

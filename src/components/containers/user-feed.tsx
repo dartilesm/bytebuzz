@@ -1,5 +1,5 @@
-import { PostComposer } from "@/components/post-composer/post-composer";
 import { PostList } from "@/components/post/post-list";
+import { PostComposer } from "@/components/post-composer/post-composer";
 import { Section } from "@/components/ui/container";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";

@@ -1,10 +1,10 @@
-import { PostComposer } from "@/components/post-composer/post-composer";
+import { RepeatIcon } from "lucide-react";
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostThreadLine } from "@/components/post/post-thread-line";
 import { UserPost } from "@/components/post/user-post";
+import { PostComposer } from "@/components/post-composer/post-composer";
 import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { RepeatIcon } from "lucide-react";
 
 interface PostInteractionProps {
   /**

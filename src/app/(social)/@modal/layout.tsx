@@ -1,7 +1,7 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { usePathname, useRouter, useSelectedLayoutSegment } from "next/navigation";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function ModalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

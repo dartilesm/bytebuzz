@@ -1,7 +1,10 @@
 "use client";
 
+import Image from "next/image";
+import type { ComponentPropsWithoutRef, ReactElement } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
-
 import {
   type BundledLanguage,
   CodeBlock,
@@ -14,10 +17,6 @@ import {
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import type { ComponentPropsWithoutRef, ReactElement } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 

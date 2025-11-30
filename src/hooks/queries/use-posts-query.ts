@@ -1,10 +1,10 @@
 "use client";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useRef } from "react";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import type { NestedPost } from "@/types/nested-posts";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useRef } from "react";
 
 export function usePostsQuery(queryType?: POST_QUERY_TYPE) {
   const isFirstRenderRef = useRef(true);

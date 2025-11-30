@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { PostThreadLine } from "@/components/post/post-thread-line";
-import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
-import { usePostContext } from "@/hooks/use-post-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
+import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 export function PostAvatarAndThreadLine() {
   const { isThread, isFirstInThread, isLastInThread, isThreadPagePost, post } = usePostContext();

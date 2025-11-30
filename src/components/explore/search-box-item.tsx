@@ -1,12 +1,12 @@
 "use client";
 
-import { FollowButton } from "@/components/ui/follow-button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
 import type { Database } from "database.types";
 import { SearchIcon } from "lucide-react";
 import Link from "next/link";
 import type { UrlObject } from "url";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FollowButton } from "@/components/ui/follow-button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];

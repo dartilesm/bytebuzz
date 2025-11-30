@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronDownIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
 import {
   getDisplayContent,
@@ -10,8 +12,6 @@ import { CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
-import { ChevronDownIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
 interface PostContentProps {
   children?: React.ReactNode;

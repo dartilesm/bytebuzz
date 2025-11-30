@@ -1,5 +1,7 @@
 "use client";
 
+import * as ReactIcons from "@icons-pack/react-simple-icons";
+import { type RefObject, useImperativeHandle, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   MultiSelect,
@@ -12,8 +14,6 @@ import {
   MultiSelectTrigger,
 } from "@/components/ui/multiselect";
 import { TECHNOLOGIES, type TechnologyId } from "@/lib/technologies";
-import * as ReactIcons from "@icons-pack/react-simple-icons";
-import { type RefObject, useImperativeHandle, useState } from "react";
 
 interface TechnologySelectorProps {
   initialTechnologies?: TechnologyId[];

@@ -1,12 +1,12 @@
 "use client";
 
+import { use } from "react";
 import { ExploreViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostsProvider } from "@/context/posts-context";
 import type { postService } from "@/lib/db/services/post.service";
 import type { NestedPost } from "@/types/nested-posts";
-import { use } from "react";
 
 export interface ExploreViewPostsProps {
   postsPromise:

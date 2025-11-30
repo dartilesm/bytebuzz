@@ -1,10 +1,10 @@
 "use client";
 
-import { CodeBlockEditor, type CodeBlockEditorValue } from "@/components/ui/code-block-editor";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createParagraphNode } from "lexical";
 import { type KeyboardEvent, useEffect, useRef } from "react";
 import type { EnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import { CodeBlockEditor, type CodeBlockEditorValue } from "@/components/ui/code-block-editor";
 
 interface EnhancedCodeBlockWrapperProps {
   node: EnhancedCodeBlockNode;

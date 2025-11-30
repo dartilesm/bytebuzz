@@ -1,14 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { PostAvatarAndThreadLine } from "@/components/post/post-avatar-and-thread-line";
+import { CardHeader } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
 import { usePostContext } from "@/hooks/use-post-context";
 import { formatDateTime } from "@/lib/format-time";
 import { getRelativeTime } from "@/lib/relative-time";
-import { CardHeader } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 export function PostHeader() {
   const { isThreadPagePost, post } = usePostContext();

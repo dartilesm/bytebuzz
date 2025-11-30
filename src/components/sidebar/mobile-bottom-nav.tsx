@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useNavigationItems } from "@/hooks/use-navigation-items";
-import { useNavigationContext } from "@/context/navigation-context";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavigationItemRenderer } from "@/components/sidebar/navigation-item-renderer";
 import type { NavigationContext } from "@/components/sidebar/navigation-items";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useNavigationContext } from "@/context/navigation-context";
+import { useNavigationItems } from "@/hooks/use-navigation-items";
+import { cn } from "@/lib/utils";
 
 /**
  * Mobile bottom navigation bar for small screens

@@ -1,6 +1,6 @@
-import { log } from "@/lib/logger/logger";
-import { postService } from "@/lib/db/services/post.service";
 import { type NextRequest, NextResponse } from "next/server";
+import { postService } from "@/lib/db/services/post.service";
+import { log } from "@/lib/logger/logger";
 
 /**
  * GET /api/posts/feed

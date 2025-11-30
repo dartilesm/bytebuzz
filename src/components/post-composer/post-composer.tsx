@@ -1,26 +1,26 @@
 "use client";
 
-import { MarkdownEditor } from "@/components/lexical-editor/markdown-editor";
-import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider";
-import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
-import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
-import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
-import { useAuthGuard } from "@/hooks/use-auth-guard";
-import { useCreatePostMutation } from "@/hooks/mutation/use-create-post-mutation";
-import { usePostsContext } from "@/hooks/use-posts-context";
-import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
-import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Section } from "@/components/ui/container";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LexicalEditor } from "lexical";
 import { $getRoot } from "lexical";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { MarkdownEditor } from "@/components/lexical-editor/markdown-editor";
+import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider";
+import { MarkdownToolbar } from "@/components/lexical-editor/markdown-toolbar";
+import { MarkdownToolbarDefaultActions } from "@/components/lexical-editor/markdown-toolbar-default-actions";
+import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Section } from "@/components/ui/container";
+import { useCreatePostMutation } from "@/hooks/mutation/use-create-post-mutation";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { usePostsContext } from "@/hooks/use-posts-context";
+import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
 import { log } from "@/lib/logger/logger";
+import { cn } from "@/lib/utils";
 
 const postComposerSchema = z.object({
   content: z.string().min(1),

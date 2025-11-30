@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { UsersIcon } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface SearchBoxEmptyProps {
   searchTerm: string;

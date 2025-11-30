@@ -1,8 +1,8 @@
-import { GlobeIcon } from "lucide-react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import { GlobeIcon } from "lucide-react";
+import type { ReactNode, SVGProps } from "react";
 import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import type { ProfileEditModalFormData } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
-import type { ReactNode, SVGProps } from "react";
 
 type UserProfileEditInput = {
   name: keyof ProfileEditModalFormData;

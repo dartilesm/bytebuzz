@@ -1,6 +1,6 @@
 import { UserFeed } from "@/components/containers/user-feed";
-import { withAnalytics } from "@/lib/with-analytics";
 import { log } from "@/lib/logger/logger";
+import { withAnalytics } from "@/lib/with-analytics";
 
 function Home() {
   log.info("Home page loaded");

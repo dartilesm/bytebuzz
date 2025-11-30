@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { FilesIcon, PaperclipIcon, User2Icon } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const SEARCH_BY_MAP = {
   all: "content",

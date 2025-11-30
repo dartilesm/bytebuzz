@@ -1,10 +1,10 @@
-import { log } from "@/lib/logger/logger";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { logs } from "@opentelemetry/sdk-node";
 import { registerOTel } from "@vercel/otel";
+import { log } from "@/lib/logger/logger";
 
 const otelCollectorUrl = process.env.NEXT_PUBLIC_BETTERSTACK_ENDPOINT;
 

@@ -1,5 +1,5 @@
-import { withAnalytics } from "@/lib/with-analytics";
 import { SignIn } from "@clerk/nextjs";
+import { withAnalytics } from "@/lib/with-analytics";
 
 async function SignInPage({ searchParams }: PageProps<"/sign-in">) {
   const { redirectUrl } = await searchParams;

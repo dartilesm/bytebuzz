@@ -1,9 +1,9 @@
 "use client";
 
-import type * as React from "react";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
-import { useIntersectionObserver } from "usehooks-ts";
 import { cva, type VariantProps } from "class-variance-authority";
+import type * as React from "react";
+import { useIntersectionObserver } from "usehooks-ts";
 
 import { cn } from "@/lib/utils";
 

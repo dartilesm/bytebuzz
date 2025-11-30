@@ -1,10 +1,10 @@
 "use client";
 
+import { LogOutIcon, SettingsIcon, SunMoonIcon, UserIcon } from "lucide-react";
+import Link from "next/link";
 import { SidebarThemeSwitcher } from "@/components/sidebar/sidebar-theme-switcher";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { LogOutIcon, SettingsIcon, SunMoonIcon, UserIcon } from "lucide-react";
-import Link from "next/link";
 import { useNavigationContext } from "@/context/navigation-context";
 
 interface AccountDropdownContentProps {

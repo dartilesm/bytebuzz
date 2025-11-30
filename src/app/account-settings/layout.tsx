@@ -1,11 +1,11 @@
-import { Sidebar } from "@/components/sidebar/sidebar";
+import { currentUser } from "@clerk/nextjs/server";
 import { MobileBottomNav } from "@/components/sidebar/mobile-bottom-nav";
+import { Sidebar } from "@/components/sidebar/sidebar";
 import { Section } from "@/components/ui/container";
 import { NavigationContextProvider } from "@/context/navigation-context";
-import { withAnalytics } from "@/lib/with-analytics";
-import { currentUser } from "@clerk/nextjs/server";
 import { serializeUser } from "@/lib/auth/serialize-user";
 import { detectMobileFromHeaders } from "@/lib/device/detect-mobile";
+import { withAnalytics } from "@/lib/with-analytics";
 
 async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();

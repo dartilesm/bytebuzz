@@ -1,7 +1,7 @@
 import "server-only";
-import { sendPageViewEvent } from "@/lib/analytics/page-view.events";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
+import { sendPageViewEvent } from "@/lib/analytics/page-view.events";
 export async function getIp(headerList: Headers) {
   const forwardedFor = headerList.get("x-forwarded-for");
   const realIp = headerList.get("x-real-ip");

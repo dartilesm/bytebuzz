@@ -1,6 +1,6 @@
-import { postService } from "@/lib/db/services/post.service";
 import { currentUser } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
+import { postService } from "@/lib/db/services/post.service";
 import { log } from "@/lib/logger/logger";
 
 /**

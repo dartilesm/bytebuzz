@@ -1,5 +1,5 @@
-import { createAdminSupabaseClient } from "@/db/supabase";
 import type { Tables } from "database.types";
+import { createAdminSupabaseClient } from "@/db/supabase";
 
 /**
  * Upsert user profile with admin permissions

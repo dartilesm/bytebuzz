@@ -1,5 +1,5 @@
-import { withCacheService } from "@/lib/db/with-cache-service";
 import type { NextRequest } from "next/server";
+import { withCacheService } from "@/lib/db/with-cache-service";
 
 /**
  * GET /api/users/[id]

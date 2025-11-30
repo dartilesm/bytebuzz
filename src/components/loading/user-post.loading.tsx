@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 /**
  * A loading state component that shows a simplified post structure with avatar and two lines

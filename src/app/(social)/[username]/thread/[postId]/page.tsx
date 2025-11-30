@@ -1,17 +1,17 @@
-import { PostComposer } from "@/components/post-composer/post-composer";
-import { PostList } from "@/components/post/post-list";
-import { PostWrapper } from "@/components/post/post-wrapper";
-import { UserPost } from "@/components/post/user-post";
-import { PageHeader } from "@/components/ui/page-header";
-import { PostsProvider } from "@/context/posts-context";
-import { createServerSupabaseClient } from "@/db/supabase";
-import { generatePostThreadMetadata, generateFallbackMetadata } from "@/lib/metadata-utils";
-import { withAnalytics } from "@/lib/with-analytics";
-import type { NestedPost } from "@/types/nested-posts";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { PostList } from "@/components/post/post-list";
+import { PostWrapper } from "@/components/post/post-wrapper";
+import { UserPost } from "@/components/post/user-post";
+import { PostComposer } from "@/components/post-composer/post-composer";
+import { PageHeader } from "@/components/ui/page-header";
+import { PostsProvider } from "@/context/posts-context";
+import { createServerSupabaseClient } from "@/db/supabase";
 import { log } from "@/lib/logger/logger";
+import { generateFallbackMetadata, generatePostThreadMetadata } from "@/lib/metadata-utils";
+import { withAnalytics } from "@/lib/with-analytics";
+import type { NestedPost } from "@/types/nested-posts";
 
 function nestReplies(posts: NestedPost[] | null) {
   const map = new Map();

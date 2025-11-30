@@ -1,9 +1,12 @@
 "use client";
 
-import { FollowButton } from "@/components/ui/follow-button";
-import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
-import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { useUser } from "@clerk/nextjs";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import type { Tables } from "database.types";
+import { Link2Icon, MoreHorizontalIcon, PencilIcon, PlusIcon, Share2Icon } from "lucide-react";
+import dynamic from "next/dynamic";
+import { use, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,18 +14,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FollowButton } from "@/components/ui/follow-button";
+import { LinkedInIcon } from "@/components/ui/icons/LinkedInIcon";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { toast } from "sonner";
-import { SiGithub } from "@icons-pack/react-simple-icons";
-import { Link2Icon, MoreHorizontalIcon, PencilIcon, PlusIcon, Share2Icon } from "lucide-react";
-import dynamic from "next/dynamic";
-import { use, useState } from "react";
-import type { Tables } from "database.types";
-import { useNavigationContext } from "@/context/navigation-context";
 import { ProfileEditModalSection } from "@/components/user-profile/user-profile-edit-modal";
+import { useNavigationContext } from "@/context/navigation-context";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 
 const UserProfileEditModal = dynamic(
-  () => import("@/components/user-profile/user-profile-edit-modal").then((mod) => mod.UserProfileEditModal),
+  () =>
+    import("@/components/user-profile/user-profile-edit-modal").then(
+      (mod) => mod.UserProfileEditModal,
+    ),
   { ssr: false },
 );
 

@@ -1,5 +1,5 @@
-import { UserHorizontalCard } from "@/components/explore/user-horizontal-card";
 import type { Tables } from "database.types";
+import { UserHorizontalCard } from "@/components/explore/user-horizontal-card";
 
 type UserToFollowListProps = {
   users: Tables<"users">[];

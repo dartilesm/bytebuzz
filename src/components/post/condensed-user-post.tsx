@@ -1,17 +1,17 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
 import { PostProvider } from "@/context/post-provider";
 import { formatDateTime } from "@/lib/format-time";
 import { getRelativeTime } from "@/lib/relative-time";
 import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 
 interface CondensedUserPostProps {
   post: NestedPost;

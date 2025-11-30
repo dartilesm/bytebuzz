@@ -1,14 +1,14 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { FollowButton } from "@/components/ui/follow-button";
-import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import type { Tables } from "database.types";
 import Image from "next/image";
 import Link from "next/link";
 import type { UrlObject } from "url";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { FollowButton } from "@/components/ui/follow-button";
+import { cn } from "@/lib/utils";
 
 interface UserVerticalCardProps {
   user: Tables<"users">;

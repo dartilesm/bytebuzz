@@ -1,9 +1,9 @@
+import { calculateThreadState } from "@/components/post/functions/thread-state-utils";
 import { PostCard } from "@/components/post/post-card";
 import { PostContent } from "@/components/post/post-card-content";
 import { PostFooter } from "@/components/post/post-card-footer";
 import { PostHeader } from "@/components/post/post-card-header";
 import { PostReplies } from "@/components/post/post-replies";
-import { calculateThreadState } from "@/components/post/functions/thread-state-utils";
 import { UserPostThread } from "@/components/post/user-post-thread";
 import { PostProvider } from "@/context/post-provider";
 import type { NestedPost } from "@/types/nested-posts";

@@ -1,17 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader } from "@/components/ui/card";
-import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import {
   transformerNotationDiff,
@@ -95,6 +83,18 @@ import {
 } from "react-icons/si";
 import { type BundledLanguage, type CodeOptionsMultipleThemes, codeToHtml } from "shiki";
 import { useCopyToClipboard } from "usehooks-ts";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader } from "@/components/ui/card";
+import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export type { BundledLanguage } from "shiki";
 

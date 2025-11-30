@@ -10,13 +10,13 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import type { EditorState, LexicalEditor } from "lexical";
 import { type RefObject, useEffect } from "react";
-import { SmartTextPlugin } from "@/components/lexical-editor/plugins/smart-text-plugin/smart-text-plugin";
-import { cn } from "@/lib/utils";
 import { editorStateToMarkdown } from "@/components/lexical-editor/functions/markdown-utils";
 import { customTransformers } from "@/components/lexical-editor/markdown-config";
 import { useMarkdownContext } from "@/components/lexical-editor/markdown-provider";
 import { MentionPlugin } from "@/components/lexical-editor/plugins/mentions/mention-plugin";
+import { SmartTextPlugin } from "@/components/lexical-editor/plugins/smart-text-plugin/smart-text-plugin";
 import { ValuePlugin } from "@/components/lexical-editor/plugins/value/value-plugin";
+import { cn } from "@/lib/utils";
 
 interface MarkdownEditorProps {
   /**
@@ -83,7 +83,7 @@ function EditorRefPlugin({ editorRef }: { editorRef?: RefObject<LexicalEditor> }
  */
 function Placeholder({ children }: { children: string }) {
   return (
-    <div className='absolute top-0 left-0 text-muted-foreground/60 pointer-events-none select-none'>
+    <div className="absolute top-0 left-0 text-muted-foreground/60 pointer-events-none select-none">
       {children}
     </div>
   );

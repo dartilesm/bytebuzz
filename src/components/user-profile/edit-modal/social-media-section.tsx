@@ -1,12 +1,12 @@
 "use client";
 
+import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Controller, useFormContext } from "react-hook-form";
-import type { ProfileEditModalFormData } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
-import { SOCIAL_MEDIA_INPUTS } from "@/components/user-profile/edit-modal/user-profile-edit-inputs";
 import { useProfileSectionContext } from "@/components/user-profile/edit-modal/profile-section-context";
+import { SOCIAL_MEDIA_INPUTS } from "@/components/user-profile/edit-modal/user-profile-edit-inputs";
+import type { ProfileEditModalFormData } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
 
 interface SocialMediaSectionProps {
   id: string;

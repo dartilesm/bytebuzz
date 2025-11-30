@@ -1,9 +1,9 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Tables } from "database.types";
 import Image from "next/image";
 import { use } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export interface UserProfileCoverAvatarProps {
   profilePromise: Promise<Tables<"users">>;

@@ -1,12 +1,12 @@
 "use client";
 
+import type { Tables } from "database.types";
+import { Link2Icon, MapPinIcon } from "lucide-react";
+import Link from "next/link";
+import { use } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { getTechnologyById } from "@/lib/technologies";
-import { Link2Icon, MapPinIcon } from "lucide-react";
-import { use } from "react";
-import type { Tables } from "database.types";
 
 export interface UserProfileDescriptionProps {
   profilePromise: Promise<Tables<"users">>;

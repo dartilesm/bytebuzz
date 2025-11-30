@@ -1,13 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
+import { useIntersectionObserver } from "usehooks-ts";
+import { UserPostLoading } from "@/components/loading/user-post.loading";
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
-import { usePostsQuery } from "@/hooks/queries/use-posts-query";
-import { useEffect } from "react";
 import { UserPost } from "@/components/post/user-post";
-import { UserPostLoading } from "@/components/loading/user-post.loading";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
-import { useIntersectionObserver } from "usehooks-ts";
+import { usePostsQuery } from "@/hooks/queries/use-posts-query";
 
 interface PostListProps {
   postQueryType?: POST_QUERY_TYPE;

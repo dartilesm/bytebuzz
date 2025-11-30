@@ -1,5 +1,17 @@
 "use client";
 
+import { SiX } from "@icons-pack/react-simple-icons";
+import { CopyIcon, MessageSquareIcon, RepeatIcon, Share2Icon, StarIcon } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useDebounceCallback } from "usehooks-ts";
+import {
+  getReactionsWithCounts,
+  getSortedReactions,
+  getTotalReactions,
+  type Reaction,
+} from "@/components/post/functions/reactions-utils";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import {
@@ -16,18 +28,6 @@ import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { SiX } from "@icons-pack/react-simple-icons";
-import { CopyIcon, MessageSquareIcon, RepeatIcon, Share2Icon, StarIcon } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useDebounceCallback } from "usehooks-ts";
-import {
-  type Reaction,
-  getReactionsWithCounts,
-  getSortedReactions,
-  getTotalReactions,
-} from "@/components/post/functions/reactions-utils";
 
 const reactions: Reaction[] = [
   { type: "star", icon: "🌟", label: "Star" },

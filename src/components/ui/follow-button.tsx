@@ -1,10 +1,10 @@
+import { useUser } from "@clerk/nextjs";
+import { Loader2, UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToggleFollowMutation } from "@/hooks/mutation/use-toggle-follow-mutation";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { useIsFollowing } from "@/hooks/use-is-following";
-import { useUser } from "@clerk/nextjs";
-import { Loader2, UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface FollowButtonProps {
   targetUserId: string;

@@ -1,7 +1,7 @@
 import type { StreamEntry } from "pino";
 import { createConsoleStream } from "@/lib/logger/console-stream";
-import { createLogtailStream } from "@/lib/logger/logtail-stream";
 import { getLogLevel } from "@/lib/logger/functions/get-log-level";
+import { createLogtailStream } from "@/lib/logger/logtail-stream";
 
 /**
  * Pino streams configuration

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { extractPlainTextFromMarkdown } from "@/lib/markdown-text-extractor";
 
 describe("extractPlainTextFromMarkdown", () => {

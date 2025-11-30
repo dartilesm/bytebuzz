@@ -1,8 +1,8 @@
-import { Sidebar } from "@/components/sidebar/sidebar";
+import { currentUser } from "@clerk/nextjs/server";
 import { MobileBottomNav } from "@/components/sidebar/mobile-bottom-nav";
+import { Sidebar } from "@/components/sidebar/sidebar";
 import { SuggestionsSection } from "@/components/suggestions/suggestions-section";
 import { NavigationContextProvider } from "@/context/navigation-context";
-import { currentUser } from "@clerk/nextjs/server";
 import { serializeUser } from "@/lib/auth/serialize-user";
 import { detectMobileFromHeaders } from "@/lib/device/detect-mobile";
 

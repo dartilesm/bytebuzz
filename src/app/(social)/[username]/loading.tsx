@@ -1,8 +1,8 @@
-import { UserProfileCoverAvatarLoading } from "@/components/user-profile/loading/user-profile-cover-avatar.loading";
-import { UserProfileTopActionsLoading } from "@/components/user-profile/loading/user-profile-top-actions.loading";
-import { UserProfileDescriptionLoading } from "@/components/user-profile/loading/user-profile-description.loading";
-import { UserProfileContentLoading } from "@/components/user-profile/loading/user-profile-content.loading";
 import { PageHeader } from "@/components/ui/page-header";
+import { UserProfileContentLoading } from "@/components/user-profile/loading/user-profile-content.loading";
+import { UserProfileCoverAvatarLoading } from "@/components/user-profile/loading/user-profile-cover-avatar.loading";
+import { UserProfileDescriptionLoading } from "@/components/user-profile/loading/user-profile-description.loading";
+import { UserProfileTopActionsLoading } from "@/components/user-profile/loading/user-profile-top-actions.loading";
 
 export default function UserPageLoading() {
   return (

@@ -2,12 +2,12 @@
 
 import { BugIcon, ExternalLinkIcon, TriangleIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { SidebarItem } from "@/components/sidebar/sidebar-item";
-import { SidebarSection } from "@/components/sidebar/sidebar-section";
-import { useNavigationItems } from "@/hooks/use-navigation-items";
-import { useNavigationContext } from "@/context/navigation-context";
 import { NavigationItemRenderer } from "@/components/sidebar/navigation-item-renderer";
 import type { NavigationContext } from "@/components/sidebar/navigation-items";
+import { SidebarItem } from "@/components/sidebar/sidebar-item";
+import { SidebarSection } from "@/components/sidebar/sidebar-section";
+import { useNavigationContext } from "@/context/navigation-context";
+import { useNavigationItems } from "@/hooks/use-navigation-items";
 
 export function Sidebar() {
   const { main, secondary } = useNavigationItems();

@@ -1,10 +1,10 @@
 "use client";
 
-import { PostAvatarAndThreadLine } from "@/components/post/post-avatar-and-thread-line";
-import { usePostContext } from "@/hooks/use-post-context";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
+import { PostAvatarAndThreadLine } from "@/components/post/post-avatar-and-thread-line";
+import { Card } from "@/components/ui/card";
+import { usePostContext } from "@/hooks/use-post-context";
+import { cn } from "@/lib/utils";
 
 const navigationDisabledElementSelectors = [
   "a",

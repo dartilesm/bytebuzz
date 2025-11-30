@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,8 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
-import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
 
 interface MediaEditModalProps {
   /**

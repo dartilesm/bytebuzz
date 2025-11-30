@@ -1,5 +1,5 @@
-import type { DestinationStream } from "pino";
 import { Logtail } from "@logtail/node";
+import type { DestinationStream } from "pino";
 import { writeToLogtail } from "@/lib/logger/functions/write-to-logtail";
 
 /**

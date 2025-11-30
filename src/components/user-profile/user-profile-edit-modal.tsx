@@ -1,10 +1,11 @@
 "use client";
 
-import {
-  useUpdateProfileMutation,
-  type UpdateProfileWithFilesData,
-} from "@/hooks/mutation/use-update-profile-mutation";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Tables } from "database.types";
+import { usePathname } from "next/navigation";
+import { useRef, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useTimeout } from "usehooks-ts";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,21 +14,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  profileEditModalSchema,
-  type ProfileEditModalFormData,
-} from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
-import { log } from "@/lib/logger/logger";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Tables } from "database.types";
-import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { useTimeout } from "usehooks-ts";
 import { PersonalInfoSection } from "@/components/user-profile/edit-modal/personal-info-section";
 import { ProfileSectionProvider } from "@/components/user-profile/edit-modal/profile-section-context";
 import { SocialMediaSection } from "@/components/user-profile/edit-modal/social-media-section";
 import { TechnologiesSection } from "@/components/user-profile/edit-modal/technologies-section";
+import {
+  type ProfileEditModalFormData,
+  profileEditModalSchema,
+} from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
+import {
+  type UpdateProfileWithFilesData,
+  useUpdateProfileMutation,
+} from "@/hooks/mutation/use-update-profile-mutation";
+import { log } from "@/lib/logger/logger";
 
 export const enum ProfileEditModalSection {
   Personal = "Personal",

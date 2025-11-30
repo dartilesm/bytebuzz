@@ -1,11 +1,11 @@
 "use client";
 
-import { PostWrapper } from "@/components/post/post-wrapper";
-import { FollowButton } from "@/components/ui/follow-button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
 import type { Tables } from "database.types";
 import Link from "next/link";
+import { PostWrapper } from "@/components/post/post-wrapper";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { FollowButton } from "@/components/ui/follow-button";
 
 interface UserHorizontalCardProps {
   user: Tables<"users">;

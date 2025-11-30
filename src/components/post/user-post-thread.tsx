@@ -1,10 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { CondensedUserPost } from "@/components/post/condensed-user-post";
+import { UserPost } from "@/components/post/user-post";
 import { cn } from "@/lib/utils";
 import type { NestedPost } from "@/types/nested-posts";
-import { useEffect, useRef } from "react";
-import { UserPost } from "@/components/post/user-post";
-import { CondensedUserPost } from "@/components/post/condensed-user-post";
 
 interface UserPostThreadProps {
   posts: NestedPost[];

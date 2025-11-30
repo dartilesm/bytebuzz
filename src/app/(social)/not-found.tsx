@@ -1,10 +1,10 @@
 "use client";
 
-import { PageHeader } from "@/components/ui/page-header";
-import { Button } from "@/components/ui/button";
 import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 
 /**
  * NotFoundPage displays a context-aware not-found message for authenticated routes, styled like the thread page.

@@ -1,10 +1,10 @@
 "use client";
 
+import { ExternalLinkIcon } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ExternalLinkIcon } from "lucide-react";
-import Link from "next/link";
 
 export function PromotedAd() {
   return (

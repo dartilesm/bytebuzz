@@ -1,7 +1,7 @@
-import { adminService } from "@/lib/db/services/admin.service";
-import { log } from "@/lib/logger/logger";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import type { RequestLike } from "node_modules/@clerk/nextjs/dist/types/server/types";
+import { adminService } from "@/lib/db/services/admin.service";
+import { log } from "@/lib/logger/logger";
 
 export async function POST(req: Request) {
   try {

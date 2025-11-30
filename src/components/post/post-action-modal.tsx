@@ -1,11 +1,11 @@
 "use client";
 
+import { Repeat2Icon, XIcon } from "lucide-react";
 import { PostInteraction } from "@/components/post-interaction";
-import type { NestedPost } from "@/types/nested-posts";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { Repeat2Icon, XIcon } from "lucide-react";
+import type { NestedPost } from "@/types/nested-posts";
 
 interface PostActionModalProps {
   post: NestedPost;

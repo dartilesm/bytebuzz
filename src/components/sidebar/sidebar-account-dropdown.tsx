@@ -1,16 +1,16 @@
 "use client";
 
-import { useNavigationContext } from "@/context/navigation-context";
 import { useAuth } from "@clerk/nextjs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { LogInIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { AccountDropdownContent } from "@/components/sidebar/account-dropdown-content";
 import type { SidebarItemProps } from "@/components/sidebar/sidebar-item";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useNavigationContext } from "@/context/navigation-context";
+import { cn } from "@/lib/utils";
 
 type SidebarAccountDropdownProps = Pick<SidebarItemProps, "isActive" | "label">;
 

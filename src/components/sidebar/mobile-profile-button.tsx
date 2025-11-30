@@ -1,14 +1,14 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
+import { UserIcon } from "lucide-react";
+import { useState } from "react";
+import { AccountDropdownContent } from "@/components/sidebar/account-dropdown-content";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { cn } from "@/lib/utils";
 import { useNavigationContext } from "@/context/navigation-context";
-import { useAuth } from "@clerk/nextjs";
-import { useState } from "react";
-import { AccountDropdownContent } from "@/components/sidebar/account-dropdown-content";
-import { UserIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MobileProfileButtonProps {
   isActive: boolean;

@@ -1,10 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Autocomplete as AutocompletePrimitive } from "@base-ui-components/react/autocomplete";
 import { cva } from "class-variance-authority";
 import { X } from "lucide-react";
 import * as React from "react";
+import { cn } from "@/lib/utils";
 
 // Define input size variants (without file: part)
 const inputVariants = cva(

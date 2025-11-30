@@ -1,10 +1,13 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { Suspense, useRef } from "react";
 import type { ExplorePageSearchParams } from "@/app/(social)/explore/page";
 import { ExploreViewProvider } from "@/components/containers/explore-view/explore-view-context";
 import {
-  type ExploreViewPostsProps,
   ExploreViewPosts,
+  type ExploreViewPostsProps,
 } from "@/components/containers/explore-view/explore-view-posts";
 import {
   type ExplorerViewUsersProps,
@@ -16,9 +19,6 @@ import { SearchBox } from "@/components/explore/search-box";
 import { Section } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSearchParams } from "next/navigation";
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import { Suspense, useRef } from "react";
 
 type SearchType = "all" | "users" | "posts";
 

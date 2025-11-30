@@ -1,5 +1,5 @@
-import type { NestedPost } from "@/types/nested-posts";
 import type { Tables } from "database.types";
+import type { NestedPost } from "@/types/nested-posts";
 
 export interface Reaction {
   type: Tables<"reactions">["reaction_type"];

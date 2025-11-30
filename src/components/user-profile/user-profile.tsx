@@ -1,15 +1,15 @@
+import type { Tables } from "database.types";
+import { Suspense } from "react";
 import { PageHeader } from "@/components/ui/page-header";
+import { UserProfileContentLoading } from "@/components/user-profile/loading/user-profile-content.loading";
+import { UserProfileCoverAvatarLoading } from "@/components/user-profile/loading/user-profile-cover-avatar.loading";
+import { UserProfileDescriptionLoading } from "@/components/user-profile/loading/user-profile-description.loading";
+import { UserProfileTopActionsLoading } from "@/components/user-profile/loading/user-profile-top-actions.loading";
 import { UserProfileContent } from "@/components/user-profile/user-profile-content";
 import { UserProfileCoverAvatar } from "@/components/user-profile/user-profile-cover-avatar";
 import { UserProfileDescription } from "@/components/user-profile/user-profile-description";
 import { UserProfileTopActions } from "@/components/user-profile/user-profile-top-actions";
 import { ProfileProvider } from "@/context/profile-provider";
-import { Suspense } from "react";
-import { UserProfileCoverAvatarLoading } from "@/components/user-profile/loading/user-profile-cover-avatar.loading";
-import { UserProfileTopActionsLoading } from "@/components/user-profile/loading/user-profile-top-actions.loading";
-import { UserProfileDescriptionLoading } from "@/components/user-profile/loading/user-profile-description.loading";
-import { UserProfileContentLoading } from "@/components/user-profile/loading/user-profile-content.loading";
-import type { Tables } from "database.types";
 import type { postService } from "@/lib/db/services/post.service";
 
 type UserProfileProps = {

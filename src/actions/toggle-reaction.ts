@@ -1,8 +1,8 @@
 "use server";
 
-import { reactionService } from "@/lib/db/services/reaction.service";
 import type { PostgrestSingleResponse } from "@supabase/supabase-js";
 import type { Tables } from "database.types";
+import { reactionService } from "@/lib/db/services/reaction.service";
 
 export interface ToggleReactionData {
   post_id: string;

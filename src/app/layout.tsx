@@ -1,9 +1,8 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-
-import { ClientProviders } from "@/app/client-providers";
 import { ThemeProvider } from "next-themes";
+import { ClientProviders } from "@/app/client-providers";
 import "@/app/globals.css";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";

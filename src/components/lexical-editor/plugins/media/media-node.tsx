@@ -1,17 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import type {
   DOMConversionMap,
@@ -26,6 +14,18 @@ import { DownloadIcon, PencilIcon, TrashIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { MediaEditModal } from "@/components/lexical-editor/plugins/media/media-edit-modal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
 
 export type MediaType = "image" | "video";
 

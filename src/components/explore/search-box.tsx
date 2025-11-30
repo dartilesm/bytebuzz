@@ -1,8 +1,11 @@
 "use client";
 
+import type { Database } from "database.types";
+import { Loader2, SearchIcon } from "lucide-react";
+import { useRef, useState } from "react";
+import { useDebounceValue } from "usehooks-ts";
 import { SearchBoxEmpty } from "@/components/explore/search-box-empty";
 import { SearchBoxItem } from "@/components/explore/search-box-item";
-import { useUsersSearch } from "@/hooks/queries/use-users-search";
 import {
   Autocomplete,
   AutocompleteClear,
@@ -12,10 +15,7 @@ import {
   AutocompleteList,
   AutocompleteStatus,
 } from "@/components/ui/autocomplete";
-import type { Database } from "database.types";
-import { Loader2, SearchIcon } from "lucide-react";
-import { useRef, useState } from "react";
-import { useDebounceValue } from "usehooks-ts";
+import { useUsersSearch } from "@/hooks/queries/use-users-search";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
 type SearchItem = { id: string; type: "search"; term: string };

@@ -1,11 +1,14 @@
 "use client";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useEffect, useState, useCallback } from "react";
-import { $getSelection, $isRangeSelection } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import type { TextNode } from "lexical";
-import { $createMentionNode, type User } from "@/components/lexical-editor/plugins/mentions/mention-node";
+import { $getSelection, $isRangeSelection } from "lexical";
+import { useCallback, useEffect, useState } from "react";
+import {
+  $createMentionNode,
+  type User,
+} from "@/components/lexical-editor/plugins/mentions/mention-node";
 import { MentionSuggestions } from "@/components/lexical-editor/plugins/mentions/mention-suggestions";
 import { log } from "@/lib/logger/logger";
 

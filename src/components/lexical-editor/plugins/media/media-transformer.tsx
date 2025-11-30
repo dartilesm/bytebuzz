@@ -1,8 +1,11 @@
 "use client";
 
 import type { ElementTransformer } from "@lexical/markdown";
+import {
+  decodeMediaMetadata,
+  metadataToMediaData,
+} from "@/components/lexical-editor/functions/media-metadata-utils";
 import { $createMediaNode } from "@/components/lexical-editor/plugins/media/media-node";
-import { decodeMediaMetadata, metadataToMediaData } from "@/components/lexical-editor/functions/media-metadata-utils";
 
 /**
  * Custom markdown transformer for media nodes (images)

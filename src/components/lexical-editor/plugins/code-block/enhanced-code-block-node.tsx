@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -10,6 +9,7 @@ import type {
   SerializedLexicalNode,
 } from "lexical";
 import { DecoratorNode } from "lexical";
+import type React from "react";
 import { EnhancedCodeBlockWrapper } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-wrapper";
 import { log } from "@/lib/logger/logger";
 

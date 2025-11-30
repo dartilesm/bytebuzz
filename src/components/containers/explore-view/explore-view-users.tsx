@@ -1,11 +1,11 @@
 "use client";
 
+import type { Tables } from "database.types";
+import { use } from "react";
 import { ExploreViewEmpty } from "@/components/containers/explore-view/explore-view-empty";
 import { UserVerticalCard } from "@/components/explore/user-vertical-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { userService } from "@/lib/db/services/user.service";
-import type { Tables } from "database.types";
-import { use } from "react";
 
 export interface ExplorerViewUsersProps {
   usersPromise:

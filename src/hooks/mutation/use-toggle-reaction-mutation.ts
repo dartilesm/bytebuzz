@@ -1,5 +1,5 @@
-import { type ToggleReactionData, toggleReaction } from "@/actions/toggle-reaction";
 import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
+import { type ToggleReactionData, toggleReaction } from "@/actions/toggle-reaction";
 
 /**
  * Hook to handle toggling reactions on posts

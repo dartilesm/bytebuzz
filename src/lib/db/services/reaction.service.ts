@@ -1,7 +1,7 @@
+import type { Tables } from "database.types";
 import { createServerSupabaseClient } from "@/db/supabase";
 import { createServiceWithContext } from "@/lib/create-service-with-context";
 import type { ServiceContext } from "@/types/services";
-import type { Tables } from "database.types";
 
 /**
  * Toggle a reaction on a post

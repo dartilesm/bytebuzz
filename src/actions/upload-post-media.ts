@@ -1,8 +1,8 @@
 "use server";
 
+import { currentUser } from "@clerk/nextjs/server";
 import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
-import { currentUser } from "@clerk/nextjs/server";
 
 /**
  * Uploads a media file to Supabase storage in a temporary location

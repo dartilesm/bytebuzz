@@ -1,5 +1,11 @@
 "use client";
 
+import { Editor } from "@monaco-editor/react";
+import { Copy, Download, MoreVertical, Trash } from "lucide-react";
+import type { editor } from "monaco-editor";
+import { useTheme } from "next-themes";
+import { useRef, useState } from "react";
+import { useCopyToClipboard } from "usehooks-ts";
 import { serializeCodeBlockMetadata } from "@/components/markdown-viewer/functions/serialize-code-block-metadata";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,13 +27,6 @@ import {
 } from "@/components/ui/select";
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
-import { Editor } from "@monaco-editor/react";
-import { Copy, Download, MoreVertical, Trash } from "lucide-react";
-import type { editor } from "monaco-editor";
-import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
-import { useCopyToClipboard } from "usehooks-ts";
-import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
 
 // Character limit constant
 const CHARACTER_LIMIT = 10_000;

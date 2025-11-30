@@ -1,8 +1,8 @@
 import { usePathname } from "next/navigation";
-import type { NavigationItem, NavigationContext } from "@/components/sidebar/navigation-items";
-import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import type { ElementType, ReactNode } from "react";
 import { createElement } from "react";
+import type { NavigationContext, NavigationItem } from "@/components/sidebar/navigation-items";
+import { baseNavigationItems } from "@/components/sidebar/navigation-items";
 import { useNavigationContext } from "@/context/navigation-context";
 
 export interface ComputedNavigationItem {

@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
+  type ExpansionData,
   getDisplayContent,
   getExpansionData,
-  type ExpansionData,
 } from "@/components/post/functions/expandable-content-utils";
 
 describe("expandable-content-utils", () => {

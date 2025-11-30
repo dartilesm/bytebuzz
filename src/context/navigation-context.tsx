@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import type { SerializedUser } from "@/lib/auth/serialize-user";
 

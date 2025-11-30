@@ -1,6 +1,6 @@
+import { type NextRequest, NextResponse } from "next/server";
 import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
-import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * GET handler for media files
