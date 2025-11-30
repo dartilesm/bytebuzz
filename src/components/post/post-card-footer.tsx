@@ -27,7 +27,7 @@ import {
   getReactionsWithCounts,
   getSortedReactions,
   getTotalReactions,
-} from "./functions/reactions-utils";
+} from "@/components/post/functions/reactions-utils";
 
 const reactions: Reaction[] = [
   { type: "star", icon: "🌟", label: "Star" },

@@ -16,7 +16,7 @@ import {
   validateMediaFile,
   createBlobMediaData,
   createLoadingMediaData,
-} from "./functions/upload-handlers";
+} from "@/components/lexical-editor/functions/upload-handlers";
 import { log } from "@/lib/logger/logger";
 
 interface MarkdownToolbarDefaultActionsProps {

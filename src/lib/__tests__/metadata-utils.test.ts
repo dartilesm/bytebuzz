@@ -3,7 +3,7 @@ import {
   generateUserProfileMetadata,
   generatePostThreadMetadata,
   generateFallbackMetadata,
-} from "../metadata-utils";
+} from "@/lib/metadata-utils";
 import type { Tables } from "database.types";
 import type { NestedPost } from "@/types/nested-posts";
 

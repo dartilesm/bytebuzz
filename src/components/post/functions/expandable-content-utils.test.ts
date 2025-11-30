@@ -3,7 +3,7 @@ import {
   getDisplayContent,
   getExpansionData,
   type ExpansionData,
-} from "./expandable-content-utils";
+} from "@/components/post/functions/expandable-content-utils";
 
 describe("expandable-content-utils", () => {
   describe("getDisplayContent", () => {
