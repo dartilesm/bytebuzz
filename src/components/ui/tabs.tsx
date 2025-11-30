@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { type ComponentProps, createContext, useContext } from "react"
-import * as TabsPrimitive from "@radix-ui/react-tabs"
-import { cva, type VariantProps } from "class-variance-authority"
+import { type ComponentProps, createContext, useContext } from "react";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const tabsTriggerVariants = cva(
   "inline-flex items-center justify-center gap-1.5 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 flex-1",
@@ -20,19 +20,18 @@ const tabsTriggerVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
-)
+  },
+);
 
-type TabsVariant = VariantProps<typeof tabsTriggerVariants>["variant"]
+type TabsVariant = VariantProps<typeof tabsTriggerVariants>["variant"];
 
-const TabsContext = createContext<{ variant?: TabsVariant }>({})
+const TabsContext = createContext<{ variant?: TabsVariant }>({});
 
 function Tabs({
   className,
   variant = "default",
   ...props
-}: ComponentProps<typeof TabsPrimitive.Root> &
-  VariantProps<typeof tabsTriggerVariants>) {
+}: ComponentProps<typeof TabsPrimitive.Root> & VariantProps<typeof tabsTriggerVariants>) {
   return (
     <TabsContext.Provider value={{ variant }}>
       <TabsPrimitive.Root
@@ -41,32 +40,28 @@ function Tabs({
         {...props}
       />
     </TabsContext.Provider>
-  )
+  );
 }
 
-function TabsList({
-  className,
-  ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
         "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function TabsTrigger({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger> &
-  VariantProps<typeof tabsTriggerVariants>) {
-  const context = useContext(TabsContext)
-  const variant = context.variant
+}: React.ComponentProps<typeof TabsPrimitive.Trigger> & VariantProps<typeof tabsTriggerVariants>) {
+  const context = useContext(TabsContext);
+  const variant = context.variant;
 
   return (
     <TabsPrimitive.Trigger
@@ -74,20 +69,17 @@ function TabsTrigger({
       className={cn(tabsTriggerVariants({ variant, className }))}
       {...props}
     />
-  )
+  );
 }
 
-function TabsContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof TabsPrimitive.Content>) {
+function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn("flex-1 outline-none", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent };

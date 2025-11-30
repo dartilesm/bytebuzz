@@ -20,15 +20,22 @@ export function PostActionModal({ post, action, onOpenChange }: PostActionModalP
       <DialogContent
         className={cn("max-w-xl p-0 gap-0 overflow-hidden [&>button]:hidden rounded-xl")}
       >
-        <DialogHeader className={cn("flex flex-row justify-between p-2 pl-4 items-center space-y-0", {
-          "dark:bg-card": action === "reply",
-          "dark:bg-muted": action === "clone",
-        })}>
+        <DialogHeader
+          className={cn("flex flex-row justify-between p-2 pl-4 items-center space-y-0", {
+            "dark:bg-card": action === "reply",
+            "dark:bg-muted": action === "clone",
+          })}
+        >
           <DialogTitle className="text-sm font-medium flex items-center gap-1 text-muted-foreground/60">
             <Repeat2Icon size={14} />
             {action === "reply" ? "Reply to" : "Repost"} @{post.user?.username}&apos;s post
           </DialogTitle>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8 rounded-full">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenChange(false)}
+            className="h-8 w-8 rounded-full"
+          >
             <XIcon size={14} />
           </Button>
         </DialogHeader>

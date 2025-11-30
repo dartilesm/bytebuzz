@@ -27,7 +27,7 @@ async function getUserFeed(this: ServiceContext, cursor?: string) {
  */
 async function getUserPosts(
   this: ServiceContext,
-  { username, cursor }: { username: string; cursor?: string }
+  { username, cursor }: { username: string; cursor?: string },
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   let query = supabase
@@ -55,7 +55,7 @@ async function getTrendingPosts(
   }: {
     limitCount?: number;
     offsetCount?: number;
-  } = {}
+  } = {},
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.rpc("get_trending_posts", {
@@ -80,7 +80,7 @@ async function searchPosts(
     searchTerm: string;
     limitCount?: number;
     offsetCount?: number;
-  }
+  },
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.rpc("search_posts", {
@@ -97,7 +97,7 @@ async function searchPosts(
 async function createPost(
   this: ServiceContext,
   data: Pick<Tables<"posts">, "content" | "user_id"> &
-    Partial<Pick<Tables<"posts">, "parent_post_id" | "repost_post_id">>
+    Partial<Pick<Tables<"posts">, "parent_post_id" | "repost_post_id">>,
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.from("posts").insert(data).select().single();

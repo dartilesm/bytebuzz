@@ -24,10 +24,10 @@ import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTimeout } from "usehooks-ts";
-import { PersonalInfoSection } from "./edit-modal/personal-info-section";
-import { ProfileSectionProvider } from "./edit-modal/profile-section-context";
-import { SocialMediaSection } from "./edit-modal/social-media-section";
-import { TechnologiesSection } from "./edit-modal/technologies-section";
+import { PersonalInfoSection } from "@/components/user-profile/edit-modal/personal-info-section";
+import { ProfileSectionProvider } from "@/components/user-profile/edit-modal/profile-section-context";
+import { SocialMediaSection } from "@/components/user-profile/edit-modal/social-media-section";
+import { TechnologiesSection } from "@/components/user-profile/edit-modal/technologies-section";
 
 export const enum ProfileEditModalSection {
   Personal = "Personal",
@@ -115,7 +115,7 @@ export function UserProfileEditModal({
   function handleImageUpload(
     file: File,
     onChange: (value: string) => void,
-    type: "avatar" | "cover"
+    type: "avatar" | "cover",
   ): void {
     // Create blob URL for immediate preview
     const blobUrl = URL.createObjectURL(file);
@@ -140,18 +140,18 @@ export function UserProfileEditModal({
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className='max-w-2xl max-h-[90vh] p-0 overflow-hidden'>
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden">
         <FormProvider {...form}>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className='flex flex-col justify-between max-h-[inherit]'
+            className="flex flex-col justify-between max-h-[inherit]"
           >
-            <DialogHeader className='p-6'>
+            <DialogHeader className="p-6">
               <DialogTitle>Edit Profile</DialogTitle>
             </DialogHeader>
-            <div className='px-6 overflow-y-auto scrollbar-auto'>
+            <div className="px-6 overflow-y-auto scrollbar-auto">
               <ProfileSectionProvider profile={profile}>
-                <div className='space-y-6'>
+                <div className="space-y-6">
                   <PersonalInfoSection
                     id={ProfileEditModalSection.Personal}
                     handleImageUpload={handleImageUpload}
@@ -161,13 +161,13 @@ export function UserProfileEditModal({
                 </div>
               </ProfileSectionProvider>
             </div>
-            <DialogFooter className='bg-background px-6 py-4'>
-              <Button variant='ghost' onClick={onClose}>
+            <DialogFooter className="bg-background px-6 py-4">
+              <Button variant="ghost" onClick={onClose}>
                 Cancel
               </Button>
               <Button
-                type='submit'
-                variant='default'
+                type="submit"
+                variant="default"
                 disabled={updateProfileMutation.isPending || !form.formState.isValid}
               >
                 {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}

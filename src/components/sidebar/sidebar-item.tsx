@@ -33,7 +33,7 @@ export function SidebarItem({
 
   return (
     <Button
-      variant='ghost'
+      variant="ghost"
       asChild={!!canNavigate}
       onClick={onClick}
       className={cn("flex items-center justify-between w-full h-auto py-2", {
@@ -53,22 +53,22 @@ export function SidebarItem({
               "max-xl:justify-center xl:gap-3 text-muted-foreground",
               {
                 "text-foreground": isActive,
-              }
+              },
             )}
           >
             {icon}
             {/* Hide label below xl */}
-            <span className='flex-1 max-xl:hidden xl:inline text-left'>{label}</span>
+            <span className="flex-1 max-xl:hidden xl:inline text-left">{label}</span>
           </div>
 
           {badge && (
-            <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
+            <Badge variant="default" className="max-xl:hidden xl:inline ml-auto">
               {badge}
             </Badge>
           )}
         </Component>
       ) : (
-        <div className='flex items-center w-full justify-between'>
+        <div className="flex items-center w-full justify-between">
           <div className={cn("flex items-center w-full", "max-xl:justify-center xl:gap-3")}>
             {icon}
             {/* Hide label below xl */}
@@ -81,7 +81,7 @@ export function SidebarItem({
             </span>
           </div>
           {badge && (
-            <Badge variant='default' className='max-xl:hidden xl:inline ml-auto'>
+            <Badge variant="default" className="max-xl:hidden xl:inline ml-auto">
               {badge}
             </Badge>
           )}

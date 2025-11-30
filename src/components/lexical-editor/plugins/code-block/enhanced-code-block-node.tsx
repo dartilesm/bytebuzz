@@ -186,7 +186,7 @@ export class EnhancedCodeBlockNode extends DecoratorNode<React.ReactElement> {
 export function $createEnhancedCodeBlockNode(
   language: string,
   code = "",
-  metadata = ""
+  metadata = "",
 ): EnhancedCodeBlockNode {
   return new EnhancedCodeBlockNode(language, code, undefined, metadata);
 }
@@ -195,7 +195,7 @@ export function $createEnhancedCodeBlockNode(
  * Checks if a node is an EnhancedCodeBlockNode
  */
 export function $isEnhancedCodeBlockNode(
-  node: LexicalNode | null | undefined
+  node: LexicalNode | null | undefined,
 ): node is EnhancedCodeBlockNode {
   return node instanceof EnhancedCodeBlockNode;
 }

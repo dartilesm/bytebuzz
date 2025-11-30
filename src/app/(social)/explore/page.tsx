@@ -54,7 +54,7 @@ async function ExplorePage({ searchParams }: PageProps<"/explore">) {
     cacheTags: ["explore-page", "trending-users", user?.id ?? "", searchParams?.toString() ?? ""],
   })();
 
-  return <ExploreView key='explore-page' postsPromise={postsPromise} usersPromise={usersPromise} />;
+  return <ExploreView key="explore-page" postsPromise={postsPromise} usersPromise={usersPromise} />;
 }
 
 export default withAnalytics(ExplorePage, { event: "page-view" });

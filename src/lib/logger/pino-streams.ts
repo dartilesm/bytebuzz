@@ -10,9 +10,7 @@ import { getLogLevel } from "@/lib/logger/functions/get-log-level";
  */
 export function getPinoStreams(): StreamEntry[] {
   const logLevel = getLogLevel();
-  const isProduction =
-    typeof process !== "undefined" &&
-    process.env.VERCEL_ENV === "production";
+  const isProduction = typeof process !== "undefined" && process.env.VERCEL_ENV === "production";
 
   if (isProduction) {
     return [

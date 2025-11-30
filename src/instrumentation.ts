@@ -25,7 +25,7 @@ export function register() {
           new OTLPLogExporter({
             url: `${otelCollectorUrl}/v1/logs`,
             headers,
-          })
+          }),
         ),
       ],
       metricReaders: [
@@ -57,7 +57,7 @@ export function onRequestError(
       | "server-rendering";
     revalidateReason: "on-demand" | "stale" | undefined; // undefined is a normal request without revalidation
     renderType: "dynamic" | "dynamic-resume"; // 'dynamic-resume' for PPR
-  }
+  },
 ) {
   const errorMessage = `Unhandled error in route "${context.routePath}" [${context.routeType}]: ${
     error?.message ?? "No error message provided"

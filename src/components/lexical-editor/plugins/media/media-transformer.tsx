@@ -34,7 +34,7 @@ export const MEDIA_TRANSFORMER: ElementTransformer = {
         // Preserve alt text from markdown if not in metadata
         alt: metadata?.alt || altText || undefined,
       },
-      src
+      src,
     );
 
     // Create MediaNode
@@ -43,4 +43,3 @@ export const MEDIA_TRANSFORMER: ElementTransformer = {
   },
   type: "element",
 };
-

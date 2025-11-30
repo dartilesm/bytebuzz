@@ -63,7 +63,7 @@ export function createServerSupabaseClient({
       global: {
         fetch: supabaseFetch,
       },
-    }
+    },
   );
 }
 

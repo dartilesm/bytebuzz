@@ -53,7 +53,7 @@ async function mockUserSearch(query: string): Promise<User[]> {
   return mockUsers.filter(
     (user) =>
       user.username.toLowerCase().includes(query.toLowerCase()) ||
-      user.displayName.toLowerCase().includes(query.toLowerCase())
+      user.displayName.toLowerCase().includes(query.toLowerCase()),
   );
 }
 
@@ -93,7 +93,7 @@ export function MentionPlugin({
         return [];
       }
     },
-    [onSearch, maxSuggestions]
+    [onSearch, maxSuggestions],
   );
 
   /**
@@ -149,7 +149,7 @@ export function MentionPlugin({
 
       closeMentions();
     },
-    [editor, trigger, closeMentions]
+    [editor, trigger, closeMentions],
   );
 
   /**
@@ -286,7 +286,7 @@ export function MentionPlugin({
   useEffect(() => {
     return mergeRegister(
       // Handle text content changes for mention detection
-      editor.registerTextContentListener(detectMention)
+      editor.registerTextContentListener(detectMention),
     );
   }, [editor, detectMention]);
 

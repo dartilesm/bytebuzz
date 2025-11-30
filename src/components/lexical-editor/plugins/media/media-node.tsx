@@ -114,7 +114,7 @@ export class MediaNode extends DecoratorNode<React.ReactElement> {
   updateItem(itemId: string, updatedData: Partial<MediaData>): void {
     const writable = this.getWritable();
     writable.__items = writable.__items.map((item) =>
-      item.id === itemId ? { ...item, ...updatedData } : item
+      item.id === itemId ? { ...item, ...updatedData } : item,
     );
   }
 
@@ -308,8 +308,8 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
   const currentItem = items[currentIndex] || items[0];
 
   return (
-    <CardContent className='p-0 border border-border rounded-lg overflow-hidden dark:bg-accent bg-accent/20'>
-      <div className='relative group'>
+    <CardContent className="p-0 border border-border rounded-lg overflow-hidden dark:bg-accent bg-accent/20">
+      <div className="relative group">
         {/* Media Content */}
         <Carousel
           setApi={setApi}
@@ -317,13 +317,13 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
             align: "start",
             loop: false,
           }}
-          className='w-full'
+          className="w-full"
         >
-          <CarouselContent className='ml-0'>
+          <CarouselContent className="ml-0">
             {items.map((item) => (
               <CarouselItem
                 key={item.id}
-                className='pl-0 w-full h-auto max-h-96 flex items-center justify-center'
+                className="pl-0 w-full h-auto max-h-96 flex items-center justify-center"
               >
                 <>
                   {item.type === "image" && (
@@ -334,7 +334,7 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
                       className={cn("w-full object-contain object-center", {
                         "animate-pulse": item.isLoading,
                       })}
-                      loading='lazy'
+                      loading="lazy"
                     />
                   )}
                   {item.type === "video" && (
@@ -345,9 +345,9 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
                       className={cn("w-full h-full rounded-lg shadow-sm max-h-96", {
                         "animate-pulse": item.isLoading,
                       })}
-                      preload='metadata'
+                      preload="metadata"
                     >
-                      <track kind='captions' src='' label='Captions' />
+                      <track kind="captions" src="" label="Captions" />
                       Your browser does not support the video tag.
                     </video>
                   )}
@@ -357,20 +357,20 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
           </CarouselContent>
           {hasMoreThanOneItem && (
             <>
-              <CarouselPrevious className='left-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background' />
-              <CarouselNext className='right-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background' />
+              <CarouselPrevious className="left-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background" />
+              <CarouselNext className="right-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background" />
             </>
           )}
         </Carousel>
 
         {/* Carousel Indicators */}
         {hasMoreThanOneItem && (
-          <div className='absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10'>
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
             {items.map((_, index) => (
               <Button
                 key={index}
-                type='button'
-                size='icon'
+                type="button"
+                size="icon"
                 variant={index === currentIndex ? "default" : "outline"}
                 onClick={() => {
                   api?.scrollTo(index);
@@ -385,46 +385,46 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
         )}
 
         {/* Floating Action Buttons - Top Right Corner */}
-        <div className='absolute top-2 px-2 flex items-center justify-between gap-1 z-20 w-full'>
+        <div className="absolute top-2 px-2 flex items-center justify-between gap-1 z-20 w-full">
           <div>
             <Button
-              size='icon-sm'
-              variant='flat'
+              size="icon-sm"
+              variant="flat"
               onClick={handleEditMedia}
-              aria-label='Edit media metadata'
+              aria-label="Edit media metadata"
               disabled={currentItem?.isLoading}
             >
-              <PencilIcon className='size-4' />
+              <PencilIcon className="size-4" />
             </Button>
           </div>
-          <div className='flex items-center gap-1'>
+          <div className="flex items-center gap-1">
             <Button
-              size='icon-sm'
-              variant='flat'
+              size="icon-sm"
+              variant="flat"
               onClick={() => handleDownloadMedia(currentItem)}
-              aria-label='Download media'
+              aria-label="Download media"
               disabled={currentItem?.isLoading}
             >
-              <DownloadIcon className='size-4' />
+              <DownloadIcon className="size-4" />
             </Button>
             <Button
-              size='icon-sm'
-              variant='flat'
+              size="icon-sm"
+              variant="flat"
               onClick={() => handleRemoveMedia(currentItem?.id)}
-              aria-label='Delete media'
+              aria-label="Delete media"
               disabled={currentItem?.isLoading}
             >
-              <TrashIcon className='size-4' />
+              <TrashIcon className="size-4" />
             </Button>
           </div>
         </div>
 
         {/* Compact Media Info - Bottom Left */}
         <Badge
-          variant='flat'
-          className='absolute bottom-2 left-2 z-10 flex items-center justify-center'
+          variant="flat"
+          className="absolute bottom-2 left-2 z-10 flex items-center justify-center"
         >
-          <span className='text-xs capitalize'>
+          <span className="text-xs capitalize">
             {currentItem?.type}
             {hasMoreThanOneItem && ` • ${currentIndex + 1}/${items.length}`}
           </span>

@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await withCacheService("userService", "getFollowStatus")(
     user.id,
-    targetUserId
+    targetUserId,
   );
   if (error && error.code !== "PGRST116") {
     // PGRST116 = No rows found, which is not an error for us

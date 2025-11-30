@@ -159,7 +159,13 @@ export function CodeBlockEditor({
               variant="flat"
               size="sm"
               className="peer pe-12"
-              onChange={(e) => handleOnChange({ metadata: serializeCodeBlockMetadata({ fileName: `${e.target.value}.${languageExtension}` }) })}
+              onChange={(e) =>
+                handleOnChange({
+                  metadata: serializeCodeBlockMetadata({
+                    fileName: `${e.target.value}.${languageExtension}`,
+                  }),
+                })
+              }
             />
             <span className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground text-sm peer-disabled:opacity-50">
               .{languageExtension}
@@ -260,7 +266,9 @@ export function CodeBlockEditor({
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-between gap-2 p-2">
-        <Badge variant="secondary">{codeBlockEditorFunctions.getLineCount(editorValue.code)} lines</Badge>
+        <Badge variant="secondary">
+          {codeBlockEditorFunctions.getLineCount(editorValue.code)} lines
+        </Badge>
 
         <Badge
           variant={

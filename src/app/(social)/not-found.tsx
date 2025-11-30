@@ -52,12 +52,7 @@ export default function NotFoundPage() {
           {heading}
         </h1>
         <p className="text-muted-foreground mb-8">{message}</p>
-        <Button
-          asChild
-          variant="default"
-          aria-label="Go to root"
-          tabIndex={0}
-        >
+        <Button asChild variant="default" aria-label="Go to root" tabIndex={0}>
           <Link href="/root">
             <HomeIcon size={16} className="mr-2" />
             Go to Root

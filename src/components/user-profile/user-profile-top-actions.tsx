@@ -23,7 +23,7 @@ import { ProfileEditModalSection } from "@/components/user-profile/user-profile-
 
 const UserProfileEditModal = dynamic(
   () => import("./user-profile-edit-modal").then((mod) => mod.UserProfileEditModal),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface EditModalState {
@@ -76,14 +76,14 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
   }
 
   return (
-    <div className='flex justify-between'>
-      <div className='flex gap-2'>
+    <div className="flex justify-between">
+      <div className="flex gap-2">
         {profile.github_url && (
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <Button asChild variant='ghost' size='icon' aria-label='View GitHub profile'>
-                  <a href={profile.github_url} target='_blank' rel='noopener noreferrer'>
+                <Button asChild variant="ghost" size="icon" aria-label="View GitHub profile">
+                  <a href={profile.github_url} target="_blank" rel="noopener noreferrer">
                     <SiGithub size={16} />
                   </a>
                 </Button>
@@ -98,9 +98,9 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <Button asChild variant='ghost' size='icon' aria-label='View LinkedIn profile'>
-                  <a href={profile.linkedin_url} target='_blank' rel='noopener noreferrer'>
-                    <LinkedInIcon size={16} fill='currentColor' />
+                <Button asChild variant="ghost" size="icon" aria-label="View LinkedIn profile">
+                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">
+                    <LinkedInIcon size={16} fill="currentColor" />
                   </a>
                 </Button>
               </TooltipTrigger>
@@ -115,11 +115,11 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
-                  variant='outline'
-                  size='icon'
-                  className='border-dashed border rounded-md text-muted-foreground bg-transparent border-muted-foreground/40'
+                  variant="outline"
+                  size="icon"
+                  className="border-dashed border rounded-md text-muted-foreground bg-transparent border-muted-foreground/40"
                   onClick={withAuth(() => toggleEditProfileModal(ProfileEditModalSection.Social))}
-                  aria-label='Add social links'
+                  aria-label="Add social links"
                 >
                   <PlusIcon size={16} />
                 </Button>
@@ -131,32 +131,32 @@ export function UserProfileTopActions({ profilePromise }: UserProfileTopActionsP
           </TooltipProvider>
         )}
       </div>
-      <div className='flex flex-row gap-1.5 items-center'>
+      <div className="flex flex-row gap-1.5 items-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' size='icon' aria-label='More options'>
+            <Button variant="ghost" size="icon" aria-label="More options">
               <MoreHorizontalIcon size={16} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuItem key='copy-link' onClick={handleCopyLink}>
-              <Link2Icon size={16} className='mr-2' />
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem key="copy-link" onClick={handleCopyLink}>
+              <Link2Icon size={16} className="mr-2" />
               Copy profile link
             </DropdownMenuItem>
-            <DropdownMenuItem key='share' onClick={handleShare}>
-              <Share2Icon size={16} className='mr-2' />
+            <DropdownMenuItem key="share" onClick={handleShare}>
+              <Share2Icon size={16} className="mr-2" />
               Share profile
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {!isCurrentUser && <FollowButton targetUserId={profile.id} size='md' />}
+        {!isCurrentUser && <FollowButton targetUserId={profile.id} size="md" />}
         {isCurrentUser && (
           <Button
-            variant='default'
+            variant="default"
             onClick={withAuth(() => toggleEditProfileModal())}
             size={isMobile ? "icon" : "default"}
           >
-            {!isMobile && <PencilIcon size={16} className='ml-2' />}
+            {!isMobile && <PencilIcon size={16} className="ml-2" />}
             {isMobile ? <PencilIcon size={16} /> : "Edit profile"}
           </Button>
         )}

@@ -18,15 +18,15 @@ export default async function AuthenticatedLayout({ children, modal }: LayoutPro
 
   return (
     <NavigationContextProvider initialUser={serializedUser} initialIsMobile={isMobile}>
-      <main className='grid grid-cols-1 md:grid-cols-[max-content_600px] lg:grid-cols-[max-content_600px_max-content] gap-4 mx-auto justify-center w-full md:container px-0 md:px-4 pb-12 md:pb-0'>
-        <div className='hidden md:flex flex-col gap-4 sticky top-0 max-h-dvh'>
+      <main className="grid grid-cols-1 md:grid-cols-[max-content_600px] lg:grid-cols-[max-content_600px_max-content] gap-4 mx-auto justify-center w-full md:container px-0 md:px-4 pb-12 md:pb-0">
+        <div className="hidden md:flex flex-col gap-4 sticky top-0 max-h-dvh">
           <Sidebar />
         </div>
-        <div className='flex flex-col min-h-dvh w-full max-w-full md:max-w-[600px] md:border-x border-x-content2/80'>
+        <div className="flex flex-col min-h-dvh w-full max-w-full md:max-w-[600px] md:border-x border-x-content2/80">
           {modal}
           {children}
         </div>
-        <div className='hidden lg:flex flex-col gap-4 sticky top-4 h-fit'>
+        <div className="hidden lg:flex flex-col gap-4 sticky top-4 h-fit">
           <SuggestionsSection />
         </div>
       </main>

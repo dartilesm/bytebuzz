@@ -64,7 +64,7 @@ const scrollShadowVariants = cva(
       size: "md",
       visibility: "top",
     },
-  }
+  },
 );
 
 interface ScrollAreaProps
@@ -107,13 +107,13 @@ function ScrollArea({
 
   return (
     <ScrollAreaPrimitive.Root
-      data-slot='scroll-area'
+      data-slot="scroll-area"
       className={cn("relative", className)}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
-        data-slot='scroll-area-viewport'
-        className='focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&>div]:relative [&>div]:overflow-hidden'
+        data-slot="scroll-area-viewport"
+        className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&>div]:relative [&>div]:overflow-hidden"
       >
         {/* Start Sentinel */}
         <div
@@ -145,7 +145,7 @@ function ScrollArea({
             visibility: isVertical ? "top" : "left",
           }),
           shadowClassName,
-          showStartShadow ? "opacity-100" : "opacity-0"
+          showStartShadow ? "opacity-100" : "opacity-0",
         )}
       />
 
@@ -158,7 +158,7 @@ function ScrollArea({
             visibility: isVertical ? "bottom" : "right",
           }),
           shadowClassName,
-          showEndShadow ? "opacity-100" : "opacity-0"
+          showEndShadow ? "opacity-100" : "opacity-0",
         )}
       />
 
@@ -175,19 +175,19 @@ function ScrollBar({
 }: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
   return (
     <ScrollAreaPrimitive.ScrollAreaScrollbar
-      data-slot='scroll-area-scrollbar'
+      data-slot="scroll-area-scrollbar"
       orientation={orientation}
       className={cn(
         "flex touch-none p-px transition-colors select-none",
         orientation === "vertical" && "h-full w-2.5 border-l border-l-transparent",
         orientation === "horizontal" && "h-2.5 flex-col border-t border-t-transparent",
-        className
+        className,
       )}
       {...props}
     >
       <ScrollAreaPrimitive.ScrollAreaThumb
-        data-slot='scroll-area-thumb'
-        className='bg-border relative flex-1 rounded-full'
+        data-slot="scroll-area-thumb"
+        className="bg-border relative flex-1 rounded-full"
       />
     </ScrollAreaPrimitive.ScrollAreaScrollbar>
   );

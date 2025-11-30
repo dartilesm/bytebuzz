@@ -21,8 +21,8 @@ export function PostHeader() {
       })}
       id="post-card-header"
     >
-      <div className='flex items-center justify-between w-full'>
-        <div className='flex items-center gap-1 md:gap-1.5 min-w-0'>
+      <div className="flex items-center justify-between w-full">
+        <div className="flex items-center gap-1 md:gap-1.5 min-w-0">
           {isThreadPagePost && <PostAvatarAndThreadLine />}
           <TooltipProvider>
             <Tooltip delayDuration={1000}>
@@ -33,10 +33,10 @@ export function PostHeader() {
                     "flex-col gap-0 items-start md:gap-0": isThreadPagePost,
                   })}
                 >
-                  <span className='font-semibold text-sm md:text-base truncate'>
+                  <span className="font-semibold text-sm md:text-base truncate">
                     {user?.display_name}
                   </span>
-                  <span className='text-xs md:text-sm text-muted-foreground/50 truncate'>
+                  <span className="text-xs md:text-sm text-muted-foreground/50 truncate">
                     @{user?.username}
                   </span>
                 </Link>
@@ -48,9 +48,9 @@ export function PostHeader() {
           </TooltipProvider>
           {!isThreadPagePost && (
             <>
-              <span className='text-xs md:text-sm text-muted-foreground/50'>·</span>
+              <span className="text-xs md:text-sm text-muted-foreground/50">·</span>
               <time
-                className='text-xs md:text-sm text-muted-foreground/50'
+                className="text-xs md:text-sm text-muted-foreground/50"
                 title={formatDateTime(created_at as unknown as Date)}
               >
                 {getRelativeTime(new Date(created_at as unknown as Date))}

@@ -21,11 +21,11 @@ export function SocialMediaSection({ id }: SocialMediaSectionProps) {
   const { errors } = formState;
 
   return (
-    <div id={id} className='space-y-4'>
+    <div id={id} className="space-y-4">
       <Separator />
-      <div className='space-y-4'>
-        <h3 className='text-sm text-muted-foreground/80'>Social Profiles</h3>
-        <div className='space-y-4'>
+      <div className="space-y-4">
+        <h3 className="text-sm text-muted-foreground/80">Social Profiles</h3>
+        <div className="space-y-4">
           {SOCIAL_MEDIA_INPUTS.map((fieldConfig) => {
             const placeholder =
               typeof fieldConfig.placeholder === "function"
@@ -40,11 +40,11 @@ export function SocialMediaSection({ id }: SocialMediaSectionProps) {
                 name={fieldConfig.name}
                 control={control}
                 render={({ field }) => (
-                  <div className='space-y-2'>
+                  <div className="space-y-2">
                     <Label htmlFor={fieldConfig.name}>{fieldConfig.label}</Label>
                     <div className={hasIcon ? "relative" : undefined}>
                       {hasIcon && IconComponent && (
-                        <div className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground'>
+                        <div className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground">
                           <IconComponent />
                         </div>
                       )}
@@ -52,14 +52,14 @@ export function SocialMediaSection({ id }: SocialMediaSectionProps) {
                         id={fieldConfig.name}
                         placeholder={placeholder}
                         className={hasIcon ? "pl-9" : undefined}
-                        variant='flat'
+                        variant="flat"
                         type={fieldConfig.type}
                         {...field}
                         value={field.value || ""}
                       />
                     </div>
                     {errors[fieldConfig.name] && (
-                      <p className='text-xs text-destructive'>
+                      <p className="text-xs text-destructive">
                         {errors[fieldConfig.name]?.message}
                       </p>
                     )}

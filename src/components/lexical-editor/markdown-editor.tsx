@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -11,14 +10,13 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import type { EditorState, LexicalEditor } from "lexical";
 import { type RefObject, useEffect } from "react";
+import { SmartTextPlugin } from "@/components/lexical-editor/plugins/smart-text-plugin/smart-text-plugin";
+import { cn } from "@/lib/utils";
 import { editorStateToMarkdown } from "./functions/markdown-utils";
-
 import { customTransformers } from "./markdown-config";
 import { useMarkdownContext } from "./markdown-provider";
-
 import { MentionPlugin } from "./plugins/mentions/mention-plugin";
 import { ValuePlugin } from "./plugins/value/value-plugin";
-import { SmartTextPlugin } from "@/components/lexical-editor/plugins/smart-text-plugin/smart-text-plugin";
 
 interface MarkdownEditorProps {
   /**
@@ -52,7 +50,9 @@ interface MarkdownEditorProps {
  */
 function OnChangeMarkdownPlugin({
   onChange,
-}: { onChange?: (markdown: string, editorState: EditorState) => void }) {
+}: {
+  onChange?: (markdown: string, editorState: EditorState) => void;
+}) {
   function handleEditorChange(editorState: EditorState) {
     if (!onChange) return;
 
@@ -83,7 +83,7 @@ function EditorRefPlugin({ editorRef }: { editorRef?: RefObject<LexicalEditor> }
  */
 function Placeholder({ children }: { children: string }) {
   return (
-    <div className="absolute top-0 left-0 text-muted-foreground/60 pointer-events-none select-none">
+    <div className='absolute top-0 left-0 text-muted-foreground/60 pointer-events-none select-none'>
       {children}
     </div>
   );

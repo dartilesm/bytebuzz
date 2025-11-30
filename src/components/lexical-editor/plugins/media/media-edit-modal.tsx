@@ -75,56 +75,56 @@ export function MediaEditModal({ open, onOpenChange, mediaData, onSave }: MediaE
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-2xl max-h-[calc(100vh-12rem)] overflow-auto scrollbar-auto p-0'>
-        <DialogHeader className='pl-6 pr-3 py-4'>
+      <DialogContent className="max-w-2xl max-h-[calc(100vh-12rem)] overflow-auto scrollbar-auto p-0">
+        <DialogHeader className="pl-6 pr-3 py-4">
           <div>
             <DialogTitle>Edit Media</DialogTitle>
             <DialogDescription>Update the metadata for this media file</DialogDescription>
           </div>
         </DialogHeader>
-        <div className='space-y-6 px-6'>
+        <div className="space-y-6 px-6">
           {/* Media Preview */}
-          <div className='relative w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center max-h-96'>
+          <div className="relative w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center max-h-96">
             {mediaData.type === "image" && (
               <img
                 src={mediaData.src}
                 alt={mediaData.alt || ""}
-                className='w-full h-auto object-contain max-h-96'
+                className="w-full h-auto object-contain max-h-96"
               />
             )}
             {mediaData.type === "video" && (
               <video
                 src={mediaData.src}
                 controls
-                className='w-full h-auto max-h-96'
-                preload='metadata'
+                className="w-full h-auto max-h-96"
+                preload="metadata"
               >
-                <track kind='captions' src='' label='Captions' />
+                <track kind="captions" src="" label="Captions" />
                 Your browser does not support the video tag.
               </video>
             )}
           </div>
 
           {/* Alt Text Input */}
-          <div className='space-y-2'>
-            <Label htmlFor='alt-text'>Alt Text</Label>
-            <DialogDescription className='text-xs'>
+          <div className="space-y-2">
+            <Label htmlFor="alt-text">Alt Text</Label>
+            <DialogDescription className="text-xs">
               Alternative text describes images for people who cannot see them. It&apos;s also used
               by search engines.
             </DialogDescription>
             <Textarea
-              id='alt-text'
+              id="alt-text"
               value={altText}
               onChange={(e) => setAltText(e.target.value)}
-              placeholder='Enter alt text...'
-              className='w-full resize-none'
-              variant='flat'
+              placeholder="Enter alt text..."
+              className="w-full resize-none"
+              variant="flat"
             />
           </div>
         </div>
 
-        <DialogFooter className='sticky bottom-0 bg-background px-6 py-4'>
-          <Button variant='ghost' onClick={handleCancel}>
+        <DialogFooter className="sticky bottom-0 bg-background px-6 py-4">
+          <Button variant="ghost" onClick={handleCancel}>
             Cancel
           </Button>
           <Button onClick={handleSave}>Save changes</Button>

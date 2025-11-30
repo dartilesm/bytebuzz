@@ -353,7 +353,7 @@ export type CodeBlockFilenameProps = HTMLAttributes<HTMLDivElement> & {
 export const CodeBlockFilename = ({ className, data, ...props }: CodeBlockFilenameProps) => {
   const { language, filename } = data;
   const supportedLanguages = codeBlockEditorFunctions.getSupportedLanguages();
-  const languageData = supportedLanguages.find((lang) => lang.value === language)
+  const languageData = supportedLanguages.find((lang) => lang.value === language);
   if (!languageData) return null;
 
   const Icon = Object.entries(filenameIconMap).find(([pattern]) => {
@@ -364,13 +364,15 @@ export const CodeBlockFilename = ({ className, data, ...props }: CodeBlockFilena
   })?.[1];
 
   return (
-    <div className={cn("flex items-center gap-2 text-muted-foreground text-xs", className)} {...props}>
+    <div
+      className={cn("flex items-center gap-2 text-muted-foreground text-xs", className)}
+      {...props}
+    >
       {Icon && <Icon className="size-3" />}
       {filename}
     </div>
   );
 };
-
 
 export type CodeBlockSelectProps = ComponentProps<typeof Select>;
 
@@ -426,9 +428,12 @@ export const CodeBlockActionButton = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button className={cn("shrink-0 text-muted-foreground", className)}
+          <Button
+            className={cn("shrink-0 text-muted-foreground", className)}
             size="icon-sm"
-            variant="ghost" {...props}>
+            variant="ghost"
+            {...props}
+          >
             {children}
           </Button>
         </TooltipTrigger>
@@ -480,17 +485,18 @@ export const CodeBlockCopyButton = ({
 
   const Icon = isCopied ? CheckIcon : CopyIcon;
 
-  return (<CodeBlockActionButton tooltipContent={isCopied ? "Copied!" : "Copy"}>
-    <Button
-      className={cn("shrink-0 text-muted-foreground", className)}
-      onClick={copyToClipboard}
-      size="icon-sm"
-      variant="ghost"
-      {...props}
-    >
-      {children ?? <Icon className="size-3.5" />}
-    </Button>
-  </CodeBlockActionButton>
+  return (
+    <CodeBlockActionButton tooltipContent={isCopied ? "Copied!" : "Copy"}>
+      <Button
+        className={cn("shrink-0 text-muted-foreground", className)}
+        onClick={copyToClipboard}
+        size="icon-sm"
+        variant="ghost"
+        {...props}
+      >
+        {children ?? <Icon className="size-3.5" />}
+      </Button>
+    </CodeBlockActionButton>
   );
 };
 

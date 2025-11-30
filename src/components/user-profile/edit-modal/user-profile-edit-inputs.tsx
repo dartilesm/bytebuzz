@@ -9,8 +9,8 @@ type UserProfileEditInput = {
   label: string;
   placeholder: string | ((username: string) => string);
   type: "text" | "url";
-  icon?: ((props: SVGProps<SVGSVGElement>) => ReactNode);
-}
+  icon?: (props: SVGProps<SVGSVGElement>) => ReactNode;
+};
 
 /**
  * Personal information inputs (Location, Website)
@@ -47,7 +47,7 @@ export const SOCIAL_MEDIA_INPUTS: UserProfileEditInput[] = [
     label: "LinkedIn Profile",
     placeholder: (username: string) => `https://linkedin.com/in/${username}`,
     type: "url",
-    icon: () => <LinkedInIcon size={16} fill='currentColor' />,
+    icon: () => <LinkedInIcon size={16} fill="currentColor" />,
   },
 ];
 

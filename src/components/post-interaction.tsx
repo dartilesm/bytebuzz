@@ -34,9 +34,9 @@ export function PostInteraction({
   const isRepost = action === "clone";
 
   return (
-    <div className='flex flex-col gap-2 rounded-xl bg-muted'>
+    <div className="flex flex-col gap-2 rounded-xl bg-muted">
       {isReply && (
-        <div className='relative'>
+        <div className="relative">
           <PostThreadLine isFirstInThread />
           <UserPost post={post} isNavigationDisabled className="rounded-none border-0">
             {post.repost && <CondensedUserPost post={post.repost} isNavigationDisabled />}
@@ -44,22 +44,26 @@ export function PostInteraction({
         </div>
       )}
       <PostComposer
-        placeholder='What are your thoughts?'
+        placeholder="What are your thoughts?"
         onSubmit={onSubmit}
         {...(isRepost && { repostPostId: post.id })}
         {...(isReply && { replyPostId: post.id })}
         className={cn("border-0 rounded-none", {
           "rounded-b-xl": isReply,
-          "dark:hover:bg-muted": isRepost
+          "dark:hover:bg-muted": isRepost,
         })}
       >
         {isRepost && (
-          <div className='mb-4 flex flex-col gap-1'>
-            <span className='text-sm text-muted-foreground/60 italic flex items-center gap-1'>
+          <div className="mb-4 flex flex-col gap-1">
+            <span className="text-sm text-muted-foreground/60 italic flex items-center gap-1">
               <RepeatIcon size={14} />
               <span> Original post</span>
             </span>
-            <CondensedUserPost className="bg-card-foreground/5 border-border border dark:bg-card" post={post} isNavigationDisabled />
+            <CondensedUserPost
+              className="bg-card-foreground/5 border-border border dark:bg-card"
+              post={post}
+              isNavigationDisabled
+            />
           </div>
         )}
       </PostComposer>

@@ -2,7 +2,6 @@ import { log } from "@/lib/logger/logger";
 import { postService } from "@/lib/db/services/post.service";
 import { type NextRequest, NextResponse } from "next/server";
 
-
 /**
  * GET /api/posts/feed
  * Fetches posts for the user feed with optional cursor for pagination

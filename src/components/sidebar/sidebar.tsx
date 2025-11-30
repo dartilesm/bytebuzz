@@ -24,19 +24,19 @@ export function Sidebar() {
   // Collapsed if below xl (using Tailwind only)
   // max-xl = below 1280px, xl = 1280px and up
   return (
-    <div className='h-full flex flex-col max-xl:max-w-[56px] xl:min-w-56 transition-all duration-200 relative'>
-      <div className='p-4 flex items-center gap-2'>
-        <div className='w-8 h-8 rounded-full bg-content1 flex items-center justify-center'>
-          <TriangleIcon className='text-content1-foreground' size={18} />
+    <div className="h-full flex flex-col max-xl:max-w-[56px] xl:min-w-56 transition-all duration-200 relative">
+      <div className="p-4 flex items-center gap-2">
+        <div className="w-8 h-8 rounded-full bg-content1 flex items-center justify-center">
+          <TriangleIcon className="text-content1-foreground" size={18} />
         </div>
         {/* Hide label below xl */}
-        <span className='font-medium text-content1-foreground text-lg max-xl:hidden xl:inline'>
+        <span className="font-medium text-content1-foreground text-lg max-xl:hidden xl:inline">
           ByteBuzz
         </span>
       </div>
 
-      <div className='flex-1 overflow-y-auto justify-center flex flex-col'>
-        <SidebarSection title=''>
+      <div className="flex-1 overflow-y-auto justify-center flex flex-col">
+        <SidebarSection title="">
           {main.map((item) => (
             <NavigationItemRenderer
               key={item.href || item.label}
@@ -57,14 +57,14 @@ export function Sidebar() {
         </SidebarSection>
       </div>
 
-      <div className='mt-auto py-4'>
+      <div className="mt-auto py-4">
         <SidebarItem
-          as='a'
-          href='https://github.com/dartilesm/bytebuzz/issues'
-          icon={<BugIcon className='text-default-500 size-5' />}
+          as="a"
+          href="https://github.com/dartilesm/bytebuzz/issues"
+          icon={<BugIcon className="text-default-500 size-5" />}
           label={
-            <span className='text-default-500 flex items-center justify-between w-full'>
-              Bug Report <ExternalLinkIcon className='text-default-500' />
+            <span className="text-default-500 flex items-center justify-between w-full">
+              Bug Report <ExternalLinkIcon className="text-default-500" />
             </span>
           }
           isExternal

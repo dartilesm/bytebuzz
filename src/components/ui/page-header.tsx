@@ -62,35 +62,35 @@ export function PageHeader({
 
   return (
     <header className={cn("sticky top-0 z-40 dark:bg-background bg-background", className)}>
-      <div className='container flex items-center h-14 md:h-16 px-2 md:px-4'>
-        <div className='flex items-center gap-1 md:gap-2 flex-1 min-w-0'>
-          <div className='flex items-center gap-1 md:gap-2'>
+      <div className="container flex items-center h-14 md:h-16 px-2 md:px-4">
+        <div className="flex items-center gap-1 md:gap-2 flex-1 min-w-0">
+          <div className="flex items-center gap-1 md:gap-2">
             {showBackButton && (
               <Button
                 asChild
-                variant='ghost'
-                size='icon'
-                aria-label='Go back'
-                className='min-w-[44px] min-h-[44px]'
+                variant="ghost"
+                size="icon"
+                aria-label="Go back"
+                className="min-w-[44px] min-h-[44px]"
               >
                 <Link href={backLink as any}>
-                  <ArrowLeftIcon className='w-4 h-4 md:w-5 md:h-5' />
+                  <ArrowLeftIcon className="w-4 h-4 md:w-5 md:h-5" />
                 </Link>
               </Button>
             )}
           </div>
           {Boolean(children) && children}
           {!children && (
-            <div className='flex flex-col min-w-0'>
-              <h1 className='text-base md:text-lg font-semibold leading-none truncate'>{title}</h1>
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-base md:text-lg font-semibold leading-none truncate">{title}</h1>
               {subtitle && (
-                <p className='text-xs md:text-sm text-default-500 truncate'>{subtitle}</p>
+                <p className="text-xs md:text-sm text-default-500 truncate">{subtitle}</p>
               )}
             </div>
           )}
         </div>
         {rightContent && (
-          <div className='flex items-center gap-1 md:gap-2 flex-shrink-0'>{rightContent}</div>
+          <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">{rightContent}</div>
         )}
       </div>
     </header>

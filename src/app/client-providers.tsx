@@ -1,7 +1,7 @@
 "use client";
 
 import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -18,9 +18,12 @@ const queryClient = new QueryClient({
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <NextThemesProvider attribute="class" defaultTheme="system"
+      <NextThemesProvider
+        attribute="class"
+        defaultTheme="system"
         enableSystem
-        disableTransitionOnChange>
+        disableTransitionOnChange
+      >
         <Toaster richColors />
         {children}
       </NextThemesProvider>

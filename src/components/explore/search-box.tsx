@@ -95,9 +95,7 @@ export function SearchBox({
           className="absolute left-0 h-9 px-8"
         />
         {isLoading && <Loader2 className="h-4 w-4 animate-spin opacity-50" />}
-        {searchTerm && (
-          <AutocompleteClear onClick={handleClear} />
-        )}
+        {searchTerm && <AutocompleteClear onClick={handleClear} />}
       </label>
       <AutocompleteContent>
         {isLoading && <AutocompleteStatus>Loading...</AutocompleteStatus>}
@@ -107,14 +105,11 @@ export function SearchBox({
           </AutocompleteStatus>
         )}
         <AutocompleteList>
-          {(item: CombinedItem) => <AutocompleteItem
-            key={item.id}
-            value={item}
-            onSelect={() => handleItemSelect(item)}
-          >
-            <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
-          </AutocompleteItem>
-          }
+          {(item: CombinedItem) => (
+            <AutocompleteItem key={item.id} value={item} onSelect={() => handleItemSelect(item)}>
+              <SearchBoxItem item={item} onExactSearch={handleExactSearch} />
+            </AutocompleteItem>
+          )}
         </AutocompleteList>
       </AutocompleteContent>
     </Autocomplete>

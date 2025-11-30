@@ -141,7 +141,7 @@ export function PostComposer({
               },
             });
           },
-        }
+        },
       );
 
       if (onSubmitProp) onSubmitProp();
@@ -159,35 +159,35 @@ export function PostComposer({
     <form
       className={cn(
         "dark:bg-muted bg-muted dark:hover:bg-muted/80 hover:bg-muted/80 rounded-xl overflow-hidden min-h-24 group/post-composer border border-border shadow-none",
-        className
+        className,
       )}
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
       <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
-        <Section className='flex flex-row gap-2 md:gap-4'>
-          <div className='flex flex-row gap-2 z-10 shrink-0'>
-            <Avatar className='h-10 w-10 border-2 border-background'>
+        <Section className="flex flex-row gap-2 md:gap-4">
+          <div className="flex flex-row gap-2 z-10 shrink-0">
+            <Avatar className="h-10 w-10 border-2 border-background">
               <AvatarImage src={user?.imageUrl} />
               <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
             </Avatar>
           </div>
-          <div className='flex-1 min-w-0'>
+          <div className="flex-1 min-w-0">
             <MarkdownEditor
               placeholder={placeholder}
-              contentClassName='min-h-12 p-0 text-sm md:text-base'
+              contentClassName="min-h-12 p-0 text-sm md:text-base"
               autoFocus
             />
-            <div className='py-2 md:py-4'>{children}</div>
-            <MarkdownToolbar className='bg-transparent border-none p-0 flex-wrap gap-1 md:gap-2'>
+            <div className="py-2 md:py-4">{children}</div>
+            <MarkdownToolbar className="bg-transparent border-none p-0 flex-wrap gap-1 md:gap-2">
               <MarkdownToolbarDefaultActions
-                buttonClassName='bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary text-xs md:text-sm'
+                buttonClassName="bg-default-transparent duration-0 hover:bg-default-300 focus-visible:ring-2 focus-visible:ring-default-300 focus-visible:ring-primary text-xs md:text-sm"
                 onMediaUpload={handleMediaUpload}
               />
               <Button
-                type='submit'
-                variant='default'
-                size='sm'
-                className='ml-auto text-xs md:text-sm'
+                type="submit"
+                variant="default"
+                size="sm"
+                className="ml-auto text-xs md:text-sm"
                 disabled={!form.formState.isValid || isPending}
               >
                 Post

@@ -41,14 +41,17 @@ export function MobileProfileButton({ isActive, label }: MobileProfileButtonProp
       <DrawerTrigger asChild>
         <Button
           onClick={handlePress}
-          className={cn("flex flex-col items-center justify-center gap-1 min-w-0 flex-1 h-full rounded-none", {
-            "text-primary": isActive,
-            "text-muted-foreground": !isActive,
-          })}
-          variant='ghost'
+          className={cn(
+            "flex flex-col items-center justify-center gap-1 min-w-0 flex-1 h-full rounded-none",
+            {
+              "text-primary": isActive,
+              "text-muted-foreground": !isActive,
+            },
+          )}
+          variant="ghost"
           aria-label={label}
         >
-          <div className='flex items-center justify-center [&>svg]:size-5'>
+          <div className="flex items-center justify-center [&>svg]:size-5">
             {user?.imageUrl ? (
               <Avatar className={cn("size-5", { "ring-2 ring-primary": isActive })}>
                 <AvatarImage src={user.imageUrl} />
@@ -58,7 +61,7 @@ export function MobileProfileButton({ isActive, label }: MobileProfileButtonProp
               <UserIcon size={20} className={cn({ "text-primary": isActive })} />
             )}
           </div>
-          <span className='text-xs'>{label}</span>
+          <span className="text-xs">{label}</span>
         </Button>
       </DrawerTrigger>
       <DrawerContent>

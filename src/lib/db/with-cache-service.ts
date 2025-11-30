@@ -50,7 +50,7 @@ type CacheSettings = {
 export function withCacheService<T extends ServiceName, M extends ServiceMethods<T>>(
   service: T,
   method: M,
-  cacheSettings: CacheSettings = {}
+  cacheSettings: CacheSettings = {},
 ) {
   async function cachedService(accessToken: string | null, ...params: ServiceMethodParams<T, M>) {
     "use cache";

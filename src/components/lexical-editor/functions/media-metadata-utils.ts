@@ -33,7 +33,7 @@ export function encodeMediaMetadata(src: string, metadata: MediaMetadata): strin
       // For relative URLs, use a base URL
       url = new URL(
         src,
-        typeof window !== "undefined" ? window.location.origin : "http://localhost"
+        typeof window !== "undefined" ? window.location.origin : "http://localhost",
       );
     }
 
@@ -73,7 +73,7 @@ export function decodeMediaMetadata(url: string): {
       // For relative URLs, use a base URL
       urlObj = new URL(
         url,
-        typeof window !== "undefined" ? window.location.origin : "http://localhost"
+        typeof window !== "undefined" ? window.location.origin : "http://localhost",
       );
     }
 

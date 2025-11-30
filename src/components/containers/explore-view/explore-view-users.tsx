@@ -34,16 +34,16 @@ export function ExploreViewUsers({
   const hasResults = users?.data && users?.data?.length > 0;
 
   return (
-    <section className='space-y-4'>
-      {title && <h2 className='text-lg font-medium'>{title}</h2>}
+    <section className="space-y-4">
+      {title && <h2 className="text-lg font-medium">{title}</h2>}
       {!hasResults && <ExploreViewEmpty />}
       {variant === "scroll" && hasResults && (
         <ScrollArea
-          className='w-full whitespace-nowrap pb-4 [&>div>div]:w-max'
-          shadowClassName='from-background'
-          orientation='horizontal'
+          className="w-full whitespace-nowrap pb-4 [&>div>div]:w-max"
+          shadowClassName="from-background"
+          orientation="horizontal"
         >
-          <div className='flex gap-4'>
+          <div className="flex gap-4">
             {users?.data?.map((user) => (
               <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
             ))}
@@ -51,7 +51,7 @@ export function ExploreViewUsers({
         </ScrollArea>
       )}
       {variant === "grid" && hasResults && (
-        <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-3'>
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {users?.data?.map((user) => (
             <UserVerticalCard key={user.id} user={user as unknown as Tables<"users">} />
           ))}

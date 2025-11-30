@@ -28,7 +28,7 @@ async function getUserById(this: ServiceContext, userId: string) {
  */
 async function updateProfile(
   this: ServiceContext,
-  data: Partial<Tables<"users">> & { id: string }
+  data: Partial<Tables<"users">> & { id: string },
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.from("users").update(data).eq("id", data.id).select().single();
@@ -74,7 +74,7 @@ async function searchUsers(
     searchTerm: string;
     limitCount?: number;
     offsetCount?: number;
-  }
+  },
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.rpc("search_users", {
@@ -97,7 +97,7 @@ async function getTrendingUsers(
   }: {
     limitCount?: number;
     offsetCount?: number;
-  } = {}
+  } = {},
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase.rpc("get_trending_users", {

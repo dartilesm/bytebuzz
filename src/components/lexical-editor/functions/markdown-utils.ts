@@ -71,7 +71,7 @@ function nodeToMarkdown(node: LexicalNode): string {
         markdownParts.push(
           `<video src="${urlWithMetadata}" controls${
             mediaData.title ? ` title="${mediaData.title}"` : ""
-          }></video>`
+          }></video>`,
         );
       }
     }

@@ -12,7 +12,7 @@ export async function UserFeed() {
 
   return (
     <PostsProvider initialPosts={initialPosts || []}>
-      <Section className='w-full flex flex-col gap-2 md:gap-4'>
+      <Section className="w-full flex flex-col gap-2 md:gap-4">
         <PostComposer />
         <PostList postQueryType={POST_QUERY_TYPE.USER_FEED} />
       </Section>

@@ -3,9 +3,7 @@
  * @returns {string} Log level ("warn" for production, "debug" for development)
  */
 export function getLogLevel(): "warn" | "debug" {
-  const isProduction =
-    typeof process !== "undefined" &&
-    process.env.VERCEL_ENV === "production";
+  const isProduction = typeof process !== "undefined" && process.env.VERCEL_ENV === "production";
 
   if (isProduction) {
     return "warn";
@@ -13,4 +11,3 @@ export function getLogLevel(): "warn" | "debug" {
 
   return "debug";
 }
-

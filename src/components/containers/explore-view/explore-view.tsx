@@ -53,7 +53,7 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
     {
       shallow: false,
       clearOnDefault: true,
-    }
+    },
   );
 
   const activeSearchTypeRef = useRef<SearchType>(getInitialSearchType(searchParams));
@@ -79,9 +79,9 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
 
   return (
     <>
-      <PageHeader title='Explore' className='pr-4'>
+      <PageHeader title="Explore" className="pr-4">
         <SearchBox
-          placeholder='Search users or posts...'
+          placeholder="Search users or posts..."
           onSearch={handleSearch}
           initialSearchTerm={searchOptions[activeSearchTypeRef.current]}
         />
@@ -95,35 +95,35 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
           <Tabs
             value={activeSearchTypeRef.current}
             onValueChange={(key) => handleSearchTypeChange(key as SearchType)}
-            className='w-full'
-            variant='underline'
+            className="w-full"
+            variant="underline"
           >
-            <TabsList className='w-full justify-around rounded-none border-b border-border bg-background p-0 gap-0 sticky top-14 md:top-16 z-40'>
-              <TabsTrigger value='all'>All</TabsTrigger>
-              <TabsTrigger value='users'>Users</TabsTrigger>
-              <TabsTrigger value='posts'>Posts</TabsTrigger>
+            <TabsList className="w-full justify-around rounded-none border-b border-border bg-background p-0 gap-0 sticky top-14 md:top-16 z-40">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="users">Users</TabsTrigger>
+              <TabsTrigger value="posts">Posts</TabsTrigger>
             </TabsList>
 
-            <TabsContent value='all' className='mt-0'>
-              <Section className='space-y-4 pt-4'>
+            <TabsContent value="all" className="mt-0">
+              <Section className="space-y-4 pt-4">
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers
                       usersPromise={usersPromise}
-                      title='Trending Users'
-                      variant='scroll'
+                      title="Trending Users"
+                      variant="scroll"
                     />
                   </Suspense>
                 )}
                 {postsPromise && (
                   <Suspense fallback={<ExploreViewPostsLoading />}>
-                    <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
+                    <ExploreViewPosts postsPromise={postsPromise} title="Trending Posts" />
                   </Suspense>
                 )}
               </Section>
             </TabsContent>
-            <TabsContent value='users' className='mt-0'>
-              <Section className='space-y-4 pt-4'>
+            <TabsContent value="users" className="mt-0">
+              <Section className="space-y-4 pt-4">
                 {usersPromise && (
                   <Suspense fallback={<ExploreViewUsersLoading />}>
                     <ExploreViewUsers usersPromise={usersPromise} />
@@ -131,8 +131,8 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
                 )}
               </Section>
             </TabsContent>
-            <TabsContent value='posts' className='mt-0'>
-              <Section className='space-y-4 pt-4'>
+            <TabsContent value="posts" className="mt-0">
+              <Section className="space-y-4 pt-4">
                 {postsPromise && (
                   <Suspense fallback={<ExploreViewPostsLoading />}>
                     <ExploreViewPosts postsPromise={postsPromise} />
@@ -143,19 +143,19 @@ export function ExploreView({ postsPromise, usersPromise }: ExploreViewProps) {
           </Tabs>
         )}
         {!activeSearchTypeRef.current && (
-          <Section className='space-y-4'>
+          <Section className="space-y-4">
             {usersPromise && (
               <Suspense fallback={<ExploreViewUsersLoading />}>
                 <ExploreViewUsers
                   usersPromise={usersPromise}
-                  title='Trending Users'
-                  variant='scroll'
+                  title="Trending Users"
+                  variant="scroll"
                 />
               </Suspense>
             )}
             {postsPromise && (
               <Suspense fallback={<ExploreViewPostsLoading />}>
-                <ExploreViewPosts postsPromise={postsPromise} title='Trending Posts' />
+                <ExploreViewPosts postsPromise={postsPromise} title="Trending Posts" />
               </Suspense>
             )}
           </Section>

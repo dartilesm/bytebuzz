@@ -84,7 +84,7 @@ export interface NavigationItem {
       isActive: boolean;
       category?: "main" | "secondary";
     },
-    context: NavigationContext
+    context: NavigationContext,
   ) => ReactNode | null;
 }
 

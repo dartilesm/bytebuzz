@@ -32,13 +32,13 @@ export function AccountDropdownContent({ onSignOut, onClose }: AccountDropdownCo
   }
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       {username && (
         <>
           <Button
             asChild
-            className='w-full justify-start'
-            variant='ghost'
+            className="w-full justify-start"
+            variant="ghost"
             onClick={handleNavigationClick}
           >
             <Link href={`/@${username}`}>
@@ -46,23 +46,23 @@ export function AccountDropdownContent({ onSignOut, onClose }: AccountDropdownCo
               Profile
             </Link>
           </Button>
-          <Separator className='my-2' />
+          <Separator className="my-2" />
         </>
       )}
 
       <Button
         asChild
-        className='w-full justify-start'
-        variant='ghost'
+        className="w-full justify-start"
+        variant="ghost"
         onClick={handleNavigationClick}
       >
-        <Link href='/account-settings'>
+        <Link href="/account-settings">
           <SettingsIcon size={18} className="mr-2" />
           Account settings
         </Link>
       </Button>
 
-      <div className='w-full flex items-center justify-between px-3 py-2'>
+      <div className="w-full flex items-center justify-between px-3 py-2">
         <span className="text-sm font-medium flex items-center gap-2">
           <SunMoonIcon size={18} />
           Theme
@@ -70,11 +70,11 @@ export function AccountDropdownContent({ onSignOut, onClose }: AccountDropdownCo
         <SidebarThemeSwitcher />
       </div>
 
-      <Separator className='my-2' />
+      <Separator className="my-2" />
 
       <Button
-        className='w-full justify-start mt-2 text-destructive hover:text-destructive hover:bg-destructive/10'
-        variant='ghost'
+        className="w-full justify-start mt-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+        variant="ghost"
         onClick={() => {
           onSignOut();
           onClose?.();

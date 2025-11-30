@@ -70,11 +70,11 @@ export function PostContent({ children }: PostContentProps) {
       {expansionData.shouldShowControls && (
         <>
           <div
-            className='transition-all duration-300 ease-out overflow-hidden'
+            className="transition-all duration-300 ease-out overflow-hidden"
             style={{ height: contentHeight || "auto" }}
           >
             <ScrollArea
-              className='h-full transition-all duration-300 bg-card [&>div>div]:flex! [&>div>div]:flex-col [&>div>div]:gap-4'
+              className="h-full transition-all duration-300 bg-card [&>div>div]:flex! [&>div>div]:flex-col [&>div>div]:gap-4"
               shadowVisibility={isFullyExpanded ? "none" : "bottom"}
               ref={contentRef}
             >
@@ -83,12 +83,12 @@ export function PostContent({ children }: PostContentProps) {
           </div>
           {canExpand && (
             <Button
-              variant='ghost'
-              size='sm'
+              variant="ghost"
+              size="sm"
               onClick={handleExpand}
-              className='self-start text-primary hover:text-primary-600 transition-colors'
+              className="self-start text-primary hover:text-primary-600 transition-colors"
             >
-              <ChevronDownIcon size={16} className='mr-2' />
+              <ChevronDownIcon size={16} className="mr-2" />
               View more
             </Button>
           )}

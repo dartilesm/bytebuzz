@@ -65,30 +65,30 @@ export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
   const direction = getSlideDirection(activeTab, previousTab);
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className="flex flex-col gap-2">
       <Tabs
         value={activeTab}
         onValueChange={(value) => handleTabChange(value)}
-        className='w-full sticky md:top-16 top-14 z-40 bg-background'
+        className="w-full sticky md:top-16 top-14 z-40 bg-background"
         variant="underline"
       >
-        <TabsList className='w-full justify-around rounded-none border-b border-border bg-transparent p-0 gap-0 sticky top-14 md:top-16 z-40'>
+        <TabsList className="w-full justify-around rounded-none border-b border-border bg-transparent p-0 gap-0 sticky top-14 md:top-16 z-40">
           <TabsTrigger value={UserProfileTabs.POSTS}>Posts</TabsTrigger>
           <TabsTrigger value={UserProfileTabs.MEDIA}>Media</TabsTrigger>
           <TabsTrigger value={UserProfileTabs.LIKES}>Likes</TabsTrigger>
         </TabsList>
       </Tabs>
-      <div className='py-4 overflow-hidden px-2 md:px-0'>
-        <AnimatePresence mode='wait' custom={direction}>
+      <div className="py-4 overflow-hidden px-2 md:px-0">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={activeTab}
             custom={direction}
             variants={slideVariants}
-            initial='enter'
-            animate='center'
-            exit='exit'
+            initial="enter"
+            animate="center"
+            exit="exit"
             transition={{ duration: 0.1 }}
-            className='w-full'
+            className="w-full"
           >
             {activeTab === UserProfileTabs.POSTS && (
               <PostsProvider initialPosts={posts}>
@@ -96,10 +96,10 @@ export function UserProfileContent({ postsPromise }: UserProfileContentProps) {
               </PostsProvider>
             )}
             {activeTab === UserProfileTabs.MEDIA && (
-              <p className='text-default-500'>No media posts yet.</p>
+              <p className="text-default-500">No media posts yet.</p>
             )}
             {activeTab === UserProfileTabs.LIKES && (
-              <p className='text-default-500'>No liked posts yet.</p>
+              <p className="text-default-500">No liked posts yet.</p>
             )}
           </motion.div>
         </AnimatePresence>

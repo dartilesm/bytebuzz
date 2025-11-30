@@ -201,7 +201,7 @@ export const codeBlockEditorFunctions = {
    */
   getCharacterLimitStatus(
     code: string,
-    limit: number
+    limit: number,
   ): {
     isApproachingLimit: boolean;
     isAtLimit: boolean;

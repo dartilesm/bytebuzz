@@ -11,7 +11,7 @@ import type { Tables } from "database.types";
 async function toggleReaction(
   this: ServiceContext,
   postId: string,
-  reactionType: Tables<"reactions">["reaction_type"]
+  reactionType: Tables<"reactions">["reaction_type"],
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   return await supabase

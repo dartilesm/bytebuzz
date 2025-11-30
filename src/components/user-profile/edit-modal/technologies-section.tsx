@@ -18,16 +18,16 @@ export function TechnologiesSection({ id }: TechnologiesSectionProps) {
   const { control } = useFormContext<ProfileEditModalFormData>();
 
   return (
-    <div id={id} className='space-y-4'>
+    <div id={id} className="space-y-4">
       <Separator />
-      <div className='space-y-4'>
-        <h3 className='text-sm text-muted-foreground/80'>Technologies</h3>
+      <div className="space-y-4">
+        <h3 className="text-sm text-muted-foreground/80">Technologies</h3>
         <Controller
-          name='top_technologies'
+          name="top_technologies"
           control={control}
           render={({ field }) => (
-            <div className='space-y-2'>
-              <Label htmlFor='top_technologies'>Top Technologies</Label>
+            <div className="space-y-2">
+              <Label htmlFor="top_technologies">Top Technologies</Label>
               <TechnologySelector
                 initialTechnologies={(field.value || []) as TechnologyId[]}
                 onTechnologiesChange={field.onChange}

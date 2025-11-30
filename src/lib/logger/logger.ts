@@ -73,7 +73,7 @@ function logWithCaller(
   level: Level,
   msg: string,
   meta?: LogMetadata,
-  caller?: CallerInfo | null
+  caller?: CallerInfo | null,
 ): void {
   const callerInfo = caller === undefined ? getCallerInfo() : caller;
   const prefix = formatCallerPrefix(callerInfo);

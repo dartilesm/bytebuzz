@@ -32,7 +32,6 @@ function getLogtailClient(): Logtail | null {
   return logtailClient;
 }
 
-
 /**
  * Flushes logs on process exit (for serverless environments)
  * Only sets up exit handlers in Node.js runtime (not Edge Runtime)

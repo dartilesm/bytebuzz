@@ -11,7 +11,7 @@ import {
   CodeBlockFilename,
   CodeBlockFiles,
   CodeBlockHeader,
-  CodeBlockItem
+  CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -26,7 +26,6 @@ type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
   // Extract image count from markdown by counting ![] patterns
   const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
-
 
   return (
     <>
@@ -72,10 +71,11 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 ]}
               >
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
-                  {filename && <CodeBlockFiles>
-                    {(item) => item && <CodeBlockFilename data={item} />}
-                  </CodeBlockFiles>
-                  }
+                  {filename && (
+                    <CodeBlockFiles>
+                      {(item) => item && <CodeBlockFilename data={item} />}
+                    </CodeBlockFiles>
+                  )}
                   <div className="flex items-center">
                     {/* <CodeBlockActionButton tooltipContent="Save to snippets">
                       <Button size="icon-sm" variant="ghost">

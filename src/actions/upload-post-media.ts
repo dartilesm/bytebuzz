@@ -29,15 +29,10 @@ export async function uploadPostMediaAction(
     const filePath = `${userId}/temp/${fileNameWithoutExtension}.${extension}`;
 
     // Upload the file to Supabase storage
-    const { error: uploadError } = await mediaService.uploadFile(
-      "post-images",
-      filePath,
-      file,
-      {
-        cacheControl: "3600",
-        upsert: false,
-      }
-    );
+    const { error: uploadError } = await mediaService.uploadFile("post-images", filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
 
     if (uploadError) {
       throw new Error(`Failed to upload file: ${uploadError.message}`);
