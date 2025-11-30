@@ -9,9 +9,9 @@ import { CameraIcon, ImageIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Controller, useFormContext } from "react-hook-form";
-import type { ProfileEditModalFormData } from "./user-profile-edit-schemas";
-import { PERSONAL_INFO_INPUTS } from "./user-profile-edit-inputs";
-import { useProfileSectionContext } from "./profile-section-context";
+import type { ProfileEditModalFormData } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
+import { PERSONAL_INFO_INPUTS } from "@/components/user-profile/edit-modal/user-profile-edit-inputs";
+import { useProfileSectionContext } from "@/components/user-profile/edit-modal/profile-section-context";
 
 interface PersonalInfoSectionProps {
   handleImageUpload: (

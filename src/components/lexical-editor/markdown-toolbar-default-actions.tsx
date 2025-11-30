@@ -9,9 +9,9 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon } from "lucide-react";
 import { useRef } from "react";
-import { $createEnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
-import { $createMediaNode, $isMediaNode, type MediaData } from "./plugins/media/media-node";
-import { removeMediaNodeById, updateMediaNodeById } from "./functions/media-node-helpers";
+import { $createEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import { $createMediaNode, $isMediaNode, type MediaData } from "@/components/lexical-editor/plugins/media/media-node";
+import { removeMediaNodeById, updateMediaNodeById } from "@/components/lexical-editor/functions/media-node-helpers";
 import {
   validateMediaFile,
   createBlobMediaData,

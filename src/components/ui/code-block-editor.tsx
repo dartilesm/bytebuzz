@@ -26,7 +26,7 @@ import type { editor } from "monaco-editor";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
-import { codeBlockEditorFunctions } from "./functions/code-block-editor-functions";
+import { codeBlockEditorFunctions } from "@/components/ui/functions/code-block-editor-functions";
 
 // Character limit constant
 const CHARACTER_LIMIT = 10_000;

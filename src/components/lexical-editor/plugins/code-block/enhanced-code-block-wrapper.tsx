@@ -4,7 +4,7 @@ import { CodeBlockEditor, type CodeBlockEditorValue } from "@/components/ui/code
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createParagraphNode } from "lexical";
 import { type KeyboardEvent, useEffect, useRef } from "react";
-import type { EnhancedCodeBlockNode } from "./enhanced-code-block-node";
+import type { EnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
 
 interface EnhancedCodeBlockWrapperProps {
   node: EnhancedCodeBlockNode;

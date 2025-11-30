@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComputedNavigationItem } from "@/hooks/use-navigation-items";
-import type { NavigationContext } from "./navigation-items";
+import type { NavigationContext } from "@/components/sidebar/navigation-items";
 import { Fragment, type ReactNode } from "react";
 
 interface NavigationItemRendererProps {

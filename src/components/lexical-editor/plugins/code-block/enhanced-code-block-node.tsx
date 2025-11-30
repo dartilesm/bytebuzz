@@ -10,7 +10,7 @@ import type {
   SerializedLexicalNode,
 } from "lexical";
 import { DecoratorNode } from "lexical";
-import { EnhancedCodeBlockWrapper } from "./enhanced-code-block-wrapper";
+import { EnhancedCodeBlockWrapper } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-wrapper";
 import { log } from "@/lib/logger/logger";
 
 export interface SerializedEnhancedCodeBlockNode extends SerializedLexicalNode {

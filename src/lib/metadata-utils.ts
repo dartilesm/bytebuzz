@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { Tables } from "database.types";
 import type { NestedPost } from "@/types/nested-posts";
-import { extractPlainTextFromMarkdown } from "./markdown-text-extractor";
+import { extractPlainTextFromMarkdown } from "@/lib/markdown-text-extractor";
 
 const metadataBase = process.env.VERCEL_URL
   ? new URL(`https://${process.env.VERCEL_URL}`)

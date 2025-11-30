@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 import { $getSelection, $isRangeSelection } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import type { TextNode } from "lexical";
-import { $createMentionNode, type User } from "./mention-node";
+import { $createMentionNode, type User } from "@/components/lexical-editor/plugins/mentions/mention-node";
 import { MentionSuggestions } from "@/components/lexical-editor/plugins/mentions/mention-suggestions";
 import { log } from "@/lib/logger/logger";
 

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { User } from "./mention-node";
+import type { User } from "@/components/lexical-editor/plugins/mentions/mention-node";
 
 interface MentionSuggestionsProps {
   /**

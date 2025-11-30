@@ -1,6 +1,6 @@
 import type { DestinationStream } from "pino";
 import { Logtail } from "@logtail/node";
-import { writeToLogtail } from "./functions/write-to-logtail";
+import { writeToLogtail } from "@/lib/logger/functions/write-to-logtail";
 
 /**
  * Logtail client instance (singleton)

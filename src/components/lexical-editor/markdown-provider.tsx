@@ -8,10 +8,10 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import type { EditorState, LexicalEditor } from "lexical";
 import { type RefObject, createContext, useContext, useRef } from "react";
 
-import { EnhancedCodeBlockNode } from "./plugins/code-block/enhanced-code-block-node";
-import { createMarkdownTheme, MARKDOWN_FEATURES } from "./markdown-config";
-import { MediaNode } from "./plugins/media/media-node";
-import { MentionNode } from "./plugins/mentions/mention-node";
+import { EnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import { createMarkdownTheme, MARKDOWN_FEATURES } from "@/components/lexical-editor/markdown-config";
+import { MediaNode } from "@/components/lexical-editor/plugins/media/media-node";
+import { MentionNode } from "@/components/lexical-editor/plugins/mentions/mention-node";
 import { log } from "@/lib/logger/logger";
 
 // Create dynamic theme based on enabled features

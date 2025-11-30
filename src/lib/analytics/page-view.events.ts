@@ -1,5 +1,5 @@
 import { isDomainAllowed } from "@/lib/analytics/domain-check";
-import { log } from "../logger/logger";
+import { log } from "@/lib/logger/logger";
 
 interface PageViewEventData {
   ip: string;

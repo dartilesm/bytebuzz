@@ -11,7 +11,7 @@ import {
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import type { TextNode } from "lexical";
-import { $createEnhancedCodeBlockNode } from "./enhanced-code-block-node";
+import { $createEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
 
 interface CodeBlockPluginProps {
   /**

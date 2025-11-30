@@ -1,7 +1,7 @@
 "use client";
 
 import type { ElementTransformer } from "@lexical/markdown";
-import { $createEnhancedCodeBlockNode, $isEnhancedCodeBlockNode } from "./enhanced-code-block-node";
+import { $createEnhancedCodeBlockNode, $isEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
 
 /**
  * Custom markdown transformer for enhanced code blocks

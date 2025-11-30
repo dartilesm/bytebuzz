@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 import { LogInIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { AccountDropdownContent } from "./account-dropdown-content";
-import type { SidebarItemProps } from "./sidebar-item";
+import { AccountDropdownContent } from "@/components/sidebar/account-dropdown-content";
+import type { SidebarItemProps } from "@/components/sidebar/sidebar-item";
 
 type SidebarAccountDropdownProps = Pick<SidebarItemProps, "isActive" | "label">;
 

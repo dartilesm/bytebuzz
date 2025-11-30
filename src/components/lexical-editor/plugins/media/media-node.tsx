@@ -25,7 +25,7 @@ import { DecoratorNode } from "lexical";
 import { DownloadIcon, PencilIcon, TrashIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { MediaEditModal } from "./media-edit-modal";
+import { MediaEditModal } from "@/components/lexical-editor/plugins/media/media-edit-modal";
 
 export type MediaType = "image" | "video";
 

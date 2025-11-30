@@ -1,4 +1,4 @@
-import { normalizeFilePath } from "./functions/normalize-file-path";
+import { normalizeFilePath } from "@/lib/logger/functions/normalize-file-path";
 
 /**
  * Type representing caller information extracted from stack trace

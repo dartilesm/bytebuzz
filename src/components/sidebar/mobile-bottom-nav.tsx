@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { useNavigationItems } from "@/hooks/use-navigation-items";
 import { useNavigationContext } from "@/context/navigation-context";
 import { usePathname } from "next/navigation";
-import { NavigationItemRenderer } from "./navigation-item-renderer";
-import type { NavigationContext } from "./navigation-items";
+import { NavigationItemRenderer } from "@/components/sidebar/navigation-item-renderer";
+import type { NavigationContext } from "@/components/sidebar/navigation-items";
 import Link from "next/link";
 
 /**

@@ -22,7 +22,7 @@ import { useNavigationContext } from "@/context/navigation-context";
 import { ProfileEditModalSection } from "@/components/user-profile/user-profile-edit-modal";
 
 const UserProfileEditModal = dynamic(
-  () => import("./user-profile-edit-modal").then((mod) => mod.UserProfileEditModal),
+  () => import("@/components/user-profile/user-profile-edit-modal").then((mod) => mod.UserProfileEditModal),
   { ssr: false },
 );
 

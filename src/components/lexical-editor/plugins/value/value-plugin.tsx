@@ -4,7 +4,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { useEffect } from "react";
 import { $getRoot, $createParagraphNode, $createTextNode } from "lexical";
 import { $convertFromMarkdownString } from "@lexical/markdown";
-import { customTransformers } from "../../markdown-config";
+import { customTransformers } from "@/components/lexical-editor/markdown-config";
 
 interface ValuePluginProps {
   /**

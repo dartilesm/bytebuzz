@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useNavigationContext } from "@/context/navigation-context";
 import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
-import { AccountDropdownContent } from "./account-dropdown-content";
+import { AccountDropdownContent } from "@/components/sidebar/account-dropdown-content";
 import { UserIcon } from "lucide-react";
 
 interface MobileProfileButtonProps {

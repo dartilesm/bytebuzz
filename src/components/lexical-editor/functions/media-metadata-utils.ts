@@ -1,4 +1,4 @@
-import type { MediaData } from "../plugins/media/media-node";
+import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
 
 /**
  * Metadata that can be stored in markdown for media files
