@@ -1,11 +1,21 @@
 "use client";
 
 import { XIcon } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { PostList } from "@/components/post/post-list";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostComposer } from "@/components/post-composer/post-composer";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PostsProvider } from "@/context/posts-context";
 import { usePostThreadQuery } from "@/hooks/queries/use-post-thread-query";
@@ -13,12 +23,29 @@ import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 
 /**
  * Full-screen content viewer modal with split layout
- * Left panel displays the content (image, etc.)
+ * Left panel displays the carousel of images
  * Right panel displays the post thread and replies
  */
 export function ContentViewerModal() {
-  const { isOpen, content, postId, closeViewer } = useContentViewerContext();
+  const { isOpen, images, initialImageIndex, postId, closeViewer } = useContentViewerContext();
   const { data: threadData, isLoading } = usePostThreadQuery(postId);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
+  useEffect(() => {
+    if (api && initialImageIndex > 0) {
+      api.scrollTo(initialImageIndex);
+    }
+  }, [api, initialImageIndex]);
 
   if (!isOpen) {
     return null;
@@ -38,9 +65,34 @@ export function ContentViewerModal() {
 
       {/* Modal Content */}
       <div className="relative z-10 flex h-full w-full bg-background">
-        {/* Left Panel - Content Display */}
+        {/* Left Panel - Carousel Display */}
         <div className="flex flex-1 items-center justify-center bg-black p-4">
-          <div className="relative h-full w-full max-h-full max-w-full">{content}</div>
+          <Carousel setApi={setApi} className="w-full h-full flex items-center justify-center">
+            <CarouselContent className="h-full items-center">
+              {images.map((image, index) => (
+                <CarouselItem key={index} className="h-full flex items-center justify-center">
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    <Image
+                      src={image.src}
+                      alt={image.alt || `Image ${index + 1}`}
+                      fill
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {images.length > 1 && (
+              <>
+                <CarouselPrevious className="left-4" />
+                <CarouselNext className="right-4" />
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 px-3 py-1 rounded-full text-white text-sm">
+                  {current + 1} / {images.length}
+                </div>
+              </>
+            )}
+          </Carousel>
         </div>
 
         {/* Right Panel - Post Thread */}
@@ -71,7 +123,7 @@ export function ContentViewerModal() {
                   {postAncestry.length > 0 && (
                     <PostsProvider initialPosts={directReplies}>
                       <PostWrapper isAncestry>
-                        <UserPost ancestry={postAncestry} isNavigationDisabled />
+                        <UserPost ancestry={postAncestry} isNavigationDisabled hideMedia={true} />
                       </PostWrapper>
                       <h3 className="text-base font-medium">Replies</h3>
                       {postId && (

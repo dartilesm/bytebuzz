@@ -59,6 +59,11 @@ interface UserPostProps {
    * Initial characters per each expansion level
    */
   charsPerLevel?: number;
+  /**
+   * When true, hides media content (images) in the post
+   * Used in modal context to prevent duplicate display
+   */
+  hideMedia?: boolean;
 }
 
 /**
@@ -93,6 +98,7 @@ export function UserPost({
   children,
   minVisibleContentLength,
   charsPerLevel,
+  hideMedia,
 }: UserPostProps) {
   if (!post && !ancestry) {
     throw new Error("Either post or ancestry must be provided");
@@ -107,7 +113,7 @@ export function UserPost({
 
   return (
     <>
-      {ancestry && <UserPostThread posts={ancestry} />}
+      {ancestry && <UserPostThread posts={ancestry} hideMedia={hideMedia} />}
       {post && (
         <PostProvider
           post={post}
@@ -117,6 +123,7 @@ export function UserPost({
           isNavigationDisabled={isNavigationDisabled}
           minVisibleContentLength={minVisibleContentLength}
           charsPerLevel={charsPerLevel}
+          hideMedia={hideMedia}
         >
           <PostCard ref={ref} className={className}>
             <PostHeader />

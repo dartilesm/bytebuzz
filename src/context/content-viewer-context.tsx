@@ -3,18 +3,25 @@
 import { createContext, useState } from "react";
 import { ContentViewerModal } from "@/components/content-viewer/content-viewer-modal";
 
+export interface ImageData {
+  src: string;
+  alt?: string;
+}
+
 export interface ContentViewerContextType {
   isOpen: boolean;
-  content: React.ReactNode | null;
   postId: string | undefined;
-  openViewer: (content: React.ReactNode, postId: string) => void;
+  images: ImageData[];
+  initialImageIndex: number;
+  openViewer: (images: ImageData[], postId: string, initialIndex?: number) => void;
   closeViewer: () => void;
 }
 
 export const ContentViewerContext = createContext<ContentViewerContextType>({
   isOpen: false,
-  content: null,
   postId: undefined,
+  images: [],
+  initialImageIndex: 0,
   openViewer: () => {},
   closeViewer: () => {},
 });
@@ -24,18 +31,21 @@ export const ContentViewerContext = createContext<ContentViewerContextType>({
  */
 export function ContentViewerProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [content, setContent] = useState<React.ReactNode | null>(null);
+  const [images, setImages] = useState<ImageData[]>([]);
+  const [initialImageIndex, setInitialImageIndex] = useState(0);
   const [postId, setPostId] = useState<string | undefined>(undefined);
 
-  function openViewer(newContent: React.ReactNode, newPostId: string) {
-    setContent(newContent);
+  function openViewer(newImages: ImageData[], newPostId: string, initialIndex = 0) {
+    setImages(newImages);
+    setInitialImageIndex(initialIndex);
     setPostId(newPostId);
     setIsOpen(true);
   }
 
   function closeViewer() {
     setIsOpen(false);
-    setContent(null);
+    setImages([]);
+    setInitialImageIndex(0);
     setPostId(undefined);
   }
 
@@ -43,7 +53,8 @@ export function ContentViewerProvider({ children }: { children: React.ReactNode 
     <ContentViewerContext.Provider
       value={{
         isOpen,
-        content,
+        images,
+        initialImageIndex,
         postId,
         openViewer,
         closeViewer,
