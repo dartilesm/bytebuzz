@@ -85,8 +85,22 @@ export function UserProfileEditModal({
         behavior: "smooth",
         block: "center",
       });
+
+      // Wait a few milliseconds to ensure the section is in view
+      setTimeout(() => {
+        // Focus the closest form field
+        const closestFormField = sectionElement.querySelector("input, textarea") as
+          | HTMLInputElement
+          | HTMLTextAreaElement
+          | null;
+        if (closestFormField) {
+          closestFormField.focus();
+        }
+      }, 150);
+
       // Add highlight animation class
       sectionElement.classList.toggle("animate-pulse");
+
       // Remove the class after animation completes (2000ms)
       setTimeout(() => {
         sectionElement.classList.remove("animate-pulse");
