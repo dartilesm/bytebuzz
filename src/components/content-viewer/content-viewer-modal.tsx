@@ -28,6 +28,7 @@ import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
  */
 export function ContentViewerModal() {
   const { isOpen, images, initialImageIndex, postId, closeViewer } = useContentViewerContext();
+  console.log({ isOpen, images, initialImageIndex, postId, closeViewer });
   const { data: threadData, isLoading } = usePostThreadQuery(postId);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
@@ -58,7 +59,7 @@ export function ContentViewerModal() {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-accent/80 backdrop-blur-sm"
         onClick={closeViewer}
         aria-hidden="true"
       />
@@ -66,9 +67,15 @@ export function ContentViewerModal() {
       {/* Modal Content */}
       <div className="relative z-10 flex h-full w-full bg-background">
         {/* Left Panel - Carousel Display */}
-        <div className="flex flex-1 items-center justify-center bg-black p-4">
-          <Carousel setApi={setApi} className="w-full h-full flex items-center justify-center">
-            <CarouselContent className="h-full items-center">
+        <div className="flex flex-1 items-center justify-center bg-accent p-4">
+          <Carousel
+            setApi={setApi}
+            opts={{
+              align: "center",
+            }}
+            className="size-full flex *:data-[slot=carousel-content]:size-full"
+          >
+            <CarouselContent>
               {images.map((image, index) => (
                 <CarouselItem key={index} className="h-full flex items-center justify-center">
                   <div className="relative w-full h-full flex items-center justify-center">
@@ -87,7 +94,7 @@ export function ContentViewerModal() {
               <>
                 <CarouselPrevious className="left-4" />
                 <CarouselNext className="right-4" />
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 px-3 py-1 rounded-full text-white text-sm">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-accent/50 px-3 py-1 rounded-full text-accent-foreground text-sm">
                   {current + 1} / {images.length}
                 </div>
               </>

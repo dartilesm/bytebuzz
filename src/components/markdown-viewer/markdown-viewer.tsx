@@ -155,24 +155,12 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 const { src, alt } = props;
                 const imageUrl = `${src}?postId=${postId}`;
 
-                const imageComponent = (
-                  <div className="relative h-full w-full flex items-center justify-center">
-                    <Image
-                      className="h-full w-full object-contain"
-                      src={imageUrl}
-                      alt={alt || "Image"}
-                      fill
-                      unoptimized
-                    />
-                  </div>
-                );
-
                 return (
                   <div
                     className={cn(
                       "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
-                    onClick={() => openViewer(imageComponent, postId)}
+                    onClick={() => openViewer([{ src: imageUrl, alt: alt || "Image" }], postId)}
                   >
                     <Image
                       className="h-full object-cover"
