@@ -39,4 +39,3 @@ export function usePostThreadQuery(postId: string | undefined) {
     enabled: !!postId,
   });
 }
-

@@ -54,4 +54,3 @@ export function ContentViewerProvider({ children }: { children: React.ReactNode 
     </ContentViewerContext.Provider>
   );
 }
-
