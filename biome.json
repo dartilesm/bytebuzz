@@ -84,7 +84,7 @@
         "noBlankTarget": "error"
       },
       "style": {
-        "noNamespace": "error",
+        "noNamespace": "off",
         "noNonNullAssertion": "error",
         "noParameterAssign": "error",
         "noRestrictedImports": {
