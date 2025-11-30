@@ -5,6 +5,7 @@ import { NavigationContextProvider } from "@/context/navigation-context";
 import { currentUser } from "@clerk/nextjs/server";
 import { serializeUser } from "@/lib/auth/serialize-user";
 import { detectMobileFromHeaders } from "@/lib/device/detect-mobile";
+import { headers } from "next/headers";
 
 /**
  * Layout for the social section. Renders the main chrome and an optional `@modal` parallel route
@@ -15,6 +16,8 @@ export default async function AuthenticatedLayout({ children, modal }: LayoutPro
   const user = await currentUser();
   const serializedUser = serializeUser(user);
   const isMobile = await detectMobileFromHeaders();
+  const headerList = await headers();
+  console.log("x-full-url", headerList.get("x-full-url"));
 
   return (
     <NavigationContextProvider initialUser={serializedUser} initialIsMobile={isMobile}>
