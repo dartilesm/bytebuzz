@@ -3,6 +3,7 @@
 import { XIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useScrollLock } from "usehooks-ts";
 import { PostList } from "@/components/post/post-list";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
@@ -16,10 +17,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { PostsProvider } from "@/context/posts-context";
 import { usePostThreadQuery } from "@/hooks/queries/use-post-thread-query";
 import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
+import { cn } from "@/lib/utils";
 
 /**
  * Full-screen content viewer modal with split layout
@@ -28,7 +29,7 @@ import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
  */
 export function ContentViewerModal() {
   const { isOpen, images, initialImageIndex, postId, closeViewer } = useContentViewerContext();
-  console.log({ isOpen, images, initialImageIndex, postId, closeViewer });
+  useScrollLock();
   const { data: threadData, isLoading } = usePostThreadQuery(postId);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
@@ -94,8 +95,22 @@ export function ContentViewerModal() {
               <>
                 <CarouselPrevious className="left-4" />
                 <CarouselNext className="right-4" />
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-accent/50 px-3 py-1 rounded-full text-accent-foreground text-sm">
-                  {current + 1} / {images.length}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
+                  {images.map((_, index) => (
+                    <Button
+                      key={index}
+                      type="button"
+                      size="icon"
+                      variant={index === current ? "default" : "outline"}
+                      onClick={() => {
+                        api?.scrollTo(index);
+                      }}
+                      aria-label={`Go to slide ${index + 1}`}
+                      className={cn("h-2 rounded-full transition-all", {
+                        "w-2": index !== current,
+                      })}
+                    />
+                  ))}
                 </div>
               </>
             )}
@@ -103,7 +118,7 @@ export function ContentViewerModal() {
         </div>
 
         {/* Right Panel - Post Thread */}
-        <div className="flex w-full flex-col border-l border-border bg-background md:w-[400px]">
+        <div className="grid grid-rows-[auto_1fr] w-full border-l border-border bg-background md:w-[400px] max-h-dvh">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border p-4">
             <h2 className="text-lg font-semibold">Post</h2>
@@ -119,18 +134,19 @@ export function ContentViewerModal() {
           </div>
 
           {/* Scrollable Content */}
-          <ScrollArea className="flex-1">
+          <div className="overflow-y-auto">
             <div className="flex flex-col gap-4 p-4">
-              {isLoading ? (
+              {isLoading && (
                 <div className="flex items-center justify-center py-8">
                   <span className="text-sm text-muted-foreground">Loading...</span>
                 </div>
-              ) : (
+              )}
+              {!isLoading && (
                 <>
                   {postAncestry.length > 0 && (
                     <PostsProvider initialPosts={directReplies}>
                       <PostWrapper isAncestry>
-                        <UserPost ancestry={postAncestry} isNavigationDisabled hideMedia={true} />
+                        <UserPost ancestry={postAncestry} isNavigationDisabled />
                       </PostWrapper>
                       <h3 className="text-base font-medium">Replies</h3>
                       {postId && (
@@ -152,7 +168,7 @@ export function ContentViewerModal() {
                 </>
               )}
             </div>
-          </ScrollArea>
+          </div>
         </div>
       </div>
     </div>

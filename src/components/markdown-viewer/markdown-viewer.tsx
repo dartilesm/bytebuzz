@@ -24,9 +24,21 @@ type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 
 export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
-  const { openViewer } = useContentViewerContext();
-  // Extract image count from markdown by counting ![] patterns
-  const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
+  const { openViewer, isOpen, postId: viewedPostId } = useContentViewerContext();
+
+  // Extract images from markdown
+  const images: { src: string; alt: string }[] = [];
+  const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
+  let match;
+  while ((match = imageRegex.exec(markdown)) !== null) {
+    images.push({
+      alt: match[1],
+      src: `${match[2]}?postId=${postId}`,
+    });
+  }
+
+  const imageCount = images.length;
+  const shouldHideImages = isOpen && viewedPostId === postId;
 
   return (
     <>
@@ -80,11 +92,6 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     </CodeBlockFiles>
                   )}
                   <div className="flex items-center">
-                    {/* <CodeBlockActionButton tooltipContent="Save to snippets">
-                      <Button size="icon-sm" variant="ghost">
-                        <BookmarkIcon className="size-3.5" />
-                      </Button>
-                    </CodeBlockActionButton> */}
                     <CodeBlockCopyButton />
                   </div>
                 </CodeBlockHeader>
@@ -124,7 +131,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
       >
         {markdown}
       </Markdown>
-      {imageCount > 0 && (
+      {imageCount > 0 && !shouldHideImages && (
         <div
           className={cn(
             "rounded-medium aspect-video border dark:border-content2 border-content3 overflow-hidden grid",
@@ -155,12 +162,15 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 const { src, alt } = props;
                 const imageUrl = `${src}?postId=${postId}`;
 
+                // Find index of this image in the images array
+                const index = images.findIndex((img) => img.src === imageUrl);
+
                 return (
                   <div
                     className={cn(
                       "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
-                    onClick={() => openViewer([{ src: imageUrl, alt: alt || "Image" }], postId)}
+                    onClick={() => openViewer(images, postId, index !== -1 ? index : 0)}
                   >
                     <Image
                       className="h-full object-cover"

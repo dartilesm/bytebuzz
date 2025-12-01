@@ -27,9 +27,7 @@ export interface PostContextType {
   togglePostModal: (isOpen?: boolean, action?: "reply" | "clone") => void;
 }
 
-export const PostContext = createContext<PostContextType>({
-  hideMedia: false,
-} as PostContextType);
+export const PostContext = createContext<PostContextType>({} as PostContextType);
 
 export interface PostProviderProps {
   children: React.ReactNode;
@@ -46,11 +44,6 @@ export interface PostProviderProps {
    * Initial characters per each expansion level
    */
   charsPerLevel?: number;
-  /**
-   * When true, hides media content (images) in the post
-   * Used in modal context to prevent duplicate display
-   */
-  hideMedia?: boolean;
 }
 
 export function PostProvider({
@@ -62,7 +55,6 @@ export function PostProvider({
   isLastInThread,
   minVisibleContentLength,
   charsPerLevel,
-  hideMedia,
 }: PostProviderProps) {
   const { postId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,7 +77,6 @@ export function PostProvider({
         togglePostModal,
         minVisibleContentLength,
         charsPerLevel,
-        hideMedia,
       }}
     >
       {children}
