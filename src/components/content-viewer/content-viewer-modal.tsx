@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 export function ContentViewerModal() {
   const { isOpen, images, initialImageIndex, postId, closeViewer } = useContentViewerContext();
   useScrollLock();
+  console.log("ContentViewerModal", images, initialImageIndex, postId);
   const { data: threadData, isLoading } = usePostThreadQuery(postId);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);

@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
-import Markdown from "react-markdown";
+import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 import {
   type BundledLanguage,
@@ -16,29 +17,58 @@ import {
   CodeBlockHeader,
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
-import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { cn } from "@/lib/utils";
+
+const ALLOWED_MEDIA_ELEMENTS = ["img", "p"] as const;
+
+function getAllowedMediaElements(disallowedMediaElements: DisallowedMediaElements) {
+  const allowedMediaElementsSet = new Set(ALLOWED_MEDIA_ELEMENTS);
+  const disallowedMediaElementsSet = new Set(disallowedMediaElements);
+
+  const allowedMediaElements = allowedMediaElementsSet.difference(disallowedMediaElementsSet);
+  const allowedMediaElementsArray = Array.from(allowedMediaElements);
+
+  return allowedMediaElementsArray;
+}
+
+export type DisallowedMediaElements = Exclude<(typeof ALLOWED_MEDIA_ELEMENTS)[number], "p">[];
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 
-export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
-  const { openViewer, isOpen, postId: viewedPostId } = useContentViewerContext();
+export type MarkdownViewerProps = {
+  markdown: string;
+  postId: string;
+  disallowedMediaElements?: DisallowedMediaElements;
+  componentEvents?: {
+    [key in keyof Components]?: {
+      onClick?: () => void;
+    };
+  } & {
+    img?: {
+      onClick?: (event: {
+        images: { src: string; alt: string }[];
+        index: number;
+        postId: string;
+      }) => void;
+    };
+  };
+};
+
+export function MarkdownViewer({
+  markdown,
+  postId,
+  disallowedMediaElements = [],
+  componentEvents,
+}: MarkdownViewerProps) {
+  const allowedMediaElements = getAllowedMediaElements(disallowedMediaElements);
 
   // Extract images from markdown
-  const images: { src: string; alt: string }[] = [];
-  const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
-  let match;
-  while ((match = imageRegex.exec(markdown)) !== null) {
-    images.push({
-      alt: match[1],
-      src: `${match[2]}?postId=${postId}`,
-    });
-  }
+  const images = getImagesFromMarkdown({ markdown, postId });
 
   const imageCount = images.length;
-  const shouldHideImages = isOpen && viewedPostId === postId;
+  const shouldHideImages = disallowedMediaElements.includes("img");
 
   return (
     <>
@@ -53,7 +83,11 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
 
             if (!children) return null;
 
-            return <p className={className}>{children}</p>;
+            return (
+              <p className={className} onClick={componentEvents?.p?.onClick}>
+                {children}
+              </p>
+            );
           },
           code: ({ node, ...props }) => {
             const { children, className } = props;
@@ -82,6 +116,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     code: codeContent,
                   },
                 ]}
+                onClick={componentEvents?.code?.onClick}
               >
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
                   {filename && (
@@ -113,7 +148,10 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           ul: ({ ...props }) => {
             const { children, className } = props;
             return (
-              <ul className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}>
+              <ul
+                className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}
+                onClick={componentEvents?.ul?.onClick}
+              >
                 {children}
               </ul>
             );
@@ -121,7 +159,10 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           ol: ({ ...props }) => {
             const { children, className } = props;
             return (
-              <ol className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}>
+              <ol
+                className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}
+                onClick={componentEvents?.ol?.onClick}
+              >
                 {children}
               </ol>
             );
@@ -170,7 +211,9 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     className={cn(
                       "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
-                    onClick={() => openViewer(images, postId, index !== -1 ? index : 0)}
+                    onClick={() => {
+                      componentEvents?.img?.onClick?.({ images, index, postId });
+                    }}
                   >
                     <Image
                       className="h-full object-cover"
@@ -183,7 +226,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 );
               },
             }}
-            allowedElements={["img", "p"]}
+            allowedElements={allowedMediaElements}
           >
             {markdown}
           </Markdown>

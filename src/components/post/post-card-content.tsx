@@ -2,7 +2,10 @@
 
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
+import {
+  type DisallowedMediaElements,
+  MarkdownViewer,
+} from "@/components/markdown-viewer/markdown-viewer";
 import {
   getDisplayContent,
   getExpansionData,
@@ -10,8 +13,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
+
+const HIDDEN_MEDIA_ELEMENTS: DisallowedMediaElements = ["img"] as const;
 
 interface PostContentProps {
   children?: React.ReactNode;
@@ -24,11 +30,16 @@ export function PostContent({ children }: PostContentProps) {
     minVisibleContentLength = 1000,
     charsPerLevel = 300,
   } = usePostContext();
+  const { openViewer, isOpen } = useContentViewerContext();
   const { content } = post;
 
   const [expansionLevel, setExpansionLevel] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<string | undefined>(undefined);
+
+  function handleImageClick({ images, index, postId }) {
+    openViewer(images, postId, index);
+  }
 
   const expansionData = getExpansionData({
     content: content ?? "",
@@ -44,6 +55,8 @@ export function PostContent({ children }: PostContentProps) {
 
   const canExpand = expansionLevel < expansionData.levels - 1;
   const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
+
+  const disallowedMediaElements = isOpen && isThreadPagePost ? HIDDEN_MEDIA_ELEMENTS : [];
 
   useEffect(() => {
     if (contentRef.current) {
@@ -65,7 +78,16 @@ export function PostContent({ children }: PostContentProps) {
       })}
     >
       {!expansionData.shouldShowControls && (
-        <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />
+        <MarkdownViewer
+          markdown={content ?? ""}
+          postId={post.id ?? ""}
+          disallowedMediaElements={disallowedMediaElements}
+          componentEvents={{
+            img: {
+              onClick: handleImageClick,
+            },
+          }}
+        />
       )}
       {expansionData.shouldShowControls && (
         <>
@@ -78,7 +100,16 @@ export function PostContent({ children }: PostContentProps) {
               shadowVisibility={isFullyExpanded ? "none" : "bottom"}
               ref={contentRef}
             >
-              <MarkdownViewer markdown={displayContent} postId={post.id ?? ""} />
+              <MarkdownViewer
+                markdown={displayContent}
+                postId={post.id ?? ""}
+                disallowedMediaElements={isOpen ? HIDDEN_MEDIA_ELEMENTS : []}
+                componentEvents={{
+                  img: {
+                    onClick: handleImageClick,
+                  },
+                }}
+              />
             </ScrollArea>
           </div>
           {canExpand && (
