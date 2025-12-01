@@ -67,15 +67,15 @@ export function ContentViewerModal() {
       {/* Modal Content */}
       <div className="relative z-10 flex h-full w-full bg-background">
         {/* Left Panel - Carousel Display */}
-        <div className="flex flex-1 items-center justify-center bg-accent p-4">
+        <div className="flex flex-1 items-center justify-center bg-accent p-0">
           <Carousel
             setApi={setApi}
             opts={{
               align: "center",
             }}
-            className="size-full flex *:data-[slot=carousel-content]:size-full"
+            className="size-full flex [&>div]:data-[slot=carousel-content]:size-full"
           >
-            <CarouselContent>
+            <CarouselContent className="flex-1 h-full">
               {images.map((image, index) => (
                 <CarouselItem key={index} className="h-full flex items-center justify-center">
                   <div className="relative w-full h-full flex items-center justify-center">
