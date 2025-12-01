@@ -42,7 +42,7 @@ export type MarkdownViewerProps = {
   postId: string;
   disallowedMediaElements?: DisallowedMediaElements;
   componentEvents?: {
-    [key in keyof Components]?: {
+    [key in keyof Omit<Components, "img">]?: {
       onClick?: () => void;
     };
   } & {

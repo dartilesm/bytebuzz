@@ -37,7 +37,15 @@ export function PostContent({ children }: PostContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<string | undefined>(undefined);
 
-  function handleImageClick({ images, index, postId }) {
+  function handleImageClick({
+    images,
+    index,
+    postId,
+  }: {
+    images: { src: string; alt: string }[];
+    index: number;
+    postId: string;
+  }) {
     openViewer(images, postId, index);
   }
 
