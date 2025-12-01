@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
+import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
 const HIDDEN_MEDIA_ELEMENTS: DisallowedMediaElements = ["img"] as const;
 
@@ -37,16 +38,13 @@ export function PostContent({ children }: PostContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<string | undefined>(undefined);
 
-  function handleImageClick({
-    images,
-    index,
-    postId,
-  }: {
-    images: { src: string; alt: string }[];
-    index: number;
-    postId: string;
-  }) {
-    openViewer(images, postId, index);
+  function handleEvent(event: MarkdownComponentEvent) {
+    if (event.source === "img" && event.type === "click") {
+      const { images, index, postId } = event.payload;
+      openViewer(images, postId, index);
+    }
+    // Handle other events here as needed
+    // e.g., if (event.source === "code" && event.type === "click") { ... }
   }
 
   const expansionData = getExpansionData({
@@ -90,11 +88,7 @@ export function PostContent({ children }: PostContentProps) {
           markdown={content ?? ""}
           postId={post.id ?? ""}
           disallowedMediaElements={disallowedMediaElements}
-          componentEvents={{
-            img: {
-              onClick: handleImageClick,
-            },
-          }}
+          onEvent={handleEvent}
         />
       )}
       {expansionData.shouldShowControls && (
@@ -112,11 +106,7 @@ export function PostContent({ children }: PostContentProps) {
                 markdown={displayContent}
                 postId={post.id ?? ""}
                 disallowedMediaElements={isOpen ? HIDDEN_MEDIA_ELEMENTS : []}
-                componentEvents={{
-                  img: {
-                    onClick: handleImageClick,
-                  },
-                }}
+                onEvent={handleEvent}
               />
             </ScrollArea>
           </div>

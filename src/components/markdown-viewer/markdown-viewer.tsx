@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
-import Markdown, { type Components } from "react-markdown";
+import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
@@ -18,6 +18,7 @@ import {
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import { cn } from "@/lib/utils";
+import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
 const ALLOWED_MEDIA_ELEMENTS = ["img", "p"] as const;
 
@@ -41,26 +42,18 @@ export type MarkdownViewerProps = {
   markdown: string;
   postId: string;
   disallowedMediaElements?: DisallowedMediaElements;
-  componentEvents?: {
-    [key in keyof Omit<Components, "img">]?: {
-      onClick?: () => void;
-    };
-  } & {
-    img?: {
-      onClick?: (event: {
-        images: { src: string; alt: string }[];
-        index: number;
-        postId: string;
-      }) => void;
-    };
-  };
+  /**
+   * Generic event handler for all markdown component events
+   * Use this instead of componentEvents for better scalability
+   */
+  onEvent?: (event: MarkdownComponentEvent) => void;
 };
 
 export function MarkdownViewer({
   markdown,
   postId,
   disallowedMediaElements = [],
-  componentEvents,
+  onEvent,
 }: MarkdownViewerProps) {
   const allowedMediaElements = getAllowedMediaElements(disallowedMediaElements);
 
@@ -84,7 +77,12 @@ export function MarkdownViewer({
             if (!children) return null;
 
             return (
-              <p className={className} onClick={componentEvents?.p?.onClick}>
+              <p
+                className={className}
+                onClick={() => {
+                  onEvent?.({ source: "p", type: "click", payload: undefined });
+                }}
+              >
                 {children}
               </p>
             );
@@ -116,7 +114,17 @@ export function MarkdownViewer({
                     code: codeContent,
                   },
                 ]}
-                onClick={componentEvents?.code?.onClick}
+                onClick={() => {
+                  onEvent?.({
+                    source: "code",
+                    type: "click",
+                    payload: {
+                      language: languageValue,
+                      code: codeContent,
+                      filename,
+                    },
+                  });
+                }}
               >
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
                   {filename && (
@@ -150,7 +158,9 @@ export function MarkdownViewer({
             return (
               <ul
                 className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}
-                onClick={componentEvents?.ul?.onClick}
+                onClick={() => {
+                  onEvent?.({ source: "ul", type: "click", payload: undefined });
+                }}
               >
                 {children}
               </ul>
@@ -161,7 +171,9 @@ export function MarkdownViewer({
             return (
               <ol
                 className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}
-                onClick={componentEvents?.ol?.onClick}
+                onClick={() => {
+                  onEvent?.({ source: "ol", type: "click", payload: undefined });
+                }}
               >
                 {children}
               </ol>
@@ -212,7 +224,16 @@ export function MarkdownViewer({
                       "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
                     onClick={() => {
-                      componentEvents?.img?.onClick?.({ images, index, postId });
+                      const eventPayload = {
+                        images,
+                        index: index !== -1 ? index : 0,
+                        postId,
+                      };
+                      onEvent?.({
+                        source: "img",
+                        type: "click",
+                        payload: eventPayload,
+                      });
                     }}
                   >
                     <Image
