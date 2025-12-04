@@ -1,7 +1,7 @@
 "use client";
 
 import type { Tables } from "database.types";
-import { Link2Icon, MapPinIcon } from "lucide-react";
+import { CalendarIcon, Link2Icon, MapPinIcon } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,18 @@ export function UserProfileDescription({ profilePromise }: UserProfileDescriptio
       .filter((tech): tech is NonNullable<typeof tech> => tech !== undefined);
   }
 
+  function formatJoinDate(date: string | null): string | null {
+    if (!date) return null;
+    const dateObj = new Date(date);
+    if (Number.isNaN(dateObj.getTime())) return null;
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+    }).format(dateObj);
+  }
+
   const selectedTechnologies = getSelectedTechnologies();
+  const formattedJoinDate = formatJoinDate(profile.join_date);
 
   return (
     <div className="flex flex-col gap-4">
@@ -77,6 +88,12 @@ export function UserProfileDescription({ profilePromise }: UserProfileDescriptio
                 </span>
               </Link>
             </Button>
+          )}
+          {formattedJoinDate && (
+            <div className="flex items-center gap-1.5 min-w-fit">
+              <CalendarIcon size={14} className="text-default-400 shrink-0" />
+              <span className="truncate">Joined {formattedJoinDate}</span>
+            </div>
           )}
         </div>
 
