@@ -66,19 +66,17 @@ export function UserAvatar({
   const shouldShowBadge = showWelcomeBadge && isNewUser(userJoinDate);
 
   return (
-    <div
-      className={cn(
-        "relative size-24 border-4 border-background ring-1 ring-border/10 rounded-full",
-        className,
-      )}
-    >
+    <div className={cn("relative inline-block rounded-full @container-[size]", className)}>
       <Avatar className="size-full">
         <AvatarImage src={imageUrl} alt={displayName} />
         <AvatarFallback>{displayName?.[0] ?? ""}</AvatarFallback>
       </Avatar>
       {shouldShowBadge && (
-        <Badge className="text-2xs absolute -bottom-2 left-1/2 -translate-x-1/2 z-10 bg-green-600 dark:bg-green-700">
-          New
+        <Badge
+          className="absolute -bottom-[10cqw] left-1/2 -translate-x-1/2 z-10 h-auto min-w-fit justify-center rounded-full text-[clamp(.5rem,20cqw,.75rem)] leading-none font-bold tracking-wide uppercase bg-success text-success-foreground"
+          variant="secondary"
+        >
+          new
         </Badge>
       )}
     </div>
