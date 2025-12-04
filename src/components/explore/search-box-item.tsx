@@ -4,9 +4,9 @@ import type { Database } from "database.types";
 import { SearchIcon } from "lucide-react";
 import Link from "next/link";
 import type { UrlObject } from "url";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/ui/follow-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserAvatar } from "@/components/user-avatar";
 import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
@@ -50,12 +50,7 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
     <Link className="w-full block" href={`/@${userData?.username}` as unknown as UrlObject}>
       <div className="flex justify-between items-center gap-3">
         <div className="flex gap-3 items-center flex-1 min-w-0">
-          <Avatar className="size-10 border border-border">
-            <AvatarImage src={userData?.image_url ?? undefined} alt={userData?.display_name} />
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-              {userData?.display_name?.charAt(0)?.toUpperCase() || "U"}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar user={userData} className="size-10 border border-border" />
           <div className="flex flex-col gap-0.5 flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h4 className="text-sm font-semibold text-foreground truncate">

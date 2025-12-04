@@ -1,9 +1,9 @@
 "use client";
 
 import type { User } from "@/components/lexical-editor/plugins/mentions/mention-node";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { UserAvatar } from "@/components/user-avatar";
 import { cn } from "@/lib/utils";
 
 interface MentionSuggestionsProps {
@@ -94,10 +94,12 @@ export function MentionSuggestions({
                 aria-selected={index === selectedIndex}
               >
                 <div className="flex items-center gap-3 w-full">
-                  <Avatar className="h-8 w-8 flex-shrink-0">
-                    <AvatarImage src={user.avatarUrl} alt={user.displayName} />
-                    <AvatarFallback>{user.displayName[0]}</AvatarFallback>
-                  </Avatar>
+                  <UserAvatar
+                    avatarUrl={user.avatarUrl}
+                    name={user.displayName}
+                    showWelcomeBadge={false}
+                    className="h-8 w-8 shrink-0"
+                  />
                   <div className="flex flex-col items-start text-left min-w-0 flex-1">
                     <span className="font-medium text-sm truncate w-full">{user.displayName}</span>
                     <span className="text-xs text-muted-foreground truncate w-full">
