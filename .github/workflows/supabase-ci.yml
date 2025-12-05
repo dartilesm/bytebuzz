@@ -15,6 +15,13 @@ on:
     paths:
       - "supabase/**"
 
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "supabase/**"
+
   workflow_dispatch:
 
 jobs:
@@ -22,12 +29,12 @@ jobs:
     name: Test, lint, and generate backup of database
     runs-on: ubuntu-latest
     environment:
-      name: Preview – bytebuzz
+      name: ${{ (github.event_name == 'pull_request' && github.base_ref == 'main') && 'Production – bytebuzz' || 'Preview – bytebuzz' }}
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
-      SUPABASE_PROJECT_ID: ${{ secrets.STAGING_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ (github.event_name == 'pull_request' && github.base_ref == 'main') && secrets.PRODUCTION_DB_PASSWORD || secrets.STAGING_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ (github.event_name == 'pull_request' && github.base_ref == 'main') && secrets.PRODUCTION_PROJECT_ID || secrets.STAGING_PROJECT_ID }}
       CLERK_DOMAIN: ${{ secrets.CLERK_DOMAIN }}
 
     steps:
@@ -43,7 +50,7 @@ jobs:
       - name: Start Supabase local development setup
         run: bun run db:start && supabase db reset
 
-      - name: Link to staging project
+      - name: Link to ${{ (github.event_name == 'pull_request' && github.base_ref == 'main') && 'production' || 'staging' }} project
         run: bun run db:link --project-ref $SUPABASE_PROJECT_ID
 
       - name: See schemas differences between local and remote
