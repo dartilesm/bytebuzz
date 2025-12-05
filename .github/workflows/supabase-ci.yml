@@ -63,6 +63,8 @@ jobs:
             git diff
             exit 1
           fi
+      - name: Check migrations to be applied
+        run: bun run db:push-remote --dry-run
 
       - name: Generate backup
         run: bun run db:dump-remote

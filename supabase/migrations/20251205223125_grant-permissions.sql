@@ -1,7 +1,3 @@
-create extension if not exists "pg_cron" with schema "pg_catalog";
-
-drop extension if exists "pg_net";
-
 grant delete on table "public"."post_media" to "anon";
 
 grant insert on table "public"."post_media" to "anon";
