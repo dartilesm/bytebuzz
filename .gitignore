@@ -30,9 +30,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# package managers
-package-lock.json
-
 # env files
 .env
 .env.*
