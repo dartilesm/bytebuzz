@@ -22,6 +22,7 @@
     "source.fixAll.biome": "explicit",
     "source.organizeImports.biome": "explicit"
   },
+  "git.showCursorWorktrees": true,
   // Deno settings for Edge Functions
   "deno.enable": true,
   "deno.lint": true,
