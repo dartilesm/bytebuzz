@@ -1,9 +1,9 @@
 "use client";
 
 import type { Tables } from "database.types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/ui/follow-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserAvatar } from "@/components/user-avatar";
 import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
 
 interface UserProfilePopoverContentProps {
@@ -50,10 +50,7 @@ export function UserProfilePopoverContent({ user }: UserProfilePopoverContentPro
     <div className="max-w-[300px] rounded-xl flex flex-col py-0 gap-0">
       <div className="justify-between flex flex-row gap-4 px-3 py-3">
         <div className="flex gap-3">
-          <Avatar className="size-10 border-2 border-background rounded-full">
-            <AvatarImage src={user.image_url ?? undefined} alt={user.display_name ?? ""} />
-            <AvatarFallback>{user.display_name?.[0] ?? user.username?.[0] ?? ""}</AvatarFallback>
-          </Avatar>
+          <UserAvatar user={user} className="size-10 border-2 border-background rounded-full" />
           <div className="flex flex-col items-start justify-center">
             <h4 className="text-sm font-semibold leading-none text-foreground">
               {user.display_name ?? user.username}
