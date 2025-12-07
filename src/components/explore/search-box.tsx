@@ -15,7 +15,8 @@ import {
   AutocompleteList,
   AutocompleteStatus,
 } from "@/components/ui/autocomplete";
-import { useUsersSearch } from "@/hooks/queries/use-users-search";
+import { useQuery } from "@tanstack/react-query";
+import { userQueries, type SearchUsersReturnType } from "@/hooks/queries/options/user-queries";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
 type SearchItem = { id: string; type: "search"; term: string };
@@ -37,9 +38,26 @@ export function SearchBox({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const {
-    data: { data: users },
+    data = {
+      data: [],
+      error: null,
+      count: 0,
+      status: 200,
+      statusText: "OK",
+    },
     isLoading,
-  } = useUsersSearch(debouncedSearchTerm);
+  } = useQuery<SearchUsersReturnType>({
+    ...userQueries.search(debouncedSearchTerm),
+    initialData: {
+      data: [],
+      error: null,
+      count: 0,
+      status: 200,
+      statusText: "OK",
+    },
+  });
+
+  const users = data.data;
 
   function handleInputChange(term: string) {
     setSearchTerm(term);

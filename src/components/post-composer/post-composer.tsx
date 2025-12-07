@@ -15,10 +15,11 @@ import type { MediaData } from "@/components/lexical-editor/plugins/media/media-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/ui/container";
-import { useCreatePostMutation } from "@/hooks/mutation/use-create-post-mutation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostsContext } from "@/hooks/use-posts-context";
-import { useUploadPostMediaMutation } from "@/hooks/use-upload-post-media-mutation";
+import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
 
@@ -63,8 +64,40 @@ export function PostComposer({
     reValidateMode: "onSubmit",
   });
 
-  const { mutateAsync: uploadPostMedia } = useUploadPostMediaMutation();
-  const { mutate: createPost, isPending } = useCreatePostMutation();
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: uploadPostMedia } = useMutation({
+    ...mutationOptions.uploadPostMedia,
+    onSuccess: (url) => {
+      toast.success("Media uploaded successfully", {
+        description: "Your media file has been uploaded and is ready to use.",
+      });
+      return url;
+    },
+    onError: (error: Error) => {
+      toast.error("Upload failed", {
+        description: error.message || "Failed to upload media. Please try again.",
+      });
+      throw error;
+    },
+  });
+
+  const { mutate: createPost, isPending } = useMutation({
+    ...mutationOptions.createPost,
+    onSuccess: () => {
+      // Invalidate the posts query to refetch the latest data
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      toast.success("Post created", {
+        description: "Your post has been published successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast.error("Failed to create post", {
+        description: error.message || "Something went wrong. Please try again.",
+      });
+    },
+  });
   const { withAuth } = useAuthGuard();
 
   async function handleMediaUpload(file: File): Promise<{ error?: string; data?: MediaData }> {

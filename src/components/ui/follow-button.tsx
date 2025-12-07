@@ -1,10 +1,11 @@
 import { useUser } from "@clerk/nextjs";
 import { Loader2, UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { useToggleFollowMutation } from "@/hooks/mutation/use-toggle-follow-mutation";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
-import { useIsFollowing } from "@/hooks/use-is-following";
+import { userQueries } from "@/hooks/queries/options/user-queries";
+import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
 
 interface FollowButtonProps {
   targetUserId: string;
@@ -13,8 +14,22 @@ interface FollowButtonProps {
 }
 
 export function FollowButton({ targetUserId, size = "sm", className }: FollowButtonProps) {
-  const { data: isFollowing, isLoading } = useIsFollowing(targetUserId);
-  const toggleFollowMutation = useToggleFollowMutation();
+  const { user: currentUser } = useUser();
+  const queryClient = useQueryClient();
+  const { data: isFollowing, isLoading } = useQuery({
+    ...userQueries.isFollowing(currentUser?.id, targetUserId),
+    select: (data) => data.isFollowing,
+    placeholderData: (data) => data,
+  });
+
+  const toggleFollowMutation = useMutation({
+    ...mutationOptions.toggleFollow,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: userQueries.isFollowing(currentUser?.id, variables.target_user_id).queryKey,
+      });
+    },
+  });
 
   const [isFollowed, setIsFollowed] = useState(isFollowing);
   const { user: currentUser } = useUser();

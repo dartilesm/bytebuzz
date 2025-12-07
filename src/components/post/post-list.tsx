@@ -1,21 +1,57 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useIntersectionObserver } from "usehooks-ts";
 import { UserPostLoading } from "@/components/loading/user-post.loading";
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
-import { usePostsQuery } from "@/hooks/queries/use-posts-query";
+import { usePostsContext } from "@/hooks/use-posts-context";
+import { postQueries } from "@/hooks/queries/options/post-queries";
 
 interface PostListProps {
   postQueryType?: POST_QUERY_TYPE;
 }
 
 export function PostList({ postQueryType }: PostListProps) {
-  // Set up infinite query for posts
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsQuery(postQueryType);
+  const isFirstRenderRef = useRef(true);
+  const { posts } = usePostsContext();
+  const username = posts?.[0]?.user?.username;
+  const isEnabled = !!postQueryType && !isFirstRenderRef.current;
+
+  function fetchMorePosts(cursor?: string) {
+    if (!isEnabled || !postQueryType) return Promise.resolve({ data: [], error: null });
+
+    const url = new URL(`/api/posts/${postQueryType}`, window.location.href);
+    url.searchParams.set("cursor", cursor || "");
+    return fetch(url.toString()).then((res) => res.json());
+  }
+
+  const infiniteQuery = useInfiniteQuery({
+    ...postQueries.list(postQueryType, username),
+    queryFn: ({ pageParam }: { pageParam: string | undefined }) => fetchMorePosts(pageParam),
+    enabled: isEnabled,
+    initialData: {
+      pageParams: [undefined],
+      pages: [
+        {
+          data: posts,
+          error: null,
+        },
+      ],
+    },
+  });
+
+  function fetchNextPage(...args: Parameters<typeof infiniteQuery.fetchNextPage>) {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+    }
+    return infiniteQuery.fetchNextPage(...args);
+  }
+
+  const { data, hasNextPage, isFetchingNextPage } = infiniteQuery;
 
   // Set up intersection observer for the last post
   const { ref, isIntersecting } = useIntersectionObserver({
@@ -29,7 +65,7 @@ export function PostList({ postQueryType }: PostListProps) {
     if (isIntersecting && hasNextPage && !isFetchingNextPage) {
       fetchNextPage({ cancelRefetch: false });
     }
-  }, [isIntersecting]);
+  }, [isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <div className="flex flex-col gap-2">
