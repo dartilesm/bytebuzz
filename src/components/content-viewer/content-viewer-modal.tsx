@@ -2,14 +2,12 @@
 
 import { XIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useScrollLock } from "usehooks-ts";
 import { PostList } from "@/components/post/post-list";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostComposer } from "@/components/post-composer/post-composer";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -137,48 +135,9 @@ export function ContentViewerModal() {
         </div>
 
         {/* Right Panel - Post Thread */}
-        <div className="grid grid-rows-[auto_1fr] w-full border-l border-border bg-background md:w-[400px] h-dvh">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            {mainPost && mainPost.user ? (
-              <Link
-                href={`/@${mainPost.user.username}`}
-                className="flex items-center gap-2 min-w-0 flex-1"
-              >
-                <Avatar className="size-8 shrink-0">
-                  <AvatarImage
-                    src={mainPost.user.image_url ?? ""}
-                    alt={mainPost.user.display_name ?? ""}
-                  />
-                  <AvatarFallback>
-                    {mainPost.user.display_name?.[0] ?? mainPost.user.username?.[0] ?? ""}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-semibold text-sm truncate">
-                    {mainPost.user.display_name}
-                  </span>
-                  <span className="text-xs text-muted-foreground truncate">
-                    @{mainPost.user.username}
-                  </span>
-                </div>
-              </Link>
-            ) : (
-              <h2 className="text-lg font-semibold">Post</h2>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={closeViewer}
-              className="h-8 w-8 rounded-full shrink-0"
-              aria-label="Close viewer"
-            >
-              <XIcon size={18} />
-            </Button>
-          </div>
-
+        <div className="w-full border-l border-border bg-background md:w-[400px] h-dvh">
           {/* Scrollable Content */}
-          <div className="overflow-y-auto">
+          <div className="overflow-y-auto max-h-full">
             <div className="flex flex-col p-4">
               {isLoading && (
                 <div className="flex items-center justify-center py-8">
@@ -199,7 +158,7 @@ export function ContentViewerModal() {
                           replyPostId={postId}
                         />
                       )}
-                      <div className="flex flex-col gap-4 mt-4">
+                      <div className="flex flex-col gap-4 mt-4 min-h-dvh">
                         {directReplies.length > 0 && (
                           <PostList postQueryType={POST_QUERY_TYPE.POST_REPLIES} postId={postId} />
                         )}
