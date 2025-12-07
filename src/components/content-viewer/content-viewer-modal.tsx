@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -21,7 +22,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
-import { usePostThreadQuery } from "@/hooks/queries/use-post-thread-query";
+import { postQueries } from "@/hooks/queries/options/post-queries";
 import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +34,7 @@ import { cn } from "@/lib/utils";
 export function ContentViewerModal() {
   const { isOpen, images, initialImageIndex, postId, closeViewer } = useContentViewerContext();
   useScrollLock();
-  const { data: threadData, isLoading } = usePostThreadQuery(postId);
+  const { data: threadData, isLoading } = useQuery(postQueries.thread({ postId }));
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
