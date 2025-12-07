@@ -1,5 +1,6 @@
 import { type UseMutationOptions, useMutation } from "@tanstack/react-query";
-import { type ToggleReactionData, toggleReaction } from "@/actions/toggle-reaction";
+import { type ToggleReactionData } from "@/actions/toggle-reaction";
+import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
 
 /**
  * Hook to handle toggling reactions on posts
@@ -8,22 +9,14 @@ import { type ToggleReactionData, toggleReaction } from "@/actions/toggle-reacti
  */
 export function useToggleReactionMutation(
   useMutationProps: UseMutationOptions<
-    Awaited<ReturnType<typeof toggleReaction>>,
+    Awaited<ReturnType<typeof mutationOptions.toggleReaction.mutationFn>>,
     Error,
     ToggleReactionData
   > = {},
 ) {
   const mutation = useMutation({
+    ...mutationOptions.toggleReaction,
     ...useMutationProps,
-    mutationFn: async (data: ToggleReactionData) => {
-      const response = await toggleReaction(data);
-
-      if (response.error) {
-        throw response.error;
-      }
-
-      return response;
-    },
   });
 
   return mutation;

@@ -1,10 +1,9 @@
-import { type UseMutationOptions } from "@tanstack/react-query";
 import { createPostAction } from "@/actions/create-post";
 import { type ToggleFollowData, toggleFollow } from "@/actions/toggle-follow";
 import { type ToggleReactionData, toggleReaction } from "@/actions/toggle-reaction";
 import { type UpdateProfileData, updateProfile } from "@/actions/update-profile";
-import { deleteProfileImage, uploadProfileImage } from "@/actions/upload-profile-image";
 import { uploadPostMediaAction } from "@/actions/upload-post-media";
+import { deleteProfileImage, uploadProfileImage } from "@/actions/upload-profile-image";
 import { log } from "@/lib/logger/logger";
 
 export type UpdateProfileWithFilesData = UpdateProfileData & {
@@ -48,7 +47,7 @@ export const mutationOptions = {
   createPost: {
     mutationFn: createPostAction,
   },
-  
+
   toggleFollow: {
     mutationFn: async (data: ToggleFollowData) => {
       const response = await toggleFollow(data);
@@ -110,4 +109,3 @@ export const mutationOptions = {
     mutationFn: uploadPostMediaAction,
   },
 };
-

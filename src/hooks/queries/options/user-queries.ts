@@ -1,6 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import type { Tables } from "database.types";
-import type { Database } from "database.types";
+import type { Database, Tables } from "database.types";
 
 interface ErrorResponse {
   error: string;
@@ -12,7 +11,7 @@ interface ErrorResponse {
  */
 type SearchUsersRpcResult = Database["public"]["Functions"]["search_users"]["Returns"];
 
-interface SearchUsersReturnType {
+export interface SearchUsersReturnType {
   data: SearchUsersRpcResult;
   error: { message: string } | null;
   count?: number | null;
@@ -89,4 +88,3 @@ export const userQueries = {
       staleTime: 60 * 3600 * 1000, // 1 hour
     }),
 };
-

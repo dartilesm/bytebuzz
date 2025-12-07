@@ -4,6 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsContext } from "@/hooks/use-posts-context";
+import { postQueries } from "@/hooks/queries/options/post-queries";
 import type { NestedPost } from "@/types/nested-posts";
 
 export function usePostsQuery(queryType?: POST_QUERY_TYPE) {
@@ -14,19 +15,17 @@ export function usePostsQuery(queryType?: POST_QUERY_TYPE) {
 
   const isEnabled = !!queryType && !isFirstRenderRef.current;
 
+  function fetchMorePosts(cursor?: string) {
+    if (!isEnabled || !queryType) return Promise.resolve({ data: [], error: null });
+
+    const url = new URL(`/api/posts/${queryType}`, window.location.href);
+    url.searchParams.set("cursor", cursor || "");
+    return fetch(url.toString()).then((res) => res.json());
+  }
+
   const infiniteQuery = useInfiniteQuery({
-    queryKey: ["posts", queryType, username],
+    ...postQueries.list(queryType, username),
     queryFn: ({ pageParam }: { pageParam: string | undefined }) => fetchMorePosts(pageParam),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage: { data: NestedPost[] | null; error: unknown }) => {
-      // If we have posts in the last page, return the created_at of the last post as cursor
-      if (lastPage.data && lastPage.data.length > 0) {
-        const lastPost = lastPage.data[lastPage.data.length - 1];
-        return lastPost.created_at || undefined;
-      }
-      // No more pages
-      return undefined;
-    },
     enabled: isEnabled,
     initialData: {
       pageParams: [undefined],
@@ -38,14 +37,6 @@ export function usePostsQuery(queryType?: POST_QUERY_TYPE) {
       ],
     },
   });
-
-  function fetchMorePosts(cursor?: string) {
-    if (!isEnabled) return Promise.resolve({ data: [], error: null });
-
-    const url = new URL(`/api/posts/${queryType}`, window.location.href);
-    url.searchParams.set("cursor", cursor || "");
-    return fetch(url.toString()).then((res) => res.json());
-  }
 
   function fetchNextPage(...args: Parameters<typeof infiniteQuery.fetchNextPage>) {
     if (isFirstRenderRef.current) {

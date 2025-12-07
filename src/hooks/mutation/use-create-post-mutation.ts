@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createPostAction } from "@/actions/create-post";
+import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
 
 /**
  * Hook for creating a post with optional media attachments
@@ -11,7 +11,7 @@ export function useCreatePostMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createPostAction,
+    ...mutationOptions.createPost,
     onSuccess: () => {
       // Invalidate the posts query to refetch the latest data
       queryClient.invalidateQueries({ queryKey: ["posts"] });
