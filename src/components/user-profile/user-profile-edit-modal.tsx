@@ -22,10 +22,11 @@ import {
   type ProfileEditModalFormData,
   profileEditModalSchema,
 } from "@/components/user-profile/edit-modal/user-profile-edit-schemas";
+import { useMutation } from "@tanstack/react-query";
 import {
   type UpdateProfileWithFilesData,
-  useUpdateProfileMutation,
-} from "@/hooks/mutation/use-update-profile-mutation";
+  mutationOptions,
+} from "@/hooks/mutation/options/mutation-options";
 import { log } from "@/lib/logger/logger";
 
 export const enum ProfileEditModalSection {
@@ -110,7 +111,8 @@ export function UserProfileEditModal({
   const { handleSubmit } = form;
 
   // Use the update profile mutation
-  const updateProfileMutation = useUpdateProfileMutation({
+  const updateProfileMutation = useMutation({
+    ...mutationOptions.updateProfile,
     onSuccess: (response) => {
       if (response.data) {
         onSave(response.data);

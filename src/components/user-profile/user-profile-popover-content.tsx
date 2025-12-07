@@ -1,10 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import type { Tables } from "database.types";
 import { FollowButton } from "@/components/ui/follow-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/user-avatar";
-import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
+import { userQueries } from "@/hooks/queries/options/user-queries";
 
 interface UserProfilePopoverContentProps {
   user: Partial<Tables<"users">>;
@@ -42,7 +43,7 @@ function UserProfilePopoverSkeleton() {
 }
 
 export function UserProfilePopoverContent({ user }: UserProfilePopoverContentProps) {
-  const { data: userData, isLoading } = useUserDataQuery(user.id ?? "");
+  const { data: userData, isLoading } = useQuery(userQueries.data(user.id ?? ""));
 
   if (isLoading) return <UserProfilePopoverSkeleton />;
 
