@@ -201,7 +201,7 @@ export function ContentViewerModal() {
                       )}
                       <div className="flex flex-col gap-4 mt-4">
                         {directReplies.length > 0 && (
-                          <PostList postQueryType={POST_QUERY_TYPE.USER_POSTS} />
+                          <PostList postQueryType={POST_QUERY_TYPE.POST_REPLIES} postId={postId} />
                         )}
                       </div>
                     </PostsProvider>

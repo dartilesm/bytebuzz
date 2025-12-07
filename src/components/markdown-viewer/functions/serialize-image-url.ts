@@ -13,4 +13,3 @@ const postIdParser = {
  * Merges postId with existing URL query parameters
  */
 export const serializeImageUrl = createSerializer(postIdParser);
-

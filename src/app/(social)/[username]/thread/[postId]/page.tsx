@@ -6,6 +6,7 @@ import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostComposer } from "@/components/post-composer/post-composer";
 import { PageHeader } from "@/components/ui/page-header";
+import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
 import { createServerSupabaseClient } from "@/db/supabase";
 import { log } from "@/lib/logger/logger";
@@ -119,7 +120,9 @@ async function ThreadPage({ params }: ThreadPageProps) {
             replyPostId={postId}
           />
           <div className="flex flex-col gap-4 min-h-dvh">
-            {!!directReplies?.length && <PostList />}
+            {!!directReplies?.length && (
+              <PostList postQueryType={POST_QUERY_TYPE.POST_REPLIES} postId={postId} />
+            )}
           </div>
         </PostsProvider>
       </div>

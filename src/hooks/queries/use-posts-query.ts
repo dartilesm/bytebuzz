@@ -6,7 +6,7 @@ import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import type { NestedPost } from "@/types/nested-posts";
 
-export function usePostsQuery(queryType: POST_QUERY_TYPE) {
+export function usePostsQuery(queryType: POST_QUERY_TYPE, postId?: string) {
   const isFirstRenderRef = useRef(true);
   const { posts } = usePostsContext();
 
@@ -15,7 +15,7 @@ export function usePostsQuery(queryType: POST_QUERY_TYPE) {
   const isEnabled = !!queryType && !isFirstRenderRef.current;
 
   const infiniteQuery = useInfiniteQuery({
-    queryKey: ["posts", queryType, username],
+    queryKey: ["posts", queryType, username, postId],
     queryFn: ({ pageParam }: { pageParam: string | undefined }) => fetchMorePosts(pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage: { data: NestedPost[] | null; error: unknown }) => {
@@ -44,6 +44,9 @@ export function usePostsQuery(queryType: POST_QUERY_TYPE) {
 
     const url = new URL(`/api/posts/${queryType}`, window.location.href);
     url.searchParams.set("cursor", cursor || "");
+    if (postId) {
+      url.searchParams.set("postId", postId);
+    }
     return fetch(url.toString()).then((res) => res.json());
   }
 

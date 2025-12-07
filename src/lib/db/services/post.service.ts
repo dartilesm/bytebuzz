@@ -190,6 +190,28 @@ async function getPostThread(this: ServiceContext, postId: string) {
 }
 
 /**
+ * Get replies to a post with cursor-based pagination
+ * @param postId - ID of the post to get replies for
+ * @param cursor - Optional timestamp to fetch replies before this point
+ */
+async function getPostReplies(
+  this: ServiceContext,
+  { postId, cursor }: { postId: string; cursor?: string },
+) {
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
+  let query = supabase
+    .rpc("get_replies_to_depth", { target_id: postId, max_depth: 1 })
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (cursor) {
+    query = query.lt("created_at", cursor);
+  }
+
+  return await query.overrideTypes<NestedPost[]>();
+}
+
+/**
  * Post service for all post-related database operations
  *
  * @example
@@ -209,6 +231,7 @@ export const postService = createServiceWithContext({
   deletePost,
   getPostById,
   getPostThread,
+  getPostReplies,
 });
 
 export type PostService = typeof postService;
