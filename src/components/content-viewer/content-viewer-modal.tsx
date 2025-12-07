@@ -137,7 +137,7 @@ export function ContentViewerModal() {
         </div>
 
         {/* Right Panel - Post Thread */}
-        <div className="border-l border-border bg-background hidden md:block md:max-w-2xl h-dvh">
+        <div className="w-full border-l border-border bg-background hidden md:block md:max-w-lg h-dvh">
           {/* Scrollable Content */}
           <div className="overflow-y-auto max-h-full">
             <div className="flex flex-col p-4">
