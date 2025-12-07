@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import type { Database } from "database.types";
 import { Loader2, SearchIcon } from "lucide-react";
 import { useRef, useState } from "react";
@@ -15,8 +16,7 @@ import {
   AutocompleteList,
   AutocompleteStatus,
 } from "@/components/ui/autocomplete";
-import { useQuery } from "@tanstack/react-query";
-import { userQueries, type SearchUsersReturnType } from "@/hooks/queries/options/user-queries";
+import { type SearchUsersReturnType, userQueries } from "@/hooks/queries/options/user-queries";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
 type SearchItem = { id: string; type: "search"; term: string };
@@ -37,24 +37,8 @@ export function SearchBox({
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounceValue(searchTerm, 300);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const {
-    data = {
-      data: [],
-      error: null,
-      count: 0,
-      status: 200,
-      statusText: "OK",
-    },
-    isLoading,
-  } = useQuery<SearchUsersReturnType>({
+  const { data, isLoading } = useQuery<SearchUsersReturnType>({
     ...userQueries.search(debouncedSearchTerm),
-    initialData: {
-      data: [],
-      error: null,
-      count: 0,
-      status: 200,
-      statusText: "OK",
-    },
   });
 
   const users = data.data;

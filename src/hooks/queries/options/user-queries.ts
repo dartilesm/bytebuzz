@@ -70,8 +70,13 @@ export const userQueries = {
       queryKey: ["users", searchTerm],
       queryFn: () => getUsers(searchTerm),
       enabled: !!searchTerm,
-      // Initial data logic is handled in the hook currently, but we can keep it there or move default here?
-      // The hook has complex initialData structure. We'll leave it to the hook for now to merge.
+      initialData: {
+        data: [],
+        error: null,
+        count: 0,
+        status: 200,
+        statusText: "OK",
+      },
     }),
 
   isFollowing: (userId: string | undefined | null, targetUserId: string | undefined) =>
