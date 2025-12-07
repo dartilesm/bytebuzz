@@ -151,7 +151,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
               },
               img: (props: MarkdownImageProps) => {
                 const { src, alt } = props;
-                const imageUrl = `${src}?postId=${postId}`;
+                const imageUrl = `${src}&postId=${postId}`;
 
                 return (
                   <div
