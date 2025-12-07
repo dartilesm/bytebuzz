@@ -2,7 +2,10 @@
 
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { MarkdownViewer } from "@/components/markdown-viewer/markdown-viewer";
+import {
+  type DisallowedMediaElements,
+  MarkdownViewer,
+} from "@/components/markdown-viewer/markdown-viewer";
 import {
   getDisplayContent,
   getExpansionData,
@@ -10,8 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
+import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
+
+const HIDDEN_MEDIA_ELEMENTS: DisallowedMediaElements = ["img"] as const;
 
 interface PostContentProps {
   children?: React.ReactNode;
@@ -24,11 +31,20 @@ export function PostContent({ children }: PostContentProps) {
     minVisibleContentLength = 1000,
     charsPerLevel = 300,
   } = usePostContext();
+  const { openViewer, isOpen, postId: viewerPostId, closeViewer } = useContentViewerContext();
   const { content } = post;
 
   const [expansionLevel, setExpansionLevel] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<string | undefined>(undefined);
+
+  function handleEvent(event: MarkdownComponentEvent) {
+    if (event.source === "img" && event.type === "click") {
+      const { images, index, postId } = event.payload;
+      return openViewer(images, postId, index);
+    }
+    closeViewer();
+  }
 
   const expansionData = getExpansionData({
     content: content ?? "",
@@ -44,6 +60,9 @@ export function PostContent({ children }: PostContentProps) {
 
   const canExpand = expansionLevel < expansionData.levels - 1;
   const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
+
+  const shouldHideMedia = isOpen && (isThreadPagePost || post.id === viewerPostId);
+  const disallowedMediaElements = shouldHideMedia ? HIDDEN_MEDIA_ELEMENTS : [];
 
   useEffect(() => {
     if (contentRef.current) {
@@ -65,7 +84,12 @@ export function PostContent({ children }: PostContentProps) {
       })}
     >
       {!expansionData.shouldShowControls && (
-        <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />
+        <MarkdownViewer
+          markdown={content ?? ""}
+          postId={post.id ?? ""}
+          disallowedMediaElements={disallowedMediaElements}
+          onEvent={handleEvent}
+        />
       )}
       {expansionData.shouldShowControls && (
         <>
@@ -78,7 +102,12 @@ export function PostContent({ children }: PostContentProps) {
               shadowVisibility={isFullyExpanded ? "none" : "bottom"}
               ref={contentRef}
             >
-              <MarkdownViewer markdown={displayContent} postId={post.id ?? ""} />
+              <MarkdownViewer
+                markdown={displayContent}
+                postId={post.id ?? ""}
+                disallowedMediaElements={disallowedMediaElements}
+                onEvent={handleEvent}
+              />
             </ScrollArea>
           </div>
           {canExpand && (

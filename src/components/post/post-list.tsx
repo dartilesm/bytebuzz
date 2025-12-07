@@ -10,12 +10,16 @@ import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsQuery } from "@/hooks/queries/use-posts-query";
 
 interface PostListProps {
-  postQueryType?: POST_QUERY_TYPE;
+  postQueryType: POST_QUERY_TYPE;
+  postId?: string;
 }
 
-export function PostList({ postQueryType }: PostListProps) {
+export function PostList({ postQueryType, postId }: PostListProps) {
   // Set up infinite query for posts
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsQuery(postQueryType);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsQuery({
+    queryType: postQueryType,
+    postId,
+  });
 
   // Set up intersection observer for the last post
   const { ref, isIntersecting } = useIntersectionObserver({
