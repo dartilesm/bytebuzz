@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
 import { UserPostLoading } from "@/components/loading/user-post.loading";
 import { CondensedUserPost } from "@/components/post/condensed-user-post";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
-import { usePostsQuery } from "@/hooks/queries/use-posts-query";
+import { postQueries } from "@/hooks/queries/options/post-queries";
+import { usePostsContext } from "@/hooks/use-posts-context";
 
 interface PostListProps {
   postQueryType: POST_QUERY_TYPE;
@@ -15,11 +17,33 @@ interface PostListProps {
 }
 
 export function PostList({ postQueryType, postId }: PostListProps) {
-  // Set up infinite query for posts
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsQuery({
-    queryType: postQueryType,
-    postId,
+  const isFirstRenderRef = useRef(true);
+  const { posts } = usePostsContext();
+  const username = posts?.[0]?.user?.username;
+  const isEnabled = !!postQueryType && !isFirstRenderRef.current;
+
+  const infiniteQuery = useInfiniteQuery({
+    ...postQueries.list({ queryType: postQueryType, username, postId }),
+    enabled: isEnabled,
+    initialData: {
+      pageParams: [undefined],
+      pages: [
+        {
+          data: posts,
+          error: null,
+        },
+      ],
+    },
   });
+
+  function fetchNextPage(...args: Parameters<typeof infiniteQuery.fetchNextPage>) {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+    }
+    return infiniteQuery.fetchNextPage(...args);
+  }
+
+  const { data, hasNextPage, isFetchingNextPage } = infiniteQuery;
 
   // Set up intersection observer for the last post
   const { ref, isIntersecting } = useIntersectionObserver({

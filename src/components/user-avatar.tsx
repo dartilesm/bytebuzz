@@ -1,10 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import type { Tables } from "database.types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
+import { userQueries } from "@/hooks/queries/options/user-queries";
 import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
@@ -54,7 +55,7 @@ function isNewUser(joinDate: string | null | undefined): boolean {
  * Supports both a user object prop and individual props for flexibility.
  */
 export function UserAvatar({ user, showWelcomeBadge = true, className }: UserAvatarProps) {
-  const { data: userData, isLoading } = useUserDataQuery(user?.id ?? "");
+  const { data: userData, isLoading } = useQuery(userQueries.data(user?.id ?? ""));
   const imageUrl = userData?.image_url ?? undefined;
   const displayName = userData?.display_name ?? "";
   const userJoinDate = userData?.join_date ?? null;

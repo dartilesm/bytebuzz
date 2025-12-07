@@ -1,6 +1,7 @@
 "use client";
 
 import { SiX } from "@icons-pack/react-simple-icons";
+import { useMutation } from "@tanstack/react-query";
 import { CopyIcon, MessageSquareIcon, RepeatIcon, Share2Icon, StarIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useToggleReactionMutation } from "@/hooks/mutation/use-toggle-reaction-mutation";
+import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
@@ -64,7 +65,7 @@ export function PostFooter() {
   const [selectedReaction, setSelectedReaction] = useState<Reaction["type"] | null>(
     post.reaction?.reaction_type ?? null,
   );
-  const toggleReactionMutation = useToggleReactionMutation();
+  const toggleReactionMutation = useMutation(mutationOptions.toggleReaction);
 
   const { withAuth } = useAuthGuard();
 

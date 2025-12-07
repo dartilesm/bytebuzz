@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { userService } from "@/lib/db/services/user.service";
 
 export interface ToggleFollowData {
@@ -7,5 +8,10 @@ export interface ToggleFollowData {
 }
 
 export async function toggleFollow({ target_user_id }: ToggleFollowData) {
-  return await userService.toggleFollow(target_user_id);
+  const toggleFollowResult = await userService.toggleFollow(target_user_id);
+
+  // Clear the cache for the /api/users/follow-status route
+  if (!toggleFollowResult.error) revalidateTag("is-following", { expire: 0 });
+
+  return toggleFollowResult;
 }

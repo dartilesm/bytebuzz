@@ -7,7 +7,8 @@ import type { UrlObject } from "url";
 import { FollowButton } from "@/components/ui/follow-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/user-avatar";
-import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
+import { useQuery } from "@tanstack/react-query";
+import { userQueries } from "@/hooks/queries/options/user-queries";
 
 type User = Database["public"]["Functions"]["search_users"]["Returns"][0];
 type SearchItem = { id: string; type: "search"; term: string };
@@ -22,7 +23,7 @@ export function SearchBoxItem({ item, onExactSearch }: SearchBoxItemProps) {
   // Handle user item
   const user = item as User;
 
-  const { data: userData, isLoading } = useUserDataQuery(user.id ?? "");
+  const { data: userData, isLoading } = useQuery(userQueries.data(user.id ?? ""));
 
   // Handle search item
   if ("type" in item && item.type === "search") {

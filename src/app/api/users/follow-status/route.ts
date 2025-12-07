@@ -1,5 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
+import { userQueries } from "@/hooks/queries/options/user-queries";
 import { withCacheService } from "@/lib/db/with-cache-service";
 
 /**
@@ -19,10 +20,11 @@ export async function GET(req: NextRequest) {
     return new Response(JSON.stringify({ error: "Missing targetUserId" }), { status: 400 });
   }
 
-  const { data, error } = await withCacheService("userService", "getFollowStatus")(
-    user.id,
-    targetUserId,
-  );
+  const cacheTags = userQueries.isFollowing(user.id, targetUserId).queryKey as string[];
+
+  const { data, error } = await withCacheService("userService", "getFollowStatus", {
+    cacheTags,
+  })(user.id, targetUserId);
   if (error && error.code !== "PGRST116") {
     // PGRST116 = No rows found, which is not an error for us
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
