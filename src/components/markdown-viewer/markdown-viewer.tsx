@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { createSerializer, parseAsString } from "nuqs/server";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
+import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
 import {
   type BundledLanguage,
   CodeBlock,
@@ -18,14 +19,50 @@ import {
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import { cn } from "@/lib/utils";
+import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
+
+const ALLOWED_MEDIA_ELEMENTS = ["img", "p"] as const;
+
+function getAllowedMediaElements(disallowedMediaElements: DisallowedMediaElements) {
+  const allowedMediaElementsSet = new Set(ALLOWED_MEDIA_ELEMENTS);
+  const disallowedMediaElementsSet = new Set(disallowedMediaElements);
+
+  const allowedMediaElements = allowedMediaElementsSet.difference(disallowedMediaElementsSet);
+  const allowedMediaElementsArray = Array.from(allowedMediaElements);
+
+  return allowedMediaElementsArray;
+}
+
+export type DisallowedMediaElements = Exclude<(typeof ALLOWED_MEDIA_ELEMENTS)[number], "p">[];
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 
-export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
-  // Extract image count from markdown by counting ![] patterns
-  const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
+export type MarkdownViewerProps = {
+  markdown: string;
+  postId: string;
+  disallowedMediaElements?: DisallowedMediaElements;
+  /**
+   * Generic event handler for all markdown component events
+   * Use this instead of componentEvents for better scalability
+   */
+  onEvent?: (event: MarkdownComponentEvent) => void;
+};
+
+export function MarkdownViewer({
+  markdown,
+  postId,
+  disallowedMediaElements = [],
+  onEvent,
+}: MarkdownViewerProps) {
+  const allowedMediaElements = getAllowedMediaElements(disallowedMediaElements);
+
+  // Extract images from markdown
+  const images = getImagesFromMarkdown({ markdown, postId });
+
+  const imageCount = images.length;
+  const shouldHideImages = disallowedMediaElements.includes("img");
 
   return (
     <>
@@ -40,7 +77,16 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
 
             if (!children) return null;
 
-            return <p className={className}>{children}</p>;
+            return (
+              <p
+                className={className}
+                onClick={() => {
+                  onEvent?.({ source: "p", type: "click", payload: undefined });
+                }}
+              >
+                {children}
+              </p>
+            );
           },
           code: ({ node, ...props }) => {
             const { children, className } = props;
@@ -69,6 +115,17 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     code: codeContent,
                   },
                 ]}
+                onClick={() => {
+                  onEvent?.({
+                    source: "code",
+                    type: "click",
+                    payload: {
+                      language: languageValue,
+                      code: codeContent,
+                      filename,
+                    },
+                  });
+                }}
               >
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
                   {filename && (
@@ -79,11 +136,6 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     </CodeBlockFiles>
                   )}
                   <div className="flex items-center">
-                    {/* <CodeBlockActionButton tooltipContent="Save to snippets">
-                      <Button size="icon-sm" variant="ghost">
-                        <BookmarkIcon className="size-3.5" />
-                      </Button>
-                    </CodeBlockActionButton> */}
                     <CodeBlockCopyButton />
                   </div>
                 </CodeBlockHeader>
@@ -105,7 +157,12 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           ul: ({ ...props }) => {
             const { children, className } = props;
             return (
-              <ul className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}>
+              <ul
+                className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}
+                onClick={() => {
+                  onEvent?.({ source: "ul", type: "click", payload: undefined });
+                }}
+              >
                 {children}
               </ul>
             );
@@ -113,7 +170,12 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           ol: ({ ...props }) => {
             const { children, className } = props;
             return (
-              <ol className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}>
+              <ol
+                className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}
+                onClick={() => {
+                  onEvent?.({ source: "ol", type: "click", payload: undefined });
+                }}
+              >
                 {children}
               </ol>
             );
@@ -123,7 +185,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
       >
         {markdown}
       </Markdown>
-      {imageCount > 0 && (
+      {imageCount > 0 && !shouldHideImages && (
         <div
           className={cn(
             "rounded-medium aspect-video border dark:border-content2 border-content3 overflow-hidden grid",
@@ -156,23 +218,31 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 if (!src || typeof src !== "string") {
                   return null;
                 }
-                // Parser for postId query parameter, it will ensure that the postId is properly set in the image URLs
-                const postIdParser = {
-                  postId: parseAsString,
-                };
-
-                // Serializer for postId query parameter, it will merge the postId with the existing URL and query params
-                const serializePostId = createSerializer(postIdParser);
 
                 // Use nuqs serializer to properly merge postId with existing URL and query params
                 // This handles cases where URL already has query params or postId
-                const imageUrl = serializePostId(src, { postId });
+                const imageUrl = serializeImageUrl(src, { postId });
+
+                // Find index of this image in the images array
+                const index = images.findIndex((img) => img.src === imageUrl);
 
                 return (
                   <div
                     className={cn(
-                      "relative outline-[0.5px] dark:outline-content2 outline-content3",
+                      "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
+                    onClick={() => {
+                      const eventPayload = {
+                        images,
+                        index: index !== -1 ? index : 0,
+                        postId,
+                      };
+                      onEvent?.({
+                        source: "img",
+                        type: "click",
+                        payload: eventPayload,
+                      });
+                    }}
                   >
                     <Image
                       className="h-full object-cover"
@@ -185,7 +255,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 );
               },
             }}
-            allowedElements={["img", "p"]}
+            allowedElements={allowedMediaElements}
           >
             {markdown}
           </Markdown>

@@ -94,12 +94,7 @@ export function MentionSuggestions({
                 aria-selected={index === selectedIndex}
               >
                 <div className="flex items-center gap-3 w-full">
-                  <UserAvatar
-                    avatarUrl={user.avatarUrl}
-                    name={user.displayName}
-                    showWelcomeBadge={false}
-                    className="h-8 w-8 shrink-0"
-                  />
+                  <UserAvatar user={user} showWelcomeBadge={false} className="h-8 w-8 shrink-0" />
                   <div className="flex flex-col items-start text-left min-w-0 flex-1">
                     <span className="font-medium text-sm truncate w-full">{user.displayName}</span>
                     <span className="text-xs text-muted-foreground truncate w-full">
