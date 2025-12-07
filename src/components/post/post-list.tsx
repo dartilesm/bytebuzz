@@ -10,7 +10,7 @@ import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsQuery } from "@/hooks/queries/use-posts-query";
 
 interface PostListProps {
-  postQueryType?: POST_QUERY_TYPE;
+  postQueryType: POST_QUERY_TYPE;
 }
 
 export function PostList({ postQueryType }: PostListProps) {

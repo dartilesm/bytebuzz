@@ -6,7 +6,7 @@ import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import type { NestedPost } from "@/types/nested-posts";
 
-export function usePostsQuery(queryType?: POST_QUERY_TYPE) {
+export function usePostsQuery(queryType: POST_QUERY_TYPE) {
   const isFirstRenderRef = useRef(true);
   const { posts } = usePostsContext();
 

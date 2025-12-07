@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useScrollLock } from "usehooks-ts";
-import { PostContent } from "@/components/post/post-card-content";
-import { PostFooter } from "@/components/post/post-card-footer";
 import { PostList } from "@/components/post/post-list";
+import { PostWrapper } from "@/components/post/post-wrapper";
+import { UserPost } from "@/components/post/user-post";
 import { PostComposer } from "@/components/post-composer/post-composer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Separator } from "@/components/ui/separator";
+import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
-import { PostProvider } from "@/context/post-provider";
 import { usePostThreadQuery } from "@/hooks/queries/use-post-thread-query";
 import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { cn } from "@/lib/utils";
@@ -147,12 +146,21 @@ export function ContentViewerModal() {
                 className="flex items-center gap-2 min-w-0 flex-1"
               >
                 <Avatar className="size-8 shrink-0">
-                  <AvatarImage src={mainPost.user.image_url ?? ""} alt={mainPost.user.display_name ?? ""} />
-                  <AvatarFallback>{mainPost.user.display_name?.[0] ?? mainPost.user.username?.[0] ?? ""}</AvatarFallback>
+                  <AvatarImage
+                    src={mainPost.user.image_url ?? ""}
+                    alt={mainPost.user.display_name ?? ""}
+                  />
+                  <AvatarFallback>
+                    {mainPost.user.display_name?.[0] ?? mainPost.user.username?.[0] ?? ""}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col min-w-0">
-                  <span className="font-semibold text-sm truncate">{mainPost.user.display_name}</span>
-                  <span className="text-xs text-muted-foreground truncate">@{mainPost.user.username}</span>
+                  <span className="font-semibold text-sm truncate">
+                    {mainPost.user.display_name}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate">
+                    @{mainPost.user.username}
+                  </span>
                 </div>
               </Link>
             ) : (
@@ -179,28 +187,26 @@ export function ContentViewerModal() {
               )}
               {!isLoading && (
                 <>
-                  {mainPost && (
+                  {postAncestry.length > 0 && (
                     <PostsProvider initialPosts={directReplies}>
-                      <PostProvider post={mainPost} isNavigationDisabled>
-                        <div className="flex flex-col">
-                          <PostContent />
-                          <PostFooter />
-                        </div>
-                      </PostProvider>
-                      <Separator className="my-4" />
-                      <h3 className="text-base font-medium mb-2">Replies</h3>
+                      <PostWrapper isAncestry>
+                        <UserPost ancestry={postAncestry} isNavigationDisabled />
+                      </PostWrapper>
+                      <h3 className="text-base font-medium mt-4 mb-2">Replies</h3>
                       {postId && (
                         <PostComposer
-                          placeholder={`Reply to @${mainPost.user?.username || "post"}`}
+                          placeholder={`Reply to @${mainPost?.user?.username || "post"}`}
                           replyPostId={postId}
                         />
                       )}
                       <div className="flex flex-col gap-4 mt-4">
-                        {directReplies.length > 0 && <PostList />}
+                        {directReplies.length > 0 && (
+                          <PostList postQueryType={POST_QUERY_TYPE.USER_POSTS} />
+                        )}
                       </div>
                     </PostsProvider>
                   )}
-                  {!mainPost && (
+                  {postAncestry.length === 0 && (
                     <div className="flex items-center justify-center py-8">
                       <span className="text-sm text-muted-foreground">Post not found</span>
                     </div>

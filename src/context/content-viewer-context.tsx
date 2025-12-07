@@ -10,7 +10,7 @@ export interface ImageData {
 
 export interface ContentViewerContextType {
   isOpen: boolean;
-  postId: string | undefined;
+  postId: string;
   images: ImageData[];
   initialImageIndex: number;
   openViewer: (images: ImageData[], postId: string, initialIndex?: number) => void;
@@ -19,7 +19,7 @@ export interface ContentViewerContextType {
 
 export const ContentViewerContext = createContext<ContentViewerContextType>({
   isOpen: false,
-  postId: undefined,
+  postId: "",
   images: [],
   initialImageIndex: 0,
   openViewer: () => {},
@@ -33,7 +33,7 @@ export function ContentViewerProvider({ children }: { children: React.ReactNode 
   const [isOpen, setIsOpen] = useState(false);
   const [images, setImages] = useState<ImageData[]>([]);
   const [initialImageIndex, setInitialImageIndex] = useState(0);
-  const [postId, setPostId] = useState<string | undefined>(undefined);
+  const [postId, setPostId] = useState<string>("");
 
   function openViewer(newImages: ImageData[], newPostId: string, initialIndex = 0) {
     setImages(newImages);
@@ -46,7 +46,7 @@ export function ContentViewerProvider({ children }: { children: React.ReactNode 
     setIsOpen(false);
     setImages([]);
     setInitialImageIndex(0);
-    setPostId(undefined);
+    setPostId("");
   }
 
   return (

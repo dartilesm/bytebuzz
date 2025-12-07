@@ -32,10 +32,10 @@ async function getPostThread(postId: string) {
 /**
  * Hook to fetch post thread (ancestry and replies) for a given post ID
  */
-export function usePostThreadQuery(postId: string | undefined) {
+export function usePostThreadQuery(postId: string) {
   return useQuery({
     queryKey: ["post-thread", postId],
-    queryFn: () => getPostThread(postId!),
+    queryFn: () => getPostThread(postId),
     enabled: !!postId,
   });
 }

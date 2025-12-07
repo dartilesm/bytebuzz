@@ -38,7 +38,7 @@ export function PostCard({ children, className, ref }: PostCardProps) {
   }
 
   return (
-    <div onClick={handleClick} ref={ref}>
+    <div onClick={handleClick} ref={ref} id={`post-${post.id}`} className="scroll-mt-20">
       <Card
         className={cn(
           "relative flex flex-row dark:bg-card bg-card shadow-none overflow-hidden py-0 gap-0 border-0",
