@@ -1,3 +1,4 @@
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostList } from "@/components/post/post-list";
@@ -58,12 +59,27 @@ async function ThreadPage({ params }: ThreadPageProps) {
   const { postId } = await params;
   const { postAncestry, directReplies } = await getPostData(postId);
 
+  const lastPost = postAncestry?.at(-1);
+  const username = lastPost?.user?.username;
+
+  const queryClient = new QueryClient();
+
+  queryClient.prefetchQuery({
+    queryKey: ["posts", POST_QUERY_TYPE.POST_REPLIES, username, postId],
+    queryFn: () => getPostData(postId),
+  });
+
+  queryClient.prefetchQuery({
+    queryKey: ["post-thread", postId],
+    queryFn: () => getPostData(postId),
+  });
+
   if (!postAncestry || postAncestry.length === 0) {
     notFound();
   }
 
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <PageHeader title="Thread" />
       <div className="flex flex-col gap-4 w-full px-2 md:px-4">
         <PostsProvider initialPosts={directReplies || []}>
@@ -82,7 +98,7 @@ async function ThreadPage({ params }: ThreadPageProps) {
           </div>
         </PostsProvider>
       </div>
-    </>
+    </HydrationBoundary>
   );
 }
 
