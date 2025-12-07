@@ -1,3 +1,5 @@
+import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
+
 /**
  * Extracts images from markdown content
  * @param options - The options for extracting images from markdown
@@ -10,9 +12,13 @@ export function getImagesFromMarkdown({ markdown, postId }: { markdown: string; 
   const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
   let match;
   while ((match = imageRegex.exec(markdown)) !== null) {
+    const src = match[2];
+    // Use nuqs serializer to properly merge postId with existing URL and query params
+    const imageUrl = serializeImageUrl(src, { postId });
+
     images.push({
       alt: match[1],
-      src: `${match[2]}?postId=${postId}`,
+      src: imageUrl,
     });
   }
   return images;
