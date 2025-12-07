@@ -1,25 +1,12 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { createSerializer, parseAsString } from "nuqs/server";
 import { useRef } from "react";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import type { NestedPost } from "@/types/nested-posts";
 
-const postsQueryParams = {
-  cursor: parseAsString,
-  postId: parseAsString,
-} as const;
-
-const serializePostsQueryParams = createSerializer(postsQueryParams);
-
-type UsePostsQueryProps = {
-  queryType: POST_QUERY_TYPE;
-  postId?: string;
-};
-
-export function usePostsQuery({ queryType, postId }: UsePostsQueryProps) {
+export function usePostsQuery(queryType?: POST_QUERY_TYPE) {
   const isFirstRenderRef = useRef(true);
   const { posts } = usePostsContext();
 
@@ -28,7 +15,7 @@ export function usePostsQuery({ queryType, postId }: UsePostsQueryProps) {
   const isEnabled = !!queryType && !isFirstRenderRef.current;
 
   const infiniteQuery = useInfiniteQuery({
-    queryKey: ["posts", queryType, username, postId],
+    queryKey: ["posts", queryType, username],
     queryFn: ({ pageParam }: { pageParam: string | undefined }) => fetchMorePosts(pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage: { data: NestedPost[] | null; error: unknown }) => {
@@ -56,9 +43,8 @@ export function usePostsQuery({ queryType, postId }: UsePostsQueryProps) {
     if (!isEnabled) return Promise.resolve({ data: [], error: null });
 
     const url = new URL(`/api/posts/${queryType}`, window.location.href);
-    const serializedQueryParams = serializePostsQueryParams({ cursor, postId });
-
-    return fetch(url.toString() + serializedQueryParams).then((res) => res.json());
+    url.searchParams.set("cursor", cursor || "");
+    return fetch(url.toString()).then((res) => res.json());
   }
 
   function fetchNextPage(...args: Parameters<typeof infiniteQuery.fetchNextPage>) {
