@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { createSerializer, parseAsString } from "nuqs/server";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -151,7 +152,21 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
               },
               img: (props: MarkdownImageProps) => {
                 const { src, alt } = props;
-                const imageUrl = `${src}&postId=${postId}`;
+
+                if (!src || typeof src !== "string") {
+                  return null;
+                }
+                // Parser for postId query parameter, it will ensure that the postId is properly set in the image URLs
+                const postIdParser = {
+                  postId: parseAsString,
+                };
+
+                // Serializer for postId query parameter, it will merge the postId with the existing URL and query params
+                const serializePostId = createSerializer(postIdParser);
+
+                // Use nuqs serializer to properly merge postId with existing URL and query params
+                // This handles cases where URL already has query params or postId
+                const imageUrl = serializePostId(src, { postId });
 
                 return (
                   <div
