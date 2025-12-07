@@ -200,7 +200,7 @@ async function getPostReplies(
 ) {
   const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
   let query = supabase
-    .rpc("get_replies_to_depth", { target_id: postId, max_depth: 1 })
+    .rpc("get_replies_to_depth", { target_id: postId, max_depth: 2 })
     .order("created_at", { ascending: false })
     .limit(10);
 
@@ -208,7 +208,17 @@ async function getPostReplies(
     query = query.lt("created_at", cursor);
   }
 
-  return await query.overrideTypes<NestedPost[]>();
+  const { data: directReplies, error: directRepliesError } =
+    await query.overrideTypes<NestedPost[]>();
+
+  if (directRepliesError) {
+    return { data: null, error: directRepliesError };
+  }
+
+  return {
+    data: nestReplies(directReplies),
+    error: null,
+  };
 }
 
 /**
