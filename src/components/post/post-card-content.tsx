@@ -31,7 +31,7 @@ export function PostContent({ children }: PostContentProps) {
     minVisibleContentLength = 1000,
     charsPerLevel = 300,
   } = usePostContext();
-  const { openViewer, isOpen } = useContentViewerContext();
+  const { openViewer, isOpen, postId: viewerPostId } = useContentViewerContext();
   const { content } = post;
 
   const [expansionLevel, setExpansionLevel] = useState(0);
@@ -62,7 +62,8 @@ export function PostContent({ children }: PostContentProps) {
   const canExpand = expansionLevel < expansionData.levels - 1;
   const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
 
-  const disallowedMediaElements = isOpen && isThreadPagePost ? HIDDEN_MEDIA_ELEMENTS : [];
+  const shouldHideMedia = isOpen && (isThreadPagePost || post.id === viewerPostId);
+  const disallowedMediaElements = shouldHideMedia ? HIDDEN_MEDIA_ELEMENTS : [];
 
   useEffect(() => {
     if (contentRef.current) {
@@ -105,7 +106,7 @@ export function PostContent({ children }: PostContentProps) {
               <MarkdownViewer
                 markdown={displayContent}
                 postId={post.id ?? ""}
-                disallowedMediaElements={isOpen ? HIDDEN_MEDIA_ELEMENTS : []}
+                disallowedMediaElements={disallowedMediaElements}
                 onEvent={handleEvent}
               />
             </ScrollArea>
