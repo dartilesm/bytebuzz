@@ -39,5 +39,6 @@ export function useIsFollowing(targetUserId: string | undefined) {
     enabled: Boolean(targetUserId) && Boolean(userId),
     select: (data) => data.isFollowing,
     placeholderData: (data) => data,
+    staleTime: 60 * 3600 * 1000, // 1 hour
   });
 }
