@@ -16,10 +16,10 @@ interface PostListProps {
 
 export function PostList({ postQueryType, postId }: PostListProps) {
   // Set up infinite query for posts
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsQuery(
-    postQueryType,
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsQuery({
+    queryType: postQueryType,
     postId,
-  );
+  });
 
   // Set up intersection observer for the last post
   const { ref, isIntersecting } = useIntersectionObserver({

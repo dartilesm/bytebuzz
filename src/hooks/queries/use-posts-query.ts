@@ -1,12 +1,25 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { createSerializer, parseAsString } from "nuqs/server";
 import { useRef } from "react";
 import type { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { usePostsContext } from "@/hooks/use-posts-context";
 import type { NestedPost } from "@/types/nested-posts";
 
-export function usePostsQuery(queryType: POST_QUERY_TYPE, postId?: string) {
+const postsQueryParams = {
+  cursor: parseAsString,
+  postId: parseAsString,
+} as const;
+
+const serializePostsQueryParams = createSerializer(postsQueryParams);
+
+type UsePostsQueryProps = {
+  queryType: POST_QUERY_TYPE;
+  postId?: string;
+};
+
+export function usePostsQuery({ queryType, postId }: UsePostsQueryProps) {
   const isFirstRenderRef = useRef(true);
   const { posts } = usePostsContext();
 
@@ -43,11 +56,9 @@ export function usePostsQuery(queryType: POST_QUERY_TYPE, postId?: string) {
     if (!isEnabled) return Promise.resolve({ data: [], error: null });
 
     const url = new URL(`/api/posts/${queryType}`, window.location.href);
-    url.searchParams.set("cursor", cursor || "");
-    if (postId) {
-      url.searchParams.set("postId", postId);
-    }
-    return fetch(url.toString()).then((res) => res.json());
+    const serializedQueryParams = serializePostsQueryParams({ cursor, postId });
+
+    return fetch(url.toString() + serializedQueryParams).then((res) => res.json());
   }
 
   function fetchNextPage(...args: Parameters<typeof infiniteQuery.fetchNextPage>) {
