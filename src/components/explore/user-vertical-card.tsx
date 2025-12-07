@@ -5,9 +5,9 @@ import type { Tables } from "database.types";
 import Image from "next/image";
 import Link from "next/link";
 import type { UrlObject } from "url";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { FollowButton } from "@/components/ui/follow-button";
+import { UserAvatar } from "@/components/user-avatar";
 import { cn } from "@/lib/utils";
 
 interface UserVerticalCardProps {
@@ -51,16 +51,10 @@ export function UserVerticalCard({ user }: UserVerticalCardProps) {
         >
           {/* Avatar */}
           <div className="relative -mt-24 mb-3">
-            <Avatar className="size-24 border-4 border-background shadow-lg ring-1 ring-border/10 transition-transform duration-300 group-hover:scale-105">
-              <AvatarImage
-                src={user.image_url || undefined}
-                alt={user.display_name}
-                className="object-cover"
-              />
-              <AvatarFallback className="bg-primary/10 text-2xl font-bold text-primary">
-                {user.display_name[0]}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar
+              user={user}
+              className="size-24 border-4 border-background shadow-lg ring-1 ring-border/10 transition-transform duration-300 group-hover:scale-105"
+            />
           </div>
 
           {/* User Info */}
