@@ -16,11 +16,20 @@ export function UserPostThread({ posts }: UserPostThreadProps) {
 
   const isFirstAndLastPost = posts.length === 1;
 
-  useEffect(() => {
-    if (lastPostRef.current) {
-      lastPostRef.current.scrollIntoView({ behavior: "instant", block: "start" });
+  useEffect(scrollToLastPost, [posts]);
+
+  function scrollToLastPost() {
+    if (lastPostRef.current && containerRef.current) {
+      const headerOffset = 64;
+      const elementPosition = lastPostRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "instant",
+      });
     }
-  }, [posts.length]);
+  }
 
   return (
     <div ref={containerRef} className="flex flex-col w-full">

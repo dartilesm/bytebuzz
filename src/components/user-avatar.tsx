@@ -3,8 +3,6 @@
 import type { Tables } from "database.types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
 import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
@@ -53,23 +51,26 @@ function isNewUser(joinDate: string | null | undefined): boolean {
  *
  * Supports both a user object prop and individual props for flexibility.
  */
-export function UserAvatar({ user, showWelcomeBadge = true, className }: UserAvatarProps) {
-  const { data: userData, isLoading } = useUserDataQuery(user?.id ?? "");
-  const imageUrl = userData?.image_url ?? undefined;
-  const displayName = userData?.display_name ?? "";
-  const userJoinDate = userData?.join_date ?? null;
+export function UserAvatar({
+  user,
+  avatarUrl,
+  name,
+  joinDate,
+  showWelcomeBadge = true,
+  className,
+}: UserAvatarProps) {
+  const imageUrl = avatarUrl ?? user?.image_url ?? undefined;
+  const displayName = name ?? user?.display_name ?? "";
+  const userJoinDate = joinDate ?? user?.join_date ?? null;
 
   const shouldShowBadge = showWelcomeBadge && isNewUser(userJoinDate);
 
   return (
     <div className={cn("relative inline-block rounded-full @container-[size]", className)}>
-      {isLoading && <Skeleton className="size-full rounded-full" />}
-      {!isLoading && (
-        <Avatar className="size-full">
-          <AvatarImage src={imageUrl} alt={displayName} />
-          <AvatarFallback>{displayName?.[0] ?? ""}</AvatarFallback>
-        </Avatar>
-      )}
+      <Avatar className="size-full">
+        <AvatarImage src={imageUrl} alt={displayName} />
+        <AvatarFallback>{displayName?.[0] ?? ""}</AvatarFallback>
+      </Avatar>
       {shouldShowBadge && (
         <Badge
           className="absolute -bottom-[10cqw] left-1/2 -translate-x-1/2 z-10 h-auto min-w-fit justify-center rounded-full text-[clamp(.5rem,20cqw,.75rem)] leading-none font-bold tracking-wide uppercase bg-success text-success-foreground"
