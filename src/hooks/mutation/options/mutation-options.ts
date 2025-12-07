@@ -1,3 +1,4 @@
+import type { MutationOptions } from "@tanstack/react-query";
 import { createPostAction } from "@/actions/create-post";
 import { type ToggleFollowData, toggleFollow } from "@/actions/toggle-follow";
 import { type ToggleReactionData, toggleReaction } from "@/actions/toggle-reaction";
@@ -108,4 +109,4 @@ export const mutationOptions = {
   uploadPostMedia: {
     mutationFn: uploadPostMediaAction,
   },
-};
+} satisfies Record<string, MutationOptions<any, any, any, any>>;

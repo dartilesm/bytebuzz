@@ -31,4 +31,3 @@ export const postQueries = {
       enabled: !!queryType,
     }),
 };
-

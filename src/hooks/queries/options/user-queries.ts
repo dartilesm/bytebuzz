@@ -86,5 +86,7 @@ export const userQueries = {
       // Hook had select: (data) => data.isFollowing
       // We will keep select in the hook for now as it transforms the return type.
       staleTime: 60 * 3600 * 1000, // 1 hour
+      select: (data) => data.isFollowing,
+      placeholderData: (data) => data,
     }),
 };

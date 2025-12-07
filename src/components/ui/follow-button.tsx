@@ -1,11 +1,10 @@
 import { useUser } from "@clerk/nextjs";
-import { Loader2, UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthGuard } from "@/hooks/use-auth-guard";
-import { userQueries } from "@/hooks/queries/options/user-queries";
 import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
+import { userQueries } from "@/hooks/queries/options/user-queries";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 
 interface FollowButtonProps {
   targetUserId: string;
@@ -16,67 +15,46 @@ interface FollowButtonProps {
 export function FollowButton({ targetUserId, size = "sm", className }: FollowButtonProps) {
   const { user: currentUser } = useUser();
   const queryClient = useQueryClient();
-  const { data: isFollowing, isLoading } = useQuery({
-    ...userQueries.isFollowing(currentUser?.id, targetUserId),
-    select: (data) => data.isFollowing,
-    placeholderData: (data) => data,
-  });
+  const isFollowingQuery = userQueries.isFollowing(currentUser?.id, targetUserId);
+
+  const { data: isFollowing, isLoading, isPending } = useQuery(isFollowingQuery);
+  const isLoadingFollowStatus = !isPending && isLoading;
 
   const toggleFollowMutation = useMutation({
     ...mutationOptions.toggleFollow,
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: userQueries.isFollowing(currentUser?.id, variables.target_user_id).queryKey,
-      });
+    onMutate: async (data) => {
+      // Optimistically update the follow status
+      queryClient.setQueryData(isFollowingQuery.queryKey, { isFollowing: !isFollowing });
+    },
+    onSettled: async () => {
+      // Invalidate after error or success
+      await queryClient.invalidateQueries(isFollowingQuery);
     },
   });
 
-  const [isFollowed, setIsFollowed] = useState(isFollowing);
-  const { user: currentUser } = useUser();
   const { withAuth } = useAuthGuard();
 
-  useEffect(() => {
-    setIsFollowed(isFollowing);
-  }, [isFollowing]);
-
-  function updateFollowStatus(isFollowing: boolean) {
-    setIsFollowed(isFollowing);
-  }
-
   function handleFollowToggle() {
-    setIsFollowed(!isFollowed);
-    toggleFollowMutation.mutate(
-      { target_user_id: targetUserId },
-      {
-        onSuccess(response) {
-          if (!response.error) {
-            updateFollowStatus(!!response.data);
-          }
-        },
-      },
-    );
+    toggleFollowMutation.mutate({ target_user_id: targetUserId });
   }
 
   if (currentUser?.id === targetUserId) return null;
 
   return (
     <Button
-      variant={isFollowed ? "flat" : "default"}
+      variant={isFollowing ? "flat" : "default"}
       size={size === "md" ? "default" : size}
       onClick={withAuth(handleFollowToggle)}
-      aria-label={isLoading ? "Loading follow status" : isFollowed ? "Following" : "Follow"}
+      aria-label={
+        isLoadingFollowStatus ? "Loading follow status" : isFollowing ? "Following" : "Follow"
+      }
       disabled={isLoading}
       className={className}
     >
-      {!isLoading && isFollowed && <UserRoundCheckIcon size={14} />}
-      {!isLoading && !isFollowed && <UserRoundPlusIcon size={14} />}
-      {isLoading ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : isFollowed ? (
-        "Following"
-      ) : (
-        "Follow"
-      )}
+      {!isLoadingFollowStatus && isFollowing && <UserRoundCheckIcon size={14} />}
+      {!isLoadingFollowStatus && !isFollowing && <UserRoundPlusIcon size={14} />}
+      {isFollowing && "Following"}
+      {!isFollowing && "Follow"}
     </Button>
   );
 }
