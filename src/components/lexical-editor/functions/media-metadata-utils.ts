@@ -1,4 +1,31 @@
+import { createLoader, createSerializer, parseAsInteger, parseAsString } from "nuqs/server";
 import type { MediaData } from "@/components/lexical-editor/plugins/media/media-node";
+
+/**
+ * Media search params parsers using nuqs for type-safe query parameter handling
+ */
+const mediaParsers = {
+  postId: parseAsString,
+  id: parseAsString,
+  type: parseAsString,
+  alt: parseAsString,
+  title: parseAsString,
+  width: parseAsInteger,
+  height: parseAsInteger,
+} as const;
+
+/**
+ * Serializer function for media metadata
+ * Converts MediaMetadata object to query string
+ * Can accept base URL, URL object, or URLSearchParams as first argument
+ */
+const serializeMediaMetadata = createSerializer(mediaParsers);
+
+/**
+ * Loader function for media metadata
+ * Extracts typed metadata from URL strings, URL objects, or URLSearchParams
+ */
+const loadMediaMetadata = createLoader(mediaParsers);
 
 /**
  * Metadata that can be stored in markdown for media files
@@ -11,51 +38,38 @@ export interface MediaMetadata {
   title?: string;
   width?: number;
   height?: number;
+  postId?: string; // Critical for API route to locate files in posts directory
   // Future fields can be added here without breaking existing code
   [key: string]: unknown;
 }
 
 /**
- * Encodes media metadata into a URL query parameter
- * Uses JSON encoding for extensibility
+ * Encodes media metadata into URL query parameters
+ * Uses nuqs serializer for type-safe, readable query parameters
+ * Critical fields like postId are kept as top-level params for API compatibility
  *
  * @param src - The original media source URL
  * @param metadata - The metadata to encode
- * @returns The URL with metadata appended as a query parameter
+ * @returns The URL with metadata as readable query parameters
  */
 export function encodeMediaMetadata(src: string, metadata: MediaMetadata): string {
-  try {
-    // Handle relative URLs by creating a temporary absolute URL
-    let url: URL;
-    if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) {
-      url = new URL(src);
-    } else {
-      // For relative URLs, use a base URL
-      url = new URL(
-        src,
-        typeof window !== "undefined" ? window.location.origin : "http://localhost",
-      );
+  // Build serializable metadata object by filtering out undefined/null values
+  const serializableMetadata: Record<string, string | number | null> = {};
+  for (const key of Object.keys(mediaParsers) as Array<keyof typeof mediaParsers>) {
+    const value = metadata[key];
+    if (value !== undefined && value !== null) {
+      serializableMetadata[key] = value as string | number;
     }
-
-    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
-    url.searchParams.set("meta", encodedMetadata);
-
-    // Return relative URL if original was relative
-    if (!src.startsWith("http://") && !src.startsWith("https://") && !src.startsWith("//")) {
-      return url.pathname + url.search + url.hash;
-    }
-
-    return url.toString();
-  } catch {
-    // If URL parsing fails, append as query string
-    const separator = src.includes("?") ? "&" : "?";
-    const encodedMetadata = encodeURIComponent(JSON.stringify(metadata));
-    return `${src}${separator}meta=${encodedMetadata}`;
   }
+
+  // Use nuqs serializer with base URL - it handles merging with existing params automatically
+  return serializeMediaMetadata(src, serializableMetadata);
 }
 
 /**
- * Decodes media metadata from a URL query parameter
+ * Decodes media metadata from URL query parameters
+ * Uses nuqs parsers for type-safe extraction
+ * Preserves postId in URL for API route compatibility
  *
  * @param url - The URL containing encoded metadata
  * @returns An object with the decoded metadata and the cleaned source URL
@@ -65,73 +79,66 @@ export function decodeMediaMetadata(url: string): {
   src: string;
 } {
   try {
-    // Handle relative URLs by creating a temporary absolute URL
-    let urlObj: URL;
-    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("//")) {
-      urlObj = new URL(url);
-    } else {
-      // For relative URLs, use a base URL
-      urlObj = new URL(
-        url,
-        typeof window !== "undefined" ? window.location.origin : "http://localhost",
-      );
-    }
+    // Use nuqs loader to extract metadata - it handles URL strings, URL objects, etc.
+    const loaded = loadMediaMetadata(url);
 
-    const metaParam = urlObj.searchParams.get("meta");
+    // Filter out null/undefined values and validate type field
+    const metadata: Partial<MediaMetadata> = {};
+    let hasMetadata = false;
 
-    if (!metaParam) {
-      return { metadata: null, src: url };
-    }
-
-    // Remove the meta parameter from the URL
-    urlObj.searchParams.delete("meta");
-
-    // Preserve original URL format (relative vs absolute)
-    let cleanSrc: string;
-    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("//")) {
-      cleanSrc = urlObj.toString();
-    } else {
-      cleanSrc = urlObj.pathname + urlObj.search + urlObj.hash;
-    }
-
-    try {
-      const decoded = JSON.parse(decodeURIComponent(metaParam)) as Partial<MediaMetadata>;
-      return { metadata: decoded, src: cleanSrc };
-    } catch {
-      // If JSON parsing fails, return null metadata but still clean the URL
-      return { metadata: null, src: cleanSrc };
-    }
-  } catch {
-    // If URL parsing fails, try to extract from query string manually
-    const metaMatch = url.match(/[?&]meta=([^&]+)/);
-    if (metaMatch) {
-      try {
-        const decoded = JSON.parse(decodeURIComponent(metaMatch[1])) as Partial<MediaMetadata>;
-        // Remove meta parameter while preserving other query params
-        const cleanSrc = url
-          .replace(/[?&]meta=[^&]+/, (_match, offset) => {
-            // If this is the first param, use ?, otherwise use &
-            return offset === 0 ? "?" : "";
-          })
-          .replace(/[?&]$/, "")
-          .replace(/&$/, "");
-        return { metadata: decoded, src: cleanSrc || url.split("?")[0] };
-      } catch {
-        const cleanSrc = url.replace(/[?&]meta=[^&]+/, "").replace(/[?&]$/, "");
-        return { metadata: null, src: cleanSrc || url.split("?")[0] };
+    for (const [key, value] of Object.entries(loaded)) {
+      // Special validation for type field
+      if (key === "type") {
+        if (value === "image" || value === "video") {
+          metadata.type = value;
+          hasMetadata = true;
+        }
+      } else if (value !== null && value !== undefined) {
+        metadata[key as keyof MediaMetadata] = value as never;
+        hasMetadata = true;
       }
     }
+
+    // Clean URL by removing metadata params (except postId) using serialize with null values
+    const nullifiedMetadata: Record<string, string | number | null> = {};
+    for (const key of Object.keys(mediaParsers) as Array<keyof typeof mediaParsers>) {
+      // Keep postId if it exists in metadata, otherwise set all others to null to remove them
+      if (key === "postId" && metadata.postId) {
+        nullifiedMetadata.postId = metadata.postId;
+      } else if (key !== "postId") {
+        nullifiedMetadata[key] = null;
+      }
+    }
+
+    // Use serialize to remove params (passing null removes them) while preserving postId
+    const cleanSrc = serializeMediaMetadata(url, nullifiedMetadata);
+
+    return { metadata: hasMetadata ? metadata : null, src: cleanSrc };
+  } catch {
+    // If URL parsing fails, return original URL with no metadata
     return { metadata: null, src: url };
   }
 }
 
 /**
  * Converts MediaData to MediaMetadata format
+ * Extracts postId from src URL if present
  *
  * @param mediaData - The MediaData object to convert
  * @returns MediaMetadata object
  */
 export function mediaDataToMetadata(mediaData: MediaData): MediaMetadata {
+  // Extract metadata from src URL using nuqs loader
+  let extractedMetadata: Partial<MediaMetadata> = {};
+  try {
+    const loaded = loadMediaMetadata(mediaData.src);
+    extractedMetadata = {
+      postId: loaded.postId || undefined,
+    };
+  } catch {
+    // If URL parsing fails, extractedMetadata remains empty
+  }
+
   return {
     id: mediaData.id,
     type: mediaData.type,
@@ -139,6 +146,7 @@ export function mediaDataToMetadata(mediaData: MediaData): MediaMetadata {
     title: mediaData.title,
     width: mediaData.width,
     height: mediaData.height,
+    postId: extractedMetadata.postId,
   };
 }
 

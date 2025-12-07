@@ -11,6 +11,9 @@
     "editor.defaultFormatter": "biomejs.biome",
     "typescript.preferences.importModuleSpecifier": "non-relative"
   },
+  "[sql]": {
+    "editor.formatOnSave": false
+  },
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "files.associations": {
