@@ -4,6 +4,7 @@ import { XIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useScrollLock } from "usehooks-ts";
+import { UserPostLoading } from "@/components/loading/user-post.loading";
 import { PostList } from "@/components/post/post-list";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
@@ -17,6 +18,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Skeleton } from "@/components/ui/skeleton";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
 import { usePostThreadQuery } from "@/hooks/queries/use-post-thread-query";
@@ -70,16 +72,16 @@ export function ContentViewerModal() {
       {/* Modal Content */}
       <div className="relative z-10 flex h-full w-full">
         {/* Left Panel - Carousel Display */}
-        <div className="relative flex flex-1 items-center justify-center bg-black">
+        <div className="relative flex flex-1 items-center justify-center bg-background">
           {/* Close Button - Top Left (X style) */}
           <Button
-            variant="ghost"
-            size="icon"
+            variant="flat"
+            size="icon-sm"
             onClick={closeViewer}
-            className="absolute top-4 left-4 z-20 h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 backdrop-blur-sm"
+            className="absolute top-4 left-4 z-20"
             aria-label="Close viewer"
           >
-            <XIcon size={20} />
+            <XIcon />
           </Button>
 
           <Carousel
@@ -106,8 +108,8 @@ export function ContentViewerModal() {
             </CarouselContent>
             {images.length > 1 && (
               <>
-                <CarouselPrevious className="left-4 h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 backdrop-blur-sm" />
-                <CarouselNext className="right-4 h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white border border-white/20 backdrop-blur-sm" />
+                <CarouselPrevious className="left-4" />
+                <CarouselNext className="right-4" />
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
                   {images.map((_, index) => (
                     <Button
@@ -135,13 +137,19 @@ export function ContentViewerModal() {
         </div>
 
         {/* Right Panel - Post Thread */}
-        <div className="w-full border-l border-border bg-background md:w-[400px] h-dvh">
+        <div className="border-l border-border bg-background hidden md:block md:max-w-2xl h-dvh">
           {/* Scrollable Content */}
           <div className="overflow-y-auto max-h-full">
             <div className="flex flex-col p-4">
               {isLoading && (
-                <div className="flex items-center justify-center py-8">
-                  <span className="text-sm text-muted-foreground">Loading...</span>
+                <div className="flex flex-col gap-4">
+                  <UserPostLoading />
+                  <Skeleton className="h-6 w-20" />
+                  <UserPostLoading />
+                  <UserPostLoading />
+                  <UserPostLoading />
+                  <UserPostLoading />
+                  <UserPostLoading />
                 </div>
               )}
               {!isLoading && (
