@@ -8,6 +8,7 @@ import { PostComposer } from "@/components/post-composer/post-composer";
 import { PageHeader } from "@/components/ui/page-header";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
+import { postQueries } from "@/hooks/queries/options/post-queries";
 import { postService } from "@/lib/db/services/post.service";
 import { log } from "@/lib/logger/logger";
 import { generateFallbackMetadata, generatePostThreadMetadata } from "@/lib/metadata-utils";
@@ -65,12 +66,13 @@ async function ThreadPage({ params }: ThreadPageProps) {
   const queryClient = new QueryClient();
 
   queryClient.prefetchQuery({
-    queryKey: ["posts", POST_QUERY_TYPE.POST_REPLIES, username, postId],
+    queryKey: postQueries.list({ queryType: POST_QUERY_TYPE.POST_REPLIES, username, postId })
+      .queryKey,
     queryFn: () => ({ directReplies, postAncestry }),
   });
 
   queryClient.prefetchQuery({
-    queryKey: ["post-thread", postId],
+    queryKey: postQueries.thread({ postId }).queryKey,
     queryFn: () => directReplies,
   });
 

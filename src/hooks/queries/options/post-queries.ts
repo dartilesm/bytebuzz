@@ -62,7 +62,7 @@ export const postQueries = {
     postId?: string;
   }) =>
     infiniteQueryOptions({
-      queryKey: ["posts", queryType, username],
+      queryKey: ["posts", queryType, username, postId],
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
         queryType
           ? fetchPosts({ queryType, postId, cursor: pageParam })
