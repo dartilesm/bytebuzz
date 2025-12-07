@@ -66,12 +66,12 @@ async function ThreadPage({ params }: ThreadPageProps) {
 
   queryClient.prefetchQuery({
     queryKey: ["posts", POST_QUERY_TYPE.POST_REPLIES, username, postId],
-    queryFn: () => getPostData(postId),
+    queryFn: () => ({ directReplies, postAncestry }),
   });
 
   queryClient.prefetchQuery({
     queryKey: ["post-thread", postId],
-    queryFn: () => getPostData(postId),
+    queryFn: () => directReplies,
   });
 
   if (!postAncestry || postAncestry.length === 0) {
