@@ -357,8 +357,8 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
           </CarouselContent>
           {hasMoreThanOneItem && (
             <>
-              <CarouselPrevious className="left-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background" />
-              <CarouselNext className="right-2 h-8 w-8 rounded-full shadow-lg bg-background/90 hover:bg-background" />
+              <CarouselPrevious className="left-2 size-8" />
+              <CarouselNext className="right-2 size-8" />
             </>
           )}
         </Carousel>
