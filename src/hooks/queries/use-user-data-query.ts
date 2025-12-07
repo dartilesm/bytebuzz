@@ -21,5 +21,6 @@ export function useUserDataQuery(userId: string) {
     queryKey: ["user-data", userId],
     queryFn: () => getUserData(userId),
     enabled: !!userId,
+    staleTime: 60 * 3600 * 1000, // 1 hour
   });
 }
