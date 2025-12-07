@@ -127,6 +127,101 @@ async function getPostById(this: ServiceContext, postId: string) {
 }
 
 /**
+ * Helper function to nest replies into a hierarchical structure
+ */
+function nestReplies(posts: NestedPost[] | null): NestedPost[] {
+  const map = new Map();
+  const roots: NestedPost[] = [];
+
+  if (!posts) {
+    return roots;
+  }
+
+  for (const post of posts) {
+    post.replies = [];
+    map.set(post.id, post);
+  }
+
+  for (const post of posts) {
+    if (post.parent_post_id && map.has(post.parent_post_id)) {
+      const parent = map.get(post.parent_post_id);
+      parent.replies.push(post);
+    } else {
+      roots.push(post);
+    }
+  }
+
+  return roots;
+}
+
+/**
+ * Get post thread (ancestry and replies) for a given post ID
+ * @param postId - ID of the post to get thread for
+ */
+async function getPostThread(this: ServiceContext, postId: string) {
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
+
+  const { data: postAncestry, error: postAncestryError } = await supabase
+    .rpc("get_post_ancestry", {
+      start_id: postId,
+    })
+    .overrideTypes<NestedPost[]>();
+
+  if (postAncestryError) {
+    return { data: null, error: postAncestryError };
+  }
+
+  const { data: directReplies, error: directRepliesError } = await supabase
+    .rpc("get_replies_to_depth", { target_id: postId, max_depth: 2 })
+    .order("created_at", { ascending: false })
+    .overrideTypes<NestedPost[]>();
+
+  if (directRepliesError) {
+    return { data: null, error: directRepliesError };
+  }
+
+  return {
+    data: {
+      postAncestry: postAncestry || [],
+      directReplies: nestReplies(directReplies),
+    },
+    error: null,
+  };
+}
+
+/**
+ * Get replies to a post with cursor-based pagination
+ * @param postId - ID of the post to get replies for
+ * @param cursor - Optional timestamp to fetch replies before this point
+ */
+async function getPostReplies(
+  this: ServiceContext,
+  { postId, cursor }: { postId: string; cursor?: string },
+) {
+  const supabase = createServerSupabaseClient({ accessToken: this.accessToken });
+  let query = supabase
+    .rpc("get_replies_to_depth", { target_id: postId, max_depth: 2 })
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (cursor) {
+    query = query.lt("created_at", cursor);
+  }
+
+  const { data: directReplies, error: directRepliesError } =
+    await query.overrideTypes<NestedPost[]>();
+
+  if (directRepliesError) {
+    return { data: null, error: directRepliesError };
+  }
+
+  return {
+    data: nestReplies(directReplies),
+    error: null,
+  };
+}
+
+/**
  * Post service for all post-related database operations
  *
  * @example
@@ -145,6 +240,8 @@ export const postService = createServiceWithContext({
   createPost,
   deletePost,
   getPostById,
+  getPostThread,
+  getPostReplies,
 });
 
 export type PostService = typeof postService;
