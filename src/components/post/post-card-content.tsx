@@ -31,7 +31,7 @@ export function PostContent({ children }: PostContentProps) {
     minVisibleContentLength = 1000,
     charsPerLevel = 300,
   } = usePostContext();
-  const { openViewer, isOpen, postId: viewerPostId } = useContentViewerContext();
+  const { openViewer, isOpen, postId: viewerPostId, closeViewer } = useContentViewerContext();
   const { content } = post;
 
   const [expansionLevel, setExpansionLevel] = useState(0);
@@ -41,10 +41,9 @@ export function PostContent({ children }: PostContentProps) {
   function handleEvent(event: MarkdownComponentEvent) {
     if (event.source === "img" && event.type === "click") {
       const { images, index, postId } = event.payload;
-      openViewer(images, postId, index);
+      return openViewer(images, postId, index);
     }
-    // Handle other events here as needed
-    // e.g., if (event.source === "code" && event.type === "click") { ... }
+    closeViewer();
   }
 
   const expansionData = getExpansionData({
