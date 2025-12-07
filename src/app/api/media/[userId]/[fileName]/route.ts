@@ -1,6 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { createLoader, parseAsString } from "nuqs/server";
 import { mediaService } from "@/lib/db/services/media.service";
 import { log } from "@/lib/logger/logger";
+
+// Loader for query parameters, it will ensure that the postId is properly set in the URL search params
+const loadQueryParams = createLoader({
+  postId: parseAsString,
+});
 
 /**
  * GET handler for media files
@@ -15,8 +21,7 @@ export async function GET(
 ) {
   try {
     const { userId, fileName } = await params;
-    const { searchParams } = new URL(_request.url);
-    const postId = searchParams.get("postId");
+    const { postId } = loadQueryParams(_request.nextUrl.searchParams);
 
     // Define the path and search based on postId presence
     const path = postId ? `${userId}/posts/${postId}` : `${userId}/temp`;
@@ -31,6 +36,7 @@ export async function GET(
 
     // Return early if no file found
     if (!matchingFile) {
+      log.error("Media file not found", { userId, fileName, path });
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
