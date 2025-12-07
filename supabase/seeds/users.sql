@@ -1,3 +1,66 @@
-INSERT INTO "public"."users" ("id", "username", "display_name", "bio", "location", "image_url", "website", "join_date", "follower_count", "following_count", "cover_image_url", "top_technologies", "github_url", "linkedin_url") VALUES
-	('user_2x6baZqyYhTgll06OwxRkkgM81r', 'test_user', 'Test User', 'This is my biography', 'San Francisco', 'https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvdXBsb2FkZWQvaW1nXzJ4QmgwQm1ISm9nYlRqZ2tHS0xuZjZuRzJyaSJ9', 'https://x.com/dartilesm', '2025-05-14 22:25:36.106596+00', 2, 0, NULL, NULL, NULL, NULL),
-	('user_2x1BsnAmgPArzn4l8kjqSpVB8bf', 'dartilesm', 'Diego Artiles', 'Senior Frontend Engineer with 10 years of experience', 'Buenos Aires, Argentina', 'https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ2l0aHViL2ltZ18yeDFCc3RqSFI5VTBBT2JXV2NqMkxZSWJLOVUifQ', 'https://dartiles.dev', '2025-05-13 00:25:09.839424+00', 0, 2, 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/profile/1754792478325_cover.webp', '{typescript,nextjs,javascript}', 'https://github.com/dartilesm', '');
+INSERT INTO
+	"public"."users" (
+		"id",
+		"username",
+		"display_name",
+		"bio",
+		"location",
+		"image_url",
+		"website",
+		"join_date",
+		"follower_count",
+		"following_count",
+		"cover_image_url",
+		"top_technologies",
+		"github_url",
+		"linkedin_url"
+	)
+VALUES
+	(
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf',
+		'dartilesm',
+		'Diegoooo Artiles',
+		'Senior Frontend Engineer with almost 10 years of experience',
+		'Buenos Aires, Argentina',
+		'https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvdXBsb2FkZWQvaW1nXzM0Yk45RE5iZGR5a0lUbVVJQXBSYkE5TGtJcyJ9',
+		'https://dartiles.dev',
+		'2025-05-13 00:25:09.839424+00',
+		'0',
+		'1',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/profile/1763939432323_cover.jpeg',
+		'{"javascript","typescript"}',
+		'https://github.com/dartilesm',
+		'https://www.linkedin.com/in/dartiles'
+	),
+	(
+		'user_2x6baZqyYhTgll06OwxRkkgM81r',
+		'test_user',
+		'Test User',
+		'This is my biography',
+		'San Francisco',
+		'https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvdXBsb2FkZWQvaW1nXzJ4QmgwQm1ISm9nYlRqZ2tHS0xuZjZuRzJyaSJ9',
+		'https://x.com/dartilesm',
+		'2025-05-14 22:25:36.106596+00',
+		'2',
+		'0',
+		null,
+		null,
+		null,
+		null
+	),
+	(
+		'user_36CPmRWVqqiUZnbCitbJBHiSk3e',
+		'diego_test',
+		'Diego Testing',
+		'',
+		'',
+		'https://img.clerk.com/eyJ0eXBlIjoiZGVmYXVsdCIsImlpZCI6Imluc18yd3BUcEdBZWtnSFYwSXpkVFVYVW9IMWJoUzYiLCJyaWQiOiJ1c2VyXzM2Q1BtUldWcXFpVVpuYkNpdGJKQkhpU2szZSIsImluaXRpYWxzIjoiRFQifQ',
+		'',
+		'2025-11-30 13:02:20.255076+00',
+		'0',
+		'0',
+		null,
+		'{"python"}',
+		'',
+		''
+	);
