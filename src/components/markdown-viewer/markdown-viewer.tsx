@@ -24,19 +24,9 @@ import {
 import { cn } from "@/lib/utils";
 import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
-const ALLOWED_MEDIA_ELEMENTS = ["img", "p", "code"] as const;
+const ALLOWED_ELEMENTS = ["img", "p", "code"] as const;
 
-function getAllowedMediaElements(disallowedMediaElements: DisallowedMediaElements) {
-  const allowedMediaElementsSet = new Set(ALLOWED_MEDIA_ELEMENTS);
-  const disallowedMediaElementsSet = new Set(disallowedMediaElements);
-
-  const allowedMediaElements = allowedMediaElementsSet.difference(disallowedMediaElementsSet);
-  const allowedMediaElementsArray = Array.from(allowedMediaElements);
-
-  return allowedMediaElementsArray;
-}
-
-export type DisallowedMediaElements = Exclude<(typeof ALLOWED_MEDIA_ELEMENTS)[number], "p">[];
+export type DisallowedElements = Exclude<(typeof ALLOWED_ELEMENTS)[number], "p">[];
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
@@ -45,7 +35,7 @@ type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 export type MarkdownViewerProps = {
   markdown: string;
   postId: string;
-  disallowedMediaElements?: DisallowedMediaElements;
+  disallowedElements?: DisallowedElements;
   /**
    * Generic event handler for all markdown component events
    * Use this instead of componentEvents for better scalability
@@ -56,11 +46,9 @@ export type MarkdownViewerProps = {
 export function MarkdownViewer({
   markdown,
   postId,
-  disallowedMediaElements = [],
+  disallowedElements = [],
   onEvent,
 }: MarkdownViewerProps) {
-  const allowedMediaElements = getAllowedMediaElements(disallowedMediaElements);
-
   // Extract all content (images and code blocks) from markdown
   const allContent = getAllContentFromMarkdown({ markdown, postId });
 
@@ -68,7 +56,7 @@ export function MarkdownViewer({
   const images = getImagesFromMarkdown({ markdown, postId });
 
   const imageCount = images.length;
-  const shouldHideImages = disallowedMediaElements.includes("img");
+  const shouldHideImages = disallowedElements.includes("img");
 
   return (
     <>
@@ -99,7 +87,7 @@ export function MarkdownViewer({
             const language = className?.replace("language-", "");
 
             // Check if code blocks should be hidden (only block code, not inline)
-            const shouldHideCode = disallowedMediaElements.includes("code");
+            const shouldHideCode = disallowedElements.includes("code");
             if (shouldHideCode) return null;
 
             if (!className)
@@ -281,7 +269,6 @@ export function MarkdownViewer({
                 );
               },
             }}
-            allowedElements={allowedMediaElements}
           >
             {markdown}
           </Markdown>
