@@ -78,6 +78,9 @@ export const postQueries = {
         return undefined;
       },
       enabled: !!queryType,
+      experimental_prefetchInRender: true,
+      staleTime: 0,
+      refetchOnMount: true,
     }),
   thread: ({ postId }: { postId: string }) =>
     queryOptions({
