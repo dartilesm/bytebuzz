@@ -3,7 +3,7 @@
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
-  type DisallowedMediaElements,
+  type DisallowedElements,
   MarkdownViewer,
 } from "@/components/markdown-viewer/markdown-viewer";
 import {
@@ -18,7 +18,7 @@ import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
 import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
-const HIDDEN_MEDIA_ELEMENTS: DisallowedMediaElements = ["img", "code"] as const;
+const HIDDEN_MEDIA_ELEMENTS: DisallowedElements = ["img", "code"] as const;
 
 interface PostContentProps {
   children?: React.ReactNode;
@@ -90,7 +90,7 @@ export function PostContent({ children }: PostContentProps) {
         <MarkdownViewer
           markdown={content ?? ""}
           postId={post.id ?? ""}
-          disallowedMediaElements={disallowedMediaElements}
+          disallowedElements={disallowedMediaElements}
           onEvent={handleEvent}
         />
       )}
@@ -108,7 +108,7 @@ export function PostContent({ children }: PostContentProps) {
               <MarkdownViewer
                 markdown={displayContent}
                 postId={post.id ?? ""}
-                disallowedMediaElements={disallowedMediaElements}
+                disallowedElements={disallowedMediaElements}
                 onEvent={handleEvent}
               />
             </ScrollArea>
