@@ -72,7 +72,7 @@ export function ContentViewerProvider({ children }: { children: React.ReactNode 
       }}
     >
       {children}
-      {isOpen && <ContentViewerModal />}
+      {isOpen && <ContentViewerModal key={postId} />}
     </ContentViewerContext.Provider>
   );
 }

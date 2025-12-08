@@ -47,7 +47,7 @@ export function ContentViewerModal() {
   const { isOpen, contentItems, initialContentIndex, postId, closeViewer } =
     useContentViewerContext();
   useScrollLock();
-  const { data: threadData, isLoading } = useQuery(postQueries.thread({ postId }));
+  const { data: threadData, isLoading } = useQuery(postQueries.thread({ postId: postId ?? "" }));
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
@@ -127,7 +127,7 @@ export function ContentViewerModal() {
                           data={[
                             {
                               language: item.data.language || "text",
-                              filename: item.data.filename,
+                              filename: item.data.filename || "",
                               code: item.data.code || "",
                             },
                           ]}
@@ -230,7 +230,11 @@ export function ContentViewerModal() {
                       )}
                       <div className="flex flex-col gap-4 mt-4 min-h-dvh">
                         {directReplies.length > 0 && (
-                          <PostList postQueryType={POST_QUERY_TYPE.POST_REPLIES} postId={postId} />
+                          <PostList
+                            key={postId}
+                            postQueryType={POST_QUERY_TYPE.POST_REPLIES}
+                            postId={postId}
+                          />
                         )}
                       </div>
                     </PostsProvider>

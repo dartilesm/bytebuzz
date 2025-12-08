@@ -23,7 +23,7 @@ interface PostCardProps {
 
 export function PostCard({ children, className, ref }: PostCardProps) {
   const { isThreadPagePost, post, isNavigationDisabled } = usePostContext();
-  const { isOpen, openViewer } = useContentViewerContext();
+  const { isOpen, openViewer, closeViewer } = useContentViewerContext();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -37,6 +37,8 @@ export function PostCard({ children, className, ref }: PostCardProps) {
     // Casting to a more specific type to fix TypeScript errors
     const pushPath = `/@${post.user?.username}/thread/${post.id}` as `/${string}/thread/${string}`;
 
+    if (pathname !== pushPath) router.push(pushPath);
+
     // If modal is open, check if post has viewable content and switch to it
     if (isOpen) {
       const contentItems = getAllContentFromMarkdown({
@@ -44,12 +46,9 @@ export function PostCard({ children, className, ref }: PostCardProps) {
         postId: post.id ?? "",
       });
 
-      if (contentItems.length > 0) {
-        openViewer(contentItems, post.id ?? "", 0);
-      }
+      if (contentItems.length > 0) return openViewer(contentItems, post.id ?? "", 0);
+      closeViewer();
     }
-
-    if (pathname !== pushPath) router.push(pushPath);
   }
 
   return (
