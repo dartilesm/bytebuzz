@@ -13,10 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import type { PostClickEvent } from "@/context/post-provider";
 import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
-import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
 const HIDDEN_MEDIA_ELEMENTS: DisallowedElements = ["img", "code"] as const;
 
@@ -31,17 +31,21 @@ export function PostContent({ children }: PostContentProps) {
     minVisibleContentLength = 1000,
     charsPerLevel = 300,
   } = usePostContext();
-  const { openViewer, isOpen, postId: viewerPostId, closeViewer } = useContentViewerContext();
+  const { isOpen, postId: viewerPostId, closeViewer } = useContentViewerContext();
   const { content } = post;
 
   const [expansionLevel, setExpansionLevel] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<string | undefined>(undefined);
 
-  function handleEvent(event: MarkdownComponentEvent) {
+  const { onPostClick } = usePostContext();
+
+  function handleEvent(event: PostClickEvent) {
     if ((event.source === "img" || event.source === "code") && event.type === "click") {
-      const { contentItems, index, postId } = event.payload;
-      return openViewer(contentItems, postId, index);
+      // Attach data attributes to event to prevent double click
+      (event.target as HTMLElement).setAttribute("data-non-propagatable", "true");
+      // Dispatch click event to PostProvider with content items
+      return onPostClick(event);
     }
     // For other events, close viewer if open
     if (isOpen) {
@@ -73,7 +77,7 @@ export function PostContent({ children }: PostContentProps) {
       const height = expansionLevel !== expansionData.levels - 1 ? contentRefHeight : "auto";
       setContentHeight(height);
     }
-  }, [expansionLevel]);
+  }, [expansionLevel, expansionData.levels]);
 
   function handleExpand() {
     setExpansionLevel((prev) => prev + 1);

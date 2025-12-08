@@ -21,8 +21,8 @@ import {
   CodeBlockHeader,
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
+import type { PostClickEvent } from "@/context/post-provider";
 import { cn } from "@/lib/utils";
-import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
 const ALLOWED_ELEMENTS = ["img", "p", "code"] as const;
 
@@ -40,7 +40,7 @@ export type MarkdownViewerProps = {
    * Generic event handler for all markdown component events
    * Use this instead of componentEvents for better scalability
    */
-  onEvent?: (event: MarkdownComponentEvent) => void;
+  onEvent?: (event: PostClickEvent) => void;
 };
 
 export function MarkdownViewer({
@@ -74,8 +74,8 @@ export function MarkdownViewer({
             return (
               <p
                 className={className}
-                onClick={() => {
-                  onEvent?.({ source: "p", type: "click", payload: undefined });
+                onClick={(event) => {
+                  onEvent?.({ ...event, source: "p", type: "click", payload: undefined });
                 }}
               >
                 {children}
@@ -135,8 +135,9 @@ export function MarkdownViewer({
                   <div className="flex items-center">
                     <CodeBlockActionButton
                       tooltipContent="Expand"
-                      onClick={() => {
+                      onClick={(event) => {
                         onEvent?.({
+                          ...event,
                           source: "code",
                           type: "click",
                           payload: {
@@ -172,8 +173,8 @@ export function MarkdownViewer({
             return (
               <ul
                 className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}
-                onClick={() => {
-                  onEvent?.({ source: "ul", type: "click", payload: undefined });
+                onClick={(event) => {
+                  onEvent?.({ ...event, source: "ul", type: "click", payload: undefined });
                 }}
               >
                 {children}
@@ -185,8 +186,8 @@ export function MarkdownViewer({
             return (
               <ol
                 className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}
-                onClick={() => {
-                  onEvent?.({ source: "ol", type: "click", payload: undefined });
+                onClick={(event) => {
+                  onEvent?.({ ...event, source: "ol", type: "click", payload: undefined });
                 }}
               >
                 {children}
@@ -246,8 +247,9 @@ export function MarkdownViewer({
                     className={cn(
                       "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
-                    onClick={() => {
+                    onClick={(event) => {
                       onEvent?.({
+                        ...event,
                         source: "img",
                         type: "click",
                         payload: {
