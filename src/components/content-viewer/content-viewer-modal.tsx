@@ -19,6 +19,18 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  type BundledLanguage,
+  CodeBlock,
+  CodeBlockBody,
+  CodeBlockContent,
+  CodeBlockCopyButton,
+  CodeBlockFilename,
+  CodeBlockFiles,
+  CodeBlockHeader,
+  CodeBlockItem,
+} from "@/components/ui/code-block/code-block";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
@@ -32,7 +44,8 @@ import { cn } from "@/lib/utils";
  * Right panel displays the post thread and replies
  */
 export function ContentViewerModal() {
-  const { isOpen, images, initialImageIndex, postId, closeViewer } = useContentViewerContext();
+  const { isOpen, contentItems, initialContentIndex, postId, closeViewer } =
+    useContentViewerContext();
   useScrollLock();
   const { data: threadData, isLoading } = useQuery(postQueries.thread({ postId }));
   const [api, setApi] = useState<CarouselApi>();
@@ -48,10 +61,10 @@ export function ContentViewerModal() {
   }, [api]);
 
   useEffect(() => {
-    if (api && initialImageIndex > 0) {
-      api.scrollTo(initialImageIndex);
+    if (api && initialContentIndex > 0) {
+      api.scrollTo(initialContentIndex);
     }
-  }, [api, initialImageIndex]);
+  }, [api, initialContentIndex]);
 
   if (!isOpen) {
     return null;
@@ -93,26 +106,74 @@ export function ContentViewerModal() {
             className="size-full flex [&>div]:data-[slot=carousel-content]:size-full"
           >
             <CarouselContent className="flex-1 h-full">
-              {images.map((image, index) => (
-                <CarouselItem key={index} className="h-full flex items-center justify-center">
-                  <div className="relative w-full h-full flex items-center justify-center p-4">
-                    <Image
-                      src={image.src}
-                      alt={image.alt || `Image ${index + 1}`}
-                      fill
-                      className="object-contain"
-                      unoptimized
-                    />
-                  </div>
+              {contentItems.map((item, index) => (
+                <CarouselItem key={item.id} className="h-full flex items-center justify-center">
+                  {item.type === "image" && (
+                    <div className="relative w-full h-full flex items-center justify-center p-4">
+                      <Image
+                        src={item.data.src || ""}
+                        alt={item.data.alt || `Image ${index + 1}`}
+                        fill
+                        className="object-contain"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                  {item.type === "code" && (
+                    <ScrollArea className="w-full h-full max-w-4xl">
+                      <div className="p-4">
+                        <CodeBlock
+                          defaultValue={item.data.language || "text"}
+                          data={[
+                            {
+                              language: item.data.language || "text",
+                              filename: item.data.filename,
+                              code: item.data.code || "",
+                            },
+                          ]}
+                        >
+                          <CodeBlockHeader className="h-10 flex justify-between items-center">
+                            {item.data.filename && (
+                              <CodeBlockFiles>
+                                {(item) =>
+                                  item && (
+                                    <CodeBlockFilename
+                                      key={item.code + item.language}
+                                      data={item}
+                                    />
+                                  )
+                                }
+                              </CodeBlockFiles>
+                            )}
+                            <div className="flex items-center">
+                              <CodeBlockCopyButton />
+                            </div>
+                          </CodeBlockHeader>
+                          <CodeBlockBody>
+                            {(item) => (
+                              <CodeBlockItem key={item.language} value={item.language}>
+                                <CodeBlockContent
+                                  language={item.language as BundledLanguage}
+                                  className="text-xs [&>pre]:p-4"
+                                >
+                                  {item.code?.trim?.()}
+                                </CodeBlockContent>
+                              </CodeBlockItem>
+                            )}
+                          </CodeBlockBody>
+                        </CodeBlock>
+                      </div>
+                    </ScrollArea>
+                  )}
                 </CarouselItem>
               ))}
             </CarouselContent>
-            {images.length > 1 && (
+            {contentItems.length > 1 && (
               <>
                 <CarouselPrevious className="left-4" />
                 <CarouselNext className="right-4" />
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
-                  {images.map((_, index) => (
+                  {contentItems.map((_, index) => (
                     <Button
                       key={index}
                       type="button"

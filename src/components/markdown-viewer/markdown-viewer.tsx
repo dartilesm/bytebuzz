@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { getAllContentFromMarkdown } from "@/components/markdown-viewer/functions/get-all-content-from-markdown";
 import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
@@ -58,7 +59,10 @@ export function MarkdownViewer({
 }: MarkdownViewerProps) {
   const allowedMediaElements = getAllowedMediaElements(disallowedMediaElements);
 
-  // Extract images from markdown
+  // Extract all content (images and code blocks) from markdown
+  const allContent = getAllContentFromMarkdown({ markdown, postId });
+
+  // Extract images separately for backward compatibility with image grid rendering
   const images = getImagesFromMarkdown({ markdown, postId });
 
   const imageCount = images.length;
@@ -105,6 +109,15 @@ export function MarkdownViewer({
             const metadata = parseCodeBlockMetadata(node?.data?.meta ?? "");
             const filename = metadata?.fileName;
 
+            // Find this code block's index in allContent
+            const codeIndex = allContent.findIndex(
+              (item) =>
+                item.type === "code" &&
+                item.data.language === languageValue &&
+                item.data.code === codeContent.trim() &&
+                item.data.filename === filename,
+            );
+
             return (
               <CodeBlock
                 defaultValue={languageValue}
@@ -120,9 +133,9 @@ export function MarkdownViewer({
                     source: "code",
                     type: "click",
                     payload: {
-                      language: languageValue,
-                      code: codeContent,
-                      filename,
+                      contentItems: allContent,
+                      index: codeIndex !== -1 ? codeIndex : 0,
+                      postId,
                     },
                   });
                 }}
@@ -223,8 +236,10 @@ export function MarkdownViewer({
                 // This handles cases where URL already has query params or postId
                 const imageUrl = serializeImageUrl(src, { postId });
 
-                // Find index of this image in the images array
-                const index = images.findIndex((img) => img.src === imageUrl);
+                // Find index of this image in the allContent array
+                const index = allContent.findIndex(
+                  (item) => item.type === "image" && item.data.src === imageUrl,
+                );
 
                 return (
                   <div
@@ -232,15 +247,14 @@ export function MarkdownViewer({
                       "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
                     )}
                     onClick={() => {
-                      const eventPayload = {
-                        images,
-                        index: index !== -1 ? index : 0,
-                        postId,
-                      };
                       onEvent?.({
                         source: "img",
                         type: "click",
-                        payload: eventPayload,
+                        payload: {
+                          contentItems: allContent,
+                          index: index !== -1 ? index : 0,
+                          postId,
+                        },
                       });
                     }}
                   >

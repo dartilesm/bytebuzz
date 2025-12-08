@@ -1,4 +1,4 @@
-type ImageData = { src: string; alt: string };
+import type { ContentItem } from "@/context/content-viewer-context";
 
 /**
  * Union type for all possible markdown component events
@@ -9,7 +9,7 @@ export type MarkdownComponentEvent =
       source: "img";
       type: "click";
       payload: {
-        images: ImageData[];
+        contentItems: ContentItem[];
         index: number;
         postId: string;
       };
@@ -18,9 +18,9 @@ export type MarkdownComponentEvent =
       source: "code";
       type: "click";
       payload: {
-        language: string;
-        code: string;
-        filename?: string;
+        contentItems: ContentItem[];
+        index: number;
+        postId: string;
       };
     }
   | {

@@ -39,11 +39,14 @@ export function PostContent({ children }: PostContentProps) {
   const [contentHeight, setContentHeight] = useState<string | undefined>(undefined);
 
   function handleEvent(event: MarkdownComponentEvent) {
-    if (event.source === "img" && event.type === "click") {
-      const { images, index, postId } = event.payload;
-      return openViewer(images, postId, index);
+    if ((event.source === "img" || event.source === "code") && event.type === "click") {
+      const { contentItems, index, postId } = event.payload;
+      return openViewer(contentItems, postId, index);
     }
-    closeViewer();
+    // For other events, close viewer if open
+    if (isOpen) {
+      closeViewer();
+    }
   }
 
   const expansionData = getExpansionData({
