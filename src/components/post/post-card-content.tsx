@@ -18,7 +18,7 @@ import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
 import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
-const HIDDEN_MEDIA_ELEMENTS: DisallowedMediaElements = ["img"] as const;
+const HIDDEN_MEDIA_ELEMENTS: DisallowedMediaElements = ["img", "code"] as const;
 
 interface PostContentProps {
   children?: React.ReactNode;

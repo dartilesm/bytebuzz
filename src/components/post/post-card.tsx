@@ -1,8 +1,10 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { getAllContentFromMarkdown } from "@/components/markdown-viewer/functions/get-all-content-from-markdown";
 import { PostAvatarAndThreadLine } from "@/components/post/post-avatar-and-thread-line";
 import { Card } from "@/components/ui/card";
+import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +23,7 @@ interface PostCardProps {
 
 export function PostCard({ children, className, ref }: PostCardProps) {
   const { isThreadPagePost, post, isNavigationDisabled } = usePostContext();
+  const { isOpen, openViewer } = useContentViewerContext();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -33,6 +36,18 @@ export function PostCard({ children, className, ref }: PostCardProps) {
 
     // Casting to a more specific type to fix TypeScript errors
     const pushPath = `/@${post.user?.username}/thread/${post.id}` as `/${string}/thread/${string}`;
+
+    // If modal is open, check if post has viewable content and switch to it
+    if (isOpen) {
+      const contentItems = getAllContentFromMarkdown({
+        markdown: post.content ?? "",
+        postId: post.id ?? "",
+      });
+
+      if (contentItems.length > 0) {
+        openViewer(contentItems, post.id ?? "", 0);
+      }
+    }
 
     if (pathname !== pushPath) router.push(pushPath);
   }

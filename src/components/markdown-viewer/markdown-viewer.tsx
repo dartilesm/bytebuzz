@@ -1,5 +1,6 @@
 "use client";
 
+import { ExpandIcon } from "lucide-react";
 import Image from "next/image";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
@@ -11,6 +12,7 @@ import { serializeImageUrl } from "@/components/markdown-viewer/functions/serial
 import {
   type BundledLanguage,
   CodeBlock,
+  CodeBlockActionButton,
   CodeBlockBody,
   CodeBlockContent,
   CodeBlockCopyButton,
@@ -22,7 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 
-const ALLOWED_MEDIA_ELEMENTS = ["img", "p"] as const;
+const ALLOWED_MEDIA_ELEMENTS = ["img", "p", "code"] as const;
 
 function getAllowedMediaElements(disallowedMediaElements: DisallowedMediaElements) {
   const allowedMediaElementsSet = new Set(ALLOWED_MEDIA_ELEMENTS);
@@ -95,6 +97,11 @@ export function MarkdownViewer({
           code: ({ node, ...props }) => {
             const { children, className } = props;
             const language = className?.replace("language-", "");
+
+            // Check if code blocks should be hidden (only block code, not inline)
+            const shouldHideCode = disallowedMediaElements.includes("code");
+            if (shouldHideCode) return null;
+
             if (!className)
               return (
                 <code className="text-xs bg-muted px-1 py-0.5 rounded-sm font-mono">
@@ -128,17 +135,6 @@ export function MarkdownViewer({
                     code: codeContent,
                   },
                 ]}
-                onClick={() => {
-                  onEvent?.({
-                    source: "code",
-                    type: "click",
-                    payload: {
-                      contentItems: allContent,
-                      index: codeIndex !== -1 ? codeIndex : 0,
-                      postId,
-                    },
-                  });
-                }}
               >
                 <CodeBlockHeader className="h-10 flex justify-between items-center">
                   {filename && (
@@ -149,6 +145,22 @@ export function MarkdownViewer({
                     </CodeBlockFiles>
                   )}
                   <div className="flex items-center">
+                    <CodeBlockActionButton
+                      tooltipContent="Expand"
+                      onClick={() => {
+                        onEvent?.({
+                          source: "code",
+                          type: "click",
+                          payload: {
+                            contentItems: allContent,
+                            index: codeIndex !== -1 ? codeIndex : 0,
+                            postId,
+                          },
+                        });
+                      }}
+                    >
+                      <ExpandIcon className="size-3.5" />
+                    </CodeBlockActionButton>
                     <CodeBlockCopyButton />
                   </div>
                 </CodeBlockHeader>
