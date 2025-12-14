@@ -18,6 +18,7 @@
     "db:list": "supabase projects list",
     "db:pull-remote": "supabase db pull --linked",
     "db:push-remote": "supabase db push --linked",
+    "db:deploy-functions": "supabase functions deploy",
     "db:start": "supabase db start",
     "db:test": "supabase test db",
     "lint": "biome check .",
