@@ -45,3 +45,5 @@ next-env.d.ts
 .cursor
 .vscode/*
 !.vscode/settings.json
+
+.agent/**

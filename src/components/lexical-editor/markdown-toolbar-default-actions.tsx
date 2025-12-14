@@ -238,7 +238,7 @@ export function MarkdownToolbarDefaultActions({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,video/*"
+        accept="image/*"
         onChange={handleFileUpload}
         className="hidden"
         aria-label="Upload media file"
