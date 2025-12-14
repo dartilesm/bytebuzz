@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '3mb',
+    },
+  },
   typedRoutes: true,
   cacheComponents: true,
   serverExternalPackages: ["thread-stream"],
