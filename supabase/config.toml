@@ -248,7 +248,7 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 [functions.media-image]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/media-image/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx

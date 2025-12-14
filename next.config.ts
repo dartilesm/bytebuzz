@@ -1,16 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '3mb',
+    },
+  },
   typedRoutes: true,
   cacheComponents: true,
-  serverExternalPackages: [
-    "@logtail/pino",
-    "thread-stream",
-    "pino",
-    "pino-worker",
-    "pino-file",
-    "pino-pretty",
-  ],
+  serverExternalPackages: ["thread-stream"],
   images: {
     remotePatterns: [
       {

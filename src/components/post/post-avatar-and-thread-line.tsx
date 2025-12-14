@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { PostThreadLine } from "@/components/post/post-thread-line";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { UserAvatar } from "@/components/user-avatar";
 import { UserProfilePopoverContent } from "@/components/user-profile/user-profile-popover-content";
 import { usePostContext } from "@/hooks/use-post-context";
 import { cn } from "@/lib/utils";
@@ -22,17 +22,15 @@ export function PostAvatarAndThreadLine() {
         <Tooltip>
           <TooltipTrigger asChild>
             <Link href={`/@${user?.username}`} className="h-fit">
-              <Avatar
+              <UserAvatar
+                user={user}
                 className={cn(
                   "shrink-0 z-20 outline-2 outline-border border-background border-2 size-10 md:size-11",
                   {
                     "size-9 md:size-10": !isThreadPagePost,
                   },
                 )}
-              >
-                <AvatarImage src={user?.image_url ?? ""} alt={user?.display_name ?? ""} />
-                <AvatarFallback>{user?.display_name?.[0] ?? ""}</AvatarFallback>
-              </Avatar>
+              />
             </Link>
           </TooltipTrigger>
           <TooltipContent className="min-w-xs">

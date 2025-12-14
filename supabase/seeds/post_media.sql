@@ -1,11 +1,146 @@
-INSERT INTO "public"."post_media" ("id", "post_id", "media_type", "file_url", "file_path", "file_size", "mime_type", "alt_text", "display_order", "created_at") VALUES
-	('f381234a-24da-481a-bacc-8e96bff9b491', '5c3cc1e2-ba3e-4e02-9cb0-4adc62edf9f5', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/5c3cc1e2-ba3e-4e02-9cb0-4adc62edf9f5/1750017436161_image.png', 'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/5c3cc1e2-ba3e-4e02-9cb0-4adc62edf9f5/1750017436161_image.png', NULL, NULL, NULL, 0, '2025-06-15 19:57:33.8495+00'),
-	('da2cbb21-4a72-457c-840b-abb288500d24', '482974d1-aceb-44d1-81ac-6fea45c00f1e', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x6baZqyYhTgll06OwxRkkgM81r/posts/482974d1-aceb-44d1-81ac-6fea45c00f1e/1750022784391_image.png', 'user_2x6baZqyYhTgll06OwxRkkgM81r/posts/482974d1-aceb-44d1-81ac-6fea45c00f1e/1750022784391_image.png', NULL, NULL, NULL, 0, '2025-06-15 21:26:36.133012+00'),
-	('66969fac-4aa0-4bd9-886a-3586d805b729', '9bf0b755-289b-4602-8ee0-1927860040e2', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x6baZqyYhTgll06OwxRkkgM81r/posts/9bf0b755-289b-4602-8ee0-1927860040e2/1750022937664_image.png', 'user_2x6baZqyYhTgll06OwxRkkgM81r/posts/9bf0b755-289b-4602-8ee0-1927860040e2/1750022937664_image.png', NULL, NULL, NULL, 0, '2025-06-15 21:29:05.250461+00'),
-	('838c4f6b-2876-4528-a2b9-cde0129dfea8', '8e45dc6b-b980-43e7-9aa8-9f6dc376ee5b', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/8e45dc6b-b980-43e7-9aa8-9f6dc376ee5b/1751206146058_image.webp', 'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/8e45dc6b-b980-43e7-9aa8-9f6dc376ee5b/1751206146058_image.webp', NULL, NULL, NULL, 0, '2025-06-29 14:09:31.108916+00'),
-	('eb4ea4e0-2554-4595-a9ba-8db83dc175b1', '307a8cad-954a-44fd-8eb7-5f627489e83e', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/307a8cad-954a-44fd-8eb7-5f627489e83e/1751208694799_image.png', 'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/307a8cad-954a-44fd-8eb7-5f627489e83e/1751208694799_image.png', NULL, NULL, NULL, 0, '2025-06-29 14:52:03.555641+00'),
-	('7d6fdde4-2d52-497e-a44d-396c4738e57d', 'b94ddb55-d373-4c5c-bb7f-f902cdceb820', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/b94ddb55-d373-4c5c-bb7f-f902cdceb820/1751209837374_image.png', 'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/b94ddb55-d373-4c5c-bb7f-f902cdceb820/1751209837374_image.png', NULL, NULL, NULL, 0, '2025-06-29 15:10:55.43411+00'),
-	('20afabf4-e683-4eb0-a6e0-dc70e087aa98', 'deef0365-32e4-4ee3-95d3-fd2d747c9482', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653643539_image.webp', 'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653643539_image.webp', NULL, NULL, NULL, 0, '2025-07-04 18:28:26.995717+00'),
-	('67da2e3e-a8a5-49f0-ac59-2359ca12de55', 'deef0365-32e4-4ee3-95d3-fd2d747c9482', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653647117_image.png', 'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653647117_image.png', NULL, NULL, NULL, 0, '2025-07-04 18:28:26.995717+00'),
-	('55406241-c94c-4f72-9bab-1d8f38a0bf4b', 'deef0365-32e4-4ee3-95d3-fd2d747c9482', 'image', 'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653651038_image.png', 'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653651038_image.png', NULL, NULL, NULL, 0, '2025-07-04 18:28:26.995717+00');
-
+INSERT INTO
+	"public"."post_media" (
+		"id",
+		"post_id",
+		"media_type",
+		"file_url",
+		"file_path",
+		"file_size",
+		"mime_type",
+		"alt_text",
+		"display_order",
+		"created_at"
+	)
+VALUES
+	(
+		'20afabf4-e683-4eb0-a6e0-dc70e087aa98',
+		'deef0365-32e4-4ee3-95d3-fd2d747c9482',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653643539_image.webp',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653643539_image.webp',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-07-04 18:28:26.995717+00'
+	),
+	(
+		'55406241-c94c-4f72-9bab-1d8f38a0bf4b',
+		'deef0365-32e4-4ee3-95d3-fd2d747c9482',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653651038_image.png',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653651038_image.png',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-07-04 18:28:26.995717+00'
+	),
+	(
+		'66969fac-4aa0-4bd9-886a-3586d805b729',
+		'9bf0b755-289b-4602-8ee0-1927860040e2',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x6baZqyYhTgll06OwxRkkgM81r/posts/9bf0b755-289b-4602-8ee0-1927860040e2/1750022937664_image.png',
+		'user_2x6baZqyYhTgll06OwxRkkgM81r/posts/9bf0b755-289b-4602-8ee0-1927860040e2/1750022937664_image.png',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-06-15 21:29:05.250461+00'
+	),
+	(
+		'67da2e3e-a8a5-49f0-ac59-2359ca12de55',
+		'deef0365-32e4-4ee3-95d3-fd2d747c9482',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653647117_image.png',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/deef0365-32e4-4ee3-95d3-fd2d747c9482/1751653647117_image.png',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-07-04 18:28:26.995717+00'
+	),
+	(
+		'7d6fdde4-2d52-497e-a44d-396c4738e57d',
+		'b94ddb55-d373-4c5c-bb7f-f902cdceb820',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/b94ddb55-d373-4c5c-bb7f-f902cdceb820/1751209837374_image.png',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/b94ddb55-d373-4c5c-bb7f-f902cdceb820/1751209837374_image.png',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-06-29 15:10:55.43411+00'
+	),
+	(
+		'838c4f6b-2876-4528-a2b9-cde0129dfea8',
+		'8e45dc6b-b980-43e7-9aa8-9f6dc376ee5b',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/8e45dc6b-b980-43e7-9aa8-9f6dc376ee5b/1751206146058_image.webp',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/8e45dc6b-b980-43e7-9aa8-9f6dc376ee5b/1751206146058_image.webp',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-06-29 14:09:31.108916+00'
+	),
+	(
+		'8531e19a-0c56-41a7-920f-bf0814924d27',
+		'75ab52b3-dea6-4c86-b759-a4adef4ddb81',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/75ab52b3-dea6-4c86-b759-a4adef4ddb81/1764255730819_image.jpeg',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/75ab52b3-dea6-4c86-b759-a4adef4ddb81/1764255730819_image.jpeg',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-11-27 15:23:22.778928+00'
+	),
+	(
+		'afd9c18e-99af-44e9-a2e2-af3bc9d0e6d3',
+		'75ab52b3-dea6-4c86-b759-a4adef4ddb81',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/75ab52b3-dea6-4c86-b759-a4adef4ddb81/1764255728008_image.jpeg',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/75ab52b3-dea6-4c86-b759-a4adef4ddb81/1764255728008_image.jpeg',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-11-27 15:23:22.778928+00'
+	),
+	(
+		'da2cbb21-4a72-457c-840b-abb288500d24',
+		'482974d1-aceb-44d1-81ac-6fea45c00f1e',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x6baZqyYhTgll06OwxRkkgM81r/posts/482974d1-aceb-44d1-81ac-6fea45c00f1e/1750022784391_image.png',
+		'user_2x6baZqyYhTgll06OwxRkkgM81r/posts/482974d1-aceb-44d1-81ac-6fea45c00f1e/1750022784391_image.png',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-06-15 21:26:36.133012+00'
+	),
+	(
+		'eb4ea4e0-2554-4595-a9ba-8db83dc175b1',
+		'307a8cad-954a-44fd-8eb7-5f627489e83e',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/307a8cad-954a-44fd-8eb7-5f627489e83e/1751208694799_image.png',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/307a8cad-954a-44fd-8eb7-5f627489e83e/1751208694799_image.png',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-06-29 14:52:03.555641+00'
+	),
+	(
+		'f381234a-24da-481a-bacc-8e96bff9b491',
+		'5c3cc1e2-ba3e-4e02-9cb0-4adc62edf9f5',
+		'image',
+		'https://tshvilqfreifjtrdjrqj.supabase.co/storage/v1/object/public/post-images/user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/5c3cc1e2-ba3e-4e02-9cb0-4adc62edf9f5/1750017436161_image.png',
+		'user_2x1BsnAmgPArzn4l8kjqSpVB8bf/posts/5c3cc1e2-ba3e-4e02-9cb0-4adc62edf9f5/1750017436161_image.png',
+		NULL,
+		NULL,
+		NULL,
+		0,
+		'2025-06-15 19:57:33.8495+00'
+	);

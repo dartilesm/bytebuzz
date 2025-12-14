@@ -12,9 +12,9 @@ import { $createMediaNode } from "@/components/lexical-editor/plugins/media/medi
  *
  * This transformer:
  * - Parses markdown image syntax: ![alt](url)
- * - Extracts metadata from URL query parameters
+ * - Extracts metadata from flat URL query parameters (postId, alt, type, etc.)
  * - Creates MediaNode instances instead of default ImageNode
- * - Supports extensible metadata storage via JSON encoding
+ * - Preserves postId in URL for API route compatibility
  */
 export const MEDIA_TRANSFORMER: ElementTransformer = {
   dependencies: [],

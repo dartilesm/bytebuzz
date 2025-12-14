@@ -11,6 +11,9 @@
     "editor.defaultFormatter": "biomejs.biome",
     "typescript.preferences.importModuleSpecifier": "non-relative"
   },
+  "[sql]": {
+    "editor.formatOnSave": false
+  },
   "javascript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "files.associations": {
@@ -22,6 +25,7 @@
     "source.fixAll.biome": "explicit",
     "source.organizeImports.biome": "explicit"
   },
+  "git.showCursorWorktrees": true,
   // Deno settings for Edge Functions
   "deno.enable": true,
   "deno.lint": true,

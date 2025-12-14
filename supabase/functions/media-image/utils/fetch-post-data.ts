@@ -12,10 +12,12 @@ export interface PostThreadData {
   createdAt: string;
 }
 
+// This env vars must be set as an .env file in the supabase folder, or 
+// as environment variables in the Supabase project settings
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseServiceKey = Deno.env.get("SUPABASE_SECRET_KEY")!;
+const supabaseSecretKey = Deno.env.get("SECRET_KEY")!;
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabase = createClient(supabaseUrl, supabaseSecretKey);
 
 export async function fetchPostData(postId: string): Promise<PostThreadData | null> {
   try {

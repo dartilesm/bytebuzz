@@ -1,10 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import type { Tables } from "database.types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FollowButton } from "@/components/ui/follow-button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUserDataQuery } from "@/hooks/queries/use-user-data-query";
+import { UserAvatar } from "@/components/user-avatar";
+import { userQueries } from "@/hooks/queries/options/user-queries";
 
 interface UserProfilePopoverContentProps {
   user: Partial<Tables<"users">>;
@@ -42,7 +43,7 @@ function UserProfilePopoverSkeleton() {
 }
 
 export function UserProfilePopoverContent({ user }: UserProfilePopoverContentProps) {
-  const { data: userData, isLoading } = useUserDataQuery(user.id ?? "");
+  const { data: userData, isLoading } = useQuery(userQueries.data(user.id ?? ""));
 
   if (isLoading) return <UserProfilePopoverSkeleton />;
 
@@ -50,10 +51,7 @@ export function UserProfilePopoverContent({ user }: UserProfilePopoverContentPro
     <div className="max-w-[300px] rounded-xl flex flex-col py-0 gap-0">
       <div className="justify-between flex flex-row gap-4 px-3 py-3">
         <div className="flex gap-3">
-          <Avatar className="size-10 border-2 border-background rounded-full">
-            <AvatarImage src={user.image_url ?? undefined} alt={user.display_name ?? ""} />
-            <AvatarFallback>{user.display_name?.[0] ?? user.username?.[0] ?? ""}</AvatarFallback>
-          </Avatar>
+          <UserAvatar user={user} className="size-10 border-2 border-background rounded-full" />
           <div className="flex flex-col items-start justify-center">
             <h4 className="text-sm font-semibold leading-none text-foreground">
               {user.display_name ?? user.username}
