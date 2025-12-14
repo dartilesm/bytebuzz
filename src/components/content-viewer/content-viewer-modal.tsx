@@ -15,6 +15,7 @@ import {
   Carousel,
   type CarouselApi,
   CarouselContent,
+  CarouselDots,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
@@ -36,7 +37,6 @@ import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
 import { postQueries } from "@/hooks/queries/options/post-queries";
 import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
-import { cn } from "@/lib/utils";
 
 /**
  * Full-screen content viewer modal with split layout
@@ -46,19 +46,11 @@ import { cn } from "@/lib/utils";
 export function ContentViewerModal() {
   const { isOpen, contentItems, initialContentIndex, postId, closeViewer } =
     useContentViewerContext();
+
   useScrollLock();
+
   const { data: threadData, isLoading } = useQuery(postQueries.thread({ postId: postId ?? "" }));
   const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    if (!api) return;
-
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
-  }, [api]);
 
   useEffect(() => {
     if (api && initialContentIndex > 0) {
@@ -102,6 +94,7 @@ export function ContentViewerModal() {
             setApi={setApi}
             opts={{
               align: "center",
+              active: contentItems?.length > 1,
             }}
             className="size-full flex [&>div]:data-[slot=carousel-content]:size-full"
           >
@@ -172,27 +165,7 @@ export function ContentViewerModal() {
               <>
                 <CarouselPrevious className="left-4" />
                 <CarouselNext className="right-4" />
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
-                  {contentItems.map((_, index) => (
-                    <Button
-                      key={index}
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => {
-                        api?.scrollTo(index);
-                      }}
-                      aria-label={`Go to slide ${index + 1}`}
-                      className={cn(
-                        "h-2 rounded-full transition-all bg-white/50 hover:bg-white/70",
-                        {
-                          "w-8 bg-white": index === current,
-                          "w-2": index !== current,
-                        },
-                      )}
-                    />
-                  ))}
-                </div>
+                <CarouselDots />
               </>
             )}
           </Carousel>
