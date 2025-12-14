@@ -18,7 +18,7 @@ import { useEffect } from "react";
  */
 function isValidURL(text: string): { isValid: boolean; url: string } {
   try {
-    // Try to create URL directly
+    // Try to create URL directly - this handles protocols like http://, https://, mailto:, etc.
     const url = new URL(text);
     if (url.protocol === "http:" || url.protocol === "https:") {
       return { isValid: true, url: url.href };
@@ -26,6 +26,18 @@ function isValidURL(text: string): { isValid: boolean; url: string } {
   } catch {
     // If it fails, try with https:// prefix for www. or domain-like strings
     if (text.includes(".") && !text.includes(" ")) {
+      // Prevent creating links for text that starts or ends with a dot (e.g. ".", "foo.")
+      if (text.startsWith(".") || text.endsWith(".")) {
+        return { isValid: false, url: text };
+      }
+
+      // Check TLD length to avoid single letter TLDs (e.g. "a.b")
+      const parts = text.split(".");
+      const tld = parts[parts.length - 1];
+      if (tld.length < 2) {
+        return { isValid: false, url: text };
+      }
+
       try {
         const url = new URL(`https://${text}`);
         if (url.protocol === "https:") {
