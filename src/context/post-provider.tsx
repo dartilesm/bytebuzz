@@ -1,13 +1,12 @@
 "use client";
 
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { createContext, type MouseEvent, useState } from "react";
 import { getAllContentFromMarkdown } from "@/components/markdown-viewer/functions/get-all-content-from-markdown";
 import { PostActionModal } from "@/components/post/post-action-modal";
-import type { ContentViewerEvent } from "@/context/content-viewer-context";
 import { useContentViewerContext } from "@/hooks/use-content-viewer-context";
 import type { MarkdownComponentEvent } from "@/types/markdown-component-events";
 import type { NestedPost } from "@/types/nested-posts";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { createContext, type MouseEvent, useState } from "react";
 
 const navigationDisabledElementSelectors = [
   "a",
@@ -81,22 +80,7 @@ export function PostProvider({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [action, setAction] = useState<"reply" | "clone">("reply");
 
-  const { isOpen, openViewer, closeViewer } = useContentViewerContext({
-    onOpenChange: handleContentViewerChange,
-  });
-
-  function handleContentViewerChange(isOpen: boolean, event: ContentViewerEvent) {
-    if (!isOpen || event.type !== "open" || !event.payload) return;
-
-    // If the modal opened for this post, navigate to its thread page
-    if (event.payload.postId === post.id) {
-      const pushPath =
-        `/@${post.user?.username}/thread/${post.id}` as `/${string}/thread/${string}`;
-      if (pathname !== pushPath) {
-        router.push(pushPath);
-      }
-    }
-  }
+  const { isOpen, openViewer, closeViewer } = useContentViewerContext();
 
   function togglePostModal(open?: boolean, action?: "reply" | "clone") {
     setIsModalOpen(open ?? !isModalOpen);
