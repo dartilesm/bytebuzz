@@ -65,3 +65,6 @@ jobs:
 
       - name: Push migrations to staging
         run: bun run db:push-remote
+
+      - name: Deploy functions to staging
+        run: bun run db:deploy-functions
