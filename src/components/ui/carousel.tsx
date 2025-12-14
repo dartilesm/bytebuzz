@@ -219,6 +219,42 @@ function CarouselNext({
   );
 }
 
+function CarouselDots({ className, ...props }: React.ComponentProps<"div">) {
+  const { api } = useCarousel();
+  const items = api?.slideNodes() ?? [];
+  const current = api?.selectedScrollSnap();
+
+  return (
+    <div
+      className={cn(
+        "absolute bottom-4 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10",
+        className,
+      )}
+      {...props}
+    >
+      {items.map((_, index) => (
+        <Button
+          key={index}
+          type="button"
+          size="icon"
+          variant="ghost"
+          onClick={() => {
+            api?.scrollTo(index);
+          }}
+          aria-label={`Go to slide ${index + 1}`}
+          className={cn(
+            "h-2 rounded-full transition-all bg-accent-foreground/30 hover:bg-accent-foreground/80 dark:hover:bg-accent-foreground/80 border-accent/30 border",
+            {
+              "w-8 bg-accent-foreground/60": index === current,
+              "w-2": index !== current,
+            },
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
 export {
   type CarouselApi,
   Carousel,
@@ -226,4 +262,5 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 };
