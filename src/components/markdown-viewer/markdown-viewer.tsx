@@ -6,6 +6,7 @@ import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
+import { Mention } from "@/components/markdown-viewer/mention";
 import {
   type BundledLanguage,
   CodeBlock,
@@ -18,7 +19,6 @@ import {
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import { cn } from "@/lib/utils";
-import { Mention } from "@/components/markdown-viewer/mention";
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
@@ -133,7 +133,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
 
             return (
               <a href={href} className="text-primary underline hover:text-primary-foreground">
-              {children}
+                {children}
               </a>
             );
           },
