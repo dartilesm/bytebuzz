@@ -114,8 +114,7 @@ export const createMarkdownTheme = () => {
 
   // Only include mention styles if mentions are enabled
   if (MARKDOWN_FEATURES.mentions) {
-    theme.mention =
-      "text-primary font-medium bg-accent/70 dark:bg-accent/80 px-1 py-0.5 rounded-md hover:no-underline";
+    theme.mention = "mention-link";
   }
 
   return theme;

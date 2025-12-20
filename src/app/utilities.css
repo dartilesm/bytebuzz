@@ -27,3 +27,7 @@
     display: none;
   }
 }
+
+@utility mention-link {
+  @apply text-primary font-medium bg-accent/70 dark:bg-accent/80 px-1 py-0.5 rounded-md hover:no-underline;
+}
