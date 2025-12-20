@@ -35,30 +35,7 @@ interface MentionState {
   selectedIndex: number;
 }
 
-/**
- * Mock user search function - replace with actual user search
- */
-async function mockUserSearch(query: string): Promise<User[]> {
-  const mockUsers: User[] = [
-    { id: "1", username: "john_doe", displayName: "John Doe", avatarUrl: "/avatars/john.jpg" },
-    { id: "2", username: "jane_smith", displayName: "Jane Smith", avatarUrl: "/avatars/jane.jpg" },
-    { id: "3", username: "bob_wilson", displayName: "Bob Wilson", avatarUrl: "/avatars/bob.jpg" },
-    {
-      id: "4",
-      username: "alice_brown",
-      displayName: "Alice Brown",
-      avatarUrl: "/avatars/alice.jpg",
-    },
-  ];
-
-  if (!query) return mockUsers;
-
-  return mockUsers.filter(
-    (user) =>
-      user.username.toLowerCase().includes(query.toLowerCase()) ||
-      user.displayName.toLowerCase().includes(query.toLowerCase()),
-  );
-}
+// Removed mockUserSearch functionality to use real backend services instead.
 
 /**
  * Plugin that handles mention functionality in Lexical editor
@@ -72,8 +49,8 @@ async function mockUserSearch(query: string): Promise<User[]> {
 export function MentionPlugin({
   trigger = "@",
   maxSuggestions = 5,
-  onSearch = mockUserSearch,
-}: MentionPluginProps = {}) {
+  onSearch,
+}: MentionPluginProps) {
   const [editor] = useLexicalComposerContext();
   const [mentionState, setMentionState] = useState<MentionState>({
     isOpen: false,
@@ -88,11 +65,12 @@ export function MentionPlugin({
    */
   const searchUsers = useCallback(
     async (query: string) => {
+      if (!onSearch) return [];
       try {
         const results = await onSearch(query);
         return results.slice(0, maxSuggestions);
       } catch (error) {
-        log.error("Error searching users", { error });
+        log.error("Error searching users in MentionPlugin", { error, query });
         return [];
       }
     },

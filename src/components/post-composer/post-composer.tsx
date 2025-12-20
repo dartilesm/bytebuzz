@@ -196,7 +196,7 @@ export function PostComposer({
       )}
       onSubmit={form.handleSubmit((data) => withAuth(() => onSubmit(data))())}
     >
-      <MarkdownProvider editorRef={editorRef} onChange={handleContentChange}>
+      <MarkdownProvider editorRef={editorRef} onChange={handleContentChange} enableMentions>
         <Section className="flex flex-row gap-2 md:gap-4">
           <div className="flex flex-row gap-2 z-10 shrink-0">
             <Avatar className="h-10 w-10 border-2 border-background">
