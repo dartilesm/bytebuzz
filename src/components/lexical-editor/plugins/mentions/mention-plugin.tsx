@@ -46,11 +46,7 @@ interface MentionState {
  * - Handles keyboard navigation and selection
  * - Converts selected mention to MentionNode
  */
-export function MentionPlugin({
-  trigger = "@",
-  maxSuggestions = 5,
-  onSearch,
-}: MentionPluginProps) {
+export function MentionPlugin({ trigger = "@", maxSuggestions = 5, onSearch }: MentionPluginProps) {
   const [editor] = useLexicalComposerContext();
   const [mentionState, setMentionState] = useState<MentionState>({
     isOpen: false,
@@ -74,7 +70,7 @@ export function MentionPlugin({
         return [];
       }
     },
-    [onSearch, maxSuggestions],
+    [onSearch, maxSuggestions]
   );
 
   /**
@@ -130,7 +126,7 @@ export function MentionPlugin({
 
       closeMentions();
     },
-    [editor, trigger, closeMentions],
+    [editor, trigger, closeMentions]
   );
 
   /**
@@ -143,16 +139,10 @@ export function MentionPlugin({
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
-    // Get the editor's root element to calculate relative position
-    const editorElement = editor.getRootElement();
-    const editorRect = editorElement?.getBoundingClientRect();
-
-    if (!editorRect) return null;
-
-    // Position relative to the editor container
+    // Position relative to the viewport (for fixed positioning in portal)
     return {
-      top: rect.bottom - editorRect.top + 4, // Relative to editor container
-      left: rect.left - editorRect.left, // Relative to editor container
+      top: rect.bottom + 4,
+      left: rect.left,
     };
   }
 
@@ -267,7 +257,7 @@ export function MentionPlugin({
   useEffect(() => {
     return mergeRegister(
       // Handle text content changes for mention detection
-      editor.registerTextContentListener(detectMention),
+      editor.registerTextContentListener(detectMention)
     );
   }, [editor, detectMention]);
 

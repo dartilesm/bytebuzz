@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import type { User } from "@/components/lexical-editor/plugins/mentions/mention-node";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -65,9 +66,9 @@ export function MentionSuggestions({
     return null;
   }
 
-  return (
+  return createPortal(
     <Card
-      className='absolute z-50 w-64 max-h-64 overflow-auto shadow-lg'
+      className='fixed z-50 w-64 max-h-64 overflow-auto shadow-lg p-0'
       style={{
         top: position.top,
         left: position.left,
@@ -106,6 +107,7 @@ export function MentionSuggestions({
           ))}
         </div>
       </CardContent>
-    </Card>
+    </Card>,
+    document.body
   );
 }
