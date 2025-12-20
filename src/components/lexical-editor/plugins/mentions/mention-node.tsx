@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -83,7 +84,9 @@ export class MentionNode extends TextNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const element = super.createDOM(config);
-    element.className = "mention";
+    const theme = config.theme;
+
+    element.className = cn(theme.mention, "mention");
     element.setAttribute("data-mention-id", this.__user.id);
     element.setAttribute("data-mention-username", this.__user.username);
     element.setAttribute("role", "button");
