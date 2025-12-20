@@ -3,9 +3,14 @@
 import type { ElementTransformer } from "@lexical/markdown";
 import {
   decodeMediaMetadata,
+  encodeMediaMetadata,
+  mediaDataToMetadata,
   metadataToMediaData,
 } from "@/components/lexical-editor/functions/media-metadata-utils";
-import { $createMediaNode } from "@/components/lexical-editor/plugins/media/media-node";
+import {
+  $createMediaNode,
+  $isMediaNode,
+} from "@/components/lexical-editor/plugins/media/media-node";
 
 /**
  * Custom markdown transformer for media nodes (images)
@@ -18,9 +23,35 @@ import { $createMediaNode } from "@/components/lexical-editor/plugins/media/medi
  */
 export const MEDIA_TRANSFORMER: ElementTransformer = {
   dependencies: [],
-  export: () => {
-    // Export is handled by markdown-utils.ts
-    return null;
+  export: (node) => {
+    if (!$isMediaNode(node)) {
+      return null;
+    }
+
+    const items = node.getItems();
+    const markdownParts: string[] = [];
+
+    for (const mediaData of items) {
+      if (mediaData.type === "image") {
+        // Convert to markdown image syntax with metadata encoded in URL
+        const alt = mediaData.alt || mediaData.title || "Image";
+        const metadata = mediaDataToMetadata(mediaData);
+        const urlWithMetadata = encodeMediaMetadata(mediaData.src, metadata);
+        markdownParts.push(`![${alt}](${urlWithMetadata})`);
+      } else if (mediaData.type === "video") {
+        // Videos don't have standard markdown syntax, so we'll use HTML
+        // Include metadata in the src URL
+        const metadata = mediaDataToMetadata(mediaData);
+        const urlWithMetadata = encodeMediaMetadata(mediaData.src, metadata);
+        markdownParts.push(
+          `<video src="${urlWithMetadata}" controls${
+            mediaData.title ? ` title="${mediaData.title}"` : ""
+          }></video>`,
+        );
+      }
+    }
+
+    return markdownParts.join("\n\n");
   },
   regExp: /^!\[([^\]]*)\]\(([^)]+)\)$/,
   replace: (parentNode, _children, match) => {
