@@ -35,30 +35,7 @@ interface MentionState {
   selectedIndex: number;
 }
 
-/**
- * Mock user search function - replace with actual user search
- */
-async function mockUserSearch(query: string): Promise<User[]> {
-  const mockUsers: User[] = [
-    { id: "1", username: "john_doe", displayName: "John Doe", avatarUrl: "/avatars/john.jpg" },
-    { id: "2", username: "jane_smith", displayName: "Jane Smith", avatarUrl: "/avatars/jane.jpg" },
-    { id: "3", username: "bob_wilson", displayName: "Bob Wilson", avatarUrl: "/avatars/bob.jpg" },
-    {
-      id: "4",
-      username: "alice_brown",
-      displayName: "Alice Brown",
-      avatarUrl: "/avatars/alice.jpg",
-    },
-  ];
-
-  if (!query) return mockUsers;
-
-  return mockUsers.filter(
-    (user) =>
-      user.username.toLowerCase().includes(query.toLowerCase()) ||
-      user.displayName.toLowerCase().includes(query.toLowerCase()),
-  );
-}
+// Removed mockUserSearch functionality to use real backend services instead.
 
 /**
  * Plugin that handles mention functionality in Lexical editor
@@ -69,11 +46,7 @@ async function mockUserSearch(query: string): Promise<User[]> {
  * - Handles keyboard navigation and selection
  * - Converts selected mention to MentionNode
  */
-export function MentionPlugin({
-  trigger = "@",
-  maxSuggestions = 5,
-  onSearch = mockUserSearch,
-}: MentionPluginProps = {}) {
+export function MentionPlugin({ trigger = "@", maxSuggestions = 5, onSearch }: MentionPluginProps) {
   const [editor] = useLexicalComposerContext();
   const [mentionState, setMentionState] = useState<MentionState>({
     isOpen: false,
@@ -88,15 +61,16 @@ export function MentionPlugin({
    */
   const searchUsers = useCallback(
     async (query: string) => {
+      if (!onSearch) return [];
       try {
         const results = await onSearch(query);
         return results.slice(0, maxSuggestions);
       } catch (error) {
-        log.error("Error searching users", { error });
+        log.error("Error searching users in MentionPlugin", { error, query });
         return [];
       }
     },
-    [onSearch, maxSuggestions],
+    [onSearch, maxSuggestions]
   );
 
   /**
@@ -152,7 +126,7 @@ export function MentionPlugin({
 
       closeMentions();
     },
-    [editor, trigger, closeMentions],
+    [editor, trigger, closeMentions]
   );
 
   /**
@@ -165,16 +139,10 @@ export function MentionPlugin({
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
-    // Get the editor's root element to calculate relative position
-    const editorElement = editor.getRootElement();
-    const editorRect = editorElement?.getBoundingClientRect();
-
-    if (!editorRect) return null;
-
-    // Position relative to the editor container
+    // Position relative to the viewport (for fixed positioning in portal)
     return {
-      top: rect.bottom - editorRect.top + 4, // Relative to editor container
-      left: rect.left - editorRect.left, // Relative to editor container
+      top: rect.bottom + 4,
+      left: rect.left,
     };
   }
 
@@ -289,7 +257,7 @@ export function MentionPlugin({
   useEffect(() => {
     return mergeRegister(
       // Handle text content changes for mention detection
-      editor.registerTextContentListener(detectMention),
+      editor.registerTextContentListener(detectMention)
     );
   }, [editor, detectMention]);
 

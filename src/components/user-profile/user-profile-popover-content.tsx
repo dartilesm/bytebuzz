@@ -51,19 +51,19 @@ export function UserProfilePopoverContent({ user }: UserProfilePopoverContentPro
     <div className="max-w-[300px] rounded-xl flex flex-col py-0 gap-0">
       <div className="justify-between flex flex-row gap-4 px-3 py-3">
         <div className="flex gap-3">
-          <UserAvatar user={user} className="size-10 border-2 border-background rounded-full" />
+          <UserAvatar user={userData} className="size-10 border-2 border-background rounded-full" />
           <div className="flex flex-col items-start justify-center">
             <h4 className="text-sm font-semibold leading-none text-foreground">
-              {user.display_name ?? user.username}
+              {userData?.display_name ?? userData?.username}
             </h4>
-            <h5 className="text-sm tracking-tight text-muted-foreground">@{user.username}</h5>
+            <h5 className="text-sm tracking-tight text-muted-foreground">@{userData?.username}</h5>
           </div>
         </div>
-        <FollowButton targetUserId={user.id ?? ""} />
+        <FollowButton targetUserId={userData?.id ?? ""} />
       </div>
-      {user.bio && (
+      {userData?.bio && (
         <div className="px-3 py-0">
-          <p className="text-sm pl-px text-muted-foreground">{user.bio}</p>
+          <p className="text-sm pl-px text-muted-foreground">{userData?.bio}</p>
         </div>
       )}
       <div className="flex items-center gap-3 px-3 py-3">

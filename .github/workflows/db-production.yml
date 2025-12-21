@@ -65,3 +65,6 @@ jobs:
 
       - name: Push migrations to production
         run: bun run db:push-remote
+
+      - name: Deploy functions to production
+        run: bun run db:deploy-functions

@@ -1,6 +1,6 @@
 "use client";
 
-import { $createLinkNode, $isLinkNode, type LinkNode } from "@lexical/link";
+import { $createLinkNode, $isLinkNode, type LinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   $createTextNode,
@@ -9,6 +9,7 @@ import {
   $isTextNode,
   COMMAND_PRIORITY_LOW,
   KEY_SPACE_COMMAND,
+  PASTE_COMMAND,
   type TextNode,
 } from "lexical";
 import { useEffect } from "react";
@@ -18,7 +19,7 @@ import { useEffect } from "react";
  */
 function isValidURL(text: string): { isValid: boolean; url: string } {
   try {
-    // Try to create URL directly
+    // Try to create URL directly - this handles protocols like http://, https://, mailto:, etc.
     const url = new URL(text);
     if (url.protocol === "http:" || url.protocol === "https:") {
       return { isValid: true, url: url.href };
@@ -26,6 +27,18 @@ function isValidURL(text: string): { isValid: boolean; url: string } {
   } catch {
     // If it fails, try with https:// prefix for www. or domain-like strings
     if (text.includes(".") && !text.includes(" ")) {
+      // Prevent creating links for text that starts or ends with a dot (e.g. ".", "foo.")
+      if (text.startsWith(".") || text.endsWith(".")) {
+        return { isValid: false, url: text };
+      }
+
+      // Check TLD length to avoid single letter TLDs (e.g. "a.b")
+      const parts = text.split(".");
+      const tld = parts[parts.length - 1];
+      if (tld.length < 2) {
+        return { isValid: false, url: text };
+      }
+
       try {
         const url = new URL(`https://${text}`);
         if (url.protocol === "https:") {
@@ -174,7 +187,54 @@ export function SmartTextPlugin(): null {
       return false; // Allow normal space handling
     }
 
-    return editor.registerCommand(KEY_SPACE_COMMAND, handleSpaceKey, COMMAND_PRIORITY_LOW);
+    /**
+     * Handles paste event to check for URLs when text is selected
+     */
+    function handlePaste(event: ClipboardEvent): boolean {
+      const selection = $getSelection();
+
+      // Only handle if there is a range selection and it's not collapsed (text is highlighted)
+      if (!$isRangeSelection(selection) || selection.isCollapsed()) {
+        return false;
+      }
+
+      const clipboardData =
+        event instanceof ClipboardEvent ? event.clipboardData : null;
+      if (!clipboardData) {
+        return false;
+      }
+
+      const pastedText = clipboardData.getData("text");
+      if (!pastedText) {
+        return false;
+      }
+
+      const { isValid, url } = isValidURL(pastedText.trim());
+      if (isValid) {
+        // Apply the link to the selected text instead of replacing it
+        editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
+        return true; // We handled the command, prevent default paste
+      }
+
+      return false;
+    }
+
+    const unregisterSpace = editor.registerCommand(
+      KEY_SPACE_COMMAND,
+      handleSpaceKey,
+      COMMAND_PRIORITY_LOW,
+    );
+
+    const unregisterPaste = editor.registerCommand(
+      PASTE_COMMAND,
+      handlePaste,
+      COMMAND_PRIORITY_LOW,
+    );
+
+    return () => {
+      unregisterSpace();
+      unregisterPaste();
+    };
   }, [editor]);
 
   return null;

@@ -1,6 +1,7 @@
 import { TRANSFORMERS } from "@lexical/markdown";
 import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "@/components/lexical-editor/plugins/code-block/enhanced-code-transformers";
 import { MEDIA_TRANSFORMER } from "@/components/lexical-editor/plugins/media/media-transformer";
+import { MENTION_TRANSFORMER } from "@/components/lexical-editor/plugins/mentions/mention-transformer";
 
 /**
  * Centralized configuration for markdown editor features
@@ -113,8 +114,7 @@ export const createMarkdownTheme = () => {
 
   // Only include mention styles if mentions are enabled
   if (MARKDOWN_FEATURES.mentions) {
-    theme.mention =
-      "bg-primary-100 text-primary-800 rounded px-1 py-0.5 font-medium cursor-pointer hover:bg-primary-200";
+    theme.mention = "mention-link";
   }
 
   return theme;
@@ -152,4 +152,5 @@ export const customTransformers = TRANSFORMERS.filter(
   .concat([
     ENHANCED_CODE_BLOCK_TRANSFORMER,
     ...(MARKDOWN_FEATURES.media ? [MEDIA_TRANSFORMER] : []),
+    ...(MARKDOWN_FEATURES.mentions ? [MENTION_TRANSFORMER] : []),
   ]);

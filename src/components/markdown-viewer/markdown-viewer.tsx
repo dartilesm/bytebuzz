@@ -9,6 +9,8 @@ import { getAllContentFromMarkdown } from "@/components/markdown-viewer/function
 import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
+import { Mention } from "@/components/markdown-viewer/mention";
+
 import {
   type BundledLanguage,
   CodeBlock,
@@ -194,6 +196,24 @@ export function MarkdownViewer({
               </ol>
             );
           },
+          a: ({ node, ...props }) => {
+            const { children, href = "" } = props;
+            const isMentionLink = href.startsWith("/mention:");
+
+            // Check if this is a mention link: mention:id:username:avatarUrl
+            if (isMentionLink) {
+              const parts = href.replace("/mention:", "").split(":");
+              const [userId, username] = parts;
+
+              return <Mention key={href} userId={userId} username={username} />;
+            }
+
+            return (
+              <a href={href} className="text-primary underline hover:text-primary-foreground">
+                {children}
+              </a>
+            );
+          },
         }}
         disallowedElements={["img"]}
       >
@@ -202,7 +222,7 @@ export function MarkdownViewer({
       {imageCount > 0 && !shouldHideImages && (
         <div
           className={cn(
-            "rounded-medium aspect-video border dark:border-content2 border-content3 overflow-hidden grid",
+            "rounded-medium aspect-video border border-accent overflow-hidden grid rounded-md",
             {
               "grid-cols-2": imageCount === 2,
               "grid-cols-2 grid-rows-2": imageCount === 3 || imageCount >= 4,
@@ -218,6 +238,7 @@ export function MarkdownViewer({
             remarkPlugins={[remarkGfm]}
             components={{
               p: ({ node, ...props }) => {
+                console.log("p", props);
                 const { children } = props;
 
                 const isChildImage =
@@ -244,9 +265,7 @@ export function MarkdownViewer({
 
                 return (
                   <div
-                    className={cn(
-                      "relative outline-[0.5px] dark:outline-content2 outline-content3 cursor-pointer",
-                    )}
+                    className={cn("relative outline-[0.5px] outline-accent")}
                     onClick={(event) => {
                       onEvent?.({
                         ...event,
@@ -271,6 +290,7 @@ export function MarkdownViewer({
                 );
               },
             }}
+            allowedElements={["img", "p"]}
           >
             {markdown}
           </Markdown>
