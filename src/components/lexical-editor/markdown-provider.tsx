@@ -13,8 +13,9 @@ import {
 } from "@/components/lexical-editor/markdown-config";
 import { EnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
 import { MediaNode } from "@/components/lexical-editor/plugins/media/media-node";
-import { MentionNode } from "@/components/lexical-editor/plugins/mentions/mention-node";
+import { MentionNode, type User } from "@/components/lexical-editor/plugins/mentions/mention-node";
 import { log } from "@/lib/logger/logger";
+import type { SearchUsersReturnType } from "@/hooks/queries/options/user-queries";
 
 // Create dynamic theme based on enabled features
 const theme = createMarkdownTheme();
@@ -22,6 +23,7 @@ const theme = createMarkdownTheme();
 // Context for markdown editor
 interface MarkdownContextValue {
   enableMentions: boolean;
+  onUserSearch?: (query: string) => Promise<User[]>;
   onChange?: (markdown: string, editorState: EditorState) => void;
   editorRef?: RefObject<LexicalEditor>;
 }
@@ -56,6 +58,10 @@ interface MarkdownProviderProps {
    * Reference to the editor instance
    */
   editorRef?: RefObject<LexicalEditor>;
+  /**
+   * Custom user search function
+   */
+  onUserSearch?: (query: string) => Promise<User[]>;
 }
 
 /**
@@ -66,6 +72,7 @@ export function MarkdownProvider({
   enableMentions = false,
   onChange,
   editorRef: defaultEditorRef,
+  onUserSearch: onUserSearchProp,
 }: MarkdownProviderProps) {
   const internalEditorRef = useRef<LexicalEditor>({} as LexicalEditor);
   const editorRef = defaultEditorRef ?? internalEditorRef;
@@ -94,8 +101,32 @@ export function MarkdownProvider({
     editorState: undefined,
   };
 
+  /**
+   * Default implementation for user search that calls the internal API
+   */
+  async function defaultOnUserSearch(query: string): Promise<User[]> {
+    try {
+      const response = await fetch(`/api/users/search?searchTerm=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error("Failed to fetch users");
+
+      const result = (await response.json()) as SearchUsersReturnType;
+      if (result.error) throw new Error(result.error.message);
+
+      return (result.data || []).map((user) => ({
+        id: user.id,
+        username: user.username,
+        displayName: user.display_name,
+        avatarUrl: user.image_url,
+      }));
+    } catch (error) {
+      log.error("Error searching users in MarkdownProvider", { error, query });
+      return [];
+    }
+  }
+
   const contextValue: MarkdownContextValue = {
     enableMentions,
+    onUserSearch: onUserSearchProp ?? defaultOnUserSearch,
     onChange,
     editorRef,
   };

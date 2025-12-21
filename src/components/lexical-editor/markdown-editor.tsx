@@ -109,7 +109,7 @@ export function MarkdownEditor({
   value,
   markdownValue,
 }: MarkdownEditorProps) {
-  const { enableMentions, onChange, editorRef } = useMarkdownContext();
+  const { enableMentions, onChange, editorRef, onUserSearch } = useMarkdownContext();
 
   return (
     <div className={cn("relative", className)}>
@@ -134,7 +134,7 @@ export function MarkdownEditor({
       <SmartTextPlugin />
 
       {/* Mention plugin */}
-      {enableMentions && <MentionPlugin />}
+      {enableMentions && <MentionPlugin onSearch={onUserSearch} />}
 
       {/* Event handling plugins */}
       <OnChangeMarkdownPlugin onChange={onChange} />

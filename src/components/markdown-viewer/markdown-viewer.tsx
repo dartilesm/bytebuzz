@@ -6,6 +6,7 @@ import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
+import { Mention } from "@/components/markdown-viewer/mention";
 import {
   type BundledLanguage,
   CodeBlock,
@@ -118,6 +119,24 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
               </ol>
             );
           },
+          a: ({ node, ...props }) => {
+            const { children, href = "" } = props;
+            const isMentionLink = href.startsWith("/mention:");
+
+            // Check if this is a mention link: mention:id:username:avatarUrl
+            if (isMentionLink) {
+              const parts = href.replace("/mention:", "").split(":");
+              const [userId, username] = parts;
+
+              return <Mention key={href} userId={userId} username={username} />;
+            }
+
+            return (
+              <a href={href} className="text-primary underline hover:text-primary-foreground">
+                {children}
+              </a>
+            );
+          },
         }}
         disallowedElements={["img"]}
       >
@@ -178,6 +197,30 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                       unoptimized
                     />
                   </div>
+                );
+              },
+              a: ({ node, ...props }) => {
+                const { children, href } = props;
+
+                // Mentions can also appear in image alt text or nearby, though rare in this specific block
+                if (href?.startsWith("mention:")) {
+                  const parts = href.replace("mention:", "").split(":");
+                  const username = parts[1];
+
+                  return (
+                    <span
+                      className="inline-flex items-center text-primary font-medium bg-accent/50 dark:bg-accent/60 px-1 py-0.5 rounded-md hover:no-underline cursor-pointer"
+                      title={`@${username}`}
+                    >
+                      {children}
+                    </span>
+                  );
+                }
+
+                return (
+                  <a href={href} className="text-blue-500 underline hover:text-blue-700">
+                    {children}
+                  </a>
                 );
               },
             }}
