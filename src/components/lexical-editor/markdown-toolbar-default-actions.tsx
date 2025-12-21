@@ -23,6 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
 
@@ -53,6 +54,7 @@ export function MarkdownToolbarDefaultActions({
 }: MarkdownToolbarDefaultActionsProps) {
   const [editor] = useLexicalComposerContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { withAuth } = useAuthGuard();
 
   /**
    * Inserts a new enhanced code block with the specified language
@@ -210,7 +212,7 @@ export function MarkdownToolbarDefaultActions({
           "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
           buttonClassName,
         )}
-        onClick={handleMediaButtonClick}
+        onClick={withAuth(handleMediaButtonClick)}
       >
         <ImageUpIcon size={16} />
       </Button>
