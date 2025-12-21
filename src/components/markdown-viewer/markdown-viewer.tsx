@@ -126,7 +126,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
       {imageCount > 0 && (
         <div
           className={cn(
-            "rounded-medium aspect-video border dark:border-content2 border-content3 overflow-hidden grid",
+            "rounded-medium aspect-video border border-accent overflow-hidden grid rounded-md",
             {
               "grid-cols-2": imageCount === 2,
               "grid-cols-2 grid-rows-2": imageCount === 3 || imageCount >= 4,
@@ -169,11 +169,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 const imageUrl = serializePostId(src, { postId });
 
                 return (
-                  <div
-                    className={cn(
-                      "relative outline-[0.5px] dark:outline-content2 outline-content3",
-                    )}
-                  >
+                  <div className={cn("relative outline-[0.5px] outline-accent")}>
                     <Image
                       className="h-full object-cover"
                       src={imageUrl}
