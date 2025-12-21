@@ -2,10 +2,12 @@
 
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { LexicalEditor } from "lexical";
 import { $getRoot } from "lexical";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { MarkdownEditor } from "@/components/lexical-editor/markdown-editor";
 import { MarkdownProvider } from "@/components/lexical-editor/markdown-provider";
@@ -15,11 +17,9 @@ import type { MediaData } from "@/components/lexical-editor/plugins/media/media-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/ui/container";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { usePostsContext } from "@/hooks/use-posts-context";
-import { mutationOptions } from "@/hooks/mutation/options/mutation-options";
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
 
@@ -207,7 +207,8 @@ export function PostComposer({
           <div className="flex-1 min-w-0">
             <MarkdownEditor
               placeholder={placeholder}
-              contentClassName="min-h-12 p-0 text-sm md:text-base"
+              className="text-sm"
+              contentClassName="min-h-8 p-0"
               autoFocus
             />
             <div className="py-2 md:py-4">{children}</div>
