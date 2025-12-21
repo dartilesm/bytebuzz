@@ -1,19 +1,14 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function AuthenticationModalLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const initialPathnameRef = useRef<string>(pathname);
   const isClosingRef = useRef<boolean>(false);
-  const [isOpen, setIsOpen] = useState(true);
-
-  useEffect(() => {
-    setIsOpen(true);
-  }, []);
 
   useEffect(() => {
     // If the pathname changes and isClosingRef is true, means the user's clicked outside the modal or intentionally closed it
@@ -31,8 +26,8 @@ export default function AuthenticationModalLayout({ children }: { children: Reac
     router.back();
   }
   return (
-    <Dialog open={isOpen} onOpenChange={handleOnOpenChange}>
-      <DialogContent className='max-w-[95vw] md:max-w-xl p-0 overflow-hidden border-none bg-transparent shadow-none [&>button]:hidden'>
+    <Dialog defaultOpen onOpenChange={handleOnOpenChange}>
+      <DialogContent className="max-w-[95vw] md:max-w-xl p-0 overflow-hidden border-none bg-transparent shadow-none [&>button]:hidden">
         {children}
       </DialogContent>
     </Dialog>
