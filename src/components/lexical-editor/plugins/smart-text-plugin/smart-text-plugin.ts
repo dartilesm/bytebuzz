@@ -1,6 +1,6 @@
 "use client";
 
-import { $createLinkNode, $isLinkNode, type LinkNode } from "@lexical/link";
+import { $createLinkNode, $isLinkNode, type LinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   $createTextNode,
@@ -9,6 +9,7 @@ import {
   $isTextNode,
   COMMAND_PRIORITY_LOW,
   KEY_SPACE_COMMAND,
+  PASTE_COMMAND,
   type TextNode,
 } from "lexical";
 import { useEffect } from "react";
@@ -186,7 +187,54 @@ export function SmartTextPlugin(): null {
       return false; // Allow normal space handling
     }
 
-    return editor.registerCommand(KEY_SPACE_COMMAND, handleSpaceKey, COMMAND_PRIORITY_LOW);
+    /**
+     * Handles paste event to check for URLs when text is selected
+     */
+    function handlePaste(event: ClipboardEvent): boolean {
+      const selection = $getSelection();
+
+      // Only handle if there is a range selection and it's not collapsed (text is highlighted)
+      if (!$isRangeSelection(selection) || selection.isCollapsed()) {
+        return false;
+      }
+
+      const clipboardData =
+        event instanceof ClipboardEvent ? event.clipboardData : null;
+      if (!clipboardData) {
+        return false;
+      }
+
+      const pastedText = clipboardData.getData("text");
+      if (!pastedText) {
+        return false;
+      }
+
+      const { isValid, url } = isValidURL(pastedText.trim());
+      if (isValid) {
+        // Apply the link to the selected text instead of replacing it
+        editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
+        return true; // We handled the command, prevent default paste
+      }
+
+      return false;
+    }
+
+    const unregisterSpace = editor.registerCommand(
+      KEY_SPACE_COMMAND,
+      handleSpaceKey,
+      COMMAND_PRIORITY_LOW,
+    );
+
+    const unregisterPaste = editor.registerCommand(
+      PASTE_COMMAND,
+      handlePaste,
+      COMMAND_PRIORITY_LOW,
+    );
+
+    return () => {
+      unregisterSpace();
+      unregisterPaste();
+    };
   }, [editor]);
 
   return null;
