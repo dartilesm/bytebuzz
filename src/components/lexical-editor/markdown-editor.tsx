@@ -14,6 +14,7 @@ import { type RefObject, useEffect } from "react";
 import { editorStateToMarkdown } from "@/components/lexical-editor/functions/markdown-utils";
 import { customTransformers } from "@/components/lexical-editor/markdown-config";
 import { useMarkdownContext } from "@/components/lexical-editor/markdown-provider";
+import { EmojiPlugin } from "@/components/lexical-editor/plugins/emoji/emoji-plugin";
 import { MentionPlugin } from "@/components/lexical-editor/plugins/mentions/mention-plugin";
 import { SmartTextPlugin } from "@/components/lexical-editor/plugins/smart-text-plugin/smart-text-plugin";
 import { ValuePlugin } from "@/components/lexical-editor/plugins/value/value-plugin";
@@ -135,6 +136,9 @@ export function MarkdownEditor({
 
       {/* Mention plugin */}
       {enableMentions && <MentionPlugin onSearch={onUserSearch} />}
+
+      {/* Emoji plugin */}
+      <EmojiPlugin />
 
       {/* Event handling plugins */}
       <OnChangeMarkdownPlugin onChange={onChange} />

@@ -3,8 +3,8 @@
 import { SiMarkdown } from "@icons-pack/react-simple-icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
-import { Code, ImageUpIcon } from "lucide-react";
-import { useRef } from "react";
+import { Code, ImageUpIcon, Smile } from "lucide-react";
+import { useRef, useState } from "react";
 import {
   removeMediaNodeById,
   updateMediaNodeById,
@@ -22,6 +22,13 @@ import {
 } from "@/components/lexical-editor/plugins/media/media-node";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  EmojiPicker,
+  EmojiPickerContent,
+  // EmojiPickerFooter,
+  EmojiPickerSearch,
+} from "@/components/ui/emoji-picker";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { log } from "@/lib/logger/logger";
@@ -55,6 +62,7 @@ export function MarkdownToolbarDefaultActions({
   const [editor] = useLexicalComposerContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { withAuth } = useAuthGuard();
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
   /**
    * Inserts a new enhanced code block with the specified language
@@ -198,6 +206,20 @@ export function MarkdownToolbarDefaultActions({
     fileInputRef.current?.click();
   }
 
+  /**
+   * Handles emoji selection from the picker
+   */
+  function handleEmojiSelect(emoji: { emoji: string }): void {
+    editor.update(() => {
+      const selection = $getSelection();
+      if (!$isRangeSelection(selection)) return;
+
+      selection.insertText(emoji.emoji);
+    });
+    setIsEmojiPickerOpen(false);
+    editor.focus();
+  }
+
   return (
     <>
       <Button
@@ -225,6 +247,28 @@ export function MarkdownToolbarDefaultActions({
       >
         <ImageUpIcon size={16} />
       </Button>
+
+      <Popover open={isEmojiPickerOpen} onOpenChange={setIsEmojiPickerOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            type="button"
+            className={cn(
+              "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
+              buttonClassName,
+            )}
+          >
+            <Smile size={16} />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="p-0 border-none w-auto" side="top" align="start">
+          <EmojiPicker onEmojiSelect={handleEmojiSelect} className="h-80 w-64 shadow-xl border">
+            <EmojiPickerSearch placeholder="Search emojis..." />
+            <EmojiPickerContent />
+          </EmojiPicker>
+        </PopoverContent>
+      </Popover>
 
       {showMarkdownInfo && (
         <TooltipProvider>
