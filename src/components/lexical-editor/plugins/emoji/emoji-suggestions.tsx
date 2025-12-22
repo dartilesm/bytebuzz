@@ -29,7 +29,7 @@ interface EmojiSuggestionsProps {
 export function EmojiSuggestions({ query, position, onSelect }: EmojiSuggestionsProps) {
   return createPortal(
     <Card
-      className="fixed z-50 w-64 max-h-80 overflow-hidden shadow-lg border border-border"
+      className="fixed z-50 w-64 max-h-80 overflow-hidden shadow-lg border border-border py-0"
       style={{
         top: position.top,
         left: position.left,
@@ -38,7 +38,7 @@ export function EmojiSuggestions({ query, position, onSelect }: EmojiSuggestions
       <EmojiSuggestionList
         searchTerm={query}
         onEmojiSelect={onSelect}
-        className="border-none rounded-none"
+        className="border-none rounded-none scrollbar-auto"
       />
     </Card>,
     document.body,
