@@ -12,6 +12,8 @@ export interface ContentItem {
     // Image specific
     src?: string;
     alt?: string;
+    width?: number;
+    height?: number;
     // Code specific
     language?: string;
     code?: string;

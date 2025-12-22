@@ -31,7 +31,7 @@ import {
   CodeBlockHeader,
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { GradientBackground } from "@/components/ui/gradient-background";
 import { Skeleton } from "@/components/ui/skeleton";
 import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
@@ -70,7 +70,7 @@ export function ContentViewerModal() {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-accent/30 backdrop-blur-sm"
         onClick={closeViewer}
         aria-hidden="true"
       />
@@ -78,7 +78,7 @@ export function ContentViewerModal() {
       {/* Modal Content */}
       <div className="relative z-10 flex h-full w-full">
         {/* Left Panel - Carousel Display */}
-        <div className="relative flex flex-1 items-center justify-center bg-background">
+        <div className="relative flex flex-1 items-center justify-center bg-foreground dark:bg-accent">
           {/* Close Button - Top Left (X style) */}
           <Button
             variant="flat"
@@ -100,17 +100,22 @@ export function ContentViewerModal() {
           >
             <CarouselContent className="flex-1 h-full">
               {contentItems.map((item, index) => (
-                <CarouselItem key={item.id} className="h-full flex items-center justify-center">
+                <CarouselItem key={item.id} className="h-full flex items-center justify-center p-0">
                   {item.type === "image" && (
-                    <div className="relative w-full h-full flex items-center justify-center p-4">
+                    <GradientBackground
+                      className="relative w-full h-full flex items-center justify-center p-4"
+                      backgroundMode="image"
+                    >
                       <Image
                         src={item.data.src || ""}
                         alt={item.data.alt || `Image ${index + 1}`}
-                        fill
-                        className="object-contain"
+                        width={item.data.width ?? undefined}
+                        height={item.data.height ?? undefined}
+                        fill={item.data.width === undefined || item.data.height === undefined}
+                        className="object-contain max-h-full max-w-full"
                         unoptimized
                       />
-                    </div>
+                    </GradientBackground>
                   )}
                   {item.type === "code" && (
                     <div className="py-4 px-16 flex-1">
