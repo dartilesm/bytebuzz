@@ -19,7 +19,7 @@ function EmojiPicker({
     <EmojiPickerPrimitive.Root
       className={cn(
         "bg-popover text-popover-foreground isolate flex h-full w-fit flex-col overflow-hidden rounded-md",
-        className
+        className,
       )}
       data-slot="emoji-picker"
       {...props}
@@ -54,17 +54,13 @@ function EmojiPickerRow({ children, ...props }: EmojiPickerListRowProps) {
   );
 }
 
-function EmojiPickerEmoji({
-  emoji,
-  className,
-  ...props
-}: EmojiPickerListEmojiProps) {
+function EmojiPickerEmoji({ emoji, className, ...props }: EmojiPickerListEmojiProps) {
   return (
     <button
       {...props}
       className={cn(
-        "data-[active]:bg-accent flex size-7 items-center justify-center rounded-sm text-base",
-        className
+        "data-active:bg-accent flex size-7 items-center justify-center rounded-sm text-base",
+        className,
       )}
       data-slot="emoji-picker-emoji"
     >
@@ -73,10 +69,7 @@ function EmojiPickerEmoji({
   );
 }
 
-function EmojiPickerCategoryHeader({
-  category,
-  ...props
-}: EmojiPickerListCategoryHeaderProps) {
+function EmojiPickerCategoryHeader({ category, ...props }: EmojiPickerListCategoryHeaderProps) {
   return (
     <div
       {...props}
@@ -123,15 +116,12 @@ function EmojiPickerContent({
   );
 }
 
-function EmojiPickerFooter({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function EmojiPickerFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
         "max-w-(--frimousse-viewport-width) flex w-full min-w-0 items-center gap-1 border-t p-2",
-        className
+        className,
       )}
       data-slot="emoji-picker-footer"
       {...props}
@@ -143,9 +133,7 @@ function EmojiPickerFooter({
               <div className="flex size-7 flex-none items-center justify-center text-lg">
                 {emoji.emoji}
               </div>
-              <span className="text-secondary-foreground truncate text-xs">
-                {emoji.label}
-              </span>
+              <span className="text-secondary-foreground truncate text-xs">{emoji.label}</span>
             </>
           ) : (
             <span className="text-muted-foreground ml-1.5 flex h-7 items-center truncate text-xs">
@@ -158,9 +146,4 @@ function EmojiPickerFooter({
   );
 }
 
-export {
-  EmojiPicker,
-  EmojiPickerSearch,
-  EmojiPickerContent,
-  EmojiPickerFooter,
-};
+export { EmojiPicker, EmojiPickerSearch, EmojiPickerContent, EmojiPickerFooter };
