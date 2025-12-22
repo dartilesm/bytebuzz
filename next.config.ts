@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '3mb',
+      bodySizeLimit: "3mb",
     },
   },
   typedRoutes: true,
@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
       },
       {
         hostname: "img.clerk.com",
+      },
+    ],
+    localPatterns: [
+      {
+        pathname: "/api/**",
+        search: "",
       },
     ],
   },

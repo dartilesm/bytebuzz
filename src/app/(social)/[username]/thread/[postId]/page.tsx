@@ -1,72 +1,31 @@
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cache } from "react";
 import { PostList } from "@/components/post/post-list";
 import { PostWrapper } from "@/components/post/post-wrapper";
 import { UserPost } from "@/components/post/user-post";
 import { PostComposer } from "@/components/post-composer/post-composer";
 import { PageHeader } from "@/components/ui/page-header";
+import { POST_QUERY_TYPE } from "@/constants/post-query-type";
 import { PostsProvider } from "@/context/posts-context";
-import { createServerSupabaseClient } from "@/db/supabase";
+import { postQueries } from "@/hooks/queries/options/post-queries";
+import { postService } from "@/lib/db/services/post.service";
 import { log } from "@/lib/logger/logger";
 import { generateFallbackMetadata, generatePostThreadMetadata } from "@/lib/metadata-utils";
 import { withAnalytics } from "@/lib/with-analytics";
-import type { NestedPost } from "@/types/nested-posts";
 
-function nestReplies(posts: NestedPost[] | null) {
-  const map = new Map();
-  const roots: NestedPost[] = [];
+async function getPostData(postId: string) {
+  const { data, error } = await postService.getPostThread(postId);
 
-  if (!posts) {
-    return roots;
+  if (error) {
+    log.error("Error fetching thread", { error });
   }
 
-  for (const post of posts) {
-    post.replies = [];
-    map.set(post.id, post);
-  }
-
-  for (const post of posts) {
-    if (post.parent_post_id && map.has(post.parent_post_id)) {
-      const parent = map.get(post.parent_post_id);
-      parent.replies.push(post);
-    } else {
-      roots.push(post);
-    }
-  }
-
-  return roots;
-}
-
-const getPostData = cache(async (postId: string) => {
-  const supabaseClient = createServerSupabaseClient();
-
-  const { data: postAncestry, error: postAncestryError } = await supabaseClient
-    .rpc("get_post_ancestry", {
-      start_id: postId,
-    })
-    .overrideTypes<NestedPost[]>();
-
-  if (postAncestryError) {
-    log.error("Error fetching thread", { postAncestryError });
-  }
-
-  const { data: directReplies, error: directRepliesError } = await supabaseClient
-    .rpc("get_replies_to_depth", { target_id: postId, max_depth: 2 })
-    .order("created_at", { ascending: false })
-    .overrideTypes<NestedPost[]>();
-
-  if (directRepliesError) {
-    log.error("Error fetching direct replies", { directRepliesError });
-  }
-
-  const result = {
-    postAncestry,
-    directReplies: nestReplies(directReplies),
+  return {
+    postAncestry: data?.postAncestry,
+    directReplies: data?.directReplies,
   };
-
-  return result;
-});
+}
 
 interface ThreadPageProps {
   params: Promise<{
@@ -101,12 +60,28 @@ async function ThreadPage({ params }: ThreadPageProps) {
   const { postId } = await params;
   const { postAncestry, directReplies } = await getPostData(postId);
 
+  const lastPost = postAncestry?.at(-1);
+  const username = lastPost?.user?.username;
+
+  const queryClient = new QueryClient();
+
+  queryClient.prefetchQuery({
+    queryKey: postQueries.list({ queryType: POST_QUERY_TYPE.POST_REPLIES, username, postId })
+      .queryKey,
+    queryFn: () => ({ directReplies, postAncestry }),
+  });
+
+  queryClient.prefetchQuery({
+    queryKey: postQueries.thread({ postId }).queryKey,
+    queryFn: () => directReplies,
+  });
+
   if (!postAncestry || postAncestry.length === 0) {
     notFound();
   }
 
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <PageHeader title="Thread" />
       <div className="flex flex-col gap-4 w-full px-2 md:px-4">
         <PostsProvider initialPosts={directReplies || []}>
@@ -119,11 +94,13 @@ async function ThreadPage({ params }: ThreadPageProps) {
             replyPostId={postId}
           />
           <div className="flex flex-col gap-4 min-h-dvh">
-            {!!directReplies?.length && <PostList />}
+            {!!directReplies?.length && (
+              <PostList postQueryType={POST_QUERY_TYPE.POST_REPLIES} postId={postId} />
+            )}
           </div>
         </PostsProvider>
       </div>
-    </>
+    </HydrationBoundary>
   );
 }
 

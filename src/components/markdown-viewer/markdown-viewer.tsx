@@ -1,15 +1,20 @@
 "use client";
 
+import { ExpandIcon } from "lucide-react";
 import Image from "next/image";
-import { createSerializer, parseAsString } from "nuqs/server";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { getAllContentFromMarkdown } from "@/components/markdown-viewer/functions/get-all-content-from-markdown";
+import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
+import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
 import { Mention } from "@/components/markdown-viewer/mention";
+
 import {
   type BundledLanguage,
   CodeBlock,
+  CodeBlockActionButton,
   CodeBlockBody,
   CodeBlockContent,
   CodeBlockCopyButton,
@@ -18,15 +23,42 @@ import {
   CodeBlockHeader,
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
+import type { PostClickEvent } from "@/context/post-provider";
 import { cn } from "@/lib/utils";
+
+const ALLOWED_ELEMENTS = ["img", "p", "code"] as const;
+
+export type DisallowedElements = Exclude<(typeof ALLOWED_ELEMENTS)[number], "p">[];
 
 type ReactElementWithNode = ReactElement & { props: { node: { tagName: string } } };
 
 type MarkdownImageProps = ComponentPropsWithoutRef<"img">;
 
-export function MarkdownViewer({ markdown, postId }: { markdown: string; postId: string }) {
-  // Extract image count from markdown by counting ![] patterns
-  const imageCount = (markdown.match(/!\[.*?\]\(.*?\)/g) || []).length;
+export type MarkdownViewerProps = {
+  markdown: string;
+  postId: string;
+  disallowedElements?: DisallowedElements;
+  /**
+   * Generic event handler for all markdown component events
+   * Use this instead of componentEvents for better scalability
+   */
+  onEvent?: (event: PostClickEvent) => void;
+};
+
+export function MarkdownViewer({
+  markdown,
+  postId,
+  disallowedElements = [],
+  onEvent,
+}: MarkdownViewerProps) {
+  // Extract all content (images and code blocks) from markdown
+  const allContent = getAllContentFromMarkdown({ markdown, postId });
+
+  // Extract images separately for backward compatibility with image grid rendering
+  const images = getImagesFromMarkdown({ markdown, postId });
+
+  const imageCount = images.length;
+  const shouldHideImages = disallowedElements.includes("img");
 
   return (
     <>
@@ -41,11 +73,25 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
 
             if (!children) return null;
 
-            return <p className={className}>{children}</p>;
+            return (
+              <p
+                className={className}
+                onClick={(event) => {
+                  onEvent?.({ ...event, source: "p", type: "click", payload: undefined });
+                }}
+              >
+                {children}
+              </p>
+            );
           },
           code: ({ node, ...props }) => {
             const { children, className } = props;
             const language = className?.replace("language-", "");
+
+            // Check if code blocks should be hidden (only block code, not inline)
+            const shouldHideCode = disallowedElements.includes("code");
+            if (shouldHideCode) return null;
+
             if (!className)
               return (
                 <code className="text-xs bg-muted px-1 py-0.5 rounded-sm font-mono">
@@ -59,6 +105,15 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
 
             const metadata = parseCodeBlockMetadata(node?.data?.meta ?? "");
             const filename = metadata?.fileName;
+
+            // Find this code block's index in allContent
+            const codeIndex = allContent.findIndex(
+              (item) =>
+                item.type === "code" &&
+                item.data.language === languageValue &&
+                item.data.code === codeContent.trim() &&
+                item.data.filename === filename,
+            );
 
             return (
               <CodeBlock
@@ -80,11 +135,23 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                     </CodeBlockFiles>
                   )}
                   <div className="flex items-center">
-                    {/* <CodeBlockActionButton tooltipContent="Save to snippets">
-                      <Button size="icon-sm" variant="ghost">
-                        <BookmarkIcon className="size-3.5" />
-                      </Button>
-                    </CodeBlockActionButton> */}
+                    <CodeBlockActionButton
+                      tooltipContent="Expand"
+                      onClick={(event) => {
+                        onEvent?.({
+                          ...event,
+                          source: "code",
+                          type: "click",
+                          payload: {
+                            contentItems: allContent,
+                            index: codeIndex !== -1 ? codeIndex : 0,
+                            postId,
+                          },
+                        });
+                      }}
+                    >
+                      <ExpandIcon className="size-3.5" />
+                    </CodeBlockActionButton>
                     <CodeBlockCopyButton />
                   </div>
                 </CodeBlockHeader>
@@ -106,7 +173,12 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           ul: ({ ...props }) => {
             const { children, className } = props;
             return (
-              <ul className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}>
+              <ul
+                className={cn("list-disc pl-4 mb-2 flex flex-col gap-1.5", className)}
+                onClick={(event) => {
+                  onEvent?.({ ...event, source: "ul", type: "click", payload: undefined });
+                }}
+              >
                 {children}
               </ul>
             );
@@ -114,7 +186,12 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
           ol: ({ ...props }) => {
             const { children, className } = props;
             return (
-              <ol className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}>
+              <ol
+                className={cn("list-decimal pl-4 mb-2 flex flex-col gap-1.5", className)}
+                onClick={(event) => {
+                  onEvent?.({ ...event, source: "ol", type: "click", payload: undefined });
+                }}
+              >
                 {children}
               </ol>
             );
@@ -142,7 +219,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
       >
         {markdown}
       </Markdown>
-      {imageCount > 0 && (
+      {imageCount > 0 && !shouldHideImages && (
         <div
           className={cn(
             "rounded-medium aspect-video border border-accent overflow-hidden grid rounded-md",
@@ -161,6 +238,7 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
             remarkPlugins={[remarkGfm]}
             components={{
               p: ({ node, ...props }) => {
+                console.log("p", props);
                 const { children } = props;
 
                 const isChildImage =
@@ -175,20 +253,32 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                 if (!src || typeof src !== "string") {
                   return null;
                 }
-                // Parser for postId query parameter, it will ensure that the postId is properly set in the image URLs
-                const postIdParser = {
-                  postId: parseAsString,
-                };
-
-                // Serializer for postId query parameter, it will merge the postId with the existing URL and query params
-                const serializePostId = createSerializer(postIdParser);
 
                 // Use nuqs serializer to properly merge postId with existing URL and query params
                 // This handles cases where URL already has query params or postId
-                const imageUrl = serializePostId(src, { postId });
+                const imageUrl = serializeImageUrl(src, { postId });
+
+                // Find index of this image in the allContent array
+                const index = allContent.findIndex(
+                  (item) => item.type === "image" && item.data.src === imageUrl,
+                );
 
                 return (
-                  <div className={cn("relative outline-[0.5px] outline-accent")}>
+                  <div
+                    className={cn("relative outline-[0.5px] outline-accent")}
+                    onClick={(event) => {
+                      onEvent?.({
+                        ...event,
+                        source: "img",
+                        type: "click",
+                        payload: {
+                          contentItems: allContent,
+                          index: index !== -1 ? index : 0,
+                          postId,
+                        },
+                      });
+                    }}
+                  >
                     <Image
                       className="h-full object-cover"
                       src={imageUrl}
@@ -197,30 +287,6 @@ export function MarkdownViewer({ markdown, postId }: { markdown: string; postId:
                       unoptimized
                     />
                   </div>
-                );
-              },
-              a: ({ node, ...props }) => {
-                const { children, href } = props;
-
-                // Mentions can also appear in image alt text or nearby, though rare in this specific block
-                if (href?.startsWith("mention:")) {
-                  const parts = href.replace("mention:", "").split(":");
-                  const username = parts[1];
-
-                  return (
-                    <span
-                      className="inline-flex items-center text-primary font-medium bg-accent/50 dark:bg-accent/60 px-1 py-0.5 rounded-md hover:no-underline cursor-pointer"
-                      title={`@${username}`}
-                    >
-                      {children}
-                    </span>
-                  );
-                }
-
-                return (
-                  <a href={href} className="text-blue-500 underline hover:text-blue-700">
-                    {children}
-                  </a>
                 );
               },
             }}

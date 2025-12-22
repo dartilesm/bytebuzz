@@ -68,14 +68,14 @@ export function MentionSuggestions({
 
   return createPortal(
     <Card
-      className='fixed z-50 w-64 max-h-64 overflow-auto shadow-lg p-0'
+      className="fixed z-50 w-64 max-h-64 overflow-auto shadow-lg p-0"
       style={{
         top: position.top,
         left: position.left,
       }}
     >
-      <CardContent className='p-2'>
-        <div className='space-y-1'>
+      <CardContent className="p-2">
+        <div className="space-y-1">
           {suggestions.map((user, index) => (
             <Button
               key={user.id}
@@ -86,19 +86,19 @@ export function MentionSuggestions({
               onClick={() => handleUserClick(user)}
               onKeyDown={(event) => handleUserKeyDown(event, user)}
               tabIndex={index === selectedIndex ? 0 : -1}
-              role='option'
+              role="option"
               aria-selected={index === selectedIndex}
             >
-              <div className='flex items-center gap-3 w-full'>
+              <div className="flex items-center gap-3 w-full">
                 <UserAvatar
                   avatarUrl={user.avatarUrl}
                   name={user.displayName}
                   showWelcomeBadge={false}
-                  className='h-8 w-8 shrink-0'
+                  className="h-8 w-8 shrink-0"
                 />
-                <div className='flex flex-col items-start text-left min-w-0 flex-1'>
-                  <span className='font-medium text-sm truncate w-full'>{user.displayName}</span>
-                  <span className='text-xs text-muted-foreground truncate w-full'>
+                <div className="flex flex-col items-start text-left min-w-0 flex-1">
+                  <span className="font-medium text-sm truncate w-full">{user.displayName}</span>
+                  <span className="text-xs text-muted-foreground truncate w-full">
                     @{user.username}
                   </span>
                 </div>
@@ -108,6 +108,6 @@ export function MentionSuggestions({
         </div>
       </CardContent>
     </Card>,
-    document.body
+    document.body,
   );
 }

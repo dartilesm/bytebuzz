@@ -21,6 +21,7 @@ import {
   Carousel,
   type CarouselApi,
   CarouselContent,
+  CarouselDots,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
@@ -361,28 +362,9 @@ function MediaComponent({ node, items }: { node: MediaNode; items: MediaData[] }
               <CarouselNext className="right-2 size-8" />
             </>
           )}
+          {/* Carousel Indicators */}
+          {hasMoreThanOneItem && <CarouselDots />}
         </Carousel>
-
-        {/* Carousel Indicators */}
-        {hasMoreThanOneItem && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
-            {items.map((_, index) => (
-              <Button
-                key={index}
-                type="button"
-                size="icon"
-                variant={index === currentIndex ? "default" : "outline"}
-                onClick={() => {
-                  api?.scrollTo(index);
-                }}
-                aria-label={`Go to slide ${index + 1}`}
-                className={cn("h-2 rounded-full transition-all", {
-                  "w-2": index !== currentIndex,
-                })}
-              />
-            ))}
-          </div>
-        )}
 
         {/* Floating Action Buttons - Top Right Corner */}
         <div className="absolute top-2 px-2 flex items-center justify-between gap-1 z-20 w-full">
@@ -481,6 +463,9 @@ function $convertMediaElement(domNode: Node): DOMConversionOutput {
         src: img.src,
         alt: img.alt,
         title: img.title,
+        // Extract dimensions from img element if available
+        width: img.naturalWidth > 0 ? img.naturalWidth : undefined,
+        height: img.naturalHeight > 0 ? img.naturalHeight : undefined,
       });
     }
 
@@ -518,13 +503,24 @@ function $convertMediaElement(domNode: Node): DOMConversionOutput {
       }
 
       if (src) {
-        items.push({
+        const mediaItem: MediaData = {
           id: mediaId || src.split("/").pop() || "media-0",
           type: mediaType,
           src,
           alt,
           title,
-        });
+        };
+
+        // Extract dimensions from img element if available
+        if (mediaType === "image") {
+          const img = node.querySelector("img");
+          if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+            mediaItem.width = img.naturalWidth;
+            mediaItem.height = img.naturalHeight;
+          }
+        }
+
+        items.push(mediaItem);
       }
     }
 

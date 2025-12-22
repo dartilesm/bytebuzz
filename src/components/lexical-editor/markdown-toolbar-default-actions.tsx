@@ -117,7 +117,7 @@ export function MarkdownToolbarDefaultActions({
   /**
    * Handles file upload for media insertion
    */
-  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -133,18 +133,20 @@ export function MarkdownToolbarDefaultActions({
     // Handle custom upload if provided
     if (onMediaUpload) return handleCustomMediaUpload(file);
 
-    // Handle default blob URL media insertion
-    const mediaData = createBlobMediaData(file);
+    // Handle default blob URL media insertion with dimension extraction
+    const mediaData = await createBlobMediaData(file);
     handleInsertMedia(mediaData);
   }
 
   /**
    * Handles custom media upload with loading state
+   * Extracts dimensions before upload to preserve them
    */
   async function handleCustomMediaUpload(file: File) {
     if (!onMediaUpload) return;
 
-    const loadingMediaData = createLoadingMediaData(file);
+    // Extract dimensions before upload to preserve them in loading state
+    const loadingMediaData = await createLoadingMediaData(file);
     handleInsertMedia(loadingMediaData);
 
     const { error, data } = await onMediaUpload(file);
@@ -154,7 +156,14 @@ export function MarkdownToolbarDefaultActions({
       return;
     }
 
-    handleUploadSuccess(loadingMediaData.id, data);
+    // Preserve dimensions from loading state if not provided by upload response
+    const finalData: MediaData = {
+      ...data,
+      width: data.width ?? loadingMediaData.width,
+      height: data.height ?? loadingMediaData.height,
+    };
+
+    handleUploadSuccess(loadingMediaData.id, finalData);
   }
 
   /**

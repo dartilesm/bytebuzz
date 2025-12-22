@@ -12,17 +12,18 @@ import { postQueries } from "@/hooks/queries/options/post-queries";
 import { usePostsContext } from "@/hooks/use-posts-context";
 
 interface PostListProps {
-  postQueryType?: POST_QUERY_TYPE;
+  postQueryType: POST_QUERY_TYPE;
+  postId?: string;
 }
 
-export function PostList({ postQueryType }: PostListProps) {
+export function PostList({ postQueryType, postId }: PostListProps) {
   const isFirstRenderRef = useRef(true);
   const { posts } = usePostsContext();
   const username = posts?.[0]?.user?.username;
   const isEnabled = !!postQueryType && !isFirstRenderRef.current;
 
   const infiniteQuery = useInfiniteQuery({
-    ...postQueries.list(postQueryType, username),
+    ...postQueries.list({ queryType: postQueryType, username, postId }),
     enabled: isEnabled,
     initialData: {
       pageParams: [undefined],
@@ -54,9 +55,9 @@ export function PostList({ postQueryType }: PostListProps) {
   // Trigger loading more posts when last post becomes visible
   useEffect(() => {
     if (isIntersecting && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage({ cancelRefetch: false });
+      fetchNextPage();
     }
-  }, [isIntersecting]);
+  }, [isIntersecting, hasNextPage, isFetchingNextPage]);
 
   return (
     <div className="flex flex-col gap-2">
