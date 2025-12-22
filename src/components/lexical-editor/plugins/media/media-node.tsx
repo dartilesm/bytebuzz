@@ -463,6 +463,9 @@ function $convertMediaElement(domNode: Node): DOMConversionOutput {
         src: img.src,
         alt: img.alt,
         title: img.title,
+        // Extract dimensions from img element if available
+        width: img.naturalWidth > 0 ? img.naturalWidth : undefined,
+        height: img.naturalHeight > 0 ? img.naturalHeight : undefined,
       });
     }
 
@@ -500,13 +503,24 @@ function $convertMediaElement(domNode: Node): DOMConversionOutput {
       }
 
       if (src) {
-        items.push({
+        const mediaItem: MediaData = {
           id: mediaId || src.split("/").pop() || "media-0",
           type: mediaType,
           src,
           alt,
           title,
-        });
+        };
+
+        // Extract dimensions from img element if available
+        if (mediaType === "image") {
+          const img = node.querySelector("img");
+          if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+            mediaItem.width = img.naturalWidth;
+            mediaItem.height = img.naturalHeight;
+          }
+        }
+
+        items.push(mediaItem);
       }
     }
 

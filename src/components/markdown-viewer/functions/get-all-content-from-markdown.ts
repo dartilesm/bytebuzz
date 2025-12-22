@@ -1,3 +1,4 @@
+import { decodeMediaMetadata } from "@/components/lexical-editor/functions/media-metadata-utils";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
 import type { ContentItem } from "@/context/content-viewer-context";
@@ -25,12 +26,23 @@ export function getAllContentFromMarkdown({
     const src = imageMatch[2];
     const imageUrl = serializeImageUrl(src, { postId });
 
+    // Decode metadata from URL to extract dimensions
+    // Decode from original src first, then from serialized URL as fallback
+    const { metadata: originalMetadata } = decodeMediaMetadata(src);
+    const { metadata: serializedMetadata } = decodeMediaMetadata(imageUrl);
+
+    // Use dimensions from either source (serialized takes precedence)
+    const width = serializedMetadata?.width ?? originalMetadata?.width;
+    const height = serializedMetadata?.height ?? originalMetadata?.height;
+
     contentItems.push({
       type: "image",
       id: imageUrl,
       data: {
         src: imageUrl,
         alt: imageMatch[1],
+        width,
+        height,
       },
     });
   }
