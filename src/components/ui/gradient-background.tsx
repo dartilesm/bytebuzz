@@ -2,57 +2,32 @@
 
 import Image from "next/image";
 import type * as React from "react";
-import { findImageSrcInChildren } from "@/components/ui/gradient-background/functions/find-image-src-in-children";
-import { useGradientColors } from "@/hooks/use-gradient-colors";
-import { generateGradientFromColors } from "@/lib/image-color-extractor";
 import { cn } from "@/lib/utils";
 
 interface GradientBackgroundProps {
   /**
-   * Image URL to extract colors from
-   * If not provided, will attempt to extract from img elements in children
+   * Image URL to use as blurred background
    */
-  imageUrl?: string;
+  imageUrl: string;
   /**
-   * Pre-computed colors (for SSR or performance optimization)
-   * Takes precedence over imageUrl
-   */
-  colors?: string[];
-  /**
-   * Content to wrap with gradient background
+   * Content to wrap with blurred background
    */
   children: React.ReactNode;
-  /**
-   * Gradient direction (default: "to bottom")
-   */
-  direction?: string;
   /**
    * Blur amount in pixels (default: 40)
    */
   blur?: number;
   /**
-   * Gradient opacity 0-1 (default: 0.6)
+   * Background opacity 0-1 (default: 0.6)
    */
   opacity?: number;
-  /**
-   * Fallback CSS gradient if color extraction fails
-   */
-  fallbackGradient?: string;
-  /**
-   * Background rendering mode
-   * - "image": Use the actual image as blurred background
-   * - "gradient": Use color gradient extracted from image (current behavior)
-   * - "auto": Use image if available, fallback to gradient
-   * @default "gradient"
-   */
-  backgroundMode?: "image" | "gradient" | "auto";
   /**
    * Overlay to apply on top of background for better text readability
    * @default "rgba(0, 0, 0, 0.3)"
    */
   overlay?: string;
   /**
-   * Scale factor for the background image (creates zoom effect)
+   * Scale factor for the background image (creates zoom effect to hide blur edges)
    * @default 1.1
    */
   backgroundScale?: number;
@@ -63,81 +38,33 @@ interface GradientBackgroundProps {
 }
 
 /**
- * Component that extracts dominant colors from an image and generates a gradient backdrop
- * Supports both blurred image backgrounds and color gradient backgrounds
+ * Component that renders a blurred image as background
  */
 export function GradientBackground({
-  imageUrl: providedImageUrl,
-  colors: providedColors,
+  imageUrl,
   children,
-  direction = "to bottom",
   blur = 40,
   opacity = 0.6,
-  fallbackGradient = "linear-gradient(to bottom, #111827 0%, #374151 100%)",
-  backgroundMode = "gradient",
   overlay = "rgba(0, 0, 0, 0.3)",
   backgroundScale = 1.1,
   className,
 }: GradientBackgroundProps) {
-  // Detect image in children if no imageUrl provided
-  const detectedImageUrl =
-    !providedImageUrl && !providedColors ? findImageSrcInChildren(children) : null;
-
-  // Determine which image URL to use
-  const imageUrl = providedImageUrl || detectedImageUrl || undefined;
-
-  // Extract colors using hook
-  const { colors, isLoading } = useGradientColors({
-    imageUrl,
-    colors: providedColors,
-    colorCount: 5,
-  });
-
-  // Generate gradient CSS
-  const gradient =
-    colors.length > 0 ? generateGradientFromColors(colors, direction) : fallbackGradient;
-
-  // Determine which background mode to use
-  const shouldRenderImage = backgroundMode === "image" || (backgroundMode === "auto" && imageUrl);
-
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      {/* Blurred Image Background (image mode) */}
-      {shouldRenderImage && imageUrl && (
-        <>
-          <Image
-            src={imageUrl}
-            alt=""
-            fill
-            className="absolute inset-0 -z-10 object-cover"
-            style={{
-              filter: `blur(${blur}px)`,
-              transform: `scale(${backgroundScale})`,
-              opacity: isLoading ? 0 : opacity,
-              transition: "opacity 0.3s ease-in-out",
-            }}
-            unoptimized
-          />
-          {overlay && (
-            <div className="absolute inset-0 -z-10" style={{ backgroundColor: overlay }} />
-          )}
-        </>
-      )}
-
-      {/* Gradient Background (gradient mode) */}
-      {!shouldRenderImage && (
-        <div
-          className="absolute inset-0 -z-10"
-          style={{
-            background: gradient,
-            filter: `blur(${blur}px)`,
-            opacity: isLoading ? 0 : opacity,
-            transition: "opacity 0.3s ease-in-out",
-          }}
-        />
-      )}
-
-      {/* Content */}
+      <Image
+        src={imageUrl}
+        alt=""
+        fill
+        className="absolute inset-0 -z-10 object-cover"
+        style={{
+          filter: `blur(${blur}px)`,
+          transform: `scale(${backgroundScale})`,
+          opacity,
+          transition: "opacity 0.3s ease-in-out",
+        }}
+        unoptimized
+      />
+      {overlay && <div className="absolute inset-0 -z-10" style={{ backgroundColor: overlay }} />}
       {children}
     </div>
   );

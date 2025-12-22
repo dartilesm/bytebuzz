@@ -104,7 +104,7 @@ export function ContentViewerModal() {
                   {item.type === "image" && (
                     <GradientBackground
                       className="relative w-full h-full flex items-center justify-center p-4"
-                      backgroundMode="image"
+                      imageUrl={item.data.src || ""}
                     >
                       <Image
                         src={item.data.src || ""}
@@ -118,44 +118,49 @@ export function ContentViewerModal() {
                     </GradientBackground>
                   )}
                   {item.type === "code" && (
-                    <div className="py-4 px-16 flex-1">
-                      <CodeBlock
-                        defaultValue={item.data.language || "text"}
-                        data={[
-                          {
-                            language: item.data.language || "text",
-                            filename: item.data.filename || "",
-                            code: item.data.code || "",
-                          },
-                        ]}
-                      >
-                        <CodeBlockHeader className="h-10 flex justify-between items-center">
-                          {item.data.filename && (
-                            <CodeBlockFiles>
-                              {(item) =>
-                                item && (
-                                  <CodeBlockFilename key={item.code + item.language} data={item} />
-                                )
-                              }
-                            </CodeBlockFiles>
-                          )}
-                          <div className="flex items-center">
-                            <CodeBlockCopyButton />
-                          </div>
-                        </CodeBlockHeader>
-                        <CodeBlockBody>
-                          {(item) => (
-                            <CodeBlockItem key={item.language} value={item.language}>
-                              <CodeBlockContent
-                                language={item.language as BundledLanguage}
-                                className="text-xs [&>pre]:p-4"
-                              >
-                                {item.code?.trim?.()}
-                              </CodeBlockContent>
-                            </CodeBlockItem>
-                          )}
-                        </CodeBlockBody>
-                      </CodeBlock>
+                    <div className="size-full py-4 pr-16 pl-20 flex items-center justify-center bg-linear-to-b from-accent/30 to-accent/0">
+                      <div className="flex-1">
+                        <CodeBlock
+                          defaultValue={item.data.language || "text"}
+                          data={[
+                            {
+                              language: item.data.language || "text",
+                              filename: item.data.filename || "",
+                              code: item.data.code || "",
+                            },
+                          ]}
+                        >
+                          <CodeBlockHeader className="h-10 flex justify-between items-center">
+                            {item.data.filename && (
+                              <CodeBlockFiles>
+                                {(item) =>
+                                  item && (
+                                    <CodeBlockFilename
+                                      key={item.code + item.language}
+                                      data={item}
+                                    />
+                                  )
+                                }
+                              </CodeBlockFiles>
+                            )}
+                            <div className="flex items-center">
+                              <CodeBlockCopyButton />
+                            </div>
+                          </CodeBlockHeader>
+                          <CodeBlockBody>
+                            {(item) => (
+                              <CodeBlockItem key={item.language} value={item.language}>
+                                <CodeBlockContent
+                                  language={item.language as BundledLanguage}
+                                  className="text-xs [&>pre]:p-4"
+                                >
+                                  {item.code?.trim?.()}
+                                </CodeBlockContent>
+                              </CodeBlockItem>
+                            )}
+                          </CodeBlockBody>
+                        </CodeBlock>
+                      </div>
                     </div>
                   )}
                 </CarouselItem>
