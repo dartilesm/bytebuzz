@@ -238,7 +238,6 @@ export function MarkdownViewer({
             remarkPlugins={[remarkGfm]}
             components={{
               p: ({ node, ...props }) => {
-                console.log("p", props);
                 const { children } = props;
 
                 const isChildImage =
