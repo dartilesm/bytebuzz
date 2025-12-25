@@ -1,94 +1,100 @@
 // @ts-nocheck
-import { Store } from '../helpers'
+import { Store } from "../helpers";
 
 const DEFAULTS = [
-  '+1',
-  'grinning',
-  'kissing_heart',
-  'heart_eyes',
-  'laughing',
-  'stuck_out_tongue_winking_eye',
-  'sweat_smile',
-  'joy',
-  'scream',
-  'disappointed',
-  'unamused',
-  'weary',
-  'sob',
-  'sunglasses',
-  'heart',
-]
+  "+1",
+  "grinning",
+  "kissing_heart",
+  "heart_eyes",
+  "laughing",
+  "stuck_out_tongue_winking_eye",
+  "sweat_smile",
+  "joy",
+  "scream",
+  "disappointed",
+  "unamused",
+  "weary",
+  "sob",
+  "sunglasses",
+  "heart",
+];
 
-let Index: any | null = null
+let Index: any | null = null;
 
 function add(emoji: { id: string }) {
-  Index || (Index = Store.get('frequently') || {})
-
-  const emojiId = emoji.id || emoji
-  if (!emojiId) return
-
-  Index[emojiId] || (Index[emojiId] = 0)
-  Index[emojiId] += 1
-
-  Store.set('last', emojiId)
-  Store.set('frequently', Index)
-}
-
-function get({ maxFrequentRows, perLine }) {
-  if (!maxFrequentRows) return []
-
-  Index || (Index = Store.get('frequently'))
-  let emojiIds = []
-
   if (!Index) {
-    Index = {}
-
-    for (let i in DEFAULTS.slice(0, perLine)) {
-      const emojiId = DEFAULTS[i]
-
-      Index[emojiId] = perLine - i
-      emojiIds.push(emojiId)
-    }
-
-    return emojiIds
+    Index = Store.get("frequently") || {};
   }
 
-  const max = maxFrequentRows * perLine
-  const last = Store.get('last')
+  const emojiId = emoji.id || emoji;
+  if (!emojiId) return;
 
-  for (let emojiId in Index) {
-    emojiIds.push(emojiId)
+  if (!Index[emojiId]) {
+    Index[emojiId] = 0;
+  }
+  Index[emojiId] += 1;
+
+  Store.set("last", emojiId);
+  Store.set("frequently", Index);
+}
+
+function get({ maxFrequentRows, perLine }: { maxFrequentRows: number; perLine: number }) {
+  if (!maxFrequentRows) return [];
+
+  if (!Index) {
+    Index = Store.get("frequently");
+  }
+  
+  let emojiIds: string[] = [];
+
+  if (!Index) {
+    Index = {};
+
+    for (let i = 0; i < DEFAULTS.slice(0, perLine).length; i++) {
+      const emojiId = DEFAULTS[i];
+      Index[emojiId] = perLine - i;
+      emojiIds.push(emojiId);
+    }
+
+    return emojiIds;
+  }
+
+  const max = maxFrequentRows * perLine;
+  const last = Store.get("last");
+
+  for (const emojiId in Index) {
+    emojiIds.push(emojiId);
   }
 
   emojiIds.sort((a, b) => {
-    const aScore = Index[b]
-    const bScore = Index[a]
+    const aScore = Index[b];
+    const bScore = Index[a];
 
-    if (aScore == bScore) {
-      return a.localeCompare(b)
+    if (aScore === bScore) {
+      return a.localeCompare(b);
     }
 
-    return aScore - bScore
-  })
+    return aScore - bScore;
+  });
 
   if (emojiIds.length > max) {
-    const removedIds = emojiIds.slice(max)
-    emojiIds = emojiIds.slice(0, max)
+    const removedIds = emojiIds.slice(max);
+    emojiIds = emojiIds.slice(0, max);
 
-    for (let removedId of removedIds) {
-      if (removedId == last) continue
-      delete Index[removedId]
+    for (const removedId of removedIds) {
+      if (removedId === last) continue;
+      delete Index[removedId];
     }
 
-    if (last && emojiIds.indexOf(last) == -1) {
-      delete Index[emojiIds[emojiIds.length - 1]]
-      emojiIds.splice(-1, 1, last)
+    if (last && emojiIds.indexOf(last) === -1) {
+      delete Index[emojiIds[emojiIds.length - 1]];
+      emojiIds.splice(-1, 1, last);
     }
 
-    Store.set('frequently', Index)
+    Store.set("frequently", Index);
   }
 
-  return emojiIds
+  return emojiIds;
 }
 
-export default { add, get, DEFAULTS }
+export default { add, get, DEFAULTS };

@@ -1,10 +1,11 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import { default as emojiData } from "@emoji-mart/data";
+import { useQuery } from "@tanstack/react-query";
+import { useLocalStorage } from "usehooks-ts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,7 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Data, I18n, init } from "./config";
 import { getCategoryIcon, getEmojiData } from "./functions/emoji-picker-utils";
-import { FrequentlyUsed, SearchIndex } from "./helpers";
+import { SearchIndex } from "./helpers";
+
 
 // --- Types ---
 
@@ -36,14 +38,14 @@ interface EmojiPickerContextValue {
   setSkin: (skin: number) => void;
   onEmojiSelect?: (emoji: EmojiData) => void;
   categories: any[];
-  activeCategory: string;
-  setActiveCategory: (category: string) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   searchResults: any[] | null;
   setSearchResults: (results: any[] | null) => void;
   hoveredEmoji: any | null;
   setHoveredEmoji: (emoji: any | null) => void;
+  frequentEmojis: string[];
+  addFrequentEmoji: (emojiId: string) => void;
 }
 
 const EmojiPickerContext = createContext<EmojiPickerContextValue | null>(null);
@@ -68,24 +70,25 @@ function EmojiPicker({
   data = emojiData,
   i18n,
   onEmojiSelect,
-  theme = "auto",
   skin: initialSkin = 1,
   set = "native",
   locale = "en",
-  categories,
   custom,
   className,
   children,
 }: EmojiPickerProps) {
-  const [isInitialized, setIsInitialized] = useState(false);
   const [skin, setSkin] = useState(initialSkin);
-  const [activeCategory, setActiveCategory] = useState("frequent");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[] | null>(null);
   const [hoveredEmoji, setHoveredEmoji] = useState<any | null>(null);
+  const [frequentEmojis, setFrequentEmojis] = useLocalStorage<string[]>(
+    "frequent-emojis",
+    [],
+  );
 
-  useEffect(() => {
-    const initialize = async () => {
+  const { data: initializedData } = useQuery({
+    queryKey: ["emoji-data", { set, locale, custom }],
+    queryFn: async () => {
       await init({
         data,
         i18n,
@@ -93,37 +96,43 @@ function EmojiPicker({
         locale,
         custom,
       });
-      setIsInitialized(true);
-    };
-    initialize();
-  }, [data, i18n, set, locale, custom]);
+      return { data: Data, i18n: I18n };
+    },
+    staleTime: Infinity,
+  });
 
-  if (!isInitialized) return null;
+  function addFrequentEmoji(emojiId: string) {
+    setFrequentEmojis((prev) => {
+      const newFrequent = [emojiId, ...prev.filter((id) => id !== emojiId)];
+      return newFrequent.slice(0, 20);
+    });
+  };
+
+  if (!initializedData) return null;
 
   const contextValue: EmojiPickerContextValue = {
-    data: Data,
-    i18n: I18n,
+    data: initializedData.data,
+    i18n: initializedData.i18n,
     skin,
     setSkin,
     onEmojiSelect,
-    categories: Data.categories,
-    activeCategory,
-    setActiveCategory,
+    categories: initializedData.data.categories,
     searchQuery,
     setSearchQuery,
     searchResults,
     setSearchResults,
     hoveredEmoji,
     setHoveredEmoji,
+    frequentEmojis,
+    addFrequentEmoji,
   };
 
   return (
     <EmojiPickerContext.Provider value={contextValue}>
       <Tabs
-        value={activeCategory}
-        onValueChange={setActiveCategory}
+        defaultValue="frequent"
         className={cn(
-          "flex flex-col w-[350px] h-[450px] border rounded-lg bg-background text-foreground shadow-sm",
+          "flex flex-col w-87.5 h-112.5 border rounded-lg bg-background text-foreground shadow-sm",
           className,
         )}
       >
@@ -183,12 +192,20 @@ function EmojiPickerContent({ className }: { className?: string }) {
   if (!context)
     throw new Error("EmojiPickerContent must be used within EmojiPicker");
 
-  const { data, categories, searchResults, skin, onEmojiSelect } = context;
+  const {
+    data,
+    categories,
+    searchResults,
+    skin,
+    onEmojiSelect,
+    frequentEmojis,
+    addFrequentEmoji,
+  } = context;
 
-  const handleEmojiClick = (emoji: any) => {
+  function handleEmojiClick(emoji: any) {
     const emojiData = getEmojiData(emoji, { skinIndex: skin - 1 });
     onEmojiSelect?.(emojiData);
-    FrequentlyUsed.add(emoji);
+    addFrequentEmoji(emoji.id);
   };
 
   return (
@@ -213,32 +230,37 @@ function EmojiPickerContent({ className }: { className?: string }) {
         </ScrollArea>
       )}
       {!searchResults &&
-        categories.map((category) => (
-          <TabsContent
-            key={category.id}
-            value={category.id}
-            className="h-full mt-0 border-0"
-          >
-            <ScrollArea className="h-full">
-              <div className="px-2">
-                <div className="grid grid-cols-8 auto-cols-auto">
-                  {category.emojis.map((emojiId: string) => {
-                    const emoji = data.emojis[emojiId];
-                    if (!emoji) return null;
-                    return (
-                      <EmojiButton
-                        key={emoji.id}
-                        emoji={emoji}
-                        skin={skin}
-                        onClick={() => handleEmojiClick(emoji)}
-                      />
-                    );
-                  })}
+        categories.map((category) => {
+          const emojisToRender =
+            category.id === "frequent" ? frequentEmojis : category.emojis;
+
+          return (
+            <TabsContent
+              key={category.id}
+              value={category.id}
+              className="h-full mt-0 border-0"
+            >
+              <ScrollArea className="h-full">
+                <div className="px-2">
+                  <div className="grid grid-cols-8 auto-cols-auto">
+                    {emojisToRender.map((emojiId: string) => {
+                      const emoji = data.emojis[emojiId];
+                      if (!emoji) return null;
+                      return (
+                        <EmojiButton
+                          key={emoji.id}
+                          emoji={emoji}
+                          skin={skin}
+                          onClick={() => handleEmojiClick(emoji)}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </ScrollArea>
-          </TabsContent>
-        ))}
+              </ScrollArea>
+            </TabsContent>
+          );
+        })}
     </div>
   );
 }
