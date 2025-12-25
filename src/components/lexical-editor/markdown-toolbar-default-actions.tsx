@@ -28,6 +28,7 @@ import {
   // EmojiPickerFooter,
   EmojiPickerSearch,
 } from "@/components/ui/emoji-picker";
+import { EmojiPicker as EmojiPicker2 } from "@/components/ui/emoji-picker-2/emoji-picker-2";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
@@ -223,12 +224,12 @@ export function MarkdownToolbarDefaultActions({
   return (
     <>
       <Button
-        variant="ghost"
-        size="icon"
-        type="button"
+        variant='ghost'
+        size='icon'
+        type='button'
         className={cn(
           "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
-          buttonClassName,
+          buttonClassName
         )}
         onClick={() => handleInsertCodeBlock("javascript")}
       >
@@ -236,12 +237,12 @@ export function MarkdownToolbarDefaultActions({
       </Button>
 
       <Button
-        variant="ghost"
-        size="icon"
-        type="button"
+        variant='ghost'
+        size='icon'
+        type='button'
         className={cn(
           "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
-          buttonClassName,
+          buttonClassName
         )}
         onClick={withAuth(handleMediaButtonClick)}
       >
@@ -251,22 +252,30 @@ export function MarkdownToolbarDefaultActions({
       <Popover open={isEmojiPickerOpen} onOpenChange={setIsEmojiPickerOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="ghost"
-            size="icon"
-            type="button"
+            variant='ghost'
+            size='icon'
+            type='button'
             className={cn(
               "text-muted-foreground hover:text-foreground cursor-pointer h-8 w-8",
-              buttonClassName,
+              buttonClassName
             )}
           >
             <Smile size={16} />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 border-none w-auto" side="top" align="start">
-          <EmojiPicker onEmojiSelect={handleEmojiSelect} className="h-80 w-64 shadow-xl border">
-            <EmojiPickerSearch placeholder="Search emojis..." />
+        <PopoverContent className='p-0 border-none w-auto' side='top' align='start'>
+          <EmojiPicker2 onEmojiSelect={console.log}>
+            <EmojiPicker2.Header>
+              <EmojiPicker2.Search />
+            </EmojiPicker2.Header>
+            <EmojiPicker2.CategoryNavigation />
+            <EmojiPicker2.Content />
+            <EmojiPicker2.Footer />
+          </EmojiPicker2>
+          {/* <EmojiPicker onEmojiSelect={handleEmojiSelect} className='h-80 w-64 shadow-xl border'>
+            <EmojiPickerSearch placeholder='Search emojis...' />
             <EmojiPickerContent />
-          </EmojiPicker>
+          </EmojiPicker> */}
         </PopoverContent>
       </Popover>
 
@@ -275,11 +284,11 @@ export function MarkdownToolbarDefaultActions({
           <Tooltip delayDuration={0}>
             <TooltipTrigger>
               <Badge
-                variant="outline"
-                className="text-muted-foreground hover:text-muted-foreground inline-flex gap-2 items-center cursor-pointer font-normal"
+                variant='outline'
+                className='text-muted-foreground hover:text-muted-foreground inline-flex gap-2 items-center cursor-pointer font-normal'
               >
-                <SiMarkdown size={16} fill="currentColor" />
-                <span className="leading-0">Markdown supported*</span>
+                <SiMarkdown size={16} fill='currentColor' />
+                <span className='leading-0'>Markdown supported*</span>
               </Badge>
             </TooltipTrigger>
             <TooltipContent>
@@ -292,11 +301,11 @@ export function MarkdownToolbarDefaultActions({
       {/* Hidden file input for media upload */}
       <input
         ref={fileInputRef}
-        type="file"
-        accept="image/*"
+        type='file'
+        accept='image/*'
         onChange={handleFileUpload}
-        className="hidden"
-        aria-label="Upload media file"
+        className='hidden'
+        aria-label='Upload media file'
       />
     </>
   );
