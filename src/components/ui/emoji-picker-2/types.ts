@@ -40,13 +40,6 @@ export interface EmojiDataMap {
   originalCategories?: CategoryData[];
 }
 
-export interface I18nData {
-  categories: Record<string, string>;
-  search: string;
-  notfound: string;
-  skintext: string;
-}
-
 export interface UseEmojiDataOptions {
   set?: EmojiSet;
   locale?: Locale;

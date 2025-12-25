@@ -1,3 +1,15 @@
+import {
+  ActivityIcon,
+  ClockIcon,
+  FlagIcon,
+  LightbulbIcon,
+  type LucideIcon,
+  PlaneIcon,
+  SmileIcon,
+  StarIcon,
+  TreesIcon,
+  UtensilsIcon,
+} from "lucide-react";
 import type React from "react";
 import { createContext, useContext, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
@@ -9,10 +21,7 @@ import {
   SkinTone,
   StorageKey,
 } from "@/components/ui/emoji-picker-2/constants";
-import {
-  getCategoryIcon,
-  getEmojiData,
-} from "@/components/ui/emoji-picker-2/functions/emoji-picker-utils";
+import { getEmojiData } from "@/components/ui/emoji-picker-2/functions/emoji-picker-utils";
 import {
   DEFAULT_FREQUENT_EMOJIS,
   getFrequentEmojis,
@@ -29,7 +38,35 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
-// --- Types ---
+const skinTones = [
+  SkinTone.DEFAULT,
+  SkinTone.LIGHT,
+  SkinTone.MEDIUM_LIGHT,
+  SkinTone.MEDIUM,
+  SkinTone.MEDIUM_DARK,
+  SkinTone.DARK,
+];
+
+const skinColors: Record<SkinTone, string> = {
+  [SkinTone.DEFAULT]: "#ffc93a",
+  [SkinTone.LIGHT]: "#fadcbc",
+  [SkinTone.MEDIUM_LIGHT]: "#e0bb95",
+  [SkinTone.MEDIUM]: "#bf8f68",
+  [SkinTone.MEDIUM_DARK]: "#9b643d",
+  [SkinTone.DARK]: "#594539",
+};
+
+const categoryIcons: Record<EmojiCategory, LucideIcon> = {
+  [EmojiCategory.FREQUENT]: ClockIcon,
+  [EmojiCategory.PEOPLE]: SmileIcon,
+  [EmojiCategory.NATURE]: TreesIcon,
+  [EmojiCategory.FOODS]: UtensilsIcon,
+  [EmojiCategory.ACTIVITY]: ActivityIcon,
+  [EmojiCategory.PLACES]: PlaneIcon,
+  [EmojiCategory.OBJECTS]: LightbulbIcon,
+  [EmojiCategory.SYMBOLS]: StarIcon,
+  [EmojiCategory.FLAGS]: FlagIcon,
+};
 
 interface EmojiPickerContextValue {
   data: EmojiDataMap;
@@ -48,8 +85,6 @@ interface EmojiPickerContextValue {
 }
 
 const EmojiPickerContext = createContext<EmojiPickerContextValue | null>(null);
-
-// --- Components ---
 
 export interface EmojiPickerProps extends UseEmojiDataOptions {
   onEmojiSelect?: (emoji: EmojiData) => void;
@@ -297,7 +332,7 @@ export function EmojiPickerCategoryNavigation({ className }: { className?: strin
     <TabsList className={cn("flex w-full justify-between px-2 bg-accent/50", className)}>
       {categories.map((category) => {
         if (category.emojis.length === 0 && category.id !== EmojiCategory.FREQUENT) return null;
-        const Icon = getCategoryIcon(category.id);
+        const Icon = categoryIcons[category.id as keyof typeof categoryIcons];
         const title = i18n.categories[category.id] || category.name || category.id;
 
         return (
@@ -321,24 +356,6 @@ export function EmojiPickerFooter({ className }: { className?: string }) {
 
   const { hoveredEmoji, skin, setSkin } = context;
   const emojiData = hoveredEmoji ? getEmojiData(hoveredEmoji, { skinIndex: skin - 1 }) : null;
-
-  const skinTones = [
-    SkinTone.DEFAULT,
-    SkinTone.LIGHT,
-    SkinTone.MEDIUM_LIGHT,
-    SkinTone.MEDIUM,
-    SkinTone.MEDIUM_DARK,
-    SkinTone.DARK,
-  ];
-
-  const skinColors = {
-    [SkinTone.DEFAULT]: "#ffc93a",
-    [SkinTone.LIGHT]: "#fadcbc",
-    [SkinTone.MEDIUM_LIGHT]: "#e0bb95",
-    [SkinTone.MEDIUM]: "#bf8f68",
-    [SkinTone.MEDIUM_DARK]: "#9b643d",
-    [SkinTone.DARK]: "#594539",
-  };
 
   return (
     <div className={cn("h-14 border-t p-2 flex items-center justify-between gap-2", className)}>

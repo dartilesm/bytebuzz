@@ -1,17 +1,3 @@
-import {
-  Activity,
-  AlertCircle,
-  Clock,
-  Flag,
-  Lightbulb,
-  type LucideIcon,
-  Plane,
-  Smile,
-  Star,
-  Trees,
-  Utensils,
-} from "lucide-react";
-import { EmojiCategory } from "@/components/ui/emoji-picker-2/constants";
 import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
 
 /**
@@ -54,34 +40,4 @@ export function getEmojiData(
   }
 
   return emojiData;
-}
-
-/**
- * Gets the icon component for a category
- * @param categoryId The category ID
- * @returns LucideIcon component
- */
-export function getCategoryIcon(categoryId: string): LucideIcon {
-  switch (categoryId) {
-    case EmojiCategory.FREQUENT:
-      return Clock;
-    case EmojiCategory.PEOPLE:
-      return Smile;
-    case EmojiCategory.NATURE:
-      return Trees;
-    case EmojiCategory.FOODS:
-      return Utensils;
-    case EmojiCategory.ACTIVITY:
-      return Activity;
-    case EmojiCategory.PLACES:
-      return Plane;
-    case EmojiCategory.OBJECTS:
-      return Lightbulb;
-    case EmojiCategory.SYMBOLS:
-      return Star;
-    case EmojiCategory.FLAGS:
-      return Flag;
-    default:
-      return AlertCircle;
-  }
 }

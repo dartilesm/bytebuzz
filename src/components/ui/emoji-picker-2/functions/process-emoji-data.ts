@@ -107,6 +107,11 @@ export function processEmojiData(data: any, options: UseEmojiDataOptions = {}): 
       // 6.2 Check exceptions
       if (exceptEmojis && exceptEmojis.includes(emoji.id)) return false;
 
+      // Ensure shortcodes exist
+      if (!emoji.shortcodes) {
+        emoji.shortcodes = `:${emoji.id}:`;
+      }
+
       // 6.3 Check version support
       if (latestVersionSupport && emoji.version && emoji.version > latestVersionSupport)
         return false;
