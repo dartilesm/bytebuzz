@@ -1,4 +1,4 @@
-const CACHE = new Map();
+const CACHE = new Map<string, boolean>();
 const VERSIONS = [
   { v: 15, emoji: "🫨" },
   { v: 14, emoji: "🫠" },
@@ -14,7 +14,10 @@ const VERSIONS = [
   { v: 1, emoji: "🙃" },
 ];
 
-function latestVersion() {
+/**
+ * Detects the latest emoji version supported by the browser
+ */
+function latestVersion(): number | undefined {
   for (const { v, emoji } of VERSIONS) {
     if (isSupported(emoji)) {
       return v;
@@ -22,7 +25,11 @@ function latestVersion() {
   }
 }
 
-function noCountryFlags() {
+/**
+ * Checks if country flag emojis are supported
+ * (Windows often doesn't support them)
+ */
+function noCountryFlags(): boolean {
   if (isSupported("🇨🇦")) {
     return false;
   }
@@ -30,9 +37,12 @@ function noCountryFlags() {
   return true;
 }
 
-function isSupported(emoji: string) {
+/**
+ * Checks if a specific emoji is supported by the browser
+ */
+function isSupported(emoji: string): boolean {
   if (CACHE.has(emoji)) {
-    return CACHE.get(emoji);
+    return CACHE.get(emoji) as boolean;
   }
 
   const supported = isEmojiSupported(emoji);
@@ -42,11 +52,12 @@ function isSupported(emoji: string) {
 }
 
 // https://github.com/koala-interactive/is-emoji-supported
-function isEmojiSupported(unicode: string) {
+function isEmojiSupported(unicode: string): boolean {
   let ctx: CanvasRenderingContext2D | null = null;
   try {
     if (!navigator.userAgent.includes("jsdom")) {
       const canvas = document.createElement("canvas");
+      // @ts-ignore
       ctx = canvas.getContext("2d", { willReadFrequently: true });
     }
   } catch {
@@ -104,4 +115,3 @@ function isEmojiSupported(unicode: string) {
 }
 
 export default { latestVersion, noCountryFlags, isSupported };
-

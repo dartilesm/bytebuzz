@@ -4,14 +4,31 @@ import {
   Clock,
   Flag,
   Lightbulb,
+  type LucideIcon,
   Plane,
   Smile,
   Star,
   Trees,
   Utensils,
 } from "lucide-react";
+import { EmojiCategory } from "@/components/ui/emoji-picker-2/constants";
+import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
 
-export function getEmojiData(emoji: any, { skinIndex = 0 } = {}) {
+/**
+ * Extracts emoji data with correct skin tone variant
+ * @param emoji The emoji object
+ * @param options configuration options
+ * @param options.skinIndex the index of the skin to use
+ * @returns The specific skin variant data
+ */
+export function getEmojiData(
+  emoji: EmojiData,
+  { skinIndex = 0 }: { skinIndex?: number } = {},
+): EmojiData {
+  if (!emoji.skins || emoji.skins.length === 0) {
+    return emoji;
+  }
+
   const skin =
     emoji.skins[skinIndex] ||
     (() => {
@@ -19,12 +36,12 @@ export function getEmojiData(emoji: any, { skinIndex = 0 } = {}) {
       return emoji.skins[skinIndex];
     })();
 
-  const emojiData: any = {
-    id: emoji.id,
-    name: emoji.name,
+  if (!skin) return emoji;
+
+  const emojiData: EmojiData = {
+    ...emoji,
     native: skin.native,
     unified: skin.unified,
-    keywords: emoji.keywords,
     shortcodes: skin.shortcodes || emoji.shortcodes,
   };
 
@@ -36,36 +53,33 @@ export function getEmojiData(emoji: any, { skinIndex = 0 } = {}) {
     emojiData.src = skin.src;
   }
 
-  if (emoji.aliases && emoji.aliases.length) {
-    emojiData.aliases = emoji.aliases;
-  }
-
-  if (emoji.emoticons && emoji.emoticons.length) {
-    emojiData.emoticons = emoji.emoticons;
-  }
-
   return emojiData;
 }
 
-export function getCategoryIcon(categoryId: string) {
+/**
+ * Gets the icon component for a category
+ * @param categoryId The category ID
+ * @returns LucideIcon component
+ */
+export function getCategoryIcon(categoryId: string): LucideIcon {
   switch (categoryId) {
-    case "frequent":
+    case EmojiCategory.FREQUENT:
       return Clock;
-    case "people":
+    case EmojiCategory.PEOPLE:
       return Smile;
-    case "nature":
+    case EmojiCategory.NATURE:
       return Trees;
-    case "foods":
+    case EmojiCategory.FOODS:
       return Utensils;
-    case "activity":
+    case EmojiCategory.ACTIVITY:
       return Activity;
-    case "places":
+    case EmojiCategory.PLACES:
       return Plane;
-    case "objects":
+    case EmojiCategory.OBJECTS:
       return Lightbulb;
-    case "symbols":
+    case EmojiCategory.SYMBOLS:
       return Star;
-    case "flags":
+    case EmojiCategory.FLAGS:
       return Flag;
     default:
       return AlertCircle;

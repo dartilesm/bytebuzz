@@ -1,31 +1,21 @@
-// @ts-nocheck
-import { Data, init } from "../config";
+import type { EmojiData, EmojiDataMap } from "@/components/ui/emoji-picker-2/types";
 
-const SHORTCODES_REGEX = /^(?:\:([^\:]+)\:)(?:\:skin-tone-(\d)\:)?$/;
-let Pool: any[] | null = null;
+export const SHORTCODES_REGEX = /^(?:\:([^\:]+)\:)(?:\:skin-tone-(\d)\:)?$/;
 
-function get(emojiId: any) {
-  if (emojiId.id) {
-    return emojiId;
-  }
+/**
+ * Searches emojis by query string with scoring algorithm
+ * @param query The search query
+ * @param emojiData The processed emoji data map
+ * @param maxResults Maximum number of results to return
+ */
+export function searchEmojis(
+  query: string,
+  emojiData: EmojiDataMap,
+  maxResults: number = 90,
+): EmojiData[] {
+  if (!query || !query.trim().length) return [];
 
-  return (
-    Data.emojis[emojiId] ||
-    Data.emojis[Data.aliases[emojiId]] ||
-    Data.emojis[Data.natives[emojiId]]
-  );
-}
-
-function reset() {
-  Pool = null;
-}
-
-async function search(value: string, { maxResults = 90, caller = "SearchIndex.search" } = {}) {
-  if (!value || !value.trim().length) return null;
-
-  await init(null, { caller });
-
-  const values = value
+  const values = query
     .toLowerCase()
     .replace(/(\w)-/, "$1 ")
     .split(/[\s|,]+/)
@@ -33,23 +23,21 @@ async function search(value: string, { maxResults = 90, caller = "SearchIndex.se
       return word.trim() && words.indexOf(word) === i;
     });
 
-  if (!values.length) return;
+  if (!values.length) return [];
 
-  if (!Pool) {
-    Pool = Object.values(Data.emojis);
-  }
-  
-  let pool = Pool;
-  let results: any[] = [];
+  const pool = Object.values(emojiData.emojis);
+
+  let currentPool = pool;
+  let results: EmojiData[] = [];
   let scores: Record<string, number> = {};
 
   for (const val of values) {
-    if (!pool.length) break;
+    if (!currentPool.length) break;
 
     results = [];
     scores = {};
 
-    for (const emoji of pool) {
+    for (const emoji of currentPool) {
       if (!emoji.search) continue;
       const score = emoji.search.indexOf(`,${val}`);
       if (score === -1) continue;
@@ -61,7 +49,7 @@ async function search(value: string, { maxResults = 90, caller = "SearchIndex.se
       scores[emoji.id] += emoji.id === val ? 0 : score + 1;
     }
 
-    pool = results;
+    currentPool = results;
   }
 
   if (results.length < 2) {
@@ -86,4 +74,26 @@ async function search(value: string, { maxResults = 90, caller = "SearchIndex.se
   return results;
 }
 
-export default { search, get, reset, SHORTCODES_REGEX };
+/**
+ * Gets an emoji by ID, alias, or native string
+ */
+export function getEmoji(emojiId: string, data: EmojiDataMap): EmojiData | undefined {
+  if (!emojiId || !data) return undefined;
+
+  // If emojiId looks like an ID and exists
+  if (data.emojis[emojiId]) return data.emojis[emojiId];
+
+  // Check alias
+  const aliasId = data.aliases[emojiId];
+  if (aliasId && data.emojis[aliasId]) return data.emojis[aliasId];
+
+  // Check native (if we have a native map)
+  const nativeId = data.natives[emojiId];
+  if (nativeId && data.emojis[nativeId]) return data.emojis[nativeId];
+
+  // Check emoticons
+  const emoticonId = data.emoticons[emojiId];
+  if (emoticonId && data.emojis[emoticonId]) return data.emojis[emoticonId];
+
+  return undefined;
+}
