@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Data, I18n, init } from "./config";
 import { getCategoryIcon, getEmojiData } from "./functions/emoji-picker-utils";
 import { SearchIndex } from "./helpers";
+import { emojiQueries } from "@/hooks/queries/options/emoji-queries";
 
 
 // --- Types ---
@@ -86,20 +87,9 @@ function EmojiPicker({
     [],
   );
 
-  const { data: initializedData } = useQuery({
-    queryKey: ["emoji-data", { set, locale, custom }],
-    queryFn: async () => {
-      await init({
-        data,
-        i18n,
-        set,
-        locale,
-        custom,
-      });
-      return { data: Data, i18n: I18n };
-    },
-    staleTime: Infinity,
-  });
+  const { data: initializedData } = useQuery(
+    emojiQueries.data({ data, i18n, set, locale, custom }),
+  );
 
   function addFrequentEmoji(emojiId: string) {
     setFrequentEmojis((prev) => {
