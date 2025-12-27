@@ -78,13 +78,17 @@ interface EmojiPickerContextValue {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   searchResults: EmojiData[] | null;
-  hoveredEmoji: EmojiData | null;
-  setHoveredEmoji: (emoji: EmojiData | null) => void;
   frequentEmojis: string[];
   addFrequentEmoji: (emojiId: string) => void;
 }
 
+interface EmojiHoverContextValue {
+  hoveredEmoji: EmojiData | null;
+  setHoveredEmoji: (emoji: EmojiData | null) => void;
+}
+
 const EmojiPickerContext = createContext<EmojiPickerContextValue | null>(null);
+const EmojiHoverContext = createContext<EmojiHoverContextValue | null>(null);
 
 export interface EmojiPickerProps extends UseEmojiDataOptions {
   onEmojiSelect?: (emoji: EmojiData) => void;
@@ -152,28 +156,31 @@ export function EmojiPicker({
     searchQuery,
     setSearchQuery,
     searchResults,
-    hoveredEmoji,
-    setHoveredEmoji,
     frequentEmojis: effectiveFrequentEmojis,
     addFrequentEmoji,
   };
 
+  const hoverContextValue: EmojiHoverContextValue = {
+    hoveredEmoji,
+    setHoveredEmoji,
+  };
+
   return (
     <EmojiPickerContext.Provider value={contextValue}>
-      <Tabs
-        defaultValue={EmojiCategory.FREQUENT}
-        className={cn(
-          "flex flex-col w-87.5 h-112.5 border rounded-lg bg-background text-foreground shadow-sm",
-          className,
-        )}
-      >
-        {children}
-      </Tabs>
+      <EmojiHoverContext.Provider value={hoverContextValue}>
+        <Tabs
+          defaultValue={EmojiCategory.FREQUENT}
+          className={cn(
+            "flex flex-col w-87.5 h-112.5 border rounded-lg bg-background text-foreground shadow-sm",
+            className,
+          )}
+        >
+          {children}
+        </Tabs>
+      </EmojiHoverContext.Provider>
     </EmojiPickerContext.Provider>
   );
 }
-
-// --- Subcomponents ---
 
 export function EmojiPickerHeader({
   className,
@@ -305,15 +312,15 @@ function EmojiButton({
   skin: number;
   onClick: () => void;
 }) {
-  const context = useContext(EmojiPickerContext);
+  const hoverContext = useContext(EmojiHoverContext);
   const emojiData = getEmojiData(emoji, { skinIndex: skin - 1 });
 
   return (
     <Button
       variant="ghost"
       onClick={onClick}
-      onMouseEnter={() => context?.setHoveredEmoji(emoji)}
-      onMouseLeave={() => context?.setHoveredEmoji(null)}
+      onMouseEnter={() => hoverContext?.setHoveredEmoji(emoji)}
+      onMouseLeave={() => hoverContext?.setHoveredEmoji(null)}
       title={emoji.name}
       className="p-1 h-9 w-9"
     >
@@ -354,8 +361,12 @@ export function EmojiPickerFooter({ className }: { className?: string }) {
   const context = useContext(EmojiPickerContext);
   if (!context) throw new Error("EmojiPickerFooter must be used within EmojiPicker");
 
-  const { hoveredEmoji, skin, setSkin } = context;
-  const emojiData = hoveredEmoji ? getEmojiData(hoveredEmoji, { skinIndex: skin - 1 }) : null;
+  const { skin: currentSkin, setSkin } = context;
+  const hoverContext = useContext(EmojiHoverContext);
+  const hoveredEmoji = hoverContext?.hoveredEmoji;
+  const emojiData = hoveredEmoji
+    ? getEmojiData(hoveredEmoji, { skinIndex: currentSkin - 1 })
+    : null;
 
   return (
     <div className={cn("h-14 border-t p-2 flex items-center justify-between gap-2", className)}>
@@ -374,13 +385,14 @@ export function EmojiPickerFooter({ className }: { className?: string }) {
 
       <div className="flex items-center gap-0.5 shrink-0">
         {skinTones.map((tone) => (
-          <button
+          <Button
             key={tone}
             type="button"
-            className={cn(
-              "w-4 h-4 rounded-full border border-transparent hover:scale-110 transition-transform",
-              skin === tone && "ring-2 ring-primary ring-offset-1",
-            )}
+            size="icon-sm"
+            variant="ghost"
+            className={cn("size-6", {
+              "ring-2 ring-primary ring-offset-1": currentSkin === tone,
+            })}
             style={{
               backgroundColor: skinColors[tone as keyof typeof skinColors],
             }}
