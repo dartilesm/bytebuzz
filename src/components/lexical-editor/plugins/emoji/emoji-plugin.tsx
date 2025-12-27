@@ -3,8 +3,15 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $getSelection, $isRangeSelection, type TextNode } from "lexical";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useEventListener } from "usehooks-ts";
+
 import { EmojiSuggestions } from "@/components/lexical-editor/plugins/emoji/emoji-suggestions";
+import {
+  checkEmojiTrigger,
+  getCaretPosition,
+} from "@/components/lexical-editor/plugins/emoji/functions/emoji-utils";
+import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
 
 interface EmojiState {
   isOpen: boolean;
@@ -25,140 +32,92 @@ export function EmojiPlugin() {
     position: null,
   });
 
-  const closeEmojis = useCallback(() => {
+  function closeEmojis() {
     setEmojiState({
       isOpen: false,
       query: "",
       position: null,
     });
-  }, []);
+  }
 
-  const selectEmoji = useCallback(
-    (emoji: { emoji: string }) => {
-      console.log("Selected emoji:", emoji);
-      editor.update(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return;
-
-        const anchor = selection.anchor;
-        const node = anchor.getNode();
-
-        if (node && "getTextContent" in node) {
-          const textNode = node as TextNode;
-          const currentText = textNode.getTextContent();
-          const currentOffset = anchor.offset;
-
-          const beforeCursor = currentText.slice(0, currentOffset);
-          // Match ":" preceded by space or start of line
-          const emojiMatch = beforeCursor.match(/(?:^|\s):([a-z0-9_]*)$/i);
-
-          if (emojiMatch) {
-            const matchString = emojiMatch[0];
-            // We want to replace from the start of the match (including space if it was matched)
-            const matchStart = currentOffset - matchString.length;
-            const colonIndex = matchString.startsWith(" ") ? matchStart + 1 : matchStart;
-
-            // Select from colon to current offset
-            textNode.select(colonIndex, currentOffset);
-
-            // Insert emoji character
-            selection.insertText(emoji.emoji);
-
-            // Add a space after
-            selection.insertText(" ");
-          }
-        }
-      });
-
-      closeEmojis();
-    },
-    [editor, closeEmojis],
-  );
-
-  const getCaretPosition = useCallback((): { top: number; left: number } | null => {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return null;
-
-    const range = selection.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-
-    return {
-      top: rect.bottom + 4,
-      left: rect.left,
-    };
-  }, []);
-
-  const detectEmojiTrigger = useCallback(() => {
-    editor.getEditorState().read(() => {
+  function selectEmoji(emojiData: EmojiData) {
+    editor.update(() => {
       const selection = $getSelection();
       if (!$isRangeSelection(selection)) return;
 
       const anchor = selection.anchor;
       const node = anchor.getNode();
 
-      if (node && "getTextContent" in node) {
-        const textNode = node as TextNode;
-        const text = textNode.getTextContent();
-        const offset = anchor.offset;
+      if (!node || !("getTextContent" in node)) return;
 
-        const beforeCursor = text.slice(0, offset);
-        // Regex to check for ":" preceded by space or start of line
-        const emojiMatch = beforeCursor.match(/(?:^|\s):([a-z0-9_]*)$/i);
+      const textNode = node as TextNode;
+      const currentText = textNode.getTextContent();
+      const currentOffset = anchor.offset;
 
-        if (emojiMatch) {
-          const query = emojiMatch[1].toLowerCase();
-          const position = getCaretPosition();
+      const beforeCursor = currentText.slice(0, currentOffset);
+      // Using the same regex logic from utils, but need to re-match here to get precise indices for replacement.
+      // We can't reuse the match object from state easily because logic is imperative here inside update.
+      const emojiMatch = beforeCursor.match(/(?:^|\s):([a-z0-9_]*)$/i);
 
-          if (position) {
-            setEmojiState((prev) => ({
-              ...prev,
-              isOpen: true,
-              query,
-              position,
-            }));
-          }
-        } else if (emojiState.isOpen) {
-          closeEmojis();
-        }
-      }
+      if (!emojiMatch) return;
+
+      const matchString = emojiMatch[0];
+      const matchStart = currentOffset - matchString.length;
+      const colonIndex = matchString.startsWith(" ") ? matchStart + 1 : matchStart;
+
+      // Select from colon to current offset
+      textNode.select(colonIndex, currentOffset);
+
+      // Insert emoji character
+      selection.insertText(emojiData.native);
+
+      // Add a space after
+      selection.insertText(" ");
     });
-  }, [editor, emojiState.isOpen, closeEmojis, getCaretPosition]);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!emojiState.isOpen) return;
+    closeEmojis();
+  }
 
-      // When the emoji dropdown is open, we close on Escape/Tab
-      if (event.key === "Escape" || event.key === "Tab") {
-        event.preventDefault();
-        event.stopPropagation();
-        closeEmojis();
-      }
-    };
+  function detectEmojiTrigger() {
+    editor.getEditorState().read(() => {
+      const trigger = checkEmojiTrigger();
+      const position = getCaretPosition();
 
-    if (emojiState.isOpen) {
-      document.addEventListener("keydown", handleKeyDown, true);
+      if (trigger && position)
+        return setEmojiState({
+          isOpen: true,
+          query: trigger.query,
+          position,
+        });
+
+      if (emojiState.isOpen) closeEmojis();
+    });
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (!emojiState.isOpen) return;
+
+    if (event.key === "Escape" || event.key === "Tab") {
+      event.preventDefault();
+      event.stopPropagation();
+      closeEmojis();
     }
+  }
 
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, [emojiState.isOpen, closeEmojis]);
+  useEventListener("keydown", handleKeyDown);
 
   useEffect(() => {
     return mergeRegister(editor.registerTextContentListener(detectEmojiTrigger));
   }, [editor, detectEmojiTrigger]);
 
+  if (!emojiState.isOpen || !emojiState.position) return null;
+
   return (
-    <>
-      {emojiState.isOpen && emojiState.position && (
-        <EmojiSuggestions
-          query={emojiState.query}
-          position={emojiState.position}
-          onSelect={selectEmoji}
-          onClose={closeEmojis}
-        />
-      )}
-    </>
+    <EmojiSuggestions
+      query={emojiState.query}
+      position={emojiState.position}
+      onSelect={selectEmoji}
+      onClose={closeEmojis}
+    />
   );
 }
