@@ -383,15 +383,16 @@ export function EmojiPickerFooter({ className }: { className?: string }) {
         {!emojiData && <div className="text-sm text-muted-foreground">Pick an emoji...</div>}
       </div>
 
-      <div className="flex items-center gap-0.5 shrink-0">
+      <div className="flex items-center gap-1 shrink-0">
         {skinTones.map((tone) => (
           <Button
             key={tone}
             type="button"
-            size="icon-sm"
+            size="icon"
             variant="ghost"
-            className={cn("size-6", {
-              "ring-2 ring-primary ring-offset-1": currentSkin === tone,
+            className={cn("size-5 rounded-full p-0 shadow-sm ring-offset-background", {
+              "ring-2 ring-primary ring-offset-2": currentSkin === tone,
+              "hover:scale-110 transition-transform": currentSkin !== tone,
             })}
             style={{
               backgroundColor: skinColors[tone as keyof typeof skinColors],
