@@ -322,7 +322,6 @@ function EmojiButton({
 }) {
   const hoverContext = useContext(EmojiHoverContext);
   const emojiData = getEmojiData(emoji, { skinIndex: skin - 1 });
-
   return (
     <Button
       variant="ghost"
@@ -332,7 +331,8 @@ function EmojiButton({
       title={emoji.name}
       className="p-1 h-9 w-9"
     >
-      <span className="text-xl">{emojiData.native}</span>
+      {emojiData.native && <span className="text-xl">{emojiData.native}</span>}
+      {emojiData.src && <img src={emojiData.src} alt={emojiData.name} className="size-6" />}
     </Button>
   );
 }
@@ -352,7 +352,7 @@ export function EmojiPickerCategoryNavigation({ className }: { className?: strin
     >
       {categories.map((category) => {
         if (category.emojis.length === 0 && category.id !== EmojiCategory.FREQUENT) return null;
-        const Icon = categoryIcons[category.id as keyof typeof categoryIcons];
+        const Icon = categoryIcons[category.id as keyof typeof categoryIcons] || StarIcon;
         const title = i18n.categories[category.id] || category.name || category.id;
 
         return (

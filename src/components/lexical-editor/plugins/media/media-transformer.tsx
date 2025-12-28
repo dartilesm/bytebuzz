@@ -53,7 +53,7 @@ export const MEDIA_TRANSFORMER: ElementTransformer = {
 
     return markdownParts.join("\n\n");
   },
-  regExp: /^!\[([^\]]*)\]\(([^)]+)\)$/,
+  regExp: /^!\[(?!(?:emoji:))([^\]]*)\]\(([^)]+)\)$/,
   replace: (parentNode, _children, match) => {
     const altText = match[1] || "";
     const url = match[2] || "";

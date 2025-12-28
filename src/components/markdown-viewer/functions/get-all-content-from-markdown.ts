@@ -23,6 +23,10 @@ export function getAllContentFromMarkdown({
   const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
   let imageMatch;
   while ((imageMatch = imageRegex.exec(markdown)) !== null) {
+    const altText = imageMatch[1];
+    // Skip custom emojis
+    if (altText.startsWith("emoji:")) continue;
+
     const src = imageMatch[2];
     const imageUrl = serializeImageUrl(src, { postId });
 
@@ -40,7 +44,7 @@ export function getAllContentFromMarkdown({
       id: imageUrl,
       data: {
         src: imageUrl,
-        alt: imageMatch[1],
+        alt: altText,
         width,
         height,
       },

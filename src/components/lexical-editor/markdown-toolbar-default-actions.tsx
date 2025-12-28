@@ -4,8 +4,7 @@ import { SiMarkdown } from "@icons-pack/react-simple-icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon, Smile } from "lucide-react";
-import { type RefObject, useRef, useState } from "react";
-import { useOnClickOutside } from "usehooks-ts";
+import { useRef, useState } from "react";
 import {
   removeMediaNodeById,
   updateMediaNodeById,
@@ -16,6 +15,7 @@ import {
   validateMediaFile,
 } from "@/components/lexical-editor/functions/upload-handlers";
 import { $createEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import { $createInlineImageNode } from "@/components/lexical-editor/plugins/inline-image/inline-image-node";
 import {
   $createMediaNode,
   $isMediaNode,
@@ -30,6 +30,22 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
+
+const customEmojis = [
+  {
+    id: "my-custom-category",
+    name: "My Custom Pack",
+    emojis: [
+      {
+        id: "party_parrot",
+        name: "Party Parrot",
+        shortcodes: ":party_parrot:",
+        keywords: ["blob", "party", "dance"],
+        src: "https://i.redd.it/uvzeqpqgwk2c1.gif",
+      },
+    ],
+  },
+];
 
 interface MarkdownToolbarDefaultActionsProps {
   /**
@@ -211,7 +227,19 @@ export function MarkdownToolbarDefaultActions({
       const selection = $getSelection();
       if (!$isRangeSelection(selection)) return;
 
-      selection.insertText(emoji.native);
+      if (emoji.src) {
+        // Insert custom emoji as InlineImageNode
+        // This ensures it renders immediately as an image
+        const node = $createInlineImageNode({
+          src: emoji.src,
+          alt: `emoji:${emoji.name}`,
+        });
+        selection.insertNodes([node]);
+        // Insert a space after to verify cursor position
+        selection.insertText(" ");
+      } else {
+        selection.insertText(emoji.native);
+      }
     });
     editor.focus();
   }
@@ -259,7 +287,7 @@ export function MarkdownToolbarDefaultActions({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 border-none w-auto" side="top" align="start">
-          <EmojiPicker2 onEmojiSelect={handleEmojiSelect}>
+          <EmojiPicker2 onEmojiSelect={handleEmojiSelect} custom={customEmojis}>
             <EmojiPicker2.Header>
               <EmojiPicker2.Search />
             </EmojiPicker2.Header>

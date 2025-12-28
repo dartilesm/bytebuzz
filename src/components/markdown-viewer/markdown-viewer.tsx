@@ -68,11 +68,9 @@ export function MarkdownViewer({
           p: ({ node, ...props }) => {
             const { children, className } = props;
 
-            const isChildImage = (children as ReactElementWithNode)?.props?.node?.tagName === "img";
-            if (isChildImage) return <>{children}</>;
-
-            if (!children) return null;
-
+            // If strict structure check handles pure images, we might mostly rely on that
+            // But for emojis mixed with text, we want the P to render
+            // So we just return standard p with children
             return (
               <p
                 className={className}
@@ -83,6 +81,24 @@ export function MarkdownViewer({
                 {children}
               </p>
             );
+          },
+          img: (props: MarkdownImageProps) => {
+            const { src, alt } = props;
+            if (!src) return null;
+
+            // Render custom emojis inline
+            if (alt?.startsWith("emoji:")) {
+              return (
+                <img
+                  src={src}
+                  alt={alt.replace("emoji:", "")}
+                  className="inline-block size-5 align-text-bottom object-contain"
+                />
+              );
+            }
+
+            // Hide regular images from main flow (they go to grid)
+            return null;
           },
           code: ({ node, ...props }) => {
             const { children, className } = props;
@@ -215,7 +231,8 @@ export function MarkdownViewer({
             );
           },
         }}
-        disallowedElements={["img"]}
+        // Removed img from disallowedElements to allow custom emoji handling
+        disallowedElements={disallowedElements.filter((el) => el !== "img")}
       >
         {markdown}
       </Markdown>
@@ -239,17 +256,21 @@ export function MarkdownViewer({
             components={{
               p: ({ node, ...props }) => {
                 const { children } = props;
-
+                // Only render children (images) for the grid viewer
                 const isChildImage =
                   (children as ReactElementWithNode)?.props?.node?.tagName === "img";
                 if (isChildImage) return <>{children}</>;
-
                 return null;
               },
               img: (props: MarkdownImageProps) => {
                 const { src, alt } = props;
 
                 if (!src || typeof src !== "string") {
+                  return null;
+                }
+
+                // Strictly skip custom emojis in grid
+                if (alt?.startsWith("emoji:")) {
                   return null;
                 }
 
