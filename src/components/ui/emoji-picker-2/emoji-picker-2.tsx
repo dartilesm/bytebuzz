@@ -5,6 +5,7 @@ import {
   LightbulbIcon,
   type LucideIcon,
   PlaneIcon,
+  SearchIcon,
   SmileIcon,
   StarIcon,
   TreesIcon,
@@ -34,6 +35,7 @@ import type {
   UseEmojiDataOptions,
 } from "@/components/ui/emoji-picker-2/types";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -216,6 +218,7 @@ export function EmojiPickerSearch({
     <div className={cn("relative", className)}>
       <Input
         type="text"
+        startIcon={<SearchIcon className="size-4" />}
         placeholder={placeholder}
         value={searchQuery}
         onChange={handleSearch}
@@ -343,7 +346,7 @@ export function EmojiPickerCategoryNavigation({ className }: { className?: strin
   return (
     <TabsList
       className={cn(
-        "w-full justify-around rounded-none border-b border-border bg-background",
+        "w-full justify-around rounded-none border-b border-border bg-background pb-0",
         className,
       )}
     >
@@ -392,26 +395,38 @@ export function EmojiPickerFooter({ className }: { className?: string }) {
         )}
         {!emojiData && <div className="text-sm text-muted-foreground">Pick an emoji...</div>}
       </div>
-
-      <div className="flex items-center gap-1 shrink-0">
-        {skinTones.map((tone) => (
+      <Popover>
+        <PopoverTrigger asChild>
           <Button
-            key={tone}
-            type="button"
+            variant="outline"
             size="icon"
-            variant="ghost"
-            className={cn("size-5 rounded-full p-0 shadow-sm ring-offset-background", {
-              "ring-2 ring-primary ring-offset-2": currentSkin === tone,
-              "hover:scale-110 transition-transform": currentSkin !== tone,
-            })}
+            className="size-5 rounded-full p-0 shadow-sm ring-offset-background"
+            title="Change skin tone"
             style={{
-              backgroundColor: skinColors[tone as keyof typeof skinColors],
+              backgroundColor: skinColors[currentSkin as keyof typeof skinColors],
             }}
-            onClick={() => setSkin(tone as number)}
-            title={`Skin tone ${tone}`}
           />
-        ))}
-      </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-[--radix-popover-trigger-width] flex gap-2" align="end">
+          {skinTones.map((tone) => (
+            <Button
+              key={tone}
+              type="button"
+              size="icon"
+              variant="ghost"
+              className={cn("size-5 rounded-full p-0 shadow-sm ring-offset-background", {
+                "ring-2 ring-primary ring-offset-2": currentSkin === tone,
+                "hover:scale-110 transition-transform": currentSkin !== tone,
+              })}
+              style={{
+                backgroundColor: skinColors[tone as keyof typeof skinColors],
+              }}
+              onClick={() => setSkin(tone as number)}
+              title={`Skin tone ${tone}`}
+            />
+          ))}
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
