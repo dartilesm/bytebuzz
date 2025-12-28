@@ -3,8 +3,8 @@ import type { EmojiCategory, EmojiSet, Locale } from "@/components/ui/emoji-pick
 export interface EmojiData {
   id: string;
   name: string;
-  native: string;
-  unified: string;
+  native?: string;
+  unified?: string;
   keywords: string[];
   shortcodes: string;
   skin?: number;

@@ -10,7 +10,6 @@ import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/ge
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
 import { Mention } from "@/components/markdown-viewer/mention";
-
 import {
   type BundledLanguage,
   CodeBlock,
@@ -24,6 +23,7 @@ import {
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import type { PostClickEvent } from "@/context/post-provider";
+import { resolveCustomEmojiUrl } from "@/lib/emojis/custom-emojis";
 import { cn } from "@/lib/utils";
 
 const ALLOWED_ELEMENTS = ["img", "p", "code"] as const;
@@ -86,13 +86,14 @@ export function MarkdownViewer({
             const { src, alt } = props;
             if (!src) return null;
 
-            // Render custom emojis inline
             if (alt?.startsWith("emoji:")) {
+              const resolvedSrc = typeof src === "string" ? resolveCustomEmojiUrl(src) || src : src;
               return (
                 <img
-                  src={src}
-                  alt={alt.replace("emoji:", "")}
-                  className="inline-block size-5 align-text-bottom object-contain"
+                  src={resolvedSrc}
+                  alt={alt}
+                  className="inline-block w-5 h-5 align-text-bottom object-contain mx-0.5"
+                  draggable={false}
                 />
               );
             }

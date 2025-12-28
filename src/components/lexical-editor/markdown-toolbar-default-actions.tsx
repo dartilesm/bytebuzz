@@ -28,24 +28,9 @@ import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { CUSTOM_EMOJIS } from "@/lib/emojis/custom-emojis";
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
-
-const customEmojis = [
-  {
-    id: "my-custom-category",
-    name: "My Custom Pack",
-    emojis: [
-      {
-        id: "party_parrot",
-        name: "Party Parrot",
-        shortcodes: ":party_parrot:",
-        keywords: ["blob", "party", "dance"],
-        src: "https://i.redd.it/uvzeqpqgwk2c1.gif",
-      },
-    ],
-  },
-];
 
 interface MarkdownToolbarDefaultActionsProps {
   /**
@@ -233,12 +218,13 @@ export function MarkdownToolbarDefaultActions({
         const node = $createInlineImageNode({
           src: emoji.src,
           alt: `emoji:${emoji.name}`,
+          id: emoji.id,
         });
         selection.insertNodes([node]);
         // Insert a space after to verify cursor position
         selection.insertText(" ");
       } else {
-        selection.insertText(emoji.native);
+        selection.insertText(emoji.native || "");
       }
     });
     editor.focus();
@@ -287,7 +273,7 @@ export function MarkdownToolbarDefaultActions({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 border-none w-auto" side="top" align="start">
-          <EmojiPicker2 onEmojiSelect={handleEmojiSelect} custom={customEmojis}>
+          <EmojiPicker2 onEmojiSelect={handleEmojiSelect} custom={CUSTOM_EMOJIS}>
             <EmojiPicker2.Header>
               <EmojiPicker2.Search />
             </EmojiPicker2.Header>
@@ -295,10 +281,6 @@ export function MarkdownToolbarDefaultActions({
             <EmojiPicker2.Content />
             <EmojiPicker2.Footer />
           </EmojiPicker2>
-          {/* <EmojiPicker onEmojiSelect={handleEmojiSelect} className='h-80 w-64 shadow-xl border'>
-            <EmojiPickerSearch placeholder='Search emojis...' />
-            <EmojiPickerContent />
-          </EmojiPicker> */}
         </PopoverContent>
       </Popover>
 

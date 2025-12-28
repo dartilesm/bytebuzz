@@ -1,20 +1,11 @@
-import type {
-  DOMConversionMap,
-  DOMConversionOutput,
-  DOMExportOutput,
-  EditorConfig,
-  LexicalEditor,
-  LexicalNode,
-  NodeKey,
-  SerializedLexicalNode,
-  Spread,
-} from "lexical";
-import { DecoratorNode } from "lexical";
+import type { EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
+import { $isDecoratorNode, DecoratorNode } from "lexical";
 import type React from "react";
 
 export interface InlineMediaType {
   src: string;
   alt: string;
+  id?: string;
   width?: number;
   height?: number;
 }
@@ -23,6 +14,7 @@ export type SerializedInlineImageNode = Spread<
   {
     src: string;
     alt: string;
+    id?: string;
     width?: number;
     height?: number;
     type: "inline-image";
@@ -34,6 +26,7 @@ export type SerializedInlineImageNode = Spread<
 export class InlineImageNode extends DecoratorNode<React.ReactNode> {
   __src: string;
   __alt: string;
+  __id?: string;
   __width: number | "inherit";
   __height: number | "inherit";
 
@@ -42,14 +35,22 @@ export class InlineImageNode extends DecoratorNode<React.ReactNode> {
   }
 
   static clone(node: InlineImageNode): InlineImageNode {
-    return new InlineImageNode(node.__src, node.__alt, node.__width, node.__height, node.__key);
+    return new InlineImageNode(
+      node.__src,
+      node.__alt,
+      node.__id,
+      node.__width,
+      node.__height,
+      node.__key,
+    );
   }
 
   static importJSON(serializedNode: SerializedInlineImageNode): InlineImageNode {
-    const { width, height, src, alt } = serializedNode;
+    const { width, height, src, alt, id } = serializedNode;
     return $createInlineImageNode({
       src,
       alt,
+      id,
       width,
       height,
     });
@@ -59,6 +60,7 @@ export class InlineImageNode extends DecoratorNode<React.ReactNode> {
     return {
       alt: this.__alt,
       height: this.__height === "inherit" ? 0 : this.__height,
+      id: this.__id,
       src: this.__src,
       type: "inline-image",
       version: 1,
@@ -69,6 +71,7 @@ export class InlineImageNode extends DecoratorNode<React.ReactNode> {
   constructor(
     src: string,
     alt: string,
+    id?: string,
     width?: number | "inherit",
     height?: number | "inherit",
     key?: NodeKey,
@@ -76,6 +79,7 @@ export class InlineImageNode extends DecoratorNode<React.ReactNode> {
     super(key);
     this.__src = src;
     this.__alt = alt;
+    this.__id = id;
     this.__width = width || "inherit";
     this.__height = height || "inherit";
   }
@@ -105,7 +109,7 @@ export class InlineImageNode extends DecoratorNode<React.ReactNode> {
   }
 
   getTextContent(): string {
-    return `![${this.__alt}](${this.__src})`;
+    return `![${this.__alt}](${this.__id || this.__src})`;
   }
 
   // Allow this node to be inline
@@ -117,10 +121,11 @@ export class InlineImageNode extends DecoratorNode<React.ReactNode> {
 export function $createInlineImageNode({
   src,
   alt,
+  id,
   width,
   height,
 }: InlineMediaType): InlineImageNode {
-  return new InlineImageNode(src, alt, width, height);
+  return new InlineImageNode(src, alt, id, width, height);
 }
 
 export function $isInlineImageNode(node: LexicalNode | null | undefined): node is InlineImageNode {
