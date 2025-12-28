@@ -174,9 +174,10 @@ export function EmojiPicker({
           ref={ref}
           defaultValue={EmojiCategory.FREQUENT}
           className={cn(
-            "flex flex-col w-87.5 h-112.5 border rounded-lg bg-background text-foreground shadow-sm",
+            "flex flex-col md:w-xs md:h-96 size-full border rounded-lg bg-background text-foreground gap-0",
             className,
           )}
+          variant="underline"
         >
           {children}
         </Tabs>
@@ -192,12 +193,12 @@ export function EmojiPickerHeader({
   className?: string;
   children?: React.ReactNode;
 }) {
-  return <div className={cn("p-2 border-b", className)}>{children}</div>;
+  return <div className={cn("p-2", className)}>{children}</div>;
 }
 
 export function EmojiPickerSearch({
   className,
-  placeholder = "Search...",
+  placeholder = "Search emojis...",
 }: {
   className?: string;
   placeholder?: string;
@@ -219,6 +220,7 @@ export function EmojiPickerSearch({
         value={searchQuery}
         onChange={handleSearch}
         className="w-full"
+        variant="flat"
       />
     </div>
   );
@@ -339,7 +341,12 @@ export function EmojiPickerCategoryNavigation({ className }: { className?: strin
   const { categories, i18n } = context;
 
   return (
-    <TabsList className={cn("flex w-full justify-between px-2 bg-accent/50", className)}>
+    <TabsList
+      className={cn(
+        "w-full justify-around rounded-none border-b border-border bg-background",
+        className,
+      )}
+    >
       {categories.map((category) => {
         if (category.emojis.length === 0 && category.id !== EmojiCategory.FREQUENT) return null;
         const Icon = categoryIcons[category.id as keyof typeof categoryIcons];
@@ -349,7 +356,7 @@ export function EmojiPickerCategoryNavigation({ className }: { className?: strin
           <TabsTrigger
             key={category.id}
             value={category.id}
-            className="flex-1 px-0 h-8 data-[state=active]:bg-background"
+            className="flex-1 px-0 h-8 data-[state=active]:bg-background cursor-pointer"
             title={title}
           >
             <Icon className="h-4 w-4" />
