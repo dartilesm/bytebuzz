@@ -1,13 +1,12 @@
 "use client";
 
+import { Popover, PopoverContent } from "@radix-ui/react-popover";
 import { useRef } from "react";
-import { createPortal } from "react-dom";
 import { useEventListener } from "usehooks-ts";
 import { handleEmojiNavigation } from "@/components/lexical-editor/plugins/emoji/functions/emoji-navigation";
 import { Card } from "@/components/ui/card";
 import { EmojiPickerList } from "@/components/ui/emoji-picker-2/emoji-picker-list";
 import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
-import { FocusTrap } from "@/components/ui/focus-trap";
 
 interface EmojiSuggestionsProps {
   /**
@@ -50,24 +49,27 @@ export function EmojiSuggestions({ query, position, onSelect }: EmojiSuggestions
     handleEmojiNavigation(event, containerRef.current, "button");
   }
 
-  return createPortal(
-    <Card
-      className="fixed z-50 w-64 max-h-80 overflow-hidden shadow-lg border border-border py-0"
-      style={{
-        top: position.top,
-        left: position.left,
-      }}
-    >
-      <FocusTrap>
-        <div ref={containerRef} className="h-full">
-          <EmojiPickerList
-            searchTerm={query}
-            onEmojiSelect={onSelect}
-            className="border-none rounded-none scrollbar-auto"
-          />
-        </div>
-      </FocusTrap>
-    </Card>,
-    document.body,
+  return (
+    <Popover defaultOpen>
+      <PopoverContent
+        className="fixed z-50 w-64 max-h-80 overflow-hidden shadow-lg border border-border py-0"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        asChild
+        style={{
+          top: position.top,
+          left: position.left,
+        }}
+      >
+        <Card>
+          <div ref={containerRef} className="h-full">
+            <EmojiPickerList
+              searchTerm={query}
+              onEmojiSelect={onSelect}
+              className="border-none rounded-none scrollbar-auto"
+            />
+          </div>
+        </Card>
+      </PopoverContent>
+    </Popover>
   );
 }

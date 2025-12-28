@@ -11,7 +11,7 @@ import {
   UtensilsIcon,
 } from "lucide-react";
 import type React from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, type ReactNode, type RefObject, useContext, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,7 +94,8 @@ export interface EmojiPickerProps extends UseEmojiDataOptions {
   onEmojiSelect?: (emoji: EmojiData) => void;
   skin?: number;
   className?: string;
-  children?: React.ReactNode;
+  ref?: RefObject<HTMLDivElement>;
+  children?: ReactNode;
 }
 
 export function EmojiPicker({
@@ -109,6 +110,7 @@ export function EmojiPicker({
   noCountryFlags,
   exceptEmojis,
   className,
+  ref,
   children,
 }: EmojiPickerProps) {
   const [skin, setSkin] = useLocalStorage<number>(StorageKey.SKIN_TONE, initialSkin);
@@ -169,6 +171,7 @@ export function EmojiPicker({
     <EmojiPickerContext.Provider value={contextValue}>
       <EmojiHoverContext.Provider value={hoverContextValue}>
         <Tabs
+          ref={ref}
           defaultValue={EmojiCategory.FREQUENT}
           className={cn(
             "flex flex-col w-87.5 h-112.5 border rounded-lg bg-background text-foreground shadow-sm",
