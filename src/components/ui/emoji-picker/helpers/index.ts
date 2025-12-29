@@ -1,5 +1,5 @@
-export { default as NativeSupport } from "@/components/ui/emoji-picker-2/helpers/native-support";
-export { getEmoji, searchEmojis } from "@/components/ui/emoji-picker-2/helpers/search-index";
+export { default as NativeSupport } from "@/components/ui/emoji-picker/helpers/native-support";
+export { getEmoji, searchEmojis } from "@/components/ui/emoji-picker/helpers/search-index";
 
 export const SafeFlags = [
   "checkered_flag",

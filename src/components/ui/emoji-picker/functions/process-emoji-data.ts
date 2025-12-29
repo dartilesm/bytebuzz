@@ -1,11 +1,11 @@
-import { EmojiCategory, EmojiSet } from "@/components/ui/emoji-picker-2/constants";
-import { NativeSupport } from "@/components/ui/emoji-picker-2/helpers";
+import { EmojiCategory, EmojiSet } from "@/components/ui/emoji-picker/constants";
+import { NativeSupport } from "@/components/ui/emoji-picker/helpers";
 import type {
   CategoryData,
   EmojiData,
   EmojiDataMap,
   UseEmojiDataOptions,
-} from "@/components/ui/emoji-picker-2/types";
+} from "@/components/ui/emoji-picker/types";
 
 /**
  * Initializes the emoji data structure with helper maps and default categories

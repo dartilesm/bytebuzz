@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { searchEmojis } from "@/components/ui/emoji-picker-2/helpers/search-index";
-import type { EmojiDataMap } from "@/components/ui/emoji-picker-2/types";
+import { searchEmojis } from "@/components/ui/emoji-picker/helpers/search-index";
+import type { EmojiDataMap } from "@/components/ui/emoji-picker/types";
 
 /**
  * Hook to search emojis based on query string

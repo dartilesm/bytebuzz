@@ -1,7 +1,7 @@
 import { useQueries } from "@tanstack/react-query";
-import { EmojiSet, Locale } from "@/components/ui/emoji-picker-2/constants";
-import { processEmojiData } from "@/components/ui/emoji-picker-2/functions/process-emoji-data";
-import type { EmojiDataMap, UseEmojiDataOptions } from "@/components/ui/emoji-picker-2/types";
+import { EmojiSet, Locale } from "@/components/ui/emoji-picker/constants";
+import { processEmojiData } from "@/components/ui/emoji-picker/functions/process-emoji-data";
+import type { EmojiDataMap, UseEmojiDataOptions } from "@/components/ui/emoji-picker/types";
 import { emojiQueries } from "@/hooks/queries/options/emoji-queries";
 
 const DEFAULT_LOCALE = Locale.EN;

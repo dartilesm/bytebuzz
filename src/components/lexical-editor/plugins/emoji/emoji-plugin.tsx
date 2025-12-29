@@ -11,7 +11,7 @@ import {
   checkEmojiTrigger,
   getCaretPosition,
 } from "@/components/lexical-editor/plugins/emoji/functions/emoji-utils";
-import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
+import type { EmojiData } from "@/components/ui/emoji-picker/types";
 
 interface EmojiState {
   isOpen: boolean;

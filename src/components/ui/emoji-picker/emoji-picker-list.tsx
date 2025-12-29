@@ -1,11 +1,11 @@
 import { Loader2 } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 import { Button } from "@/components/ui/button";
-import { EmojiSet, Locale, SkinTone, StorageKey } from "@/components/ui/emoji-picker-2/constants";
-import { getEmojiData } from "@/components/ui/emoji-picker-2/functions/emoji-picker-utils";
-import { useEmojiData } from "@/components/ui/emoji-picker-2/hooks/use-emoji-data";
-import { useEmojiSearch } from "@/components/ui/emoji-picker-2/hooks/use-emoji-search";
-import type { EmojiData, UseEmojiDataOptions } from "@/components/ui/emoji-picker-2/types";
+import { EmojiSet, Locale, SkinTone, StorageKey } from "@/components/ui/emoji-picker/constants";
+import { getEmojiData } from "@/components/ui/emoji-picker/functions/emoji-picker-utils";
+import { useEmojiData } from "@/components/ui/emoji-picker/hooks/use-emoji-data";
+import { useEmojiSearch } from "@/components/ui/emoji-picker/hooks/use-emoji-search";
+import type { EmojiData, UseEmojiDataOptions } from "@/components/ui/emoji-picker/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 

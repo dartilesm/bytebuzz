@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
-import type { EmojiSet, Locale } from "@/components/ui/emoji-picker-2/constants";
-import type { CustomEmoji } from "@/components/ui/emoji-picker-2/types";
+import type { EmojiSet, Locale } from "@/components/ui/emoji-picker/constants";
+import type { CustomEmoji } from "@/components/ui/emoji-picker/types";
 
 async function fetchJson(url: string) {
   const response = await fetch(url);

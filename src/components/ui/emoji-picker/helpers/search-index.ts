@@ -1,4 +1,4 @@
-import type { EmojiData, EmojiDataMap } from "@/components/ui/emoji-picker-2/types";
+import type { EmojiData, EmojiDataMap } from "@/components/ui/emoji-picker/types";
 
 export const SHORTCODES_REGEX = /^(?:\:([^\:]+)\:)(?:\:skin-tone-(\d)\:)?$/;
 

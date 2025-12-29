@@ -23,8 +23,8 @@ import {
 } from "@/components/lexical-editor/plugins/media/media-node";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EmojiPicker as EmojiPicker2 } from "@/components/ui/emoji-picker-2/emoji-picker-2";
-import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
+import { EmojiPicker as EmojiPicker2 } from "@/components/ui/emoji-picker/emoji-picker";
+import type { EmojiData } from "@/components/ui/emoji-picker/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthGuard } from "@/hooks/use-auth-guard";

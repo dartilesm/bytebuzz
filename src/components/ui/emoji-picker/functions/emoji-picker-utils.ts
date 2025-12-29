@@ -1,4 +1,4 @@
-import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
+import type { EmojiData } from "@/components/ui/emoji-picker/types";
 
 /**
  * Extracts emoji data with correct skin tone variant

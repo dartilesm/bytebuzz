@@ -1,4 +1,4 @@
-// import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
+// import type { EmojiData } from "@/components/ui/emoji-picker/types";
 // import { createServerSupabaseClient } from "@/db/supabase";
 import { createServiceWithContext } from "@/lib/create-service-with-context";
 import type { ServiceContext } from "@/types/services";

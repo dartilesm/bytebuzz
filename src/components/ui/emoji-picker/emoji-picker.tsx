@@ -23,19 +23,19 @@ import {
   Locale,
   SkinTone,
   StorageKey,
-} from "@/components/ui/emoji-picker-2/constants";
-import { getEmojiData } from "@/components/ui/emoji-picker-2/functions/emoji-picker-utils";
+} from "@/components/ui/emoji-picker/constants";
+import { getEmojiData } from "@/components/ui/emoji-picker/functions/emoji-picker-utils";
 import {
   DEFAULT_FREQUENT_EMOJIS,
   getFrequentEmojis,
-} from "@/components/ui/emoji-picker-2/functions/get-frequent-emojis";
-import { useEmojiData } from "@/components/ui/emoji-picker-2/hooks/use-emoji-data";
-import { useEmojiSearch } from "@/components/ui/emoji-picker-2/hooks/use-emoji-search";
+} from "@/components/ui/emoji-picker/functions/get-frequent-emojis";
+import { useEmojiData } from "@/components/ui/emoji-picker/hooks/use-emoji-data";
+import { useEmojiSearch } from "@/components/ui/emoji-picker/hooks/use-emoji-search";
 import type {
   EmojiData,
   EmojiDataMap,
   UseEmojiDataOptions,
-} from "@/components/ui/emoji-picker-2/types";
+} from "@/components/ui/emoji-picker/types";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";

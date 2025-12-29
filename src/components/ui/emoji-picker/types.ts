@@ -1,4 +1,4 @@
-import type { EmojiCategory, EmojiSet, Locale } from "@/components/ui/emoji-picker-2/constants";
+import type { EmojiCategory, EmojiSet, Locale } from "@/components/ui/emoji-picker/constants";
 
 export interface EmojiData {
   id: string;

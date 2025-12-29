@@ -5,8 +5,8 @@ import { useRef } from "react";
 import { useEventListener } from "usehooks-ts";
 import { handleEmojiNavigation } from "@/components/lexical-editor/plugins/emoji/functions/emoji-navigation";
 import { Card } from "@/components/ui/card";
-import { EmojiPickerList } from "@/components/ui/emoji-picker-2/emoji-picker-list";
-import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
+import { EmojiPickerList } from "@/components/ui/emoji-picker/emoji-picker-list";
+import type { EmojiData } from "@/components/ui/emoji-picker/types";
 
 interface EmojiSuggestionsProps {
   /**

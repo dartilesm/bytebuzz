@@ -1,7 +1,7 @@
 import {
   DEFAULT_MAX_FREQUENT_ROWS,
   DEFAULT_PER_LINE,
-} from "@/components/ui/emoji-picker-2/constants";
+} from "@/components/ui/emoji-picker/constants";
 
 /**
  * Gets the list of frequent emoji IDs sorted by usage

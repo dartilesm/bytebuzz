@@ -1,7 +1,7 @@
 import type { RangeSelection } from "lexical";
 import { EMOJI_ENDPOINT, EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
 import { $createInlineImageNode } from "@/components/lexical-editor/plugins/inline-image/inline-image-node";
-import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
+import type { EmojiData } from "@/components/ui/emoji-picker/types";
 
 export function getCustomEmojiId(creator: string | undefined, id: string): string {
   return creator ? `${creator}:${id}` : id;
