@@ -154,7 +154,8 @@ export function PostComposer({
   }
 
   async function onSubmit(data: z.infer<typeof postComposerSchema>) {
-    try {
+    console.log(data.content);
+    /* try {
       // Create post with all media files
       await createPost(
         {
@@ -185,7 +186,7 @@ export function PostComposer({
       form.setError("content", {
         message: error instanceof Error ? error.message : "Failed to create post",
       });
-    }
+    } */
   }
 
   return (

@@ -6,9 +6,9 @@ export const CUSTOM_EMOJIS: CustomEmoji[] = [
     name: "My Custom Pack",
     emojis: [
       {
-        id: "party_parrot2",
-        name: "Party Parrot as das das dsad asd sa s",
-        shortcodes: ":devhub/party_parrot2:",
+        id: "party_parrot",
+        name: "Party Parrot",
+        shortcodes: ":party_parrot:",
         keywords: ["blob", "party", "dance"],
         src: "https://i.redd.it/uvzeqpqgwk2c1.gif",
         creator: "devhub",
@@ -39,17 +39,6 @@ export function getRealCustomEmojiUrl(fullId: string): string | undefined {
   for (const category of CUSTOM_EMOJIS) {
     const emoji = category.emojis.find((e) => e.id === emojiId && e.creator === creator);
     if (emoji) return emoji.src;
-  }
-  return undefined;
-}
-
-/**
- * Gets a custom emoji by its ID.
- */
-export function getCustomEmojiById(id: string): EmojiData | undefined {
-  for (const category of CUSTOM_EMOJIS) {
-    const emoji = category.emojis.find((e) => e.id === id);
-    if (emoji) return emoji;
   }
   return undefined;
 }

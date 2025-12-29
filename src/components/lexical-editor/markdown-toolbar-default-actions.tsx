@@ -5,6 +5,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon, Smile } from "lucide-react";
 import { useRef, useState } from "react";
+import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
 import {
   removeMediaNodeById,
   updateMediaNodeById,
@@ -220,7 +221,7 @@ export function MarkdownToolbarDefaultActions({
 
         const node = $createInlineImageNode({
           src,
-          alt: `emoji:${emoji.name}`,
+          alt: `${EMOJI_PREFIX}${emoji.name}`,
           id: fullId,
         });
         selection.insertNodes([node]);

@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
 import { getAllContentFromMarkdown } from "@/components/markdown-viewer/functions/get-all-content-from-markdown";
 import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
@@ -23,7 +24,6 @@ import {
   CodeBlockItem,
 } from "@/components/ui/code-block/code-block";
 import type { PostClickEvent } from "@/context/post-provider";
-import { resolveCustomEmojiUrl } from "@/lib/emojis/custom-emojis";
 import { cn } from "@/lib/utils";
 
 const ALLOWED_ELEMENTS = ["img", "p", "code"] as const;
@@ -86,12 +86,10 @@ export function MarkdownViewer({
             const { src, alt } = props;
             if (!src) return null;
 
-            if (alt?.startsWith("emoji:")) {
-              console.log({ src, alt });
-              const resolvedSrc = typeof src === "string" ? resolveCustomEmojiUrl(src) || src : src;
+            if (alt?.startsWith(EMOJI_PREFIX)) {
               return (
                 <img
-                  src={resolvedSrc}
+                  src={src}
                   alt={alt}
                   className="inline-block w-5 h-5 align-text-bottom object-contain mx-0.5"
                   draggable={false}
@@ -272,7 +270,7 @@ export function MarkdownViewer({
                 }
 
                 // Strictly skip custom emojis in grid
-                if (alt?.startsWith("emoji:")) {
+                if (alt?.includes(EMOJI_PREFIX)) {
                   return null;
                 }
 
