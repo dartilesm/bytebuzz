@@ -386,9 +386,12 @@ export function EmojiPickerFooter({ className }: { className?: string }) {
       <div className="flex items-center gap-2 overflow-hidden">
         {emojiData && (
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="text-3xl shrink-0">{emojiData.native}</div>
+            {emojiData.native && <div className="text-3xl shrink-0">{emojiData.native}</div>}
+            {emojiData.src && <img src={emojiData.src} alt={emojiData.name} className="size-8" />}
             <div className="flex flex-col overflow-hidden">
-              <span className="text-sm font-medium truncate">{emojiData.name}</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="text-sm font-medium truncate">{emojiData.name}</span>
+              </span>
               <span className="text-xs text-muted-foreground truncate">{emojiData.shortcodes}</span>
             </div>
           </div>

@@ -87,6 +87,7 @@ export function MarkdownViewer({
             if (!src) return null;
 
             if (alt?.startsWith("emoji:")) {
+              console.log({ src, alt });
               const resolvedSrc = typeof src === "string" ? resolveCustomEmojiUrl(src) || src : src;
               return (
                 <img

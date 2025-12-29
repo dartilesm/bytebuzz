@@ -11,6 +11,7 @@ export interface EmojiData {
   src?: string;
   aliases?: string[];
   emoticons?: string[];
+  creator?: string;
   skins?: { native: string; unified: string; shortcodes?: string; src?: string }[];
   search?: string;
   version?: number;

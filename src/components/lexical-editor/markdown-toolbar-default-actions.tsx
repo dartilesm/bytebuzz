@@ -215,10 +215,13 @@ export function MarkdownToolbarDefaultActions({
       if (emoji.src) {
         // Insert custom emoji as InlineImageNode
         // This ensures it renders immediately as an image
+        const fullId = emoji.creator ? `${emoji.creator}:${emoji.id}` : emoji.id;
+        const src = emoji.creator ? `/api/emoji/${fullId}` : emoji.src;
+
         const node = $createInlineImageNode({
-          src: emoji.src,
+          src,
           alt: `emoji:${emoji.name}`,
-          id: emoji.id,
+          id: fullId,
         });
         selection.insertNodes([node]);
         // Insert a space after to verify cursor position

@@ -1,5 +1,5 @@
 import type { EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
-import { $isDecoratorNode, DecoratorNode } from "lexical";
+import { DecoratorNode } from "lexical";
 import type React from "react";
 
 export interface InlineMediaType {
