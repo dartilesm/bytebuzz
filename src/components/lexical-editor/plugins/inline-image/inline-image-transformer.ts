@@ -1,5 +1,6 @@
 import type { ElementTransformer } from "@lexical/markdown";
 import { EMOJI_ENDPOINT } from "@/components/lexical-editor/consts/emoji";
+import { getCustomEmojiUrl } from "@/components/lexical-editor/functions/insert-emoji";
 import {
   $createInlineImageNode,
   $isInlineImageNode,
@@ -27,7 +28,7 @@ export const INLINE_IMAGE_TRANSFORMER: ElementTransformer = {
     // Check if it's likely an ID (no scheme/path)
     if (!srcOrId.startsWith("http") && !srcOrId.startsWith("/")) {
       id = srcOrId;
-      src = `${EMOJI_ENDPOINT}/${id}`;
+      src = getCustomEmojiUrl(id);
     } else if (srcOrId.startsWith(EMOJI_ENDPOINT)) {
       // It's already an API path, extract ID
       id = srcOrId.replace(`${EMOJI_ENDPOINT}/`, "");

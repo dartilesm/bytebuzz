@@ -89,7 +89,16 @@ export function EmojiPickerList({
                 onClick={() => onEmojiSelect?.(emojiData)}
                 className="flex items-center gap-3 text-left text-accent-foreground/80 hover:text-accent-foreground"
               >
-                <span className="text-lg shrink-0 leading-none">{emojiData.native}</span>
+                {emojiData.src && (
+                  <img
+                    src={emojiData.src}
+                    alt={emojiData.name}
+                    className="size-5 object-contain shrink-0"
+                  />
+                )}{" "}
+                {emojiData.native && (
+                  <span className="text-lg shrink-0 leading-none">{emojiData.native}</span>
+                )}
                 <div className="flex flex-col min-w-0 flex-1">
                   <span className="text-xs font-medium truncate">{emojiData.name}</span>
                   <span className="text-2xs truncate">{emojiData.shortcodes}</span>

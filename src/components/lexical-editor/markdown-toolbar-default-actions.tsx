@@ -5,7 +5,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { Code, ImageUpIcon, Smile } from "lucide-react";
 import { useRef, useState } from "react";
-import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
+import { insertEmoji } from "@/components/lexical-editor/functions/insert-emoji";
 import {
   removeMediaNodeById,
   updateMediaNodeById,
@@ -16,7 +16,6 @@ import {
   validateMediaFile,
 } from "@/components/lexical-editor/functions/upload-handlers";
 import { $createEnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
-import { $createInlineImageNode } from "@/components/lexical-editor/plugins/inline-image/inline-image-node";
 import {
   $createMediaNode,
   $isMediaNode,
@@ -213,22 +212,11 @@ export function MarkdownToolbarDefaultActions({
       const selection = $getSelection();
       if (!$isRangeSelection(selection)) return;
 
-      if (emoji.src) {
-        // Insert custom emoji as InlineImageNode
-        // This ensures it renders immediately as an image
-        const fullId = emoji.creator ? `${emoji.creator}:${emoji.id}` : emoji.id;
-        const src = emoji.creator ? `/api/emoji/${fullId}` : emoji.src;
+      insertEmoji(selection, emoji);
 
-        const node = $createInlineImageNode({
-          src,
-          alt: `${EMOJI_PREFIX}${emoji.name}`,
-          id: fullId,
-        });
-        selection.insertNodes([node]);
-        // Insert a space after to verify cursor position
+      // For images, insert a space to ensure cursor behavior is clean
+      if (emoji.src) {
         selection.insertText(" ");
-      } else {
-        selection.insertText(emoji.native || "");
       }
     });
     editor.focus();

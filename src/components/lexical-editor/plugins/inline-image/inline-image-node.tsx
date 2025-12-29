@@ -1,7 +1,8 @@
 import type { EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import { DecoratorNode } from "lexical";
 import type React from "react";
-import { EMOJI_ENDPOINT, EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
+import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
+import { getCustomEmojiUrl } from "@/components/lexical-editor/functions/insert-emoji";
 
 export interface InlineMediaType {
   src: string;
@@ -114,7 +115,7 @@ export class InlineImageNode extends DecoratorNode<React.ReactNode> {
 
     if (isEmoji) {
       const emojiId = this.__id || this.__src;
-      const emojiUrl = `${EMOJI_ENDPOINT}/${emojiId}`;
+      const emojiUrl = getCustomEmojiUrl(emojiId);
 
       return `![${this.__alt}](${emojiUrl})`;
     }

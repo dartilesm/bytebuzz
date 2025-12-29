@@ -5,7 +5,7 @@ import { mergeRegister } from "@lexical/utils";
 import { $getSelection, $isRangeSelection, type TextNode } from "lexical";
 import { useEffect, useState } from "react";
 import { useEventListener } from "usehooks-ts";
-
+import { insertEmoji } from "@/components/lexical-editor/functions/insert-emoji";
 import { EmojiSuggestions } from "@/components/lexical-editor/plugins/emoji/emoji-suggestions";
 import {
   checkEmojiTrigger,
@@ -68,8 +68,8 @@ export function EmojiPlugin() {
       // Select from colon to current offset
       textNode.select(colonIndex, currentOffset);
 
-      // Insert emoji character
-      selection.insertText(emojiData.native);
+      // Insert emoji character (text or image)
+      insertEmoji(selection, emojiData);
 
       // Add a space after
       selection.insertText(" ");
