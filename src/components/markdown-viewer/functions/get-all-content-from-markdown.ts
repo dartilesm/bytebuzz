@@ -1,3 +1,4 @@
+import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
 import { decodeMediaMetadata } from "@/components/lexical-editor/functions/media-metadata-utils";
 import { parseCodeBlockMetadata } from "@/components/markdown-viewer/functions/parse-code-block-metadata";
 import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
@@ -23,6 +24,10 @@ export function getAllContentFromMarkdown({
   const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
   let imageMatch;
   while ((imageMatch = imageRegex.exec(markdown)) !== null) {
+    const altText = imageMatch[1];
+    // Skip custom emojis
+    if (altText.startsWith(EMOJI_PREFIX)) continue;
+
     const src = imageMatch[2];
     const imageUrl = serializeImageUrl(src, { postId });
 
@@ -40,7 +45,7 @@ export function getAllContentFromMarkdown({
       id: imageUrl,
       data: {
         src: imageUrl,
-        alt: imageMatch[1],
+        alt: altText,
         width,
         height,
       },

@@ -12,10 +12,11 @@ import {
   MARKDOWN_FEATURES,
 } from "@/components/lexical-editor/markdown-config";
 import { EnhancedCodeBlockNode } from "@/components/lexical-editor/plugins/code-block/enhanced-code-block-node";
+import { InlineImageNode } from "@/components/lexical-editor/plugins/inline-image/inline-image-node";
 import { MediaNode } from "@/components/lexical-editor/plugins/media/media-node";
 import { MentionNode, type User } from "@/components/lexical-editor/plugins/mentions/mention-node";
-import { log } from "@/lib/logger/logger";
 import type { SearchUsersReturnType } from "@/hooks/queries/options/user-queries";
+import { log } from "@/lib/logger/logger";
 
 // Create dynamic theme based on enabled features
 const theme = createMarkdownTheme();
@@ -96,7 +97,7 @@ export function MarkdownProvider({
       ...(MARKDOWN_FEATURES.links ? [LinkNode, AutoLinkNode] : []),
       ...(MARKDOWN_FEATURES.enhancedCodeBlocks ? [EnhancedCodeBlockNode] : []),
       ...(enableMentions && MARKDOWN_FEATURES.mentions ? [MentionNode] : []),
-      ...(MARKDOWN_FEATURES.media ? [MediaNode] : []),
+      ...(MARKDOWN_FEATURES.media ? [MediaNode, InlineImageNode] : []),
     ],
     editorState: undefined,
   };

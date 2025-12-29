@@ -1,5 +1,6 @@
 import { TRANSFORMERS } from "@lexical/markdown";
 import { ENHANCED_CODE_BLOCK_TRANSFORMER } from "@/components/lexical-editor/plugins/code-block/enhanced-code-transformers";
+import { INLINE_IMAGE_TRANSFORMER } from "@/components/lexical-editor/plugins/inline-image/inline-image-transformer";
 import { MEDIA_TRANSFORMER } from "@/components/lexical-editor/plugins/media/media-transformer";
 import { MENTION_TRANSFORMER } from "@/components/lexical-editor/plugins/mentions/mention-transformer";
 
@@ -151,6 +152,6 @@ export const customTransformers = TRANSFORMERS.filter(
   })
   .concat([
     ENHANCED_CODE_BLOCK_TRANSFORMER,
-    ...(MARKDOWN_FEATURES.media ? [MEDIA_TRANSFORMER] : []),
+    ...(MARKDOWN_FEATURES.media ? [MEDIA_TRANSFORMER, INLINE_IMAGE_TRANSFORMER] : []),
     ...(MARKDOWN_FEATURES.mentions ? [MENTION_TRANSFORMER] : []),
   ]);
