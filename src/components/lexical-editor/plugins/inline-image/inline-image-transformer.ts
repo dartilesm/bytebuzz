@@ -1,10 +1,10 @@
 import type { ElementTransformer } from "@lexical/markdown";
+import { EMOJI_ENDPOINT } from "@/components/lexical-editor/consts/emoji";
 import {
   $createInlineImageNode,
   $isInlineImageNode,
   InlineImageNode,
 } from "@/components/lexical-editor/plugins/inline-image/inline-image-node";
-import { resolveCustomEmojiUrl } from "@/lib/emojis/custom-emojis";
 
 export const INLINE_IMAGE_TRANSFORMER: ElementTransformer = {
   dependencies: [InlineImageNode],
@@ -21,13 +21,17 @@ export const INLINE_IMAGE_TRANSFORMER: ElementTransformer = {
     const alt = match[1];
     const srcOrId = match[2];
 
-    // Try to resolve as custom emoji ID
-    const resolvedUrl = resolveCustomEmojiUrl(srcOrId);
+    let src = srcOrId;
+    let id: string | undefined = undefined;
 
-    // If resolved, use the resolved URL as src, and srcOrId as id
-    // If not resolved, assume it's a direct URL (fallback)
-    const src = resolvedUrl || srcOrId;
-    const id = resolvedUrl ? srcOrId : undefined;
+    // Check if it's likely an ID (no scheme/path)
+    if (!srcOrId.startsWith("http") && !srcOrId.startsWith("/")) {
+      id = srcOrId;
+      src = `${EMOJI_ENDPOINT}/${id}`;
+    } else if (srcOrId.startsWith(EMOJI_ENDPOINT)) {
+      // It's already an API path, extract ID
+      id = srcOrId.replace(`${EMOJI_ENDPOINT}/`, "");
+    }
 
     const mediaNode = $createInlineImageNode({
       alt,

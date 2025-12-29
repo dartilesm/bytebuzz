@@ -1,3 +1,5 @@
+// import { useQuery } from "@tanstack/react-query";
+// ... (imports remain)
 import {
   ActivityIcon,
   ClockIcon,
@@ -38,6 +40,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { emojiQueries } from "@/hooks/queries/options/emoji-queries";
 import { cn } from "@/lib/utils";
 
 const skinTones = [

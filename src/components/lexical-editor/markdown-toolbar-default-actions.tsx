@@ -29,7 +29,7 @@ import type { EmojiData } from "@/components/ui/emoji-picker-2/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
-import { CUSTOM_EMOJIS } from "@/lib/emojis/custom-emojis";
+
 import { log } from "@/lib/logger/logger";
 import { cn } from "@/lib/utils";
 
@@ -277,7 +277,7 @@ export function MarkdownToolbarDefaultActions({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 border-none w-auto" side="top" align="start">
-          <EmojiPicker2 onEmojiSelect={handleEmojiSelect} custom={CUSTOM_EMOJIS}>
+          <EmojiPicker2 onEmojiSelect={handleEmojiSelect}>
             <EmojiPicker2.Header>
               <EmojiPicker2.Search />
             </EmojiPicker2.Header>

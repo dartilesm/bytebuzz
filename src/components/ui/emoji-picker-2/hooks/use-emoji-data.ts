@@ -1,19 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { EmojiSet, Locale } from "@/components/ui/emoji-picker-2/constants";
 import { processEmojiData } from "@/components/ui/emoji-picker-2/functions/process-emoji-data";
 import type { EmojiDataMap, UseEmojiDataOptions } from "@/components/ui/emoji-picker-2/types";
+import { emojiQueries } from "@/hooks/queries/options/emoji-queries";
 
 const DEFAULT_LOCALE = Locale.EN;
 const DEFAULT_SET = EmojiSet.NATIVE;
 const DEFAULT_VERSION = 15;
-
-async function fetchJson(url: string) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${url}`);
-  }
-  return response.json();
-}
 
 /**
  * Hook to fetch and process emoji data
@@ -21,28 +14,33 @@ async function fetchJson(url: string) {
 export function useEmojiData(options: UseEmojiDataOptions = {}) {
   const { set = DEFAULT_SET, locale = DEFAULT_LOCALE, emojiVersion = DEFAULT_VERSION } = options;
 
-  return useQuery({
-    queryKey: ["emoji-data", { set, locale, emojiVersion, options }],
-    queryFn: async () => {
-      const [data, i18n] = await Promise.all([
-        fetchJson(
-          `https://cdn.jsdelivr.net/npm/@emoji-mart/data@latest/sets/${emojiVersion}/${set}.json`,
-        ),
-        locale === "en"
-          ? import("@emoji-mart/data/i18n/en.json").then((m) => m.default)
-          : fetchJson(`https://cdn.jsdelivr.net/npm/@emoji-mart/data@latest/i18n/${locale}.json`),
-      ]);
+  return useQueries({
+    queries: [emojiQueries.defaults({ set, locale, emojiVersion }), emojiQueries.custom()],
+    combine: ([defaults, custom]) => {
+      const isPending = defaults.isPending || custom.isPending;
+      const isError = defaults.isError || custom.isError;
 
-      const processedData = processEmojiData(data, options);
+      if (!defaults.data) {
+        return {
+          data: undefined,
+          isPending,
+          isError,
+        };
+      }
+
+      const { data, i18n } = defaults.data;
+      const mergedCustom = [...(options.custom || []), ...(custom.data || [])];
+
+      const processedData = processEmojiData(data, { ...options, custom: mergedCustom });
 
       return {
-        data: processedData as EmojiDataMap,
-        i18n,
+        data: {
+          data: processedData as EmojiDataMap,
+          i18n,
+        },
+        isPending,
+        isError,
       };
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 }
