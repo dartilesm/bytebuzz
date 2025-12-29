@@ -1,5 +1,5 @@
 import { EmojiCategory, EmojiSet } from "@/components/ui/emoji-picker/constants";
-import { NativeSupport } from "@/components/ui/emoji-picker/helpers";
+import { emojiSupport } from "@/components/ui/emoji-picker/functions/emoji-support";
 import type {
   CategoryData,
   EmojiData,
@@ -84,9 +84,9 @@ export function processEmojiData(data: any, options: UseEmojiDataOptions = {}): 
   }
 
   // 6. Filter Emojis & Build Search Index
-  const latestVersionSupport = set === EmojiSet.NATIVE ? NativeSupport.latestVersion() : null;
+  const latestVersionSupport = set === EmojiSet.NATIVE ? emojiSupport.latestVersion() : null;
   const shouldFilterCountryFlags =
-    noCountryFlags || (set === EmojiSet.NATIVE && NativeSupport.noCountryFlags());
+    noCountryFlags || (set === EmojiSet.NATIVE && emojiSupport.noCountryFlags);
 
   // We need to iterate through categories to filter emojis
   // But since we might be filtering categories out, we should look at processedData.categories

@@ -1,5 +1,6 @@
 // import { useQuery } from "@tanstack/react-query";
 // ... (imports remain)
+
 import {
   ActivityIcon,
   ClockIcon,
@@ -24,11 +25,8 @@ import {
   SkinTone,
   StorageKey,
 } from "@/components/ui/emoji-picker/constants";
-import { getEmojiData } from "@/components/ui/emoji-picker/functions/emoji-picker-utils";
-import {
-  DEFAULT_FREQUENT_EMOJIS,
-  getFrequentEmojis,
-} from "@/components/ui/emoji-picker/functions/get-frequent-emojis";
+import { getEmojiData } from "@/components/ui/emoji-picker/functions/get-emoji-data";
+import { getFrequentEmojis } from "@/components/ui/emoji-picker/functions/get-frequent-emojis";
 import { useEmojiData } from "@/components/ui/emoji-picker/hooks/use-emoji-data";
 import { useEmojiSearch } from "@/components/ui/emoji-picker/hooks/use-emoji-search";
 import type {
@@ -150,8 +148,7 @@ export function EmojiPicker({
 
   const frequentEmojis = getFrequentEmojis(frequentEmojiMap);
   // If no frequent emojis, use defaults
-  const effectiveFrequentEmojis =
-    frequentEmojis.length > 0 ? frequentEmojis : DEFAULT_FREQUENT_EMOJIS;
+  const effectiveFrequentEmojis = frequentEmojis.length > 0 ? frequentEmojis : [];
 
   const contextValue: EmojiPickerContextValue = {
     data: initializedData.data,

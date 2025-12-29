@@ -27,24 +27,3 @@ export function getFrequentEmojis(
   const maxEmojis = maxRows * perLine;
   return sortedIds.slice(0, maxEmojis);
 }
-
-/**
- * Defaults for frequent emojis when history is empty
- */
-export const DEFAULT_FREQUENT_EMOJIS = [
-  "+1",
-  "grinning",
-  "kissing_heart",
-  "heart_eyes",
-  "laughing",
-  "stuck_out_tongue_winking_eye",
-  "sweat_smile",
-  "joy",
-  "scream",
-  "disappointed",
-  "unamused",
-  "weary",
-  "sob",
-  "sunglasses",
-  "heart",
-];

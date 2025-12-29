@@ -2,7 +2,7 @@ import { Loader2 } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 import { Button } from "@/components/ui/button";
 import { EmojiSet, Locale, SkinTone, StorageKey } from "@/components/ui/emoji-picker/constants";
-import { getEmojiData } from "@/components/ui/emoji-picker/functions/emoji-picker-utils";
+import { getEmojiData } from "@/components/ui/emoji-picker/functions/get-emoji-data";
 import { useEmojiData } from "@/components/ui/emoji-picker/hooks/use-emoji-data";
 import { useEmojiSearch } from "@/components/ui/emoji-picker/hooks/use-emoji-search";
 import type { EmojiData, UseEmojiDataOptions } from "@/components/ui/emoji-picker/types";

@@ -114,4 +114,8 @@ function isEmojiSupported(unicode: string): boolean {
   return true;
 }
 
-export default { latestVersion, noCountryFlags, isSupported };
+export const emojiSupport = {
+  latestVersion,
+  noCountryFlags,
+  isSupported,
+};
