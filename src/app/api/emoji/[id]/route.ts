@@ -9,6 +9,8 @@ export async function GET(request: NextRequest, routeContext: RouteContext<"/api
     return new NextResponse("Emoji not found", { status: 404 });
   }
 
-  // Redirect to the real URL
-  return NextResponse.redirect(emoji.src);
+  return NextResponse.json(emoji);
+
+  // Redirect to the emoji source URL
+  // return NextResponse.redirect(emoji.src);
 }
