@@ -48,3 +48,7 @@ next-env.d.ts
 
 # antigravity
 .agent/**
+
+# github copilot
+.github/instructions/**
+.github/prompts/**
