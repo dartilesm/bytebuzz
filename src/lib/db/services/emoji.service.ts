@@ -3,23 +3,6 @@
 import { createServiceWithContext } from "@/lib/create-service-with-context";
 import type { ServiceContext } from "@/types/services";
 
-// Mock data to replace DB for now
-const MOCK_EMOJIS = [
-  {
-    id: "my-custom-category",
-    name: "My Custom Pack",
-    emojis: [
-      {
-        id: "party_parrot",
-        name: "Party Parrot",
-        shortcodes: ":party_parrot:",
-        keywords: ["blob", "party", "dance"],
-        src: "https://i.redd.it/uvzeqpqgwk2c1.gif",
-        creator: "devhub",
-      },
-    ],
-  },
-];
 
 /**
  * Get a single custom emoji by its composite ID (username:id)
@@ -42,15 +25,6 @@ async function getCustomEmoji(this: ServiceContext, fullId: string) {
   return data;
   */
 
-  // Mock implementation
-  const [creator, emojiId] = fullId.split(":");
-  if (!creator || !emojiId) return null;
-
-  for (const category of MOCK_EMOJIS) {
-    const emoji = category.emojis.find((e) => e.id === emojiId && e.creator === creator);
-    if (emoji) return emoji;
-  }
-
   return null;
 }
 
@@ -69,7 +43,7 @@ async function getAllCustomEmojis(this: ServiceContext) {
   return data;
   */
 
-  return MOCK_EMOJIS;
+  return null;
 }
 
 export const emojiService = createServiceWithContext({
