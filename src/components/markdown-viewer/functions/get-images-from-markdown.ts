@@ -1,3 +1,4 @@
+import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
 import { serializeImageUrl } from "@/components/markdown-viewer/functions/serialize-image-url";
 
 /**
@@ -12,12 +13,16 @@ export function getImagesFromMarkdown({ markdown, postId }: { markdown: string; 
   const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
   let match;
   while ((match = imageRegex.exec(markdown)) !== null) {
+    const altText = match[1];
+    // Skip custom emojis
+    if (altText.startsWith(EMOJI_PREFIX)) continue;
+
     const src = match[2];
     // Use nuqs serializer to properly merge postId with existing URL and query params
     const imageUrl = serializeImageUrl(src, { postId });
 
     images.push({
-      alt: match[1],
+      alt: altText,
       src: imageUrl,
     });
   }

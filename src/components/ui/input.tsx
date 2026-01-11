@@ -26,18 +26,41 @@ const inputVariants = cva(
 
 export interface InputProps
   extends Omit<React.ComponentProps<"input">, "size">,
-    VariantProps<typeof inputVariants> {}
+    VariantProps<typeof inputVariants> {
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, variant, size, type, ...props }, ref) => {
+  ({ className, variant, size, type, startIcon, endIcon, ...props }, ref) => {
     return (
-      <input
-        type={type}
-        data-slot="input"
-        className={cn(inputVariants({ variant, size }), className)}
-        ref={ref}
-        {...props}
-      />
+      <div className="relative w-full">
+        <input
+          type={type}
+          data-slot="input"
+          className={cn(
+            "peer",
+            inputVariants({ variant, size }),
+            {
+              "pl-9": startIcon,
+              "pr-9": endIcon,
+            },
+            className,
+          )}
+          ref={ref}
+          {...props}
+        />
+        {startIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 peer-disabled:opacity-50">
+            {startIcon}
+          </div>
+        )}
+        {endIcon && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 peer-disabled:opacity-50">
+            {endIcon}
+          </div>
+        )}
+      </div>
     );
   },
 );
