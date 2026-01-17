@@ -41,11 +41,13 @@ export function PostInteraction({
   return (
     <div className={cn("flex flex-col gap-2 rounded-xl bg-muted", className)}>
       {isReply && (
-        <div className="relative max-h-[40dvh] overflow-auto scrollbar-auto bg-card">
-          <PostThreadLine isFirstInThread />
-          <UserPost post={post} isNavigationDisabled className="rounded-none border-0">
-            {post.repost && <CondensedUserPost post={post.repost} isNavigationDisabled />}
-          </UserPost>
+        <div className="relative max-h-[40dvh] overflow-hidden">
+          <PostThreadLine isFirstInThread className="top-4" />
+          <div className="h-full max-h-[40dvh] overflow-auto scrollbar-auto bg-card">
+            <UserPost post={post} isNavigationDisabled className="rounded-none border-0">
+              {post.repost && <CondensedUserPost post={post.repost} isNavigationDisabled />}
+            </UserPost>
+          </div>
         </div>
       )}
       <PostComposer
