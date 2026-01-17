@@ -2,7 +2,6 @@
 
 import { ExpandIcon } from "lucide-react";
 import Image from "next/image";
-import { createSerializer, parseAsString } from "nuqs/server";
 import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
