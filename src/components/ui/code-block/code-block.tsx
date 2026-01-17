@@ -182,7 +182,7 @@ const lineNumberClassNames = cn(
   "[&_.line]:before:[counter-increment:line]",
   "[&_.line]:before:w-4",
   "[&_.line]:before:mr-4",
-  "[&_.line]:before:text-[13px]",
+  "[&_.line]:before:text-[clamp(0.5em,3vw,1em)]",
   "[&_.line]:before:text-right",
   "[&_.line]:before:text-muted-foreground/50",
   "[&_.line]:before:font-mono",
@@ -237,7 +237,7 @@ const wordHighlightClassNames = cn(
 );
 
 const codeBlockClassName = cn(
-  "mt-0 bg-background text-sm",
+  "mt-0 bg-background text-[clamp(0.75em,2vw,0.875em)]",
   "[&_pre]:py-4",
   // "[&_.shiki]:!bg-[var(--shiki-bg)]",
   "[&_.shiki]:!bg-transparent",

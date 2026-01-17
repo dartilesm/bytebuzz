@@ -52,3 +52,4 @@ next-env.d.ts
 # github copilot
 .github/instructions/**
 .github/prompts/**
+.github/skills/**

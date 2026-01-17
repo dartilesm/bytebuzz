@@ -19,6 +19,10 @@ interface PostInteractionProps {
    * Callback function to be called after successful interaction
    */
   onSubmit?: () => void;
+  /**
+   * Additional className to be applied to the component
+   */
+  className?: string;
 }
 
 /**
@@ -29,12 +33,13 @@ export function PostInteraction({
   post,
   action,
   onSubmit = () => Promise.resolve(),
+  className,
 }: PostInteractionProps) {
   const isReply = action === "reply";
   const isRepost = action === "clone";
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl bg-muted">
+    <div className={cn("flex flex-col gap-2 rounded-xl bg-muted", className)}>
       {isReply && (
         <div className="relative">
           <PostThreadLine isFirstInThread />
@@ -59,11 +64,13 @@ export function PostInteraction({
               <RepeatIcon size={14} />
               <span> Original post</span>
             </span>
-            <CondensedUserPost
-              className="bg-card-foreground/5 border-border border dark:bg-card"
-              post={post}
-              isNavigationDisabled
-            />
+            <div className="max-h-[40vh] overflow-y-auto rounded-xl border border-border bg-card-foreground/5 dark:bg-card scrollbar-auto">
+              <CondensedUserPost
+                className="bg-transparent border-none"
+                post={post}
+                isNavigationDisabled
+              />
+            </div>
           </div>
         )}
       </PostComposer>
