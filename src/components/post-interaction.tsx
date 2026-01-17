@@ -41,7 +41,7 @@ export function PostInteraction({
   return (
     <div className={cn("flex flex-col gap-2 rounded-xl bg-muted", className)}>
       {isReply && (
-        <div className="relative">
+        <div className="relative max-h-[40dvh] overflow-auto scrollbar-auto bg-card">
           <PostThreadLine isFirstInThread />
           <UserPost post={post} isNavigationDisabled className="rounded-none border-0">
             {post.repost && <CondensedUserPost post={post.repost} isNavigationDisabled />}
