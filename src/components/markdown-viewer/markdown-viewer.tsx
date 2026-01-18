@@ -1,10 +1,5 @@
 "use client";
 
-import { ExpandIcon } from "lucide-react";
-import Image from "next/image";
-import type { ComponentPropsWithoutRef, ReactElement } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
 import { getAllContentFromMarkdown } from "@/components/markdown-viewer/functions/get-all-content-from-markdown";
 import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
@@ -25,7 +20,11 @@ import {
 } from "@/components/ui/code-block/code-block";
 import type { PostClickEvent } from "@/context/post-provider";
 import { cn } from "@/lib/utils";
-import { disabled } from "node_modules/@base-ui-components/react/esm/utils/reason-parts";
+import { ExpandIcon } from "lucide-react";
+import Image from "next/image";
+import type { ComponentPropsWithoutRef, ReactElement } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const ALLOWED_ELEMENTS = ["img", "p", "code"] as const;
 
