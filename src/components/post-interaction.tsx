@@ -44,7 +44,12 @@ export function PostInteraction({
         <div className="relative max-h-[40dvh] overflow-hidden">
           <PostThreadLine isFirstInThread className="top-4" />
           <div className="h-full max-h-[40dvh] overflow-auto scrollbar-auto bg-card">
-            <UserPost post={post} isNavigationDisabled className="rounded-none border-0">
+            <UserPost
+              post={post}
+              isNavigationDisabled
+              className="rounded-none border-0"
+              ignoreHideMedia
+            >
               {post.repost && <CondensedUserPost post={post.repost} isNavigationDisabled />}
             </UserPost>
           </div>

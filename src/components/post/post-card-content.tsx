@@ -30,6 +30,7 @@ export function PostContent({ children }: PostContentProps) {
     post,
     minVisibleContentLength = 1000,
     charsPerLevel = 300,
+    ignoreHideMedia,
   } = usePostContext();
   const { isOpen: isContentViewerOpen, postId: viewerPostId, closeViewer } = useContentViewerContext();
   const { content } = post;
@@ -48,7 +49,7 @@ export function PostContent({ children }: PostContentProps) {
       return onPostClick(event);
     }
     // For other events, close viewer if open
-    if (isContentViewerOpen) {
+    if (isContentViewerOpen && !ignoreHideMedia) {
       closeViewer();
     }
   }
@@ -68,7 +69,8 @@ export function PostContent({ children }: PostContentProps) {
   const canExpand = expansionLevel < expansionData.levels - 1;
   const isFullyExpanded = expansionLevel >= expansionData.levels - 1;
 
-  const shouldHideMedia = isContentViewerOpen && (isThreadPagePost || post.id === viewerPostId);
+  const shouldHideMedia =
+    !ignoreHideMedia && isContentViewerOpen && (isThreadPagePost || post.id === viewerPostId);
   const disallowedMediaElements = shouldHideMedia ? HIDDEN_MEDIA_ELEMENTS : [];
 
   useEffect(() => {
