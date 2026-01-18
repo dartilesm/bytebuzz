@@ -34,7 +34,7 @@ export function PostCard({ children, className, ref }: PostCardProps) {
         tabIndex={0}
       >
         {!isThreadPagePost && <PostAvatarAndThreadLine />}
-        <div className="w-full">{children}</div>
+        <div className="flex-1 min-w-0">{children}</div>
       </Card>
     </div>
   );

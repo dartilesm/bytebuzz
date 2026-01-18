@@ -59,6 +59,10 @@ interface UserPostProps {
    * Initial characters per each expansion level
    */
   charsPerLevel?: number;
+  /**
+   * Whether to ignore global media hiding rules (e.g. from content viewer)
+   */
+  ignoreHideMedia?: boolean;
 }
 
 /**
@@ -93,6 +97,7 @@ export function UserPost({
   children,
   minVisibleContentLength,
   charsPerLevel,
+  ignoreHideMedia,
 }: UserPostProps) {
   if (!post && !ancestry) {
     throw new Error("Either post or ancestry must be provided");
@@ -117,6 +122,7 @@ export function UserPost({
           isNavigationDisabled={isNavigationDisabled}
           minVisibleContentLength={minVisibleContentLength}
           charsPerLevel={charsPerLevel}
+          ignoreHideMedia={ignoreHideMedia}
         >
           <PostCard ref={ref} className={className}>
             <PostHeader />

@@ -1,10 +1,5 @@
 "use client";
 
-import { ExpandIcon } from "lucide-react";
-import Image from "next/image";
-import type { ComponentPropsWithoutRef, ReactElement } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { EMOJI_PREFIX } from "@/components/lexical-editor/consts/emoji";
 import { getAllContentFromMarkdown } from "@/components/markdown-viewer/functions/get-all-content-from-markdown";
 import { getImagesFromMarkdown } from "@/components/markdown-viewer/functions/get-images-from-markdown";
@@ -25,6 +20,11 @@ import {
 } from "@/components/ui/code-block/code-block";
 import type { PostClickEvent } from "@/context/post-provider";
 import { cn } from "@/lib/utils";
+import { ExpandIcon } from "lucide-react";
+import Image from "next/image";
+import type { ComponentPropsWithoutRef, ReactElement } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const ALLOWED_ELEMENTS = ["img", "p", "code"] as const;
 
@@ -43,6 +43,10 @@ export type MarkdownViewerProps = {
    * Use this instead of componentEvents for better scalability
    */
   onEvent?: (event: PostClickEvent) => void;
+  /**
+   * When true, disables all interactions within the markdown viewer
+   */
+  disabled?: boolean;
 };
 
 export function MarkdownViewer({
@@ -50,6 +54,7 @@ export function MarkdownViewer({
   postId,
   disallowedElements = [],
   onEvent,
+  disabled,
 }: MarkdownViewerProps) {
   // Extract all content (images and code blocks) from markdown
   const allContent = getAllContentFromMarkdown({ markdown, postId });
@@ -142,7 +147,11 @@ export function MarkdownViewer({
                   },
                 ]}
               >
-                <CodeBlockHeader className="h-10 flex justify-between items-center">
+                <CodeBlockHeader className={cn("h-10 flex items-center", {
+                  "hidden": disabled,
+                  "justify-between": filename,
+                  "justify-end": !filename,
+                })}>
                   {filename && (
                     <CodeBlockFiles>
                       {(item) =>
@@ -176,7 +185,7 @@ export function MarkdownViewer({
                     <CodeBlockItem key={item.language} value={item.language}>
                       <CodeBlockContent
                         language={item.language as BundledLanguage}
-                        className="text-xs [&>pre]:p-2 [&>pre_.line]:p-0"
+                        className="[&>pre]:p-2 [&>pre_.line]:p-0"
                       >
                         {item.code?.trim?.()}
                       </CodeBlockContent>
@@ -225,7 +234,7 @@ export function MarkdownViewer({
             }
 
             return (
-              <a href={href} className="text-primary underline hover:text-primary-foreground">
+              <a href={href} className="text-primary underline hover:text-primary-foreground" target="_blank">
                 {children}
               </a>
             );

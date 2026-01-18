@@ -18,13 +18,18 @@ export function PostActionModal({ post, action, onOpenChange }: PostActionModalP
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onOpenChange(false)}>
       <DialogContent
-        className={cn("max-w-xl p-0 gap-0 overflow-hidden [&>button]:hidden rounded-xl")}
+        className={cn(
+          "max-w-2xl p-0 gap-0 overflow-hidden [&>button]:hidden rounded-xl flex flex-col max-h-[85vh]",
+        )}
       >
         <DialogHeader
-          className={cn("flex flex-row justify-between p-2 pl-4 items-center space-y-0", {
-            "dark:bg-card": action === "reply",
-            "dark:bg-muted": action === "clone",
-          })}
+          className={cn(
+            "flex flex-row justify-between p-2 pl-4 items-center space-y-0 shrink-0",
+            {
+              "dark:bg-card": action === "reply",
+              "dark:bg-muted": action === "clone",
+            },
+          )}
         >
           <DialogTitle className="text-sm font-medium flex items-center gap-1 text-muted-foreground/60">
             <Repeat2Icon size={14} />
@@ -39,7 +44,9 @@ export function PostActionModal({ post, action, onOpenChange }: PostActionModalP
             <XIcon size={14} />
           </Button>
         </DialogHeader>
-        <PostInteraction post={post} action={action} onSubmit={onOpenChange} />
+        <div className="flex-1 overflow-y-auto">
+          <PostInteraction post={post} action={action} onSubmit={onOpenChange} />
+        </div>
       </DialogContent>
     </Dialog>
   );

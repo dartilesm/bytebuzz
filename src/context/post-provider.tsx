@@ -37,6 +37,7 @@ export interface PostContextType {
   isThreadPagePost?: boolean;
   minVisibleContentLength?: number;
   charsPerLevel?: number;
+  ignoreHideMedia?: boolean;
   togglePostModal: (isOpen?: boolean, action?: "reply" | "clone") => void;
   /**
    * Handler for post click events. Can be called by any nested component to trigger
@@ -62,6 +63,10 @@ export interface PostProviderProps {
    * Initial characters per each expansion level
    */
   charsPerLevel?: number;
+  /**
+   * Whether to ignore global media hiding rules (e.g. from content viewer)
+   */
+  ignoreHideMedia?: boolean;
 }
 
 export function PostProvider({
@@ -73,6 +78,7 @@ export function PostProvider({
   isLastInThread,
   minVisibleContentLength,
   charsPerLevel,
+  ignoreHideMedia = false,
 }: PostProviderProps) {
   const { postId } = useParams();
   const router = useRouter();
@@ -135,6 +141,7 @@ export function PostProvider({
         minVisibleContentLength,
         charsPerLevel,
         onPostClick,
+        ignoreHideMedia,
       }}
     >
       {children}

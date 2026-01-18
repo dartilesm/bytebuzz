@@ -127,10 +127,10 @@ export function CondensedUserPost({
             )}
           </div>
 
-          <div className="w-full overflow-hidden">
-            <CardHeader className="flex items-center gap-2 pb-1 flex-1 p-0 space-y-0">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-1.5">
+          <div className="w-full overflow-hidden flex flex-col gap-2">
+            <CardHeader className="flex items-center gap-2 pb-1 flex-1 py-0 space-y-0 px-2">
+              <div className="flex items-center justify-between w-full text-muted-foreground/50">
+                <div className="flex items-center gap-1.5 text-sm">
                   {isInteractive ? (
                     <TooltipProvider>
                       <Tooltip delayDuration={1000}>
@@ -158,8 +158,8 @@ export function CondensedUserPost({
               </div>
             </CardHeader>
 
-            <CardContent className="text-sm gap-2 p-2 pt-0">
-              <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} />
+            <CardContent className="text-xs flex flex-col gap-2 p-2 pt-0 text-muted-foreground">
+              <MarkdownViewer markdown={content ?? ""} postId={post.id ?? ""} disabled />
             </CardContent>
           </div>
         </Card>
